@@ -199,6 +199,13 @@ const Team = () => {
             imageUrl: "https://example.com/kunal.jpg",
             linkedin: "https://linkedin.com/in/kunal",
             twitter: "https://twitter.com/kunal",
+          },
+          {
+            name: "Achintya",
+            role: "AI Pathfinder",
+            imageUrl: "https://example.com/achintya.jpg",
+            linkedin: "https://linkedin.com/in/achintya",
+            twitter: "https://twitter.com/achintya",
           }
         ]
       },

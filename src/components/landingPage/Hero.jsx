@@ -2,7 +2,7 @@ import { ArrowRight } from "lucide-react";
 
 const Hero = () => {
   return (
-    <section className="relative min-h-[90vh] flex flex-col justify-center hero-pattern" style={{backgroundColor: '#FFDE59'}}>
+    <section className="relative min-h-[100vh] flex flex-col justify-center hero-pattern" style={{backgroundColor: '#FFDE59'}}>
       <div className="container max-w-[80vw] mx-auto px-4 py-16 pt-32 md:pt-20">
         <div className="flex flex-col lg:flex-row items-center">
           <div className="lg:w-1/2 lg:pr-12">
