@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, Users, Archive, BookOpen, Award, Layers, Calendar } from 'lucide-react';
+import { LogOut, Users, Archive, BookOpen, Award, Layers, Calendar, FileText } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import UserManagement from '../components/admin/UserManagement';
 import CohortManagement from '../components/admin/CohortManagement';
 import LeagueManagement from '../components/admin/LeagueManagement';
 import SpecializationManagement from '../components/admin/SpecializationManagement';
 import WeekManagement from '../components/admin/WeekManagement';
+import SectionManagement from '../components/admin/SectionManagement';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const API_BASE_URL = `${BASE_URL}/api`;
@@ -19,11 +20,12 @@ const AdminPage = () => {
   const [leagues, setLeagues] = useState([]);
   const [specializations, setSpecializations] = useState([]);
   const [weeks, setWeeks] = useState([]);
+  const [sections, setSections] = useState([]);
   const [selectedLeagueId, setSelectedLeagueId] = useState('');
+  const [selectedWeekId, setSelectedWeekId] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     // Initial data fetch based on active tab
     fetchTabData(activeTab);
@@ -60,6 +62,9 @@ const AdminPage = () => {
           break;
         case 'weeks':
           endpoint = `${API_BASE_URL}/weeks`;
+          break;
+        case 'sections':
+          endpoint = `${API_BASE_URL}/sections`;
           break;
         default:
           endpoint = `${API_BASE_URL}/admin/pending-users`;
@@ -106,6 +111,16 @@ const AdminPage = () => {
         case 'weeks':
           setWeeks(result.data.weeks || []);
           // For weeks, also fetch leagues if not already loaded
+          if (leagues.length === 0) {
+            await fetchLeagues();
+          }
+          break;
+        case 'sections':
+          setSections(result.data.sections || []);
+          // For sections, also fetch weeks and leagues if not already loaded
+          if (weeks.length === 0) {
+            await fetchWeeks();
+          }
           if (leagues.length === 0) {
             await fetchLeagues();
           }
@@ -157,6 +172,26 @@ const AdminPage = () => {
       }
     } catch (err) {
       console.error('Error fetching leagues:', err);
+    }
+  };
+
+  const fetchWeeks = async () => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      
+      const response = await fetch(`${API_BASE_URL}/weeks`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        setWeeks(result.data.weeks || []);
+      }
+    } catch (err) {
+      console.error('Error fetching weeks:', err);
     }
   };
 
@@ -644,6 +679,10 @@ const AdminPage = () => {
     setSelectedLeagueId(leagueId);
   };
 
+  const handleSelectWeek = (weekId) => {
+    setSelectedWeekId(weekId);
+  };
+
   const renderWeeks = () => {
     return (
       <WeekManagement
@@ -654,6 +693,106 @@ const AdminPage = () => {
         onDeleteWeek={handleDeleteWeek}
         selectedLeagueId={selectedLeagueId}
         onSelectLeague={handleSelectLeague}
+        loading={loading}
+      />
+    );
+  };
+
+  // Section handler functions
+  const handleCreateSection = async (section) => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      
+      const response = await fetch(`${API_BASE_URL}/sections`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(section)
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        // Add the new section to the list
+        setSections([...sections, result.data]);
+      } else {
+        throw new Error(result.error || 'Failed to create section');
+      }
+    } catch (err) {
+      console.error('Error creating section:', err);
+      setError(`Failed to create section: ${err.message}`);
+    }
+  };
+
+  const handleUpdateSection = async (sectionId, updatedSection) => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      
+      const response = await fetch(`${API_BASE_URL}/sections/${sectionId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(updatedSection)
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        // Update the section in the list
+        setSections(sections.map(section => 
+          section.id === sectionId ? result.data : section
+        ));
+      } else {
+        throw new Error(result.error || 'Failed to update section');
+      }
+    } catch (err) {
+      console.error('Error updating section:', err);
+      setError(`Failed to update section: ${err.message}`);
+    }
+  };
+
+  const handleDeleteSection = async (sectionId) => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      
+      const response = await fetch(`${API_BASE_URL}/sections/${sectionId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        // Remove the section from the list
+        setSections(sections.filter(section => section.id !== sectionId));
+      } else {
+        throw new Error(result.error || 'Failed to delete section');
+      }
+    } catch (err) {
+      console.error('Error deleting section:', err);
+      setError(`Failed to delete section: ${err.message}`);
+    }
+  };
+
+  const renderSections = () => {
+    return (
+      <SectionManagement
+        sections={sections}
+        weeks={weeks}
+        leagues={leagues}
+        onCreateSection={handleCreateSection}
+        onUpdateSection={handleUpdateSection}
+        onDeleteSection={handleDeleteSection}
+        selectedLeagueId={selectedLeagueId}
+        selectedWeekId={selectedWeekId}
+        onSelectLeague={handleSelectLeague}
+        onSelectWeek={handleSelectWeek}
         loading={loading}
       />
     );
@@ -702,7 +841,7 @@ const AdminPage = () => {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Admin Panel</h1>
           <p className="mt-1 text-sm text-gray-600">
-            Manage users, cohorts, leagues, and specializations
+            Manage users, cohorts, leagues, specializations, weeks, and sections
           </p>
         </div>
 
@@ -764,6 +903,17 @@ const AdminPage = () => {
               <Calendar size={16} className="mr-2" />
               Weeks
             </button>
+            <button
+              className={`${
+                activeTab === 'sections'
+                  ? 'border-black text-black'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center`}
+              onClick={() => setActiveTab('sections')}
+            >
+              <FileText size={16} className="mr-2" />
+              Sections
+            </button>
           </nav>
         </div>
 
@@ -795,6 +945,7 @@ const AdminPage = () => {
             {activeTab === 'leagues' && renderLeagues()}
             {activeTab === 'specializations' && renderSpecializations()}
             {activeTab === 'weeks' && renderWeeks()}
+            {activeTab === 'sections' && renderSections()}
           </div>
         )}
       </main>
