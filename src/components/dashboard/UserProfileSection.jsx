@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   User,
   ExternalLink, 
@@ -12,8 +12,51 @@ import {
   Star,
   Trophy
 } from 'lucide-react';
+import ProgressService from '../../utils/progressService';
+import BadgeService from '../../utils/badgeService';
 
-const UserProfileSection = ({ user }) => {
+const UserProfileSection = ({ user, dashboardData = null }) => {
+  const [userStats, setUserStats] = useState({
+    badgesCount: 0,
+    leaguesCount: 0
+  });
+  const [loading, setLoading] = useState(false);
+
+  // Fetch dashboard data if not provided
+  useEffect(() => {
+    const fetchUserStats = async () => {
+      if (dashboardData) {
+        // Use provided dashboard data
+        const stats = ProgressService.calculateProgressStats(dashboardData);
+        setUserStats({
+          badgesCount: stats.badgesEarned,
+          leaguesCount: stats.totalEnrollments
+        });
+      } else {
+        // Fetch data independently
+        setLoading(true);
+        try {
+          const [dashboardResponse, badgesResponse] = await Promise.all([
+            ProgressService.getUserDashboard(),
+            BadgeService.getMyBadges()
+          ]);
+          
+          const stats = ProgressService.calculateProgressStats(dashboardResponse);
+          setUserStats({
+            badgesCount: badgesResponse.badges?.length || 0,
+            leaguesCount: stats.totalEnrollments
+          });
+        } catch (error) {
+          console.error('Error fetching user stats:', error);
+          // Keep default values of 0
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchUserStats();
+  }, [dashboardData]);
   // Get role display info with enhanced styling
   const getRoleInfo = (role) => {
     switch (role) {
@@ -111,14 +154,18 @@ const UserProfileSection = ({ user }) => {
           <div className="bg-white/40 backdrop-blur-sm rounded-xl p-4 border border-white/20 shadow-sm hover:shadow-md transition-all duration-200">
             <div className="text-center">
               <Trophy size={16} className="mx-auto mb-1 text-amber-500" />
-              <div className="text-lg font-bold text-gray-900">0</div>
+              <div className="text-lg font-bold text-gray-900">
+                {loading ? '...' : userStats.badgesCount}
+              </div>
               <div className="text-xs text-gray-600">Badges</div>
             </div>
           </div>
           <div className="bg-white/40 backdrop-blur-sm rounded-xl p-4 border border-white/20 shadow-sm hover:shadow-md transition-all duration-200">
             <div className="text-center">
               <BarChart3 size={16} className="mx-auto mb-1 text-blue-500" />
-              <div className="text-lg font-bold text-gray-900">0</div>
+              <div className="text-lg font-bold text-gray-900">
+                {loading ? '...' : userStats.leaguesCount}
+              </div>
               <div className="text-xs text-gray-600">Leagues</div>
             </div>
           </div>

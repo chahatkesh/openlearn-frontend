@@ -1,13 +1,31 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { LogOut } from 'lucide-react';
 import PendingApprovalPage from '../components/dashboard/PendingApprovalPage';
 import UserProfileSection from '../components/dashboard/UserProfileSection';
 import LearningProgressSection from '../components/dashboard/LearningProgressSection';
+import ProgressService from '../utils/progressService';
 
 const DashboardPage = () => {
   const { user } = useAuth();
+  const [dashboardData, setDashboardData] = useState(null);
+
+  // Fetch dashboard data at the top level
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const data = await ProgressService.getUserDashboard();
+        setDashboardData(data);
+      } catch (err) {
+        console.error('Error fetching dashboard data:', err);
+      }
+    };
+
+    if (user?.status !== 'PENDING') {
+      fetchDashboardData();
+    }
+  }, [user]);
 
   // Show pending approval page if user is not approved
   if (user?.status === 'PENDING') {
@@ -59,7 +77,7 @@ const DashboardPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Left Section - 25% Width (User Profile) */}
           <div className="lg:col-span-1">
-            <UserProfileSection user={user} />
+            <UserProfileSection user={user} dashboardData={dashboardData} />
           </div>
           
           {/* Right Section - 75% Width (Learning Progress) */}
