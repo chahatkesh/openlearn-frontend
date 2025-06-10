@@ -100,17 +100,81 @@ class DataService {
     return handleResponse(response);
   }
 
-  // ==================== SPECIFIC DATA QUERIES ====================
+  // ==================== DETAILED DATA FETCHING ====================
+  
+  /**
+   * Get detailed cohort information
+   * @param {string} cohortId - Cohort ID
+   * @returns {Promise} Cohort details
+   */
+  static async getCohortDetails(cohortId) {
+    const response = await fetch(`${API_BASE_URL}/cohorts/${cohortId}`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
 
   /**
-   * Get weeks for a specific league
+   * Get detailed league information
    * @param {string} leagueId - League ID
-   * @returns {Promise} Weeks data
+   * @returns {Promise} League details
+   */
+  static async getLeagueDetails(leagueId) {
+    const response = await fetch(`${API_BASE_URL}/leagues/${leagueId}`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+
+  /**
+   * Get all weeks for a specific league
+   * @param {string} leagueId - League ID
+   * @returns {Promise} Weeks data for the league
    */
   static async getWeeksByLeague(leagueId) {
-    const weeks = await this.getWeeks();
-    return weeks.filter(week => week.leagueId === leagueId);
+    const response = await fetch(`${API_BASE_URL}/weeks/league/${leagueId}`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
   }
+
+  /**
+   * Get week details with sections
+   * @param {string} weekId - Week ID
+   * @returns {Promise} Week details with sections
+   */
+  static async getWeekDetails(weekId) {
+    const response = await fetch(`${API_BASE_URL}/weeks/${weekId}/sections`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+
+  /**
+   * Get section details with resources and user progress
+   * @param {string} sectionId - Section ID
+   * @returns {Promise} Section details with resources and progress
+   */
+  static async getSectionDetails(sectionId) {
+    const response = await fetch(`${API_BASE_URL}/sections/${sectionId}`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+
+  /**
+   * Get all resources for a specific section
+   * @param {string} sectionId - Section ID
+   * @returns {Promise} Section resources
+   */
+  static async getSectionResources(sectionId) {
+    const response = await fetch(`${API_BASE_URL}/sections/${sectionId}/resources`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+
+  // ==================== SPECIFIC DATA QUERIES ====================
 
   /**
    * Get sections for a specific week
@@ -323,6 +387,46 @@ class DataService {
     });
 
     return result;
+  }
+
+  // ==================== ASSIGNMENT MANAGEMENT ====================
+
+  /**
+   * Get assignment for a specific league
+   * @param {string} leagueId - League ID
+   * @returns {Promise} Assignment data
+   */
+  static async getLeagueAssignment(leagueId) {
+    const response = await fetch(`${API_BASE_URL}/assignments/league/${leagueId}`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+
+  /**
+   * Submit assignment solution
+   * @param {string} assignmentId - Assignment ID
+   * @param {Object} submissionData - Submission data
+   * @returns {Promise} Submission response
+   */
+  static async submitAssignment(assignmentId, submissionData) {
+    const response = await fetch(`${API_BASE_URL}/assignments/${assignmentId}/submit`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(submissionData)
+    });
+    return handleResponse(response);
+  }
+
+  /**
+   * Get user's assignment submissions
+   * @returns {Promise} Assignment submissions
+   */
+  static async getMySubmissions() {
+    const response = await fetch(`${API_BASE_URL}/assignments/my-submissions`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
   }
 }
 

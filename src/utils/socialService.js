@@ -85,6 +85,119 @@ class SocialService {
   }
 
   /**
+   * Share overall progress with modal
+   * @param {Object} progressData - Progress data to share
+   */
+  static shareProgress(progressData) {
+    const message = `🚀 Making great progress on @OpenLearnPlatform! 
+
+📊 Overall Progress: ${progressData.overallProgress}%
+✅ Completed: ${progressData.completedSections}/${progressData.totalSections} sections
+
+Join me in this learning journey! 🎓
+
+#OpenLearn #Learning #Progress`;
+
+    this.showShareModal('progress', { message, progressData });
+  }
+
+  /**
+   * Share league-specific progress
+   * @param {Object} leagueData - League progress data
+   */
+  static shareLeagueProgress(leagueData) {
+    const message = `🎯 Making progress in ${leagueData.leagueName} on @OpenLearnPlatform!
+
+📈 Progress: ${leagueData.progressPercentage}%
+✅ Completed: ${leagueData.completedSections}/${leagueData.totalSections} sections
+
+Learning never stops! 💪
+
+#OpenLearn #${leagueData.leagueName.replace(/\s+/g, '')} #ContinuousLearning`;
+
+    this.showShareModal('league', { message, leagueData });
+  }
+
+  /**
+   * Show share modal with multiple platform options
+   * @param {string} type - Type of share (progress, league, section, badge)
+   * @param {Object} data - Share data
+   * @param {Function} onShare - Callback when sharing is done
+   */
+  static showShareModal(type, data, onShare = null) {
+    // Create modal HTML
+    const modalHTML = `
+      <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" id="shareModal">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">Share Your Achievement</h3>
+            <button onclick="document.getElementById('shareModal').remove()" class="text-gray-500 hover:text-gray-700">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+          
+          <div class="mb-4">
+            <textarea 
+              id="shareMessage" 
+              class="w-full p-3 border border-gray-300 rounded-lg resize-none" 
+              rows="4"
+              readonly
+            >${data.message}</textarea>
+          </div>
+          
+          <div class="flex flex-col space-y-2">
+            <button 
+              onclick="SocialService.shareOnTwitter(document.getElementById('shareMessage').value); document.getElementById('shareModal').remove();"
+              class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center"
+            >
+              <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+              </svg>
+              Share on Twitter
+            </button>
+            
+            <button 
+              onclick="SocialService.shareOnLinkedIn(document.getElementById('shareMessage').value); document.getElementById('shareModal').remove();"
+              class="bg-blue-700 text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition-colors flex items-center justify-center"
+            >
+              <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+              </svg>
+              Share on LinkedIn
+            </button>
+            
+            <button 
+              onclick="navigator.clipboard.writeText(document.getElementById('shareMessage').value).then(() => alert('Copied to clipboard!')); document.getElementById('shareModal').remove();"
+              class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center"
+            >
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+              </svg>
+              Copy to Clipboard
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Remove existing modal if any
+    const existingModal = document.getElementById('shareModal');
+    if (existingModal) {
+      existingModal.remove();
+    }
+
+    // Add modal to page
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+    // Call callback if provided
+    if (onShare) {
+      onShare(type);
+    }
+  }
+
+  /**
    * Share section completion on Twitter
    * @param {string} sectionId - Section ID
    * @param {Object} sectionData - Optional section data for fallback

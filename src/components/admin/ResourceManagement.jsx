@@ -565,7 +565,7 @@ const ResourceManagement = ({
       {filteredResources.length > 0 && (
         <div className="bg-gray-50 rounded-lg p-4">
           <h4 className="text-sm font-medium text-gray-900 mb-3">Resource Statistics</h4>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             <div className="text-center">
               <div className="text-2xl font-bold text-gray-900">{filteredResources.length}</div>
               <div className="text-sm text-gray-500">Total Resources</div>
