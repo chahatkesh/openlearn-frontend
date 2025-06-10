@@ -8,12 +8,10 @@ const SectionManagement = ({
   onCreateSection, 
   onUpdateSection, 
   onDeleteSection,
-  onReorderSections,
   selectedLeagueId,
   selectedWeekId,
   onSelectLeague,
-  onSelectWeek,
-  loading 
+  onSelectWeek, 
 }) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingSection, setEditingSection] = useState(null);
