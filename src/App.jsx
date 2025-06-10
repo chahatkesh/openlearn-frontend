@@ -6,6 +6,7 @@ import SignUpPage from './pages/SignUpPage'
 import DashboardPage from './pages/DashboardPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import LogoutPage from './pages/LogoutPage'
+import AdminPage from './pages/AdminPage'
 import { AuthProvider } from './context/AuthContext'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
 
@@ -27,8 +28,8 @@ const App = () => {
         </Route>
         
         {/* Routes with specific role requirements */}
-        <Route element={<ProtectedRoute requiredRoles={['admin']} />}>
-          <Route path="/admin" element={<div className="p-8">Admin Panel (Admin Only - Coming Soon)</div>} />
+        <Route element={<ProtectedRoute requiredRoles={['GRAND_PATHFINDER']} />}>
+          <Route path="/admin" element={<AdminPage />} />
         </Route>
 
         {/* Fallback route - redirect to home */}

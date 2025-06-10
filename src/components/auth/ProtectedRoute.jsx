@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import LoadingScreen from '../common/LoadingScreen';
 
@@ -42,13 +42,19 @@ export const ProtectedRoute = ({
               <span className="font-medium">Required role:</span> {requiredRoles.join(' or ')}
             </p>
           </div>
-          <div className="flex justify-center">
-            <a 
-              href="/"
+          <div className="flex flex-col gap-3">
+            <Link 
+              to="/dashboard"
               className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors"
             >
+              Go to Dashboard
+            </Link>
+            <Link 
+              to="/"
+              className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
+            >
               Return to Home
-            </a>
+            </Link>
           </div>
         </div>
       </div>
