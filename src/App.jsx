@@ -4,7 +4,6 @@ import LandingPage from './pages/LandingPage'
 import SignInPage from './pages/SignInPage'
 import SignUpPage from './pages/SignUpPage'
 import DashboardPage from './pages/DashboardPage'
-import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import LogoutPage from './pages/LogoutPage'
 import AdminPage from './pages/AdminPage'
 import { AuthProvider } from './context/AuthContext'
@@ -18,7 +17,6 @@ const App = () => {
         <Route path="/" element={<LandingPage />} />
         <Route path="/signin" element={<SignInPage />} />
         <Route path="/signup" element={<SignUpPage />} />
-        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
