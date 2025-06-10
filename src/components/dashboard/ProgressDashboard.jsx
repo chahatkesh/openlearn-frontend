@@ -9,7 +9,8 @@ import {
   CheckCircle,
   AlertCircle,
   Share2,
-  Calendar
+  Calendar,
+  Users
 } from 'lucide-react';
 import ProgressService from '../../utils/progressService';
 import SocialService from '../../utils/socialService';
@@ -260,59 +261,6 @@ const ProgressDashboard = ({ user, refreshTrigger = 0 }) => {
                 </button>
               </div>
             ))}
-          </div>
-        </div>
-      )}
-
-      {/* Recent Activity */}
-      {stats.totalEnrollments > 0 && (
-        <div className="mt-8">
-          <div className="flex items-center mb-6">
-            <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center mr-3">
-              <Clock size={16} className="text-white" />
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900">Learning Activity</h3>
-              <p className="text-sm text-gray-600">Your progress across active leagues</p>
-            </div>
-          </div>
-          
-          <div className="space-y-3">
-            {dashboardData.enrollments.map((enrollment) => {
-              const progressStatus = ProgressService.getProgressStatus(enrollment.progress.progressPercentage);
-              
-              return (
-                <div key={enrollment.league.id} className="group flex items-center justify-between p-4 bg-white/60 backdrop-blur-sm rounded-xl border border-white/50 hover:border-[#FFDE59]/30 transition-all duration-200">
-                  <div className="flex items-center">
-                    <div className={`w-3 h-3 rounded-full mr-3 ${
-                      progressStatus.color === 'green' ? 'bg-green-500' :
-                      progressStatus.color === 'yellow' ? 'bg-yellow-500' :
-                      progressStatus.color === 'orange' ? 'bg-orange-500' :
-                      progressStatus.color === 'blue' ? 'bg-blue-500' : 'bg-gray-400'
-                    }`}></div>
-                    <div>
-                      <h4 className="font-medium text-gray-900 group-hover:text-[#FFDE59] transition-colors">{enrollment.league.name}</h4>
-                      <p className="text-sm text-gray-600">
-                        {enrollment.progress.completedSections} of {enrollment.progress.totalSections} sections
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-sm font-medium text-gray-900">
-                      {enrollment.progress.progressPercentage}%
-                    </div>
-                    <div className={`text-xs ${
-                      progressStatus.color === 'green' ? 'text-green-600' :
-                      progressStatus.color === 'yellow' ? 'text-yellow-600' :
-                      progressStatus.color === 'orange' ? 'text-orange-600' :
-                      progressStatus.color === 'blue' ? 'text-blue-600' : 'text-gray-500'
-                    }`}>
-                      {progressStatus.text}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
           </div>
         </div>
       )}

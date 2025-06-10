@@ -184,16 +184,16 @@ const LearningProgressSection = ({ user }) => {
           </div>
         )}
 
-        {/* Current Enrollments - Modern Design */}
+        {/* Active Leagues - Modern Design */}
         {dashboardData?.enrollments?.length > 0 && (
           <div className="space-y-5">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-bold text-gray-900 flex items-center">
-                  <div className="w-8 h-8 bg-gradient-to-r from-[#FFDE59] to-[#FFD700] rounded-lg flex items-center justify-center mr-3">
-                    <BookOpen size={16} className="text-gray-900" />
+                  <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
+                    <Users size={16} className="text-white" />
                   </div>
-                  Your Learning Journey
+                  Active Leagues
                 </h2>
                 <p className="text-sm text-gray-600 mt-1">
                   {dashboardData.enrollments.length} active enrollment{dashboardData.enrollments.length !== 1 ? 's' : ''}
@@ -201,7 +201,7 @@ const LearningProgressSection = ({ user }) => {
               </div>
             </div>
             
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {dashboardData.enrollments.map((enrollment) => (
                 <div 
                   key={enrollment.league.id} 
@@ -214,7 +214,7 @@ const LearningProgressSection = ({ user }) => {
                         <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-[#FFDE59] transition-colors">
                           {enrollment.league.name}
                         </h3>
-                        <p className="text-gray-600 text-sm leading-relaxed">
+                        <p className="text-gray-600 text-sm leading-relaxed mb-3">
                           {enrollment.league.description}
                         </p>
                       </div>
@@ -228,8 +228,24 @@ const LearningProgressSection = ({ user }) => {
                       </div>
                     </div>
 
+                    {/* League Stats Grid */}
+                    <div className="grid grid-cols-3 gap-4 mb-5">
+                      <div className="text-center p-3 bg-blue-50/50 rounded-xl">
+                        <div className="text-lg font-bold text-blue-600">{enrollment.league.weeksCount || 0}</div>
+                        <div className="text-xs text-gray-600">Total Weeks</div>
+                      </div>
+                      <div className="text-center p-3 bg-green-50/50 rounded-xl">
+                        <div className="text-lg font-bold text-green-600">{enrollment.league.sectionsCount || 0}</div>
+                        <div className="text-xs text-gray-600">Total Sections</div>
+                      </div>
+                      <div className="text-center p-3 bg-purple-50/50 rounded-xl">
+                        <div className="text-lg font-bold text-purple-600">{enrollment.league.totalResources || 0}</div>
+                        <div className="text-xs text-gray-600">Total Resources</div>
+                      </div>
+                    </div>
+
                     {/* Progress Stats */}
-                    <div className="flex items-center space-x-6 text-sm text-gray-600 mb-4">
+                    <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
                       <span className="flex items-center">
                         <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                         {enrollment.progress.completedSections}/{enrollment.progress.totalSections} sections completed
