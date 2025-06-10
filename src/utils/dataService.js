@@ -1,0 +1,329 @@
+/**
+ * Data Service for OpenLearn Platform
+ * Handles basic data fetching operations for cohorts, leagues, etc.
+ */
+
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = `${BASE_URL}/api`;
+
+/**
+ * Get authorization header with JWT token
+ */
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('accessToken');
+  return {
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json'
+  };
+};
+
+/**
+ * Handle API response and return data or throw error
+ */
+const handleResponse = async (response) => {
+  const result = await response.json();
+  if (!result.success) {
+    throw new Error(result.error || 'API request failed');
+  }
+  return result.data;
+};
+
+/**
+ * Data Service Class
+ */
+class DataService {
+  // ==================== PUBLIC DATA FETCHING ====================
+  
+  /**
+   * Get all cohorts
+   * @returns {Promise} Cohorts data
+   */
+  static async getCohorts() {
+    const response = await fetch(`${API_BASE_URL}/cohorts`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+
+  /**
+   * Get all leagues
+   * @returns {Promise} Leagues data
+   */
+  static async getLeagues() {
+    const response = await fetch(`${API_BASE_URL}/leagues`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+
+  /**
+   * Get all weeks
+   * @returns {Promise} Weeks data
+   */
+  static async getWeeks() {
+    const response = await fetch(`${API_BASE_URL}/weeks`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+
+  /**
+   * Get all sections
+   * @returns {Promise} Sections data
+   */
+  static async getSections() {
+    const response = await fetch(`${API_BASE_URL}/sections`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+
+  /**
+   * Get all specializations
+   * @returns {Promise} Specializations data
+   */
+  static async getSpecializations() {
+    const response = await fetch(`${API_BASE_URL}/specializations`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+
+  /**
+   * Get all resources
+   * @returns {Promise} Resources data
+   */
+  static async getResources() {
+    const response = await fetch(`${API_BASE_URL}/resources`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+
+  // ==================== SPECIFIC DATA QUERIES ====================
+
+  /**
+   * Get weeks for a specific league
+   * @param {string} leagueId - League ID
+   * @returns {Promise} Weeks data
+   */
+  static async getWeeksByLeague(leagueId) {
+    const weeks = await this.getWeeks();
+    return weeks.filter(week => week.leagueId === leagueId);
+  }
+
+  /**
+   * Get sections for a specific week
+   * @param {string} weekId - Week ID
+   * @returns {Promise} Sections data
+   */
+  static async getSectionsByWeek(weekId) {
+    const sections = await this.getSections();
+    return sections.filter(section => section.weekId === weekId);
+  }
+
+  /**
+   * Get resources for a specific section
+   * @param {string} sectionId - Section ID
+   * @returns {Promise} Resources data
+   */
+  static async getResourcesBySection(sectionId) {
+    const resources = await this.getResources();
+    return resources.filter(resource => resource.sectionId === sectionId);
+  }
+
+  /**
+   * Get league by ID
+   * @param {string} leagueId - League ID
+   * @returns {Promise} League data
+   */
+  static async getLeague(leagueId) {
+    const response = await fetch(`${API_BASE_URL}/leagues/${leagueId}`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+
+  /**
+   * Get week by ID
+   * @param {string} weekId - Week ID
+   * @returns {Promise} Week data
+   */
+  static async getWeek(weekId) {
+    const response = await fetch(`${API_BASE_URL}/weeks/${weekId}`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+
+  /**
+   * Get section by ID
+   * @param {string} sectionId - Section ID
+   * @returns {Promise} Section data
+   */
+  static async getSection(sectionId) {
+    const response = await fetch(`${API_BASE_URL}/sections/${sectionId}`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+
+  // ==================== USER PROFILE ====================
+
+  /**
+   * Get current user profile
+   * @returns {Promise} User profile data
+   */
+  static async getUserProfile() {
+    const response = await fetch(`${API_BASE_URL}/auth/profile`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+
+  // ==================== UTILITY METHODS ====================
+
+  /**
+   * Find entity by ID in array
+   * @param {Array} array - Array to search
+   * @param {string} id - ID to find
+   * @returns {Object|null} Found entity or null
+   */
+  static findById(array, id) {
+    return array.find(item => item.id === id) || null;
+  }
+
+  /**
+   * Group entities by a property
+   * @param {Array} array - Array to group
+   * @param {string} property - Property to group by
+   * @returns {Object} Grouped entities
+   */
+  static groupBy(array, property) {
+    return array.reduce((groups, item) => {
+      const key = item[property];
+      if (!groups[key]) {
+        groups[key] = [];
+      }
+      groups[key].push(item);
+      return groups;
+    }, {});
+  }
+
+  /**
+   * Sort entities by property
+   * @param {Array} array - Array to sort
+   * @param {string} property - Property to sort by
+   * @param {string} order - Sort order ('asc' or 'desc')
+   * @returns {Array} Sorted array
+   */
+  static sortBy(array, property, order = 'asc') {
+    return [...array].sort((a, b) => {
+      const valueA = a[property];
+      const valueB = b[property];
+      
+      if (typeof valueA === 'string') {
+        return order === 'asc' 
+          ? valueA.localeCompare(valueB)
+          : valueB.localeCompare(valueA);
+      }
+      
+      if (typeof valueA === 'number') {
+        return order === 'asc' ? valueA - valueB : valueB - valueA;
+      }
+      
+      if (valueA instanceof Date) {
+        return order === 'asc' 
+          ? valueA.getTime() - valueB.getTime()
+          : valueB.getTime() - valueA.getTime();
+      }
+      
+      return 0;
+    });
+  }
+
+  /**
+   * Filter entities by criteria
+   * @param {Array} array - Array to filter
+   * @param {Object} criteria - Filter criteria
+   * @returns {Array} Filtered array
+   */
+  static filterBy(array, criteria) {
+    return array.filter(item => {
+      return Object.keys(criteria).every(key => {
+        const filterValue = criteria[key];
+        const itemValue = item[key];
+        
+        if (filterValue === null || filterValue === undefined || filterValue === '') {
+          return true;
+        }
+        
+        if (typeof filterValue === 'string') {
+          return itemValue && itemValue.toLowerCase().includes(filterValue.toLowerCase());
+        }
+        
+        return itemValue === filterValue;
+      });
+    });
+  }
+
+  /**
+   * Paginate array
+   * @param {Array} array - Array to paginate
+   * @param {number} page - Page number (1-based)
+   * @param {number} limit - Items per page
+   * @returns {Object} Paginated result
+   */
+  static paginate(array, page = 1, limit = 10) {
+    const offset = (page - 1) * limit;
+    const paginatedItems = array.slice(offset, offset + limit);
+    
+    return {
+      items: paginatedItems,
+      pagination: {
+        page,
+        limit,
+        total: array.length,
+        totalPages: Math.ceil(array.length / limit),
+        hasNext: page < Math.ceil(array.length / limit),
+        hasPrev: page > 1
+      }
+    };
+  }
+
+  /**
+   * Create a hierarchical structure from flat data
+   * @param {Array} items - Flat array of items
+   * @param {string} parentKey - Parent reference key
+   * @param {string} idKey - ID key
+   * @returns {Array} Hierarchical structure
+   */
+  static createHierarchy(items, parentKey = 'parentId', idKey = 'id') {
+    const itemMap = new Map();
+    const result = [];
+
+    // Create a map of all items
+    items.forEach(item => {
+      itemMap.set(item[idKey], { ...item, children: [] });
+    });
+
+    // Build hierarchy
+    items.forEach(item => {
+      const mappedItem = itemMap.get(item[idKey]);
+      if (item[parentKey]) {
+        const parent = itemMap.get(item[parentKey]);
+        if (parent) {
+          parent.children.push(mappedItem);
+        } else {
+          result.push(mappedItem);
+        }
+      } else {
+        result.push(mappedItem);
+      }
+    });
+
+    return result;
+  }
+}
+
+export default DataService;

@@ -3,8 +3,9 @@ import { TrendingUp, BookOpen, Users, Star, ChevronRight, Play, FileText, CheckS
 import LeagueDetailPage from './LeagueDetailPage';
 import ProgressCard from './ProgressCard';
 import WelcomeBanner from './WelcomeBanner';
-
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import ProgressDashboard from './ProgressDashboard';
+import ProgressService from '../../utils/progressService';
+import DataService from '../../utils/dataService';
 
 const LearningProgressSection = ({ user }) => {
   const [dashboardData, setDashboardData] = useState(null);
@@ -13,6 +14,7 @@ const LearningProgressSection = ({ user }) => {
   const [selectedLeague, setSelectedLeague] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
     fetchDashboardData();
@@ -22,14 +24,8 @@ const LearningProgressSection = ({ user }) => {
 
   const fetchDashboardData = async () => {
     try {
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch(`${BASE_URL}/api/progress/dashboard`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const result = await response.json();
-      if (result.success) {
-        setDashboardData(result.data);
-      }
+      const data = await ProgressService.getUserDashboard();
+      setDashboardData(data);
     } catch (err) {
       console.error('Error fetching dashboard data:', err);
       setError('Failed to load dashboard data');
@@ -38,14 +34,8 @@ const LearningProgressSection = ({ user }) => {
 
   const fetchCohorts = async () => {
     try {
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch(`${BASE_URL}/api/cohorts`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const result = await response.json();
-      if (result.success) {
-        setCohorts(result.data.cohorts || []);
-      }
+      const data = await DataService.getCohorts();
+      setCohorts(data.cohorts || []);
     } catch (err) {
       console.error('Error fetching cohorts:', err);
     }
@@ -53,14 +43,8 @@ const LearningProgressSection = ({ user }) => {
 
   const fetchLeagues = async () => {
     try {
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch(`${BASE_URL}/api/leagues`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const result = await response.json();
-      if (result.success) {
-        setLeagues(result.data.leagues || []);
-      }
+      const data = await DataService.getLeagues();
+      setLeagues(data.leagues || []);
     } catch (err) {
       console.error('Error fetching leagues:', err);
     } finally {
@@ -68,38 +52,32 @@ const LearningProgressSection = ({ user }) => {
     }
   };
 
+  const handleEnrollment = async (cohortId, leagueId) => {
+    try {
+      await ProgressService.enrollUser(cohortId, leagueId);
+      alert('Enrollment successful! Welcome to your learning journey!');
+      await fetchDashboardData(); // Refresh dashboard data
+      setRefreshTrigger(prev => prev + 1); // Trigger refresh in ProgressDashboard
+    } catch (err) {
+      console.error('Enrollment error:', err);
+      alert(`Enrollment failed: ${err.message}`);
+    }
+  };
+
   const handleLeagueClick = (league) => {
     setSelectedLeague(league);
+  };
+
+  // Trigger refresh when returning from league detail
+  const handleBackFromLeague = () => {
+    setSelectedLeague(null);
+    setRefreshTrigger(prev => prev + 1);
   };
 
   const scrollToLeagues = () => {
     const leaguesSection = document.getElementById('available-leagues');
     if (leaguesSection) {
       leaguesSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  const handleEnrollment = async (cohortId, leagueId) => {
-    try {
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch(`${BASE_URL}/api/progress/enroll`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ cohortId, leagueId })
-      });
-      const result = await response.json();
-      if (result.success) {
-        alert('Enrollment successful! Welcome to your learning journey!');
-        fetchDashboardData(); // Refresh dashboard data
-      } else {
-        alert(`Enrollment failed: ${result.error}`);
-      }
-    } catch (err) {
-      console.error('Enrollment error:', err);
-      alert('Enrollment failed. Please try again.');
     }
   };
 
@@ -122,46 +100,15 @@ const LearningProgressSection = ({ user }) => {
     return (
       <LeagueDetailPage 
         league={selectedLeague} 
-        onBack={() => setSelectedLeague(null)} 
+        onBack={handleBackFromLeague}
       />
     );
   }
 
   return (
     <div className="space-y-6">
-      {/* Progress Card */}
-      <div className="bg-white rounded-lg shadow-sm border p-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-          <TrendingUp className="mr-2 text-[#FFDE59]" size={24} />
-          Learning Progress
-        </h2>
-        
-        {dashboardData ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">{dashboardData.statistics?.totalEnrollments || 0}</div>
-              <div className="text-sm text-gray-600">Enrollments</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">{dashboardData.statistics?.totalCompletedSections || 0}</div>
-              <div className="text-sm text-gray-600">Completed</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">{dashboardData.statistics?.badgesEarned || 0}</div>
-              <div className="text-sm text-gray-600">Badges</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-[#FFDE59]">{dashboardData.statistics?.overallProgress || 0}%</div>
-              <div className="text-sm text-gray-600">Overall</div>
-            </div>
-          </div>
-        ) : (
-          <div className="text-center py-8">
-            <BookOpen size={32} className="mx-auto mb-2 text-gray-300" />
-            <p className="text-gray-500">Start your learning journey!</p>
-          </div>
-        )}
-      </div>
+      {/* Enhanced Progress Dashboard */}
+      <ProgressDashboard user={user} refreshTrigger={refreshTrigger} />
 
       {/* Welcome Banner for New Users */}
       {(!dashboardData?.enrollments || dashboardData.enrollments.length === 0) && (

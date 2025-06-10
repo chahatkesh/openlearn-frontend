@@ -50,6 +50,15 @@ const Hero = () => {
                   Join Cohort 1.0{" "}
                   <ArrowRight size={18} className="ml-2 animate-pulse inline" />
                 </button>
+                <Link
+                  to="/demo"
+                  className="px-6 py-3 text-lg border-2 transition-all duration-200 hover:-translate-y-1 active:translate-y-0 active:scale-95 rounded-md font-medium cursor-pointer text-center flex items-center justify-center"
+                  style={{borderColor: '#000000', color: '#000000'}}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(0, 0, 0, 0.05)'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                >
+                  View Progress API Demo
+                </Link>
                 <button
                   className="px-6 py-3 text-lg border-2 transition-all duration-200 hover:-translate-y-1 active:translate-y-0 active:scale-95 rounded-md font-medium cursor-pointer"
                   style={{borderColor: '#000000', color: '#000000'}}

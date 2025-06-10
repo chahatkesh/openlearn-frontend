@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, Users, Archive, BookOpen, Award, Layers, Calendar, FileText, Database } from 'lucide-react';
+import { LogOut, Users, Archive, BookOpen, Award, Layers, Calendar, FileText, Database, Settings, Activity } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import UserManagement from '../components/admin/UserManagement';
 import CohortManagement from '../components/admin/CohortManagement';
@@ -9,6 +9,8 @@ import SpecializationManagement from '../components/admin/SpecializationManageme
 import WeekManagement from '../components/admin/WeekManagement';
 import SectionManagement from '../components/admin/SectionManagement';
 import ResourceManagement from '../components/admin/ResourceManagement';
+import ComprehensiveAPITests from '../components/admin/ComprehensiveAPITests';
+import AdminService from '../utils/adminService';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const API_BASE_URL = `${BASE_URL}/api`;
@@ -34,73 +36,30 @@ const AdminPage = () => {
     setError(null);
     
     try {
-      const token = localStorage.getItem('accessToken');
-      
-      if (!token) {
-        setError('Authentication token not found');
-        setLoading(false);
-        return;
-      }
-      
-      // Define primary endpoint based on active tab
-      let endpoint = '';
-      
+      // Use AdminService for data fetching
       switch(tab) {
-        case 'users':
-          endpoint = `${API_BASE_URL}/admin/users`;
+        case 'users': {
+          const usersData = await AdminService.getAllUsers();
+          setAllUsers(usersData.users || []);
           break;
-        case 'cohorts':
-          endpoint = `${API_BASE_URL}/cohorts`;
-          break;
-        case 'leagues':
-          endpoint = `${API_BASE_URL}/leagues`;
-          break;
-        case 'specializations':
-          endpoint = `${API_BASE_URL}/specializations`;
-          break;
-        case 'weeks':
-          endpoint = `${API_BASE_URL}/weeks`;
-          break;
-        case 'sections':
-          endpoint = `${API_BASE_URL}/sections`;
-          break;
-        case 'resources':
-          endpoint = `${API_BASE_URL}/resources`;
-          break;
-        default:
-          endpoint = `${API_BASE_URL}/admin/users`;
-      }
-      
-      // Main data fetch for the active tab
-      const response = await fetch(endpoint, {
-        headers: {
-          'Authorization': `Bearer ${token}`
         }
-      });
-      
-      const result = await response.json();
-      
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to fetch data');
-      }
-      
-      // Update state based on the tab
-      switch(tab) {
-        case 'users':
-          setAllUsers(result.data.users || []);
+        case 'cohorts': {
+          const cohortsData = await AdminService.getAllCohorts();
+          setCohorts(cohortsData.cohorts || []);
           break;
-        case 'cohorts':
-          setCohorts(result.data.cohorts || []);
-          break;
-        case 'leagues':
-          setLeagues(result.data.leagues || []);
+        }
+        case 'leagues': {
+          const leaguesData = await AdminService.getAllLeagues();
+          setLeagues(leaguesData.leagues || []);
           // For leagues, also fetch cohorts if not already loaded
           if (cohorts.length === 0) {
             await fetchCohorts();
           }
           break;
-        case 'specializations':
-          setSpecializations(result.data.specializations || []);
+        }
+        case 'specializations': {
+          const specializationsData = await AdminService.getAllSpecializations();
+          setSpecializations(specializationsData.specializations || []);
           // For specializations, also fetch cohorts and leagues if not already loaded
           if (cohorts.length === 0) {
             await fetchCohorts();
@@ -109,15 +68,19 @@ const AdminPage = () => {
             await fetchLeagues();
           }
           break;
-        case 'weeks':
-          setWeeks(result.data.weeks || []);
+        }
+        case 'weeks': {
+          const weeksData = await AdminService.getAllWeeks();
+          setWeeks(weeksData.weeks || []);
           // For weeks, also fetch leagues if not already loaded
           if (leagues.length === 0) {
             await fetchLeagues();
           }
           break;
-        case 'sections':
-          setSections(result.data.sections || []);
+        }
+        case 'sections': {
+          const sectionsData = await AdminService.getAllSections();
+          setSections(sectionsData.sections || []);
           // For sections, also fetch weeks and leagues if not already loaded
           if (weeks.length === 0) {
             await fetchWeeks();
@@ -126,8 +89,10 @@ const AdminPage = () => {
             await fetchLeagues();
           }
           break;
-        case 'resources':
-          setResources(result.data.resources || []);
+        }
+        case 'resources': {
+          const resourcesData = await AdminService.getAllResources();
+          setResources(resourcesData.resources || []);
           // For resources, also fetch all related data if not already loaded
           if (sections.length === 0) {
             await fetchSections();
@@ -138,6 +103,10 @@ const AdminPage = () => {
           if (leagues.length === 0) {
             await fetchLeagues();
           }
+          break;
+        }
+        case 'api-tests':
+          // This tab doesn't need data fetching
           break;
       }
     } catch (err) {
@@ -156,19 +125,8 @@ const AdminPage = () => {
   // Helper functions to fetch related data
   const fetchCohorts = async () => {
     try {
-      const token = localStorage.getItem('accessToken');
-      
-      const response = await fetch(`${API_BASE_URL}/cohorts`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      const result = await response.json();
-      
-      if (result.success) {
-        setCohorts(result.data.cohorts || []);
-      }
+      const data = await AdminService.getAllCohorts();
+      setCohorts(data.cohorts || []);
     } catch (err) {
       console.error('Error fetching cohorts:', err);
     }
@@ -176,19 +134,8 @@ const AdminPage = () => {
   
   const fetchLeagues = async () => {
     try {
-      const token = localStorage.getItem('accessToken');
-      
-      const response = await fetch(`${API_BASE_URL}/leagues`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      const result = await response.json();
-      
-      if (result.success) {
-        setLeagues(result.data.leagues || []);
-      }
+      const data = await AdminService.getAllLeagues();
+      setLeagues(data.leagues || []);
     } catch (err) {
       console.error('Error fetching leagues:', err);
     }
@@ -196,19 +143,8 @@ const AdminPage = () => {
 
   const fetchWeeks = async () => {
     try {
-      const token = localStorage.getItem('accessToken');
-      
-      const response = await fetch(`${API_BASE_URL}/weeks`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      const result = await response.json();
-      
-      if (result.success) {
-        setWeeks(result.data.weeks || []);
-      }
+      const data = await AdminService.getAllWeeks();
+      setWeeks(data.weeks || []);
     } catch (err) {
       console.error('Error fetching weeks:', err);
     }
@@ -216,19 +152,8 @@ const AdminPage = () => {
 
   const fetchSections = async () => {
     try {
-      const token = localStorage.getItem('accessToken');
-      
-      const response = await fetch(`${API_BASE_URL}/sections`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      const result = await response.json();
-      
-      if (result.success) {
-        setSections(result.data.sections || []);
-      }
+      const data = await AdminService.getAllSections();
+      setSections(data.sections || []);
     } catch (err) {
       console.error('Error fetching sections:', err);
     }
@@ -240,27 +165,11 @@ const AdminPage = () => {
     }
 
     try {
-      const token = localStorage.getItem('accessToken');
-      
-      const response = await fetch(`${API_BASE_URL}/admin/approve-user`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ userId })
-      });
-      
-      const result = await response.json();
-      
-      if (result.success) {
-        // Update the user status in the list
-        setAllUsers(allUsers.map(user => 
-          user.id === userId ? { ...user, status: 'ACTIVE' } : user
-        ));
-      } else {
-        throw new Error(result.error || 'Failed to approve user');
-      }
+      await AdminService.approveUser(userId);
+      // Update the user status in the list
+      setAllUsers(allUsers.map(user => 
+        user.id === userId ? { ...user, status: 'ACTIVE' } : user
+      ));
     } catch (err) {
       console.error('Error approving user:', err);
       setError(`Failed to approve user: ${err.message}`);
@@ -273,27 +182,11 @@ const AdminPage = () => {
     }
 
     try {
-      const token = localStorage.getItem('accessToken');
-      
-      const response = await fetch(`${API_BASE_URL}/admin/update-role`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ userId, newRole })
-      });
-      
-      const result = await response.json();
-      
-      if (result.success) {
-        // Update the user in the list
-        setAllUsers(allUsers.map(user => 
-          user.id === userId ? { ...user, role: newRole } : user
-        ));
-      } else {
-        throw new Error(result.error || 'Failed to update user role');
-      }
+      await AdminService.updateUserRole(userId, newRole);
+      // Update the user in the list
+      setAllUsers(allUsers.map(user => 
+        user.id === userId ? { ...user, role: newRole } : user
+      ));
     } catch (err) {
       console.error('Error updating user role:', err);
       setError(`Failed to update user role: ${err.message}`);
@@ -307,27 +200,11 @@ const AdminPage = () => {
     }
 
     try {
-      const token = localStorage.getItem('accessToken');
-      
-      const response = await fetch(`${API_BASE_URL}/admin/update-status`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ userId, newStatus })
-      });
-      
-      const result = await response.json();
-      
-      if (result.success) {
-        // Update the user in the list
-        setAllUsers(allUsers.map(user => 
-          user.id === userId ? { ...user, status: newStatus } : user
-        ));
-      } else {
-        throw new Error(result.error || 'Failed to update user status');
-      }
+      await AdminService.updateUserStatus(userId, newStatus);
+      // Update the user in the list
+      setAllUsers(allUsers.map(user => 
+        user.id === userId ? { ...user, status: newStatus } : user
+      ));
     } catch (err) {
       console.error('Error updating user status:', err);
       setError(`Failed to update user status: ${err.message}`);
@@ -1127,6 +1004,17 @@ const AdminPage = () => {
               <Database size={16} className="mr-2" />
               Resources
             </button>
+            <button
+              className={`${
+                activeTab === 'api-tests'
+                  ? 'border-black text-black'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center`}
+              onClick={() => setActiveTab('api-tests')}
+            >
+              <Settings size={16} className="mr-2" />
+              API Tests
+            </button>
           </nav>
         </div>
 
@@ -1160,6 +1048,7 @@ const AdminPage = () => {
             {activeTab === 'weeks' && renderWeeks()}
             {activeTab === 'sections' && renderSections()}
             {activeTab === 'resources' && renderResources()}
+            {activeTab === 'api-tests' && <ComprehensiveAPITests user={user} />}
           </div>
         )}
       </main>
