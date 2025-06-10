@@ -33,7 +33,7 @@ const UserManagement = ({
 
   // Filter users based on status and role, and exclude GRAND_PATHFINDER users
   const filteredUsers = users.filter(user => {
-    // Never show GRAND_PATHFINDER users in the list
+    // Never show GRAND_PATHFINDER users in the list (they are the highest role)
     if (user.role === 'GRAND_PATHFINDER') return false;
     if (statusFilter !== 'ALL' && user.status !== statusFilter) return false;
     if (roleFilter !== 'ALL' && user.role !== roleFilter) return false;

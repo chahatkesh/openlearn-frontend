@@ -26,7 +26,7 @@ const App = () => {
         </Route>
         
         {/* Routes with specific role requirements */}
-        <Route element={<ProtectedRoute requiredRoles={['GRAND_PATHFINDER']} />}>
+        <Route element={<ProtectedRoute requiredRoles={['GRAND_PATHFINDER', 'CHIEF_PATHFINDER']} />}>
           <Route path="/admin" element={<AdminPage />} />
         </Route>
 

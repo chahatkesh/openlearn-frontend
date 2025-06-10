@@ -18,7 +18,7 @@ const DashboardPage = () => {
             <div className="text-sm text-gray-700">
               Hello, {user?.name || 'User'}
             </div>
-            {user?.role === 'GRAND_PATHFINDER' && (
+            {(user?.role === 'GRAND_PATHFINDER' || user?.role === 'CHIEF_PATHFINDER') && (
               <Link
                 to="/admin"
                 className="flex items-center text-sm text-gray-700 hover:text-black mr-4"
@@ -77,7 +77,7 @@ const DashboardPage = () => {
             </div>
           </div>
 
-          {user?.role === 'GRAND_PATHFINDER' && (
+          {(user?.role === 'GRAND_PATHFINDER' || user?.role === 'CHIEF_PATHFINDER') && (
             <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
               <div className="flex items-center">
                 <div className="bg-blue-100 p-2 rounded-full">
@@ -86,7 +86,9 @@ const DashboardPage = () => {
                   </svg>
                 </div>
                 <div className="ml-3">
-                  <h3 className="text-md font-medium text-blue-800">Grand Pathfinder Access</h3>
+                  <h3 className="text-md font-medium text-blue-800">
+                    {user?.role === 'GRAND_PATHFINDER' ? 'Grand Pathfinder' : 'Chief Pathfinder'} Access
+                  </h3>
                   <p className="text-sm text-blue-600">You have administrator privileges with access to the admin panel</p>
                 </div>
               </div>
