@@ -1,8 +1,6 @@
 import React from 'react';
 import { 
-  User, 
-  Mail, 
-  Calendar, 
+  User,
   ExternalLink, 
   Twitter, 
   Linkedin,
@@ -12,7 +10,6 @@ import {
   Shield,
   Crown,
   Star,
-  Settings,
   Trophy
 } from 'lucide-react';
 
@@ -131,7 +128,6 @@ const UserProfileSection = ({ user }) => {
         <div className="bg-white/30 backdrop-blur-sm rounded-xl p-4 border border-white/20 shadow-sm space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-gray-700">Account Status</span>
-            <Settings size={14} className="text-gray-400" />
           </div>
           
           <div className="space-y-2">
