@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, Users, Archive, BookOpen, Award, Layers, Calendar, FileText } from 'lucide-react';
+import { LogOut, Users, Archive, BookOpen, Award, Layers, Calendar, FileText, Database } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import UserManagement from '../components/admin/UserManagement';
 import CohortManagement from '../components/admin/CohortManagement';
@@ -8,6 +8,7 @@ import LeagueManagement from '../components/admin/LeagueManagement';
 import SpecializationManagement from '../components/admin/SpecializationManagement';
 import WeekManagement from '../components/admin/WeekManagement';
 import SectionManagement from '../components/admin/SectionManagement';
+import ResourceManagement from '../components/admin/ResourceManagement';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const API_BASE_URL = `${BASE_URL}/api`;
@@ -21,8 +22,10 @@ const AdminPage = () => {
   const [specializations, setSpecializations] = useState([]);
   const [weeks, setWeeks] = useState([]);
   const [sections, setSections] = useState([]);
+  const [resources, setResources] = useState([]);
   const [selectedLeagueId, setSelectedLeagueId] = useState('');
   const [selectedWeekId, setSelectedWeekId] = useState('');
+  const [selectedSectionId, setSelectedSectionId] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -60,6 +63,9 @@ const AdminPage = () => {
           break;
         case 'sections':
           endpoint = `${API_BASE_URL}/sections`;
+          break;
+        case 'resources':
+          endpoint = `${API_BASE_URL}/resources`;
           break;
         default:
           endpoint = `${API_BASE_URL}/admin/users`;
@@ -120,6 +126,19 @@ const AdminPage = () => {
             await fetchLeagues();
           }
           break;
+        case 'resources':
+          setResources(result.data.resources || []);
+          // For resources, also fetch all related data if not already loaded
+          if (sections.length === 0) {
+            await fetchSections();
+          }
+          if (weeks.length === 0) {
+            await fetchWeeks();
+          }
+          if (leagues.length === 0) {
+            await fetchLeagues();
+          }
+          break;
       }
     } catch (err) {
       console.error(`Error fetching ${tab} data:`, err);
@@ -127,7 +146,7 @@ const AdminPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [cohorts.length, leagues.length, weeks.length]);
+  }, [cohorts.length, leagues.length, weeks.length, sections.length]);
 
   useEffect(() => {
     // Initial data fetch based on active tab
@@ -192,6 +211,26 @@ const AdminPage = () => {
       }
     } catch (err) {
       console.error('Error fetching weeks:', err);
+    }
+  };
+
+  const fetchSections = async () => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      
+      const response = await fetch(`${API_BASE_URL}/sections`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        setSections(result.data.sections || []);
+      }
+    } catch (err) {
+      console.error('Error fetching sections:', err);
     }
   };
 
@@ -698,6 +737,10 @@ const AdminPage = () => {
     setSelectedWeekId(weekId);
   };
 
+  const handleSelectSection = (sectionId) => {
+    setSelectedSectionId(sectionId);
+  };
+
   const renderWeeks = () => {
     return (
       <WeekManagement
@@ -718,13 +761,16 @@ const AdminPage = () => {
     try {
       const token = localStorage.getItem('accessToken');
       
-      const response = await fetch(`${API_BASE_URL}/sections`, {
+      const response = await fetch(`${API_BASE_URL}/weeks/${section.weekId}/sections`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(section)
+        body: JSON.stringify({
+          title: section.title,
+          order: section.order
+        })
       });
       
       const result = await response.json();
@@ -813,6 +859,145 @@ const AdminPage = () => {
     );
   };
 
+  // Resource handler functions
+  const handleCreateResource = async (resource) => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      
+      const response = await fetch(`${API_BASE_URL}/sections/${resource.sectionId}/resources`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          title: resource.title,
+          url: resource.url,
+          type: resource.type,
+          order: resource.order
+        })
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        // Add the new resource to the list
+        setResources([...resources, result.data]);
+      } else {
+        throw new Error(result.error || 'Failed to create resource');
+      }
+    } catch (err) {
+      console.error('Error creating resource:', err);
+      setError(`Failed to create resource: ${err.message}`);
+    }
+  };
+
+  const handleUpdateResource = async (resourceId, updatedResource) => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      
+      const response = await fetch(`${API_BASE_URL}/resources/${resourceId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(updatedResource)
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        // Update the resource in the list
+        setResources(resources.map(resource => 
+          resource.id === resourceId ? result.data : resource
+        ));
+      } else {
+        throw new Error(result.error || 'Failed to update resource');
+      }
+    } catch (err) {
+      console.error('Error updating resource:', err);
+      setError(`Failed to update resource: ${err.message}`);
+    }
+  };
+
+  const handleDeleteResource = async (resourceId) => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      
+      const response = await fetch(`${API_BASE_URL}/resources/${resourceId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        // Remove the resource from the list
+        setResources(resources.filter(resource => resource.id !== resourceId));
+      } else {
+        throw new Error(result.error || 'Failed to delete resource');
+      }
+    } catch (err) {
+      console.error('Error deleting resource:', err);
+      setError(`Failed to delete resource: ${err.message}`);
+    }
+  };
+
+  const handleReorderResources = async (sectionId, resourceOrders) => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      
+      const response = await fetch(`${API_BASE_URL}/sections/${sectionId}/resources/reorder`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ resourceOrders })
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        // Update the resources in the list with new orders
+        const updatedResourcesMap = new Map(result.data.map(r => [r.id, r]));
+        setResources(resources.map(resource => 
+          updatedResourcesMap.has(resource.id) ? updatedResourcesMap.get(resource.id) : resource
+        ));
+      } else {
+        throw new Error(result.error || 'Failed to reorder resources');
+      }
+    } catch (err) {
+      console.error('Error reordering resources:', err);
+      setError(`Failed to reorder resources: ${err.message}`);
+    }
+  };
+
+  const renderResources = () => {
+    return (
+      <ResourceManagement
+        resources={resources}
+        sections={sections}
+        weeks={weeks}
+        leagues={leagues}
+        onCreateResource={handleCreateResource}
+        onUpdateResource={handleUpdateResource}
+        onDeleteResource={handleDeleteResource}
+        onReorderResources={handleReorderResources}
+        selectedLeagueId={selectedLeagueId}
+        selectedWeekId={selectedWeekId}
+        selectedSectionId={selectedSectionId}
+        onSelectLeague={handleSelectLeague}
+        onSelectWeek={handleSelectWeek}
+        onSelectSection={handleSelectSection}
+        loading={loading}
+      />
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -856,7 +1041,7 @@ const AdminPage = () => {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Admin Panel</h1>
           <p className="mt-1 text-sm text-gray-600">
-            Manage users, cohorts, leagues, specializations, weeks, and sections
+            Manage users, cohorts, leagues, specializations, weeks, sections, and resources
           </p>
         </div>
 
@@ -929,6 +1114,17 @@ const AdminPage = () => {
               <FileText size={16} className="mr-2" />
               Sections
             </button>
+            <button
+              className={`${
+                activeTab === 'resources'
+                  ? 'border-black text-black'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center`}
+              onClick={() => setActiveTab('resources')}
+            >
+              <Database size={16} className="mr-2" />
+              Resources
+            </button>
           </nav>
         </div>
 
@@ -961,6 +1157,7 @@ const AdminPage = () => {
             {activeTab === 'specializations' && renderSpecializations()}
             {activeTab === 'weeks' && renderWeeks()}
             {activeTab === 'sections' && renderSections()}
+            {activeTab === 'resources' && renderResources()}
           </div>
         )}
       </main>
