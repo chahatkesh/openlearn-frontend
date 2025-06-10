@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { LogOut, Users, Archive, BookOpen, Award, Layers, Calendar, FileText } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -14,8 +14,8 @@ const API_BASE_URL = `${BASE_URL}/api`;
 
 const AdminPage = () => {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState('pending-users');
-  const [pendingUsers, setPendingUsers] = useState([]);
+  const [activeTab, setActiveTab] = useState('users');
+  const [allUsers, setAllUsers] = useState([]);
   const [cohorts, setCohorts] = useState([]);
   const [leagues, setLeagues] = useState([]);
   const [specializations, setSpecializations] = useState([]);
@@ -26,12 +26,7 @@ const AdminPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    // Initial data fetch based on active tab
-    fetchTabData(activeTab);
-  }, [activeTab]);
-
-  const fetchTabData = async (tab) => {
+  const fetchTabData = useCallback(async (tab) => {
     setLoading(true);
     setError(null);
     
@@ -48,8 +43,8 @@ const AdminPage = () => {
       let endpoint = '';
       
       switch(tab) {
-        case 'pending-users':
-          endpoint = `${API_BASE_URL}/admin/pending-users`;
+        case 'users':
+          endpoint = `${API_BASE_URL}/admin/users`;
           break;
         case 'cohorts':
           endpoint = `${API_BASE_URL}/cohorts`;
@@ -67,7 +62,7 @@ const AdminPage = () => {
           endpoint = `${API_BASE_URL}/sections`;
           break;
         default:
-          endpoint = `${API_BASE_URL}/admin/pending-users`;
+          endpoint = `${API_BASE_URL}/admin/users`;
       }
       
       // Main data fetch for the active tab
@@ -85,8 +80,8 @@ const AdminPage = () => {
       
       // Update state based on the tab
       switch(tab) {
-        case 'pending-users':
-          setPendingUsers(result.data.users || []);
+        case 'users':
+          setAllUsers(result.data.users || []);
           break;
         case 'cohorts':
           setCohorts(result.data.cohorts || []);
@@ -132,7 +127,12 @@ const AdminPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [cohorts.length, leagues.length, weeks.length]);
+
+  useEffect(() => {
+    // Initial data fetch based on active tab
+    fetchTabData(activeTab);
+  }, [activeTab, fetchTabData]);
   
   // Helper functions to fetch related data
   const fetchCohorts = async () => {
@@ -196,6 +196,10 @@ const AdminPage = () => {
   };
 
   const handleApproveUser = async (userId) => {
+    if (!window.confirm('Are you sure you want to approve this user?')) {
+      return;
+    }
+
     try {
       const token = localStorage.getItem('accessToken');
       
@@ -211,8 +215,10 @@ const AdminPage = () => {
       const result = await response.json();
       
       if (result.success) {
-        // Remove the approved user from the list
-        setPendingUsers(pendingUsers.filter(user => user.id !== userId));
+        // Update the user status in the list
+        setAllUsers(allUsers.map(user => 
+          user.id === userId ? { ...user, status: 'ACTIVE' } : user
+        ));
       } else {
         throw new Error(result.error || 'Failed to approve user');
       }
@@ -223,6 +229,10 @@ const AdminPage = () => {
   };
 
   const handleUpdateRole = async (userId, newRole) => {
+    if (!window.confirm(`Are you sure you want to change this user's role to ${newRole}?`)) {
+      return;
+    }
+
     try {
       const token = localStorage.getItem('accessToken');
       
@@ -239,7 +249,7 @@ const AdminPage = () => {
       
       if (result.success) {
         // Update the user in the list
-        setPendingUsers(pendingUsers.map(user => 
+        setAllUsers(allUsers.map(user => 
           user.id === userId ? { ...user, role: newRole } : user
         ));
       } else {
@@ -252,6 +262,11 @@ const AdminPage = () => {
   };
 
   const handleUpdateStatus = async (userId, newStatus) => {
+    const action = newStatus === 'SUSPENDED' ? 'suspend' : 'activate';
+    if (!window.confirm(`Are you sure you want to ${action} this user?`)) {
+      return;
+    }
+
     try {
       const token = localStorage.getItem('accessToken');
       
@@ -268,7 +283,7 @@ const AdminPage = () => {
       
       if (result.success) {
         // Update the user in the list
-        setPendingUsers(pendingUsers.map(user => 
+        setAllUsers(allUsers.map(user => 
           user.id === userId ? { ...user, status: newStatus } : user
         ));
       } else {
@@ -281,10 +296,10 @@ const AdminPage = () => {
   };
 
   // Tab content components
-  const renderPendingUsers = () => {
+  const renderUsers = () => {
     return (
       <UserManagement
-        users={pendingUsers}
+        users={allUsers}
         onApproveUser={handleApproveUser}
         onUpdateRole={handleUpdateRole}
         onUpdateStatus={handleUpdateStatus}
@@ -850,14 +865,14 @@ const AdminPage = () => {
           <nav className="flex space-x-8" aria-label="Tabs">
             <button
               className={`${
-                activeTab === 'pending-users'
+                activeTab === 'users'
                   ? 'border-black text-black'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center`}
-              onClick={() => setActiveTab('pending-users')}
+              onClick={() => setActiveTab('users')}
             >
               <Users size={16} className="mr-2" />
-              Pending Users
+              Users
             </button>
             <button
               className={`${
@@ -940,7 +955,7 @@ const AdminPage = () => {
           </div>
         ) : (
           <div className="bg-white shadow rounded-lg p-6">
-            {activeTab === 'pending-users' && renderPendingUsers()}
+            {activeTab === 'users' && renderUsers()}
             {activeTab === 'cohorts' && renderCohorts()}
             {activeTab === 'leagues' && renderLeagues()}
             {activeTab === 'specializations' && renderSpecializations()}
