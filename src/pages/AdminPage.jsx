@@ -761,15 +761,17 @@ const AdminPage = () => {
     try {
       const token = localStorage.getItem('accessToken');
       
-      const response = await fetch(`${API_BASE_URL}/weeks/${section.weekId}/sections`, {
+      const response = await fetch(`${API_BASE_URL}/sections`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          title: section.title,
-          order: section.order
+          name: section.name,
+          description: section.description,
+          order: section.order,
+          weekId: section.weekId
         })
       });
       
