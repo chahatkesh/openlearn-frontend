@@ -1,5 +1,5 @@
 import React from 'react';
-import { Linkedin, Twitter, Instagram, Mail, MapPin, Phone } from 'lucide-react';
+import { Linkedin, Twitter, Instagram, MapPin } from 'lucide-react';
 
 const Footer = () => {
   return (
@@ -44,10 +44,6 @@ const Footer = () => {
             
             {/* Contact Details */}
             <div className="space-y-2">
-              <div className="flex items-center text-sm text-gray-400">
-                <Mail size={14} className="mr-2 text-[#FFDE59]" />
-                <span>hello@openlearn.tech</span>
-              </div>
               <div className="flex items-center text-sm text-gray-400">
                 <MapPin size={14} className="mr-2 text-[#FFDE59]" />
                 <span>NIT Jalandhar, Punjab, India</span>

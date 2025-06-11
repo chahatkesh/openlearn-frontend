@@ -64,24 +64,8 @@ class ProgressService {
       
       return handleResponse(response);
     } catch (error) {
-      console.warn('Enrollment API unavailable, simulating enrollment:', error.message);
-      
-      // Simulate successful enrollment for demo purposes
-      return {
-        enrollment: {
-          id: `enrollment_${Date.now()}`,
-          cohortId,
-          leagueId,
-          userId: userId || 'current_user',
-          enrolledAt: new Date().toISOString(),
-          progress: {
-            progressPercentage: 0,
-            completedSections: 0,
-            totalSections: 12
-          }
-        },
-        message: 'Successfully enrolled (demo mode)'
-      };
+      console.error('Enrollment failed:', error.message);
+      throw error;
     }
   }
 
@@ -146,54 +130,8 @@ class ProgressService {
       
       return handleResponse(response);
     } catch (error) {
-      console.warn(`League progress API unavailable for ${leagueId}, using fallback data:`, error.message);
-      
-      // Return mock league progress data
-      return {
-        league: {
-          id: leagueId,
-          name: 'Sample League',
-          description: 'A sample league for demonstration purposes.',
-          weeksCount: 4,
-          sectionsCount: 12,
-          totalResources: 48
-        },
-        progress: {
-          weeks: [
-            {
-              id: 'mock_week_1',
-              name: 'Week 1: Introduction',
-              description: 'Getting started with the fundamentals',
-              order: 1,
-              sections: [
-                {
-                  id: 'mock_section_1',
-                  name: 'Section 1.1: Overview',
-                  description: 'Course overview and objectives',
-                  order: 1,
-                  progress: {
-                    isCompleted: true,
-                    completedAt: '2024-01-16T10:30:00.000Z'
-                  }
-                },
-                {
-                  id: 'mock_section_2',
-                  name: 'Section 1.2: Setup',
-                  description: 'Environment setup and tools',
-                  order: 2,
-                  progress: {
-                    isCompleted: false,
-                    completedAt: null
-                  }
-                }
-              ]
-            }
-          ],
-          overallProgress: 25,
-          completedSections: 3,
-          totalSections: 12
-        }
-      };
+      console.error(`League progress failed for ${leagueId}:`, error.message);
+      throw error;
     }
   }
 
@@ -219,85 +157,8 @@ class ProgressService {
       
       return handleResponse(response);
     } catch (error) {
-      console.warn('Dashboard API unavailable, using fallback data:', error.message);
-      
-      // Return mock data structure to prevent crashes
-      return {
-        enrollments: [
-          {
-            id: 'mock_enrollment_1',
-            league: {
-              id: 'mock_league_1',
-              name: 'Machine Learning League',
-              description: 'A comprehensive journey through ML fundamentals and applications.',
-              weeksCount: 8,
-              sectionsCount: 24,
-              totalResources: 96
-            },
-            cohort: {
-              id: 'mock_cohort_1',
-              name: 'Cohort 1.0'
-            },
-            progress: {
-              progressPercentage: 65,
-              completedSections: 15,
-              totalSections: 24
-            },
-            enrolledAt: '2024-01-15T08:00:00.000Z'
-          },
-          {
-            id: 'mock_enrollment_2',
-            league: {
-              id: 'mock_league_2',
-              name: 'Finance League',
-              description: 'Understanding money, markets, and financial principles.',
-              weeksCount: 6,
-              sectionsCount: 18,
-              totalResources: 72
-            },
-            cohort: {
-              id: 'mock_cohort_1',
-              name: 'Cohort 1.0'
-            },
-            progress: {
-              progressPercentage: 30,
-              completedSections: 5,
-              totalSections: 18
-            },
-            enrolledAt: '2024-02-01T08:00:00.000Z'
-          }
-        ],
-        badges: [
-          {
-            id: 'mock_badge_1',
-            name: 'First Steps',
-            description: 'Completed your first section',
-            earnedAt: '2024-01-16T10:30:00.000Z',
-            league: {
-              id: 'mock_league_1',
-              name: 'Machine Learning League'
-            }
-          },
-          {
-            id: 'mock_badge_2',
-            name: 'Week Warrior',
-            description: 'Completed your first week',
-            earnedAt: '2024-01-23T15:45:00.000Z',
-            league: {
-              id: 'mock_league_1',
-              name: 'Machine Learning League'
-            }
-          }
-        ],
-        specializations: [],
-        statistics: {
-          overallProgress: 48,
-          completedSections: 20,
-          totalSections: 42,
-          totalEnrollments: 2,
-          badgesEarned: 2
-        }
-      };
+      console.error('Dashboard API failed:', error.message);
+      throw error;
     }
   }
 

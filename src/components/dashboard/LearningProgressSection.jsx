@@ -164,9 +164,9 @@ const LearningProgressSection = ({ user }) => {
       setDashboardData(data);
     } catch (err) {
       console.error('Error fetching dashboard data:', err);
-      setError(`Connection to learning platform failed. Running in demo mode. (${err.message})`);
+      setError(`Failed to connect to the learning platform. Please try again later. (${err.message})`);
       
-      // Set minimal mock data to prevent crashes
+      // Set empty data structure to prevent crashes
       setDashboardData({
         enrollments: [],
         badges: []

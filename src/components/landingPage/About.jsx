@@ -69,7 +69,7 @@ const SupporterCard = ({ name, logo, supportType, description = "#" }) => {
   
   return (
     <div 
-      className={`bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-500 group ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+      className={`bg-white rounded-xl overflow-hidden hover:shadow-sm transition-all duration-500 group ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
       style={{ transitionDelay: '150ms' }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -173,8 +173,20 @@ const About = () => {
     },
     {
       name: "IOTA Club",
-      logo: "https://pbs.twimg.com/media/F7CIs3DWIAEooXV?format=jpg&name=4096x4096",
+      logo: "https://github.com/user-attachments/assets/5afe8e80-29b8-47a1-8109-efe445dc5471",
       supportType: "Community",
+      description: "Supporting ideation and team-based growth through events, hackathons and industry partnerships.",
+    },
+    {
+      name: "gaNIT",
+      logo: "https://d1hbpr09pwz0sk.cloudfront.net/logo_url/ganit-nit-jalandhar-c08f64ec",
+      supportType: "Mathematics",
+      description: "Supporting ideation and team-based growth through events, hackathons and industry partnerships.",
+    },
+    {
+      name: "FinNest",
+      logo: "https://nitj.ac.in/files/1726944127629-DSC00831.JPG",
+      supportType: "Finance",
       description: "Supporting ideation and team-based growth through events, hackathons and industry partnerships.",
     }
   ];
@@ -229,7 +241,7 @@ const About = () => {
           <div className="absolute -top-20 -left-20 w-64 h-64 bg-[#FFDE59] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
           <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-[#FFDE59] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
           
-          <div className="bg-gray-50 border border-gray-100 rounded-2xl p-6 md:p-12 shadow-lg max-w-6xl mx-auto transform transition-all duration-500">
+          <div className="bg-gray-50 border border-gray-100 rounded-2xl p-6 md:p-12 shadow-md max-w-6xl mx-auto transform transition-all duration-500">
             <h3 className="text-2xl md:text-4xl font-bold mb-12 text-center relative">
               <span className="relative">
                 Recognised & Supported By
@@ -244,7 +256,7 @@ const About = () => {
               {supporters.map((supporter, index) => (
                 <div 
                   key={index} 
-                  className="transform transition-all duration-300 hover:-translate-y-2"
+                  className="transform transition-all duration-300 hover:-translate-y-1"
                 >
                   <SupporterCard {...supporter} />
                 </div>

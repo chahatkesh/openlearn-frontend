@@ -94,10 +94,10 @@ const ProgressDashboard = ({ refreshTrigger = 0 }) => {
           <span className="font-medium">Connection Issue</span>
         </div>
         <p className="text-gray-600 mb-4">{error}</p>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-          <h4 className="text-blue-800 font-medium mb-2">Demo Mode Active</h4>
-          <p className="text-blue-700 text-sm">
-            The learning platform is running in demo mode. Your progress will be simulated for demonstration purposes.
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+          <h4 className="text-red-800 font-medium mb-2">Connection Error</h4>
+          <p className="text-red-700 text-sm">
+            Unable to connect to the learning platform. Please check your internet connection and try again.
           </p>
         </div>
         <button
