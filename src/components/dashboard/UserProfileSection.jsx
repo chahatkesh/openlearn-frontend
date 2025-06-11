@@ -10,10 +10,265 @@ import {
   Shield,
   Crown,
   Star,
-  Trophy
+  Trophy,
+  X,
+  Award,
+  CheckCircle,
+  Lock
 } from 'lucide-react';
 import ProgressService from '../../utils/progressService';
 import BadgeService from '../../utils/badgeService';
+
+// BadgesModal Component
+const BadgesModal = ({ isOpen, onClose, user, userBadges }) => {
+  const [allBadges, setAllBadges] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchAllBadges();
+    }
+  }, [isOpen]);
+
+  const fetchAllBadges = async () => {
+    setLoading(true);
+    try {
+      const response = await BadgeService.getAllBadges();
+      setAllBadges(response.badges || []);
+    } catch (error) {
+      console.error('Error fetching badges:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Get role-based automatic badges based on hierarchy
+  const getRoleBadges = (userRole) => {
+    const roleBadges = [];
+    
+    // Pioneer - base level (everyone has this)
+    if (userRole === 'PIONEER' || userRole === 'LUMINARY' || userRole === 'PATHFINDER' || userRole === 'CHIEF_PATHFINDER' || userRole === 'GRAND_PATHFINDER') {
+      roleBadges.push({
+        id: 'role-pioneer',
+        name: 'Pioneer',
+        description: 'Starting your learning journey',
+        icon: Star,
+        color: 'from-blue-400 to-blue-600',
+        bgColor: 'bg-blue-50',
+        textColor: 'text-blue-700',
+        earned: true,
+        automatic: true
+      });
+    }
+
+    // Luminary - includes Pioneer
+    if (userRole === 'LUMINARY' || userRole === 'PATHFINDER' || userRole === 'CHIEF_PATHFINDER' || userRole === 'GRAND_PATHFINDER') {
+      roleBadges.push({
+        id: 'role-luminary',
+        name: 'Luminary',
+        description: 'Illuminating the path for others',
+        icon: Sparkles,
+        color: 'from-purple-400 to-purple-600',
+        bgColor: 'bg-purple-50',
+        textColor: 'text-purple-700',
+        earned: true,
+        automatic: true
+      });
+    }
+
+    // Pathfinder - includes Pioneer and Luminary
+    if (userRole === 'PATHFINDER' || userRole === 'CHIEF_PATHFINDER' || userRole === 'GRAND_PATHFINDER') {
+      roleBadges.push({
+        id: 'role-pathfinder',
+        name: 'Pathfinder',
+        description: 'Guiding others on their learning path',
+        icon: Shield,
+        color: 'from-green-400 to-green-600',
+        bgColor: 'bg-green-50',
+        textColor: 'text-green-700',
+        earned: true,
+        automatic: true
+      });
+    }
+
+    // Chief Pathfinder - includes Pioneer, Luminary, and Pathfinder
+    if (userRole === 'CHIEF_PATHFINDER' || userRole === 'GRAND_PATHFINDER') {
+      roleBadges.push({
+        id: 'role-chief-pathfinder',
+        name: 'Chief Pathfinder',
+        description: 'Leading and managing learning initiatives',
+        icon: Crown,
+        color: 'from-orange-400 to-orange-600',
+        bgColor: 'bg-orange-50',
+        textColor: 'text-orange-700',
+        earned: true,
+        automatic: true
+      });
+    }
+
+    // Grand Pathfinder - includes all previous roles
+    if (userRole === 'GRAND_PATHFINDER') {
+      roleBadges.push({
+        id: 'role-grand-pathfinder',
+        name: 'Grand Pathfinder',
+        description: 'Ultimate leadership in the learning community',
+        icon: Crown,
+        color: 'from-red-400 to-red-600',
+        bgColor: 'bg-red-50',
+        textColor: 'text-red-700',
+        earned: true,
+        automatic: true
+      });
+    }
+
+    return roleBadges;
+  };
+
+  const roleBadges = getRoleBadges(user?.role);
+  const earnedBadgeIds = new Set(userBadges?.map(b => b.badge?.id || b.id) || []);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/45 flex items-center justify-center z-50 p-4">
+      <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden shadow-2xl border border-yellow-200">
+        {/* Modal Header */}
+        <div className="flex items-center justify-between p-6 border-b border-yellow-200 bg-white/50">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">My Badges</h2>
+            <p className="text-sm text-gray-600">Your achievements and recognitions</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-yellow-200 rounded-full transition-colors"
+          >
+            <X size={20} className="text-gray-600" />
+          </button>
+        </div>
+
+        {/* Modal Content */}
+        <div className="p-6 overflow-y-auto max-h-[calc(80vh-100px)]">
+          {loading ? (
+            <div className="text-center py-8">
+              <div className="animate-spin w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading badges...</p>
+            </div>
+          ) : (
+            <div className="space-y-8">
+              {/* Role-based Automatic Badges */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <Award size={20} className="text-yellow-600" />
+                  Role Badges
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {roleBadges.map((badge) => {
+                    const IconComponent = badge.icon;
+                    return (
+                      <div
+                        key={badge.id}
+                        className={`relative p-4 rounded-xl border-2 ${badge.bgColor} border-white shadow-sm hover:shadow-md transition-all duration-200`}
+                      >
+                        <div className="text-center">
+                          <div className={`w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-r ${badge.color} p-0.5 shadow-lg`}>
+                            <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
+                              <IconComponent size={24} className={badge.textColor} />
+                            </div>
+                          </div>
+                          <h4 className="font-semibold text-gray-900 mb-1">{badge.name}</h4>
+                          <p className="text-xs text-gray-600 mb-2">{badge.description}</p>
+                          <div className="flex items-center justify-center gap-1">
+                            <CheckCircle size={14} className="text-green-500" />
+                            <span className="text-xs text-green-600 font-medium">Earned</span>
+                          </div>
+                        </div>
+                        <div className="absolute top-2 right-2">
+                          <div className="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center">
+                            <Star size={12} className="text-white" />
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Admin-assigned and Achievement Badges */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <Trophy size={20} className="text-yellow-600" />
+                  Achievement Badges
+                </h3>
+                {allBadges.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {allBadges.map((badge) => {
+                      const isEarned = earnedBadgeIds.has(badge.id);
+                      return (
+                        <div
+                          key={badge.id}
+                          className={`relative p-4 rounded-xl border-2 shadow-sm transition-all duration-200 ${
+                            isEarned 
+                              ? 'bg-green-50 border-green-200 hover:shadow-md' 
+                              : 'bg-gray-50 border-gray-200 opacity-60'
+                          }`}
+                        >
+                          <div className="text-center">
+                            <div className={`w-16 h-16 mx-auto mb-3 rounded-full p-0.5 shadow-lg ${
+                              isEarned 
+                                ? 'bg-gradient-to-r from-green-400 to-green-600' 
+                                : 'bg-gradient-to-r from-gray-300 to-gray-400'
+                            }`}>
+                              <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
+                                {badge.imageUrl ? (
+                                  <img 
+                                    src={badge.imageUrl} 
+                                    alt={badge.name}
+                                    className="w-8 h-8 object-cover rounded-full"
+                                  />
+                                ) : (
+                                  <Trophy size={24} className={isEarned ? 'text-green-600' : 'text-gray-400'} />
+                                )}
+                              </div>
+                            </div>
+                            <h4 className={`font-semibold mb-1 ${isEarned ? 'text-gray-900' : 'text-gray-500'}`}>
+                              {badge.name}
+                            </h4>
+                            <p className={`text-xs mb-2 ${isEarned ? 'text-gray-600' : 'text-gray-400'}`}>
+                              {badge.description || 'Achievement badge'}
+                            </p>
+                            <div className="flex items-center justify-center gap-1">
+                              {isEarned ? (
+                                <>
+                                  <CheckCircle size={14} className="text-green-500" />
+                                  <span className="text-xs text-green-600 font-medium">Earned</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Lock size={14} className="text-gray-400" />
+                                  <span className="text-xs text-gray-500 font-medium">Locked</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 bg-white/50 rounded-xl border border-yellow-200">
+                    <Trophy size={48} className="mx-auto text-gray-300 mb-4" />
+                    <h4 className="font-semibold text-gray-900 mb-2">No Achievement Badges Yet</h4>
+                    <p className="text-sm text-gray-600">Complete challenges and reach milestones to earn badges!</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const UserProfileSection = ({ user, dashboardData = null }) => {
   const [userStats, setUserStats] = useState({
@@ -21,6 +276,40 @@ const UserProfileSection = ({ user, dashboardData = null }) => {
     leaguesCount: 0
   });
   const [loading, setLoading] = useState(false);
+  const [isBadgesModalOpen, setIsBadgesModalOpen] = useState(false);
+  const [userBadges, setUserBadges] = useState([]);
+
+  // Helper function to count role badges based on hierarchy
+  const getRoleBadgesCount = (userRole) => {
+    let count = 0;
+    
+    // Pioneer - base level (everyone has this)
+    if (userRole === 'PIONEER' || userRole === 'LUMINARY' || userRole === 'PATHFINDER' || userRole === 'CHIEF_PATHFINDER' || userRole === 'GRAND_PATHFINDER') {
+      count++;
+    }
+
+    // Luminary - includes Pioneer
+    if (userRole === 'LUMINARY' || userRole === 'PATHFINDER' || userRole === 'CHIEF_PATHFINDER' || userRole === 'GRAND_PATHFINDER') {
+      count++;
+    }
+
+    // Pathfinder - includes Pioneer and Luminary
+    if (userRole === 'PATHFINDER' || userRole === 'CHIEF_PATHFINDER' || userRole === 'GRAND_PATHFINDER') {
+      count++;
+    }
+
+    // Chief Pathfinder - includes all previous
+    if (userRole === 'CHIEF_PATHFINDER' || userRole === 'GRAND_PATHFINDER') {
+      count++;
+    }
+
+    // Grand Pathfinder - includes all previous
+    if (userRole === 'GRAND_PATHFINDER') {
+      count++;
+    }
+
+    return count;
+  };
 
   // Fetch dashboard data if not provided
   useEffect(() => {
@@ -28,8 +317,9 @@ const UserProfileSection = ({ user, dashboardData = null }) => {
       if (dashboardData) {
         // Use provided dashboard data
         const stats = ProgressService.calculateProgressStats(dashboardData);
+        const roleBadgesCount = getRoleBadgesCount(user?.role);
         setUserStats({
-          badgesCount: stats.badgesEarned,
+          badgesCount: stats.badgesEarned + roleBadgesCount,
           leaguesCount: stats.totalEnrollments
         });
       } else {
@@ -42,13 +332,21 @@ const UserProfileSection = ({ user, dashboardData = null }) => {
           ]);
           
           const stats = ProgressService.calculateProgressStats(dashboardResponse);
+          const roleBadgesCount = getRoleBadgesCount(user?.role);
+          const achievementBadgesCount = badgesResponse.badges?.length || 0;
           setUserStats({
-            badgesCount: badgesResponse.badges?.length || 0,
+            badgesCount: achievementBadgesCount + roleBadgesCount,
             leaguesCount: stats.totalEnrollments
           });
+          setUserBadges(badgesResponse.badges || []);
         } catch (error) {
           console.error('Error fetching user stats:', error);
-          // Keep default values of 0
+          // Keep default values but still count role badges
+          const roleBadgesCount = getRoleBadgesCount(user?.role);
+          setUserStats({
+            badgesCount: roleBadgesCount,
+            leaguesCount: 0
+          });
         } finally {
           setLoading(false);
         }
@@ -56,7 +354,7 @@ const UserProfileSection = ({ user, dashboardData = null }) => {
     };
 
     fetchUserStats();
-  }, [dashboardData]);
+  }, [dashboardData, user?.role]);
   // Get role display info with enhanced styling
   const getRoleInfo = (role) => {
     switch (role) {
@@ -151,7 +449,10 @@ const UserProfileSection = ({ user, dashboardData = null }) => {
 
         {/* Quick Stats */}
         <div className="grid grid-cols-2 gap-3">
-          <div className="bg-white/40 backdrop-blur-sm rounded-xl p-4 border border-white/20 shadow-sm hover:shadow-md transition-all duration-200">
+          <button 
+            onClick={() => setIsBadgesModalOpen(true)}
+            className="bg-white/40 backdrop-blur-sm rounded-xl p-4 border border-white/20 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-[1.02] cursor-pointer"
+          >
             <div className="text-center">
               <Trophy size={16} className="mx-auto mb-1 text-amber-500" />
               <div className="text-lg font-bold text-gray-900">
@@ -159,7 +460,7 @@ const UserProfileSection = ({ user, dashboardData = null }) => {
               </div>
               <div className="text-xs text-gray-600">Badges</div>
             </div>
-          </div>
+          </button>
           <div className="bg-white/40 backdrop-blur-sm rounded-xl p-4 border border-white/20 shadow-sm hover:shadow-md transition-all duration-200">
             <div className="text-center">
               <BarChart3 size={16} className="mx-auto mb-1 text-blue-500" />
@@ -326,9 +627,104 @@ const UserProfileSection = ({ user, dashboardData = null }) => {
           </div>
         </div>
 
+        {/* Badges Section - Clickable to open modal */}
+        <div className="bg-white/30 backdrop-blur-sm rounded-xl p-4 border border-white/20 shadow-sm space-y-3 cursor-pointer" onClick={() => setIsBadgesModalOpen(true)}>
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-gray-700">My Badges</span>
+            <span className="text-xs font-semibold text-gray-500">{loading ? '...' : userStats.badgesCount}</span>
+          </div>
+          
+          <div className="flex flex-wrap gap-2">
+            {/* Display up to 4 badges in a compact view */}
+            {userStats.badgesCount > 0 ? (
+              <>
+                {/* Show role badges first */}
+                {(() => {
+                  const roleBadges = [];
+                  const userRole = user?.role;
+                  
+                  // Add role badges based on hierarchy
+                  if (userRole === 'PIONEER' || userRole === 'LUMINARY' || userRole === 'PATHFINDER' || userRole === 'CHIEF_PATHFINDER' || userRole === 'GRAND_PATHFINDER') {
+                    roleBadges.push({ id: 'pioneer', icon: Star, color: 'text-blue-600' });
+                  }
+                  if (userRole === 'LUMINARY' || userRole === 'PATHFINDER' || userRole === 'CHIEF_PATHFINDER' || userRole === 'GRAND_PATHFINDER') {
+                    roleBadges.push({ id: 'luminary', icon: Sparkles, color: 'text-purple-600' });
+                  }
+                  if (userRole === 'PATHFINDER' || userRole === 'CHIEF_PATHFINDER' || userRole === 'GRAND_PATHFINDER') {
+                    roleBadges.push({ id: 'pathfinder', icon: Shield, color: 'text-green-600' });
+                  }
+                  if (userRole === 'CHIEF_PATHFINDER' || userRole === 'GRAND_PATHFINDER') {
+                    roleBadges.push({ id: 'chief-pathfinder', icon: Crown, color: 'text-orange-600' });
+                  }
+                  if (userRole === 'GRAND_PATHFINDER') {
+                    roleBadges.push({ id: 'grand-pathfinder', icon: Crown, color: 'text-red-600' });
+                  }
+                  
+                  let displayedBadges = 0;
+                  const maxDisplay = 4;
+                  
+                  return (
+                    <>
+                      {/* Role badges */}
+                      {roleBadges.slice(0, maxDisplay).map((roleBadge) => {
+                        const IconComponent = roleBadge.icon;
+                        displayedBadges++;
+                        return (
+                          <div key={roleBadge.id} className="w-8 h-8 rounded-full bg-white border-2 border-white shadow-sm flex items-center justify-center">
+                            <IconComponent size={16} className={roleBadge.color} />
+                          </div>
+                        );
+                      })}
+                      
+                      {/* Achievement badges */}
+                      {userBadges.slice(0, maxDisplay - displayedBadges).map((badge, index) => {
+                        displayedBadges++;
+                        return (
+                          <div key={`achievement-${index}`} className="w-8 h-8 rounded-full overflow-hidden border-2 border-white shadow-sm">
+                            {badge.badge?.imageUrl ? (
+                              <img 
+                                src={badge.badge.imageUrl} 
+                                alt={badge.badge.name}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-amber-100 flex items-center justify-center">
+                                <Trophy size={16} className="text-amber-600" />
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                      
+                      {/* Show +N if there are more badges */}
+                      {userStats.badgesCount > maxDisplay && (
+                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 border-2 border-white shadow-sm">
+                          <span className="text-xs font-semibold text-gray-500">
+                            +{userStats.badgesCount - maxDisplay}
+                          </span>
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
+              </>
+            ) : (
+              <span className="text-xs text-gray-500">No badges earned yet</span>
+            )}
+          </div>
+        </div>
+
         {/* Bottom spacer for smooth scrolling */}
         <div className="h-4"></div>
       </div>
+
+      {/* Badges Modal */}
+      <BadgesModal 
+        isOpen={isBadgesModalOpen} 
+        onClose={() => setIsBadgesModalOpen(false)} 
+        user={user} 
+        userBadges={userBadges}
+      />
     </div>
   );
 };
