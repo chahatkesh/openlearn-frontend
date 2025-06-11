@@ -66,6 +66,25 @@ const LeagueDetailPage = ({ league, onBack }) => {
     }
   }, [league.id]);
 
+  // Calculate overall league progress based on actual resource completion
+  const calculateOverallProgress = () => {
+    if (!leagueProgress?.progress?.weeks) return { percentage: 0, completed: 0, total: 0 };
+    
+    let totalResources = 0;
+    let completedResources = 0;
+    
+    leagueProgress.progress.weeks.forEach(week => {
+      week.sections.forEach(section => {
+        const resources = sectionResources[section.id] || [];
+        totalResources += resources.length;
+        completedResources += resources.filter(r => resourceProgress[r.id]?.isCompleted).length;
+      });
+    });
+    
+    const percentage = totalResources > 0 ? Math.round((completedResources / totalResources) * 100) : 0;
+    return { percentage, completed: completedResources, total: totalResources };
+  };
+
   const fetchSectionResources = async (sectionId) => {
     try {
       const resourcesData = await ResourceProgressService.getSectionResourcesProgress(sectionId);
@@ -133,7 +152,10 @@ const LeagueDetailPage = ({ league, onBack }) => {
           .flat()
           .find(r => r.id === resourceId)?.title || 'Resource';
         setToastType('undo');
-        setShowSuccessToast(`"${resourceTitle}" marked as not done 🔄`);
+        
+        // Calculate new progress for toast message  
+        const newProgress = calculateOverallProgress();
+        setShowSuccessToast(`"${resourceTitle}" marked as not done 🔄 (${newProgress.percentage}% overall)`);
         
         // Hide toast after 3 seconds
         setTimeout(() => {
@@ -155,7 +177,10 @@ const LeagueDetailPage = ({ league, onBack }) => {
           .flat()
           .find(r => r.id === resourceId)?.title || 'Resource';
         setToastType('success');
-        setShowSuccessToast(`"${resourceTitle}" completed! 🎉`);
+        
+        // Calculate new progress for toast message
+        const newProgress = calculateOverallProgress();
+        setShowSuccessToast(`"${resourceTitle}" completed! 🎉 (${newProgress.percentage}% overall)`);
         
         // Remove from recently completed after animation
         setTimeout(() => {
@@ -172,8 +197,8 @@ const LeagueDetailPage = ({ league, onBack }) => {
         }, 3000);
       }
       
-      // Refresh league progress to update section completion
-      await fetchLeagueProgress();
+      // Note: We don't need to refresh league progress anymore since we calculate it locally
+      // This makes the UI more responsive and reduces API calls
     } catch (err) {
       console.error('Error updating resource completion:', err);
       
@@ -230,14 +255,24 @@ const LeagueDetailPage = ({ league, onBack }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="animate-pulse space-y-6">
-            <div className="h-8 bg-gray-700 rounded w-1/4"></div>
-            <div className="h-12 bg-gray-700 rounded w-1/2"></div>
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="animate-pulse space-y-4">
+            <div className="h-4 bg-gray-200 rounded w-32"></div>
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <div className="h-6 bg-gray-200 rounded w-1/2 mb-2"></div>
+              <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+              <div className="h-2 bg-gray-200 rounded w-full"></div>
+            </div>
             <div className="space-y-4">
               {[1, 2, 3].map(i => (
-                <div key={i} className="h-32 bg-gray-700 rounded"></div>
+                <div key={i} className="bg-white rounded-lg border border-gray-200 p-4">
+                  <div className="h-5 bg-gray-200 rounded w-1/3 mb-3"></div>
+                  <div className="space-y-2">
+                    <div className="h-4 bg-gray-200 rounded w-full"></div>
+                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
@@ -248,18 +283,24 @@ const LeagueDetailPage = ({ league, onBack }) => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <button 
             onClick={onBack}
-            className="text-orange-400 hover:text-orange-300 mb-6 flex items-center text-sm font-medium"
+            className="flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors mb-4"
           >
-            <ArrowLeft size={16} className="mr-1" />
+            <ArrowLeft size={16} className="mr-2" />
             Back to Dashboard
           </button>
-          <div className="bg-red-900/50 border border-red-500 rounded-lg p-6">
-            <h3 className="text-lg font-medium text-red-300 mb-2">Error Loading League</h3>
-            <p className="text-red-200">{error}</p>
+          <div className="bg-white rounded-lg border border-red-200 shadow-sm p-6">
+            <h3 className="text-lg font-medium text-red-700 mb-2">Error Loading League</h3>
+            <p className="text-red-600 mb-4">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-[#FFDE59] text-gray-900 rounded-lg hover:bg-[#FFD700] transition-colors text-sm font-medium"
+            >
+              Try Again
+            </button>
           </div>
         </div>
       </div>
@@ -268,19 +309,19 @@ const LeagueDetailPage = ({ league, onBack }) => {
 
   if (!leagueProgress) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <button 
             onClick={onBack}
-            className="text-orange-400 hover:text-orange-300 mb-6 flex items-center text-sm font-medium"
+            className="flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors mb-4"
           >
-            <ArrowLeft size={16} className="mr-1" />
+            <ArrowLeft size={16} className="mr-2" />
             Back to Dashboard
           </button>
-          <div className="text-center py-12">
-            <BookOpen size={48} className="mx-auto mb-4 text-gray-400" />
-            <h3 className="text-lg font-medium text-gray-300 mb-2">No Data Available</h3>
-            <p className="text-gray-400">This league doesn't have any content yet.</p>
+          <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-12 text-center">
+            <BookOpen size={40} className="mx-auto mb-3 text-gray-400" />
+            <h3 className="text-lg font-medium text-gray-900 mb-1">No Data Available</h3>
+            <p className="text-gray-600 text-sm">This league doesn't have any content yet.</p>
           </div>
         </div>
       </div>
@@ -288,45 +329,88 @@ const LeagueDetailPage = ({ league, onBack }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <button 
-            onClick={onBack}
-            className="text-orange-400 hover:text-orange-300 mb-6 flex items-center text-sm font-medium"
-          >
-            <ArrowLeft size={16} className="mr-1" />
-            Back to Dashboard
-          </button>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Compact Header */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <button 
+              onClick={onBack}
+              className="flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              <ArrowLeft size={16} className="mr-2" />
+              Back to Dashboard
+            </button>              {/* Quick Stats - Updated to use actual resource progress */}
+              <div className="flex items-center space-x-6 text-sm text-gray-600">
+                <span>{calculateOverallProgress().total} resources</span>
+                <span className="text-green-600 font-medium">{calculateOverallProgress().completed} completed</span>
+                <span className="font-semibold text-gray-900 px-2 py-1 bg-gray-100 rounded">
+                  {calculateOverallProgress().percentage}% progress
+                </span>
+              </div>
+          </div>
           
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-3xl font-bold text-white mb-2">{leagueProgress.league.name}</h1>
-              <p className="text-gray-300">{leagueProgress.league.description}</p>
+          {/* Compact League Header */}
+          <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+            <div className="px-6 py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <h1 className="text-xl font-semibold text-gray-900 mb-1">{leagueProgress.league.name}</h1>
+                  <p className="text-sm text-gray-600">{leagueProgress.league.description}</p>
+                </div>
+                
+                {/* Compact Progress Indicator - Updated to use actual resource progress */}
+                <div className="flex items-center space-x-4">
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-gray-900">{calculateOverallProgress().percentage}%</div>
+                    <div className="text-xs text-gray-500">Complete</div>
+                  </div>
+                  <div className="w-12 h-12 relative">
+                    <svg className="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
+                      <path
+                        d="M18 2.0845 A 15.9155 15.9155 0 0 1 18 33.9155"
+                        fill="none"
+                        stroke="#f3f4f6"
+                        strokeWidth="3"
+                      />
+                      <path
+                        d="M18 2.0845 A 15.9155 15.9155 0 0 1 18 33.9155"
+                        fill="none"
+                        stroke="#FFDE59"
+                        strokeWidth="3"
+                        strokeDasharray={`${calculateOverallProgress().percentage}, 100`}
+                        className="transition-all duration-1000 ease-out"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
             </div>
             
-            {/* Progress Stats */}
-            <div className="text-right">
-              <div className="text-sm text-gray-400 mb-1">
-                {leagueProgress.progress.completedSections} / {leagueProgress.progress.totalSections}
+            {/* Progress Bar - Updated to use actual resource progress */}
+            <div className="px-6 pb-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs text-gray-600">Overall Progress</span>
+                <span className="text-xs text-gray-600">
+                  {calculateOverallProgress().completed} of {calculateOverallProgress().total} resources
+                </span>
               </div>
-              <div className="bg-gray-700 rounded-full h-2 w-32">
+              <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  className="bg-orange-400 h-2 rounded-full transition-all duration-500"
-                  style={{ width: `${leagueProgress.progress.progressPercentage}%` }}
+                  className="bg-gradient-to-r from-[#FFDE59] to-[#FFD700] h-2 rounded-full transition-all duration-1000 ease-out progress-bar-fill"
+                  style={{ width: `${calculateOverallProgress().percentage}%` }}
                 ></div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Weeks Content */}
-        <div className="space-y-6">
+        {/* Compact Weeks Content */}
+        <div className="space-y-4">
           {leagueProgress.progress.weeks?.map((week) => {
             const isExpanded = expandedWeeks[week.id];
             
-            // Calculate week progress based on total resources completed across all sections
+            // Calculate week progress
             let totalResources = 0;
             let completedResources = 0;
             
@@ -341,34 +425,32 @@ const LeagueDetailPage = ({ league, onBack }) => {
               : 0;
 
             return (
-              <div key={week.id} className="bg-gray-800 rounded-lg border border-gray-700">
-                {/* Week Header */}
+              <div key={week.id} className="bg-white rounded-lg border border-gray-200 shadow-sm">
+                {/* Compact Week Header */}
                 <div 
-                  className="flex items-center justify-between p-6 cursor-pointer hover:bg-gray-750"
+                  className="flex items-center justify-between px-6 py-4 cursor-pointer hover:bg-gray-50 border-b border-gray-100"
                   onClick={() => toggleWeekExpansion(week.id)}
                 >
-                  <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-3">
                     {isExpanded ? (
-                      <ChevronDown size={20} className="text-gray-400" />
+                      <ChevronDown size={18} className="text-gray-400" />
                     ) : (
-                      <ChevronRight size={20} className="text-gray-400" />
+                      <ChevronRight size={18} className="text-gray-400" />
                     )}
                     <div>
-                      <h2 className="text-xl font-semibold text-white">
-                        {week.name}
-                      </h2>
-                      <p className="text-gray-400 text-sm">
-                        {completedResources} / {totalResources} resources completed
+                      <h2 className="text-lg font-medium text-gray-900">{week.name}</h2>
+                      <p className="text-sm text-gray-500">
+                        {completedResources} of {totalResources} resources completed
                       </p>
                     </div>
                   </div>
                   
-                  {/* Week Progress Bar */}
-                  <div className="flex items-center space-x-4">
-                    <div className="text-sm text-gray-400">{weekProgress}%</div>
-                    <div className="bg-gray-700 rounded-full h-2 w-32">
+                  {/* Compact Progress */}
+                  <div className="flex items-center space-x-3">
+                    <span className="text-sm font-medium text-gray-900">{weekProgress}%</span>
+                    <div className="w-24 bg-gray-200 rounded-full h-2">
                       <div 
-                        className="bg-orange-400 h-2 rounded-full transition-all duration-500"
+                        className="bg-gradient-to-r from-[#FFDE59] to-[#FFD700] h-2 rounded-full transition-all duration-500"
                         style={{ width: `${weekProgress}%` }}
                       ></div>
                     </div>
@@ -377,143 +459,89 @@ const LeagueDetailPage = ({ league, onBack }) => {
 
                 {/* Week Content */}
                 {isExpanded && (
-                  <div className="px-6 pb-6">
-                    {week.sections.map((section) => {
-                      const resources = sectionResources[section.id] || [];
-                      const sectionProgress = resources.length > 0 
-                        ? Math.round((resources.filter(r => resourceProgress[r.id]?.isCompleted).length / resources.length) * 100)
-                        : 0;
+                  <div className="px-6 pb-4">
+                    <div className="space-y-4">
+                      {week.sections.map((section) => {
+                        const resources = sectionResources[section.id] || [];
+                        const sectionProgress = resources.length > 0 
+                          ? Math.round((resources.filter(r => resourceProgress[r.id]?.isCompleted).length / resources.length) * 100)
+                          : 0;
 
-                      return (
-                        <div key={section.id} className="mb-6">
-                          {/* Section Header */}
-                          <div className="flex items-center justify-between mb-4">
-                            <div className="flex items-center space-x-3">
-                              <h3 className="text-lg font-medium text-white">
-                                {section.name}
-                              </h3>
-                              <div className="text-sm text-orange-400">
-                                {sectionProgress}% ({resources.filter(r => resourceProgress[r.id]?.isCompleted).length} / {resources.length})
+                        return (
+                          <div key={section.id} className="border mt-4 border-gray-100 rounded-lg">
+                            {/* Compact Section Header */}
+                            <div className="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-t-lg border-b border-gray-100">
+                              <div className="flex items-center space-x-3">
+                                <h3 className="font-medium text-gray-900">{section.name}</h3>
+                                <span className="text-sm text-gray-500">
+                                  {resources.filter(r => resourceProgress[r.id]?.isCompleted).length}/{resources.length}
+                                </span>
                               </div>
-                            </div>
-                            <div className="bg-gray-700 rounded-full h-2 w-24">
-                              <div 
-                                className="bg-orange-400 h-2 rounded-full transition-all duration-500"
-                                style={{ width: `${sectionProgress}%` }}
-                              ></div>
-                            </div>
-                          </div>
-
-                          {/* Resources Table */}
-                          {resources.length > 0 && (
-                            <div className="bg-gray-850 rounded-lg border border-gray-700 overflow-hidden">
-                              {/* Table Header */}
-                              <div className="hidden md:grid grid-cols-8 gap-3 p-4 bg-gray-800 border-b border-gray-700 text-sm font-medium text-gray-300">
-                                <div className="col-span-1 text-center">Status</div>
-                                <div className="col-span-4">Problem</div>
-                                <div className="col-span-1 text-center">Blog Link</div> 
-                                <div className="col-span-1">Note</div>
-                                <div className="col-span-1 text-center">Share</div>
-                              </div>
-
-                              {/* Table Rows */}
-                              {resources.map((resource) => {
-                                const progress = resourceProgress[resource.id];
-                                const isCompleted = progress?.isCompleted || false;
-                                const hasNote = progress?.personalNote;
-
-                                return (
+                              <div className="flex items-center space-x-2">
+                                <span className="text-sm font-medium text-gray-900">{sectionProgress}%</span>
+                                <div className="w-16 bg-gray-200 rounded-full h-1.5">
                                   <div 
-                                    key={resource.id} 
-                                    className="md:grid md:grid-cols-8 gap-3 p-4 border-b border-gray-700 last:border-b-0 hover:bg-gray-750 transition-colors"
-                                  >
-                                    {/* Mobile Layout */}
-                                    <div className="md:hidden space-y-3">
-                                      <div className="flex items-center justify-between">
-                                        <div className="flex items-center space-x-3">
-                                          {/* Enhanced Status Button for Mobile */}
-                                          <div className="relative group">
-                                            <button
-                                              onClick={() => handleResourceComplete(resource.id, isCompleted)}
-                                              onKeyDown={(e) => {
-                                                if (e.key === 'Enter' || e.key === ' ') {
-                                                  e.preventDefault();
-                                                  handleResourceComplete(resource.id, isCompleted);
-                                                }
-                                              }}
-                                              disabled={processingResources.has(resource.id)}
-                                              className={`
-                                                status-button relative p-1.5 rounded-md border-2 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 focus:ring-offset-gray-900
-                                                ${isCompleted 
-                                                  ? 'completed bg-green-500/20 border-green-400 text-green-400 hover:bg-green-500/30' 
-                                                  : 'bg-gray-700/50 border-gray-500 text-gray-400 hover:bg-orange-500/20 hover:border-orange-400 hover:text-orange-400'
-                                                }
-                                                ${processingResources.has(resource.id) ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
-                                                ${recentlyCompleted.has(resource.id) ? 'success-pulse' : ''}
-                                              `}
-                                              title={isCompleted ? 'Mark as not done' : 'Mark as done'}
-                                              aria-label={isCompleted ? 'Mark as not done' : 'Mark as done'}
-                                            >
-                                              {processingResources.has(resource.id) ? (
-                                                <Loader2 size={16} className="animate-spin" />
-                                              ) : isCompleted ? (
-                                                <div className="flex items-center">
-                                                  <Check size={16} className="completion-checkmark" />
-                                                  {recentlyCompleted.has(resource.id) && (
-                                                    <div className="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center animate-bounce">
-                                                      ✓
-                                                    </div>
-                                                  )}
-                                                </div>
-                                              ) : (
-                                                <Square size={16} />
-                                              )}
-                                            </button>
-                                            
-                                            {/* Undo Button for Completed Items */}
-                                            {isCompleted && !processingResources.has(resource.id) && (
-                                              <button
-                                                onClick={(e) => {
-                                                  e.stopPropagation();
-                                                  handleResourceComplete(resource.id, true);
-                                                }}
-                                                className="absolute -top-1 -right-1 bg-orange-600 hover:bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-all duration-200 z-10 shadow-lg"
-                                                title="Mark as not done (this will reset your progress)"
-                                              >
-                                                <RotateCcw size={10} />
-                                              </button>
-                                            )}
-                                          </div>
-                                          
+                                    className="bg-gradient-to-r from-[#FFDE59] to-[#FFD700] h-1.5 rounded-full transition-all duration-500"
+                                    style={{ width: `${sectionProgress}%` }}
+                                  ></div>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Compact Resources Table */}
+                            {resources.length > 0 && (
+                              <div className="divide-y divide-gray-100">
+                                {resources.map((resource) => {
+                                  const progress = resourceProgress[resource.id];
+                                  const isCompleted = progress?.isCompleted || false;
+                                  const hasNote = progress?.personalNote;
+
+                                  return (
+                                    <div 
+                                      key={resource.id} 
+                                      className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors"
+                                    >
+                                      {/* Left side - Status and Title */}
+                                      <div className="flex items-center space-x-3 flex-1">
+                                        <button
+                                          onClick={() => handleResourceComplete(resource.id, isCompleted)}
+                                          disabled={processingResources.has(resource.id)}
+                                          className={`
+                                            flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-all duration-200 hover-lift
+                                            ${isCompleted 
+                                              ? 'bg-green-500 border-green-500 text-white shadow-sm' 
+                                              : 'border-gray-300 hover:border-[#FFDE59] hover:bg-[#FFDE59]/10'
+                                            }
+                                            ${processingResources.has(resource.id) ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
+                                            ${recentlyCompleted.has(resource.id) ? 'success-pulse' : ''}
+                                          `}
+                                          title={isCompleted ? 'Mark as not done' : 'Mark as done'}
+                                        >
+                                          {processingResources.has(resource.id) ? (
+                                            <Loader2 size={12} className="animate-spin" />
+                                          ) : isCompleted ? (
+                                            <Check size={12} className="completion-checkmark" />
+                                          ) : null}
+                                        </button>
+                                        
+                                        <div className="flex items-center space-x-2">
                                           {getResourceTypeIcon(resource.type)}
-                                          <span className={`text-sm transition-all duration-300 ${isCompleted ? 'line-through text-gray-500' : 'text-white'}`}>
+                                          <span className={`text-sm ${isCompleted ? 'line-through text-gray-500' : 'text-gray-900'}`}>
                                             {resource.title}
                                           </span>
                                         </div>
-                                        <div className="flex items-center space-x-2">
-                                          <button
-                                            onClick={() => window.open(resource.url, '_blank')}
-                                            className="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600 transition-colors"
-                                          >
-                                            Click
-                                          </button>
-                                          <button
-                                            onClick={() => handleShareOnTwitter(resource.title, leagueProgress.league.name)}
-                                            className="text-blue-400 hover:text-blue-300 transition-colors"
-                                            title="Share on Twitter"
-                                          >
-                                            <Twitter size={16} />
-                                          </button>
-                                        </div>
                                       </div>
-                                      <div className="ml-8">
+
+                                      {/* Right side - Actions */}
+                                      <div className="flex items-center space-x-2">
+                                        {/* Note */}
                                         {editingNote === resource.id ? (
                                           <div className="flex items-center space-x-2">
                                             <input
                                               type="text"
                                               value={noteText}
                                               onChange={(e) => setNoteText(e.target.value)}
-                                              className="flex-1 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-orange-400"
+                                              className="w-32 px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:border-[#FFDE59]"
                                               placeholder="Add note..."
                                               onKeyPress={(e) => {
                                                 if (e.key === 'Enter') {
@@ -523,176 +551,58 @@ const LeagueDetailPage = ({ league, onBack }) => {
                                             />
                                             <button
                                               onClick={() => handleResourceNote(resource.id, noteText)}
-                                              className="text-green-400 hover:text-green-300"
+                                              className="text-green-600 hover:text-green-700"
                                             >
-                                              <CheckSquare size={14} />
+                                              <Check size={14} />
                                             </button>
                                           </div>
                                         ) : (
-                                          <div className="flex items-center space-x-2">
-                                            <span className="text-xs text-gray-400">
-                                              Note: {hasNote ? hasNote : 'No note'}
-                                            </span>
-                                            <button
-                                              onClick={() => {
-                                                setEditingNote(resource.id);
-                                                setNoteText(hasNote || '');
-                                              }}
-                                              className="text-gray-400 hover:text-orange-400 transition-colors"
-                                            >
-                                              <Plus size={14} />
-                                            </button>
-                                          </div>
-                                        )}
-                                      </div>
-                                    </div>
-
-                                    {/* Desktop Layout */}
-                                    <div className="hidden md:contents">
-                                      {/* Status */}
-                                      <div className="col-span-1 flex justify-center">
-                                        <div className="relative group">
                                           <button
-                                            onClick={() => handleResourceComplete(resource.id, isCompleted)}
-                                            onKeyDown={(e) => {
-                                              if (e.key === 'Enter' || e.key === ' ') {
-                                                e.preventDefault();
-                                                handleResourceComplete(resource.id, isCompleted);
-                                              }
+                                            onClick={() => {
+                                              setEditingNote(resource.id);
+                                              setNoteText(hasNote || '');
                                             }}
-                                            disabled={processingResources.has(resource.id)}
-                                            className={`
-                                              status-button relative p-1.5 rounded-md border-2 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 focus:ring-offset-gray-900
-                                              ${isCompleted 
-                                                ? 'completed bg-green-500/20 border-green-400 text-green-400 hover:bg-green-500/30' 
-                                                : 'bg-gray-700/50 border-gray-500 text-gray-400 hover:bg-orange-500/20 hover:border-orange-400 hover:text-orange-400'
-                                              }
-                                              ${processingResources.has(resource.id) ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
-                                              ${recentlyCompleted.has(resource.id) ? 'success-pulse' : ''}
-                                            `}
-                                            title={isCompleted ? 'Mark as not done' : 'Mark as done'}
-                                            aria-label={isCompleted ? 'Mark as not done' : 'Mark as done'}
+                                            className="text-xs text-gray-500 hover:text-gray-700 px-2 py-1 rounded hover:bg-gray-100"
+                                            title={hasNote ? `Note: ${hasNote}` : 'Add note'}
                                           >
-                                            {processingResources.has(resource.id) ? (
-                                              <Loader2 size={16} className="animate-spin" />
-                                            ) : isCompleted ? (
-                                              <div className="flex items-center">
-                                                <Check size={16} className="completion-checkmark" />
-                                                {recentlyCompleted.has(resource.id) && (
-                                                  <div className="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center animate-bounce">
-                                                    ✓
-                                                  </div>
-                                                )}
-                                              </div>
-                                            ) : (
-                                              <Square size={16} />
-                                            )}
+                                            {hasNote ? 'Note' : 'Add note'}
                                           </button>
-                                          
-                                          {/* Undo Button for Completed Items */}
-                                          {isCompleted && !processingResources.has(resource.id) && (
-                                            <button
-                                              onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleResourceComplete(resource.id, true);
-                                              }}
-                                              className="absolute -top-1 -right-1 bg-orange-600 hover:bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-all duration-200 z-10 shadow-lg"
-                                              title="Mark as not done (this will reset your progress)"
-                                            >
-                                              <RotateCcw size={10} />
-                                            </button>
-                                          )}
-                                        </div>
-                                      </div>
+                                        )}
 
-                                      {/* Problem */}
-                                      <div className="col-span-4">
-                                        <div className="flex items-center space-x-2">
-                                          {getResourceTypeIcon(resource.type)}
-                                          <span className={`text-sm ${isCompleted ? 'line-through text-gray-500' : 'text-white'}`}>
-                                            {resource.title}
-                                          </span>
-                                        </div>
-                                      </div>
-
-                                      {/* Blog Link */}
-                                      <div className="col-span-1 flex justify-center">
+                                        {/* Link */}
                                         <button
                                           onClick={() => window.open(resource.url, '_blank')}
-                                          className="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600 transition-colors"
+                                          className="px-3 py-1 text-xs font-medium bg-[#FFDE59] text-gray-900 rounded hover:bg-[#FFD700] transition-colors"
                                         >
-                                          Click
+                                          Open
                                         </button>
-                                      </div>
 
-                                      {/* Note */}
-                                      <div className="col-span-1">
-                                        {editingNote === resource.id ? (
-                                          <div className="flex items-center space-x-2">
-                                            <input
-                                              type="text"
-                                              value={noteText}
-                                              onChange={(e) => setNoteText(e.target.value)}
-                                              className="flex-1 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-orange-400"
-                                              placeholder="Add note..."
-                                              onKeyPress={(e) => {
-                                                if (e.key === 'Enter') {
-                                                  handleResourceNote(resource.id, noteText);
-                                                }
-                                              }}
-                                            />
-                                            <button
-                                              onClick={() => handleResourceNote(resource.id, noteText)}
-                                              className="text-green-400 hover:text-green-300"
-                                            >
-                                              <CheckSquare size={14} />
-                                            </button>
-                                          </div>
-                                        ) : (
-                                          <div className="flex items-center space-x-2">
-                                            <span className="text-xs text-gray-400 truncate">
-                                              {hasNote ? hasNote : 'No note'}
-                                            </span>
-                                            <button
-                                              onClick={() => {
-                                                setEditingNote(resource.id);
-                                                setNoteText(hasNote || '');
-                                              }}
-                                              className="text-gray-400 hover:text-orange-400 transition-colors"
-                                            >
-                                              <Plus size={14} />
-                                            </button>
-                                          </div>
-                                        )}
-                                      </div>
-
-                                      {/* Share on Twitter */}
-                                      <div className="col-span-1 flex justify-center">
+                                        {/* Share */}
                                         <button
                                           onClick={() => handleShareOnTwitter(resource.title, leagueProgress.league.name)}
-                                          className="text-blue-400 hover:text-blue-300 transition-colors"
+                                          className="text-gray-400 hover:text-blue-500 transition-colors"
                                           title="Share on Twitter"
                                         >
-                                          <Twitter size={16} />
+                                          <Twitter size={14} />
                                         </button>
                                       </div>
                                     </div>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          )}
+                                  );
+                                })}
+                              </div>
+                            )}
 
-                          {/* No Resources Message */}
-                          {resources.length === 0 && (
-                            <div className="text-center py-8 text-gray-500">
-                              <FileText size={32} className="mx-auto mb-2 text-gray-600" />
-                              <p className="text-sm">No resources available for this section yet.</p>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
+                            {/* No Resources Message */}
+                            {resources.length === 0 && (
+                              <div className="px-4 py-8 text-center text-gray-500">
+                                <FileText size={24} className="mx-auto mb-2 text-gray-400" />
+                                <p className="text-sm">No resources available for this section.</p>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
               </div>
@@ -702,43 +612,37 @@ const LeagueDetailPage = ({ league, onBack }) => {
 
         {/* No Weeks Message */}
         {(!leagueProgress.progress.weeks || leagueProgress.progress.weeks.length === 0) && (
-          <div className="text-center py-12">
-            <BookOpen size={48} className="mx-auto mb-4 text-gray-400" />
-            <h3 className="text-lg font-medium text-gray-300 mb-2">No Content Available</h3>
-            <p className="text-gray-400">This league doesn't have any weeks or sections yet.</p>
+          <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-12 text-center">
+            <BookOpen size={40} className="mx-auto mb-3 text-gray-400" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No Content Available</h3>
+            <p className="text-gray-600">This league doesn't have any weeks or sections yet.</p>
           </div>
         )}
       </div>
       
-      {/* Success Toast Notification */}
+      {/* Compact Success Toast */}
       {showSuccessToast && (
         <div className="fixed top-4 right-4 z-50 animate-slide-in-right">
           <div className={`${
             toastType === 'success' 
               ? 'bg-green-500' 
               : 'bg-orange-500'
-          } text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-3 max-w-sm`}>
+          } text-white px-4 py-2 rounded-lg shadow-lg flex items-center space-x-2 max-w-sm`}>
             <div className="flex-shrink-0">
-              <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
+              <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center">
                 {toastType === 'success' ? (
-                  <Check size={16} className="text-green-500" />
+                  <Check size={12} className="text-green-500" />
                 ) : (
-                  <RotateCcw size={16} className="text-orange-500" />
+                  <RotateCcw size={12} className="text-orange-500" />
                 )}
               </div>
             </div>
-            <div className="flex-1">
-              <p className="text-sm font-medium">{showSuccessToast}</p>
-            </div>
+            <p className="text-sm font-medium">{showSuccessToast}</p>
             <button
               onClick={() => setShowSuccessToast(null)}
-              className={`flex-shrink-0 transition-colors ${
-                toastType === 'success'
-                  ? 'text-green-200 hover:text-white'
-                  : 'text-orange-200 hover:text-white'
-              }`}
+              className="flex-shrink-0 text-white/80 hover:text-white transition-colors"
             >
-              <X size={16} />
+              <X size={14} />
             </button>
           </div>
         </div>

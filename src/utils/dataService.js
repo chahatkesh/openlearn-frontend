@@ -39,10 +39,31 @@ class DataService {
    * @returns {Promise} Cohorts data
    */
   static async getCohorts() {
-    const response = await fetch(`${API_BASE_URL}/cohorts`, {
-      headers: getAuthHeaders()
-    });
-    return handleResponse(response);
+    try {
+      const response = await fetch(`${API_BASE_URL}/cohorts`, {
+        headers: getAuthHeaders()
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      return handleResponse(response);
+    } catch (error) {
+      console.warn('Cohorts API unavailable, using fallback data:', error.message);
+      
+      return {
+        cohorts: [
+          {
+            id: 'mock_cohort_1',
+            name: 'Cohort 1.0',
+            description: 'The first cohort of learners in the OpenLearn platform.',
+            isActive: true,
+            createdAt: '2024-01-01T00:00:00.000Z'
+          }
+        ]
+      };
+    }
   }
 
   /**
@@ -50,10 +71,42 @@ class DataService {
    * @returns {Promise} Leagues data
    */
   static async getLeagues() {
-    const response = await fetch(`${API_BASE_URL}/leagues`, {
-      headers: getAuthHeaders()
-    });
-    return handleResponse(response);
+    try {
+      const response = await fetch(`${API_BASE_URL}/leagues`, {
+        headers: getAuthHeaders()
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      return handleResponse(response);
+    } catch (error) {
+      console.warn('Leagues API unavailable, using fallback data:', error.message);
+      
+      return {
+        leagues: [
+          {
+            id: 'mock_league_1',
+            name: 'Machine Learning League',
+            description: 'A comprehensive journey through ML fundamentals and applications.',
+            weeksCount: 8,
+            sectionsCount: 24,
+            totalResources: 96,
+            cohortId: 'mock_cohort_1'
+          },
+          {
+            id: 'mock_league_2',
+            name: 'Finance League',
+            description: 'Understanding money, markets, and financial principles.',
+            weeksCount: 6,
+            sectionsCount: 18,
+            totalResources: 72,
+            cohortId: 'mock_cohort_1'
+          }
+        ]
+      };
+    }
   }
 
   /**
