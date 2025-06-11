@@ -444,6 +444,106 @@ class AdminService {
     return handleResponse(response);
   }
 
+  // ==================== ASSIGNMENT MANAGEMENT ====================
+  
+  /**
+   * Get all assignments (admin view)
+   * @param {number} page - Page number
+   * @param {number} limit - Items per page
+   * @returns {Promise} Assignments data
+   */
+  static async getAllAssignments(page = 1, limit = 10) {
+    const response = await fetch(`${API_BASE_URL}/admin/assignments?page=${page}&limit=${limit}`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+
+  /**
+   * Create a new assignment
+   * @param {Object} assignmentData - Assignment data
+   * @returns {Promise} Created assignment
+   */
+  static async createAssignment(assignmentData) {
+    const response = await fetch(`${API_BASE_URL}/admin/assignments`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(assignmentData)
+    });
+    return handleResponse(response);
+  }
+
+  /**
+   * Get assignment by league ID with submissions
+   * @param {string} leagueId - League ID
+   * @returns {Promise} Assignment data with submissions
+   */
+  static async getAssignmentByLeague(leagueId) {
+    const response = await fetch(`${API_BASE_URL}/admin/assignments/league/${leagueId}`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+
+  /**
+   * Submit assignment
+   * @param {string} assignmentId - Assignment ID
+   * @param {Object} submissionData - Submission data
+   * @returns {Promise} Submission result
+   */
+  static async submitAssignment(assignmentId, submissionData) {
+    const response = await fetch(`${API_BASE_URL}/admin/assignments/${assignmentId}/submit`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(submissionData)
+    });
+    return handleResponse(response);
+  }
+
+  /**
+   * Get user submissions
+   * @param {string} userId - User ID (optional, for admin view)
+   * @returns {Promise} User submissions
+   */
+  static async getUserSubmissions(userId = null) {
+    const url = userId 
+      ? `${API_BASE_URL}/admin/assignments/submissions?userId=${userId}`
+      : `${API_BASE_URL}/admin/assignments/submissions`;
+    
+    const response = await fetch(url, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+
+  /**
+   * Update an assignment
+   * @param {string} assignmentId - Assignment ID
+   * @param {Object} assignmentData - Updated assignment data
+   * @returns {Promise} Updated assignment
+   */
+  static async updateAssignment(assignmentId, assignmentData) {
+    const response = await fetch(`${API_BASE_URL}/admin/assignments/${assignmentId}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(assignmentData)
+    });
+    return handleResponse(response);
+  }
+
+  /**
+   * Delete an assignment
+   * @param {string} assignmentId - Assignment ID
+   * @returns {Promise} Deletion result
+   */
+  static async deleteAssignment(assignmentId) {
+    const response = await fetch(`${API_BASE_URL}/admin/assignments/${assignmentId}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+
   // ==================== UTILITY METHODS ====================
 
   /**

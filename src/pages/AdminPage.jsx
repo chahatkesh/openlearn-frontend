@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../hooks/useAuth';
-import { LogOut, Users, Archive, BookOpen, Award, Layers, Calendar, FileText, Database, Activity } from 'lucide-react';
+import { LogOut, Users, Archive, BookOpen, Award, Layers, Calendar, FileText, Database, Activity, ClipboardList } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import UserManagement from '../components/admin/UserManagement';
 import CohortManagement from '../components/admin/CohortManagement';
@@ -9,6 +9,7 @@ import SpecializationManagement from '../components/admin/SpecializationManageme
 import WeekManagement from '../components/admin/WeekManagement';
 import SectionManagement from '../components/admin/SectionManagement';
 import ResourceManagement from '../components/admin/ResourceManagement';
+import AssignmentManagement from '../components/admin/AssignmentManagement';
 import AdminService from '../utils/adminService';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -99,6 +100,13 @@ const AdminPage = () => {
           if (weeks.length === 0) {
             await fetchWeeks();
           }
+          if (leagues.length === 0) {
+            await fetchLeagues();
+          }
+          break;
+        }
+        case 'assignments': {
+          // For assignments, also fetch leagues if not already loaded
           if (leagues.length === 0) {
             await fetchLeagues();
           }
@@ -919,7 +927,7 @@ const AdminPage = () => {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Admin Panel</h1>
           <p className="mt-1 text-sm text-gray-600">
-            Manage users, cohorts, leagues, specializations, weeks, sections, and resources
+            Manage users, cohorts, leagues, specializations, weeks, sections, resources, and assignments
           </p>
         </div>
 
@@ -1003,6 +1011,17 @@ const AdminPage = () => {
               <Database size={16} className="mr-2" />
               Resources
             </button>
+            <button
+              className={`${
+                activeTab === 'assignments'
+                  ? 'border-black text-black'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center`}
+              onClick={() => setActiveTab('assignments')}
+            >
+              <ClipboardList size={16} className="mr-2" />
+              Assignments
+            </button>
           </nav>
         </div>
 
@@ -1036,6 +1055,7 @@ const AdminPage = () => {
             {activeTab === 'weeks' && renderWeeks()}
             {activeTab === 'sections' && renderSections()}
             {activeTab === 'resources' && renderResources()}
+            {activeTab === 'assignments' && <AssignmentManagement leagues={leagues} />}
           </div>
         )}
       </main>

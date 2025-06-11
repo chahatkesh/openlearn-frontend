@@ -14,11 +14,16 @@ import {
   Check,
   X,
   RotateCcw,
-  Loader2
+  Loader2,
+  ClipboardList,
+  Calendar,
+  Send
 } from 'lucide-react';
 import ProgressService from '../../utils/progressService';
 import ResourceProgressService from '../../utils/resourceProgressService';
 import SocialService from '../../utils/socialService';
+import DataService from '../../utils/dataService';
+import AssignmentManagement from './AssignmentManagement';
 
 const LeagueDetailPage = ({ league, onBack }) => {
   const [leagueProgress, setLeagueProgress] = useState(null);
@@ -33,6 +38,8 @@ const LeagueDetailPage = ({ league, onBack }) => {
   const [recentlyCompleted, setRecentlyCompleted] = useState(new Set());
   const [showSuccessToast, setShowSuccessToast] = useState(null);
   const [toastType, setToastType] = useState('success'); // 'success' or 'undo'
+
+  // Assignment-related state - no longer needed as handled by AssignmentManagement component
 
   const fetchLeagueProgress = useCallback(async () => {
     setLoading(true);
@@ -64,6 +71,8 @@ const LeagueDetailPage = ({ league, onBack }) => {
       setLoading(false);
     }
   }, [league.id]);
+
+  // Assignment functions - no longer needed as handled by AssignmentManagement component
 
   // Calculate overall league progress based on actual resource completion
   const calculateOverallProgress = () => {
@@ -109,6 +118,7 @@ const LeagueDetailPage = ({ league, onBack }) => {
 
   useEffect(() => {
     fetchLeagueProgress();
+    // Assignment functionality now handled by AssignmentManagement component
   }, [fetchLeagueProgress]);
 
   const toggleWeekExpansion = (weekId) => {
@@ -661,6 +671,12 @@ const LeagueDetailPage = ({ league, onBack }) => {
             <p className="text-gray-600">This league doesn't have any weeks or sections yet.</p>
           </div>
         )}
+
+        {/* Assignment Section */}
+        <AssignmentManagement 
+          leagueId={league.id} 
+        />
+
       </div>
       
       {/* Compact Success Toast */}

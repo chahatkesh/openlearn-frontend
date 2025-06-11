@@ -667,8 +667,8 @@ const LearningProgressSection = ({ user }) => {
                                     disabled={isEnrolled}
                                     className={`ml-3 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
                                       isEnrolled
-                                        ? 'bg-green-100 text-green-700 cursor-not-allowed border border-green-200'
-                                        : 'bg-gradient-to-r from-black to-gray-800 text-white hover:from-gray-800 hover:to-black hover:shadow-lg'
+                                        ? 'bg-green-100 text-green-700 cursor-not-allowed border border-green-200 '
+                                        : 'bg-gradient-to-r from-black to-gray-800 text-white hover:from-gray-800 cursor-pointer hover:to-black hover:shadow-lg'
                                     }`}
                                   >
                                     {isEnrolled ? 'Enrolled' : 'Enroll'}

@@ -17,7 +17,7 @@ import DataService from '../../utils/dataService';
  * Assignment Management Component
  * Handles assignment viewing, submission, and tracking
  */
-const AssignmentManagement = ({ leagueId, leagueName }) => {
+const AssignmentManagement = ({ leagueId }) => {
   const [assignment, setAssignment] = useState(null);
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -28,8 +28,7 @@ const AssignmentManagement = ({ leagueId, leagueName }) => {
   // Submission form state
   const [submissionForm, setSubmissionForm] = useState({
     submissionType: 'GITHUB_LINK',
-    content: '',
-    description: ''
+    content: ''
   });
 
   const fetchAssignment = useCallback(async () => {
@@ -71,18 +70,34 @@ const AssignmentManagement = ({ leagueId, leagueName }) => {
 
     setSubmitting(true);
     try {
-      await DataService.submitAssignment(assignment.id, submissionForm);
+      // Prepare submission data based on API documentation
+      const submissionData = {};
+      
+      if (submissionForm.submissionType === 'TEXT_SUBMISSION') {
+        submissionData.content = submissionForm.content;
+      } else if (submissionForm.submissionType === 'GITHUB_LINK') {
+        submissionData.githubUrl = submissionForm.content;
+      } else if (submissionForm.submissionType === 'LIVE_URL') {
+        submissionData.liveUrl = submissionForm.content;
+      } else if (submissionForm.submissionType === 'FILE_URL') {
+        submissionData.fileUrl = submissionForm.content;
+      }
+
+      await DataService.submitAssignment(assignment.id, submissionData);
       
       // Reset form and refresh submissions
       setSubmissionForm({
         submissionType: 'GITHUB_LINK',
-        content: '',
-        description: ''
+        content: ''
       });
       setShowSubmissionForm(false);
       await fetchSubmissions();
       
-      alert('Assignment submitted successfully!');
+      // Show success message based on whether it's a new submission or resubmission
+      const message = latestSubmission 
+        ? 'Assignment resubmitted successfully!' 
+        : 'Assignment submitted successfully!';
+      alert(message);
     } catch (err) {
       console.error('Error submitting assignment:', err);
       alert(`Failed to submit assignment: ${err.message}`);
@@ -113,7 +128,7 @@ const AssignmentManagement = ({ leagueId, leagueName }) => {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-lg shadow-sm border p-6">
+      <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mt-4">
         <div className="animate-pulse space-y-4">
           <div className="h-6 bg-gray-200 rounded w-1/4"></div>
           <div className="h-4 bg-gray-200 rounded w-3/4"></div>
@@ -125,7 +140,7 @@ const AssignmentManagement = ({ leagueId, leagueName }) => {
 
   if (error) {
     return (
-      <div className="bg-white rounded-lg shadow-sm border p-6">
+      <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mt-4">
         <div className="text-center py-8">
           <AlertCircle size={48} className="mx-auto text-red-500 mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">Error Loading Assignment</h3>
@@ -136,7 +151,7 @@ const AssignmentManagement = ({ leagueId, leagueName }) => {
               setLoading(true);
               fetchAssignment();
             }}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            className="bg-[#FFDE59] text-gray-900 px-4 py-2 rounded-lg hover:bg-[#FFD700] transition-colors text-sm font-medium"
           >
             Try Again
           </button>
@@ -147,7 +162,7 @@ const AssignmentManagement = ({ leagueId, leagueName }) => {
 
   if (!assignment) {
     return (
-      <div className="bg-white rounded-lg shadow-sm border p-6">
+      <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mt-4">
         <div className="text-center py-8">
           <FileText size={48} className="mx-auto text-gray-300 mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">No Assignment Available</h3>
@@ -163,220 +178,196 @@ const AssignmentManagement = ({ leagueId, leagueName }) => {
   const canSubmit = !latestSubmission || latestSubmission.status === 'NEEDS_REVISION';
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 mt-4">
       {/* Assignment Details */}
-      <div className="bg-white rounded-lg shadow-sm border p-6">
-        <div className="flex items-start justify-between mb-4">
-          <div>
-            <h2 className="text-xl font-bold text-gray-900 flex items-center">
-              <FileText className="mr-2 text-[#FFDE59]" size={24} />
-              {leagueName} Assignment
-            </h2>
-            <p className="text-gray-600 mt-1">{assignment.title}</p>
-          </div>
-          
-          {assignment.dueDate && (
-            <div className="text-right">
-              <div className="text-sm text-gray-500">Due Date</div>
-              <div className="font-medium text-gray-900 flex items-center">
-                <Calendar size={16} className="mr-1" />
-                {new Date(assignment.dueDate).toLocaleDateString()}
+      <div className="bg-gradient-to-r from-[#FFDE59]/20 to-[#FFD700]/20 rounded-lg border border-[#FFDE59]/30 shadow-sm">
+        <div className="px-6 py-4">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center space-x-3">
+              <div>
+                <h2 className="text-lg font-bold text-gray-900">{assignment.title}</h2>
+                <p className="text-sm text-gray-600">League Assignment</p>
               </div>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              {assignment.dueDate && (
+                <div className="flex items-center text-sm text-gray-600">
+                  <Calendar size={16} className="mr-1" />
+                  Due: {new Date(assignment.dueDate).toLocaleDateString()}
+                </div>
+              )}
+              
+              {submissions.length > 0 ? (
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  Submitted
+                </span>
+              ) : (
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                  Pending
+                </span>
+              )}
+              
+              {canSubmit && (
+                <button
+                  onClick={() => setShowSubmissionForm(!showSubmissionForm)}
+                  className="bg-[#FFDE59] text-gray-900 px-3 py-1 rounded-lg text-sm font-medium hover:bg-[#FFD700] transition-colors flex items-center"
+                >
+                  <Upload size={14} className="mr-1" />
+                  {latestSubmission ? 'Resubmit' : 'Submit'}
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Compact Assignment Description */}
+          <div className="bg-white/60 border border-[#FFDE59]/30 rounded-lg p-3 mb-3">
+            <p className="text-sm text-gray-700 line-clamp-3">
+              {assignment.description}
+            </p>
+          </div>
+
+          {/* Submission Details (if submitted) */}
+          {submissions.length > 0 && (
+            <div className="bg-white/80 border border-[#FFDE59]/40 rounded-lg p-3">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center space-x-2">
+                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getSubmissionStatusColor(latestSubmission.status)}`}>
+                    {getSubmissionStatusIcon(latestSubmission.status)}
+                    <span className="ml-1">{latestSubmission.status.replace('_', ' ')}</span>
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    Submitted on {new Date(latestSubmission.submittedAt).toLocaleDateString()}
+                  </span>
+                </div>
+                
+                {(latestSubmission.githubUrl || latestSubmission.liveUrl || latestSubmission.fileUrl) && (
+                  <a
+                    href={latestSubmission.githubUrl || latestSubmission.liveUrl || latestSubmission.fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#000000] flex items-center text-xs font-medium transition-colors"
+                  >
+                    <ExternalLink size={12} className="mr-1" />
+                    View
+                  </a>
+                )}
+              </div>
+
+              {/* Submission Content */}
+              <div className="mb-2">
+                <span className="text-xs font-medium text-gray-700">
+                  {latestSubmission.githubUrl ? 'GitHub Repository:' : 
+                   latestSubmission.liveUrl ? 'Project Link:' : 
+                   latestSubmission.fileUrl ? 'File Upload:' : 'Text Submission:'}
+                </span>
+                <div className="text-xs text-gray-600 mt-1">
+                  {latestSubmission.content && latestSubmission.content.length > 0
+                    ? latestSubmission.content.substring(0, 150) + (latestSubmission.content.length > 150 ? '...' : '')
+                    : latestSubmission.githubUrl || latestSubmission.liveUrl || latestSubmission.fileUrl
+                  }
+                </div>
+              </div>
+
+              {/* Feedback */}
+              {latestSubmission.feedback && (
+                <div className="bg-blue-50 border border-blue-200 rounded p-2 mt-2">
+                  <div className="text-xs font-medium text-blue-900">Instructor Feedback:</div>
+                  <div className="text-xs text-blue-800 mt-1">{latestSubmission.feedback}</div>
+                </div>
+              )}
             </div>
           )}
         </div>
-
-        {/* Assignment Description */}
-        <div className="prose max-w-none mb-6">
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Assignment Description</h3>
-            <div className="text-gray-700 whitespace-pre-wrap">
-              {assignment.description}
-            </div>
-          </div>
-        </div>
-
-        {/* Assignment Requirements */}
-        {assignment.requirements && (
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Requirements</h3>
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <div className="text-blue-800 whitespace-pre-wrap">
-                {assignment.requirements}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Submission Button */}
-        {canSubmit && (
-          <div className="flex justify-end">
-            <button
-              onClick={() => setShowSubmissionForm(!showSubmissionForm)}
-              className="bg-[#FFDE59] text-gray-900 px-4 py-2 rounded-lg font-medium hover:bg-[#FFD700] transition-colors flex items-center"
-            >
-              <Upload size={16} className="mr-2" />
-              {latestSubmission ? 'Resubmit Assignment' : 'Submit Assignment'}
-            </button>
-          </div>
-        )}
       </div>
 
       {/* Submission Form */}
       {showSubmissionForm && (
-        <div className="bg-white rounded-lg shadow-sm border p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Submit Your Assignment</h3>
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+          <div className="px-6 py-4 border-b border-gray-100">
+            <h3 className="text-lg font-semibold text-gray-900">
+              {latestSubmission ? 'Resubmit Your Assignment' : 'Submit Your Assignment'}
+            </h3>
+          </div>
           
-          <form onSubmit={handleSubmissionSubmit}>
-            {/* Submission Type */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Submission Type
-              </label>
-              <select
-                value={submissionForm.submissionType}
-                onChange={(e) => setSubmissionForm({...submissionForm, submissionType: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                required
-              >
-                <option value="GITHUB_LINK">GitHub Repository Link</option>
-                <option value="EXTERNAL_LINK">External Link</option>
-                <option value="TEXT_SUBMISSION">Text Submission</option>
-              </select>
-            </div>
-
-            {/* Content */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {submissionForm.submissionType === 'TEXT_SUBMISSION' ? 'Submission Content' : 'Link URL'}
-              </label>
-              {submissionForm.submissionType === 'TEXT_SUBMISSION' ? (
-                <textarea
-                  value={submissionForm.content}
-                  onChange={(e) => setSubmissionForm({...submissionForm, content: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  rows={6}
-                  placeholder="Enter your assignment submission..."
+          <div className="px-6 py-4">
+            {latestSubmission && (
+              <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p className="text-sm text-yellow-800">
+                  <strong>Note:</strong> This will replace your previous submission.
+                </p>
+              </div>
+            )}
+            
+            <form onSubmit={handleSubmissionSubmit}>
+              {/* Submission Type */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Submission Type
+                </label>
+                <select
+                  value={submissionForm.submissionType}
+                  onChange={(e) => setSubmissionForm({...submissionForm, submissionType: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] transition-colors"
                   required
-                />
-              ) : (
-                <input
-                  type="url"
-                  value={submissionForm.content}
-                  onChange={(e) => setSubmissionForm({...submissionForm, content: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder={submissionForm.submissionType === 'GITHUB_LINK' 
-                    ? 'https://github.com/username/repository' 
-                    : 'https://example.com/your-project'
-                  }
-                  required
-                />
-              )}
-            </div>
+                >
+                  <option value="GITHUB_LINK">GitHub Repository Link</option>
+                  <option value="LIVE_URL">Live Demo Link</option>
+                  <option value="FILE_URL">File Upload Link</option>
+                  <option value="TEXT_SUBMISSION">Text Submission</option>
+                </select>
+              </div>
 
-            {/* Description */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Description (Optional)
-              </label>
-              <textarea
-                value={submissionForm.description}
-                onChange={(e) => setSubmissionForm({...submissionForm, description: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                rows={3}
-                placeholder="Brief description of your submission, approach, or any notes..."
-              />
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex items-center space-x-3">
-              <button
-                type="submit"
-                disabled={submitting}
-                className="bg-[#FFDE59] text-gray-900 px-4 py-2 rounded-lg font-medium hover:bg-[#FFD700] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
-              >
-                <Send size={16} className="mr-2" />
-                {submitting ? 'Submitting...' : 'Submit Assignment'}
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowSubmissionForm(false)}
-                className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-300 transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
-
-      {/* Submission History */}
-      {submissions.length > 0 && (
-        <div className="bg-white rounded-lg shadow-sm border p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Submission History</h3>
-          
-          <div className="space-y-4">
-            {submissions.map((submission, index) => (
-              <div key={submission.id} className="border border-gray-200 rounded-lg p-4">
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <div className="flex items-center space-x-2 mb-1">
-                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getSubmissionStatusColor(submission.status)}`}>
-                        {getSubmissionStatusIcon(submission.status)}
-                        <span className="ml-1">{submission.status.replace('_', ' ')}</span>
-                      </span>
-                      <span className="text-sm text-gray-500">
-                        Submission #{submissions.length - index}
-                      </span>
-                    </div>
-                    <div className="text-sm text-gray-600">
-                      Submitted on {new Date(submission.submittedAt).toLocaleDateString()}
-                    </div>
-                  </div>
-                  
-                  {submission.submissionType !== 'TEXT_SUBMISSION' && (
-                    <a
-                      href={submission.content}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-700 flex items-center text-sm"
-                    >
-                      <ExternalLink size={14} className="mr-1" />
-                      View
-                    </a>
-                  )}
-                </div>
-
-                {/* Submission Content Preview */}
-                <div className="bg-gray-50 border border-gray-200 rounded p-3 mb-3">
-                  <div className="text-sm font-medium text-gray-700 mb-1">
-                    {submission.submissionType === 'GITHUB_LINK' ? 'GitHub Repository' : 
-                     submission.submissionType === 'EXTERNAL_LINK' ? 'External Link' : 'Text Submission'}
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    {submission.submissionType === 'TEXT_SUBMISSION' 
-                      ? submission.content.substring(0, 200) + (submission.content.length > 200 ? '...' : '')
-                      : submission.content
+              {/* Content */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {submissionForm.submissionType === 'TEXT_SUBMISSION' ? 'Submission Content' : 'Link URL'}
+                </label>
+                {submissionForm.submissionType === 'TEXT_SUBMISSION' ? (
+                  <textarea
+                    value={submissionForm.content}
+                    onChange={(e) => setSubmissionForm({...submissionForm, content: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] transition-colors"
+                    rows={6}
+                    placeholder="Enter your assignment submission..."
+                    required
+                  />
+                ) : (
+                  <input
+                    type="url"
+                    value={submissionForm.content}
+                    onChange={(e) => setSubmissionForm({...submissionForm, content: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] transition-colors"
+                    placeholder={submissionForm.submissionType === 'GITHUB_LINK' 
+                      ? 'https://github.com/username/repository' 
+                      : submissionForm.submissionType === 'LIVE_URL'
+                      ? 'https://your-project.vercel.app'
+                      : 'https://drive.google.com/file/d/...'
                     }
-                  </div>
-                </div>
-
-                {/* Description */}
-                {submission.description && (
-                  <div className="text-sm text-gray-600 mb-3">
-                    <strong>Description:</strong> {submission.description}
-                  </div>
-                )}
-
-                {/* Feedback */}
-                {submission.feedback && (
-                  <div className="bg-blue-50 border border-blue-200 rounded p-3">
-                    <div className="text-sm font-medium text-blue-900 mb-1">Instructor Feedback</div>
-                    <div className="text-sm text-blue-800">{submission.feedback}</div>
-                  </div>
+                    required
+                  />
                 )}
               </div>
-            ))}
+
+              {/* Action Buttons */}
+              <div className="flex items-center space-x-3">
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="bg-[#FFDE59] text-gray-900 px-4 py-2 rounded-lg font-medium hover:bg-[#FFD700] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                >
+                  <Send size={16} className="mr-2" />
+                  {submitting ? 'Submitting...' : 'Submit Assignment'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowSubmissionForm(false)}
+                  className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-300 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
