@@ -464,6 +464,96 @@ class ProgressService {
   static canViewOthersProgress(user) {
     return user && ['PATHFINDER', 'CHIEF_PATHFINDER', 'GRAND_PATHFINDER'].includes(user.role);
   }
+
+  /**
+   * Calculate overall resource progress across all enrollments
+   * @param {Object} dashboardData - Dashboard data from API
+   * @returns {Object} Overall resource progress statistics
+   */
+  static calculateOverallResourceProgress(dashboardData) {
+    if (!dashboardData?.enrollments) {
+      return {
+        totalResources: 0,
+        completedResources: 0,
+        overallResourceProgress: 0,
+        totalEnrollments: 0
+      };
+    }
+
+    const { enrollments = [] } = dashboardData;
+    
+    // Calculate total resources and completed resources across all leagues
+    let totalResources = 0;
+    let completedResources = 0;
+    
+    enrollments.forEach(enrollment => {
+      const leagueResources = enrollment?.league?.totalResources || 0;
+      const progressPercentage = enrollment?.progress?.progressPercentage || 0;
+      
+      totalResources += leagueResources;
+      completedResources += Math.round((progressPercentage / 100) * leagueResources);
+    });
+    
+    const overallResourceProgress = totalResources > 0 ? Math.round((completedResources / totalResources) * 100) : 0;
+    
+    return {
+      totalResources,
+      completedResources,
+      overallResourceProgress,
+      totalEnrollments: enrollments.length
+    };
+  }
+
+  /**
+   * Calculate accurate resource progress using actual resource completion data
+   * @param {Object} dashboardData - Dashboard data from API
+   * @param {Object} allResourceProgress - All resource progress data from sections
+   * @returns {Object} Accurate resource progress statistics
+   */
+  static calculateAccurateResourceProgress(dashboardData, allResourceProgress = {}) {
+    if (!dashboardData?.enrollments) {
+      return {
+        totalResources: 0,
+        completedResources: 0,
+        overallResourceProgress: 0,
+        totalEnrollments: 0
+      };
+    }
+
+    const { enrollments = [] } = dashboardData;
+    
+    // Calculate actual resource completion from resource progress data
+    let totalResources = 0;
+    let completedResources = 0;
+    
+    // Count actual resources from the progress data
+    Object.keys(allResourceProgress).forEach(resourceId => {
+      totalResources++;
+      if (allResourceProgress[resourceId]?.isCompleted) {
+        completedResources++;
+      }
+    });
+    
+    // If no resource progress data available, fall back to enrollment estimates
+    if (totalResources === 0) {
+      enrollments.forEach(enrollment => {
+        const leagueResources = enrollment?.league?.totalResources || 0;
+        const progressPercentage = enrollment?.progress?.progressPercentage || 0;
+        
+        totalResources += leagueResources;
+        completedResources += Math.round((progressPercentage / 100) * leagueResources);
+      });
+    }
+    
+    const overallResourceProgress = totalResources > 0 ? Math.round((completedResources / totalResources) * 100) : 0;
+    
+    return {
+      totalResources,
+      completedResources,
+      overallResourceProgress,
+      totalEnrollments: enrollments.length
+    };
+  }
 }
 
 export default ProgressService;
