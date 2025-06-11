@@ -342,7 +342,7 @@ const LeagueDetailPage = ({ league, onBack }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 content-scroll">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Compact Header */}
         <div className="mb-6">
@@ -419,7 +419,7 @@ const LeagueDetailPage = ({ league, onBack }) => {
         </div>
 
         {/* Compact Weeks Content */}
-        <div className="space-y-4">
+        <div className="space-y-4 content-scroll">
           {leagueProgress.progress.weeks?.map((week) => {
             const isExpanded = expandedWeeks[week.id];
             
@@ -472,7 +472,7 @@ const LeagueDetailPage = ({ league, onBack }) => {
 
                 {/* Week Content */}
                 {isExpanded && (
-                  <div className="px-6 pb-4">
+                  <div className="px-6 pb-4 content-scroll">
                     <div className="space-y-4">
                       {week.sections.map((section) => {
                         const resources = sectionResources[section.id] || [];

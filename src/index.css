@@ -4,37 +4,62 @@
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.05'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3Cpath d='M6 5V0H5v5H0v1h5v94h1V6h94V5H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
 }
 
-/* Custom Scrollbar Styles */
+/* Custom Scrollbar Styles - Ultra Modern, Minimal & Light */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 3px;
+  height: 3px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.03);
-  border-radius: 8px;
+  background: transparent;
+  border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, rgba(255, 222, 89, 0.6), rgba(255, 193, 7, 0.6));
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  transition: all 0.2s ease;
+  background: rgba(203, 213, 225, 0.4);
+  border-radius: 2px;
+  transition: all 0.2s ease-in-out;
+  opacity: 0;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #FFDE59, #FFC107);
-  box-shadow: 0 2px 6px rgba(255, 222, 89, 0.25);
+  background: rgba(148, 163, 184, 0.6);
+  width: 4px;
+  opacity: 1;
+}
+
+/* Show scrollbar on hover only */
+::-webkit-scrollbar-thumb:vertical {
+  background: linear-gradient(180deg, rgba(203, 213, 225, 0.3), rgba(148, 163, 184, 0.5));
+}
+
+::-webkit-scrollbar-thumb:horizontal {
+  background: linear-gradient(90deg, rgba(203, 213, 225, 0.3), rgba(148, 163, 184, 0.5));
 }
 
 ::-webkit-scrollbar-corner {
-  background: rgba(0, 0, 0, 0.03);
+  background: transparent;
 }
 
-/* Firefox Scrollbar */
+/* Firefox Modern Scrollbar */
 html {
   scrollbar-width: thin;
-  scrollbar-color: #FFDE59 rgba(0, 0, 0, 0.05);
+  scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
+}
+
+/* Custom scroll behavior for smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Enhanced scrollbar visibility on hover for containers */
+.scroll-container:hover::-webkit-scrollbar-thumb {
+  opacity: 1;
+  background: rgba(148, 163, 184, 0.6);
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+  opacity: 0.3;
 }
 
 /* Custom animations for resource completion */
@@ -323,43 +348,66 @@ html {
 
 /* Enhanced Dashboard-specific scrollbar styling */
 .dashboard-scroll::-webkit-scrollbar {
-  width: 6px;
+  /* Modern Minimal Scrollbar for Dashboard */
+.dashboard-scroll::-webkit-scrollbar {
+  width: 2px;
 }
 
 .dashboard-scroll::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  margin: 4px;
+  background: transparent;
+  border-radius: 1px;
 }
 
 .dashboard-scroll::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, rgba(255, 222, 89, 0.8), rgba(255, 193, 7, 0.8));
-  border-radius: 8px;
-  backdrop-filter: blur(10px);
+  background: rgba(156, 163, 175, 0.3);
+  border-radius: 1px;
   transition: all 0.2s ease;
 }
 
 .dashboard-scroll::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, rgba(255, 222, 89, 1), rgba(255, 193, 7, 1));
-  box-shadow: 0 2px 6px rgba(255, 222, 89, 0.3);
+  background: rgba(107, 114, 128, 0.5);
+  width: 3px;
 }
 
-/* Modal scrollbar styling */
+/* Ultra-light scrollbar for modals */
 .modal-scroll::-webkit-scrollbar {
-  width: 4px;
+  width: 2px;
 }
 
 .modal-scroll::-webkit-scrollbar-track {
-  background: rgba(255, 222, 89, 0.1);
-  border-radius: 6px;
+  background: transparent;
+  border-radius: 1px;
 }
 
 .modal-scroll::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, rgba(255, 222, 89, 0.6), rgba(255, 193, 7, 0.6));
-  border-radius: 6px;
+  background: rgba(255, 222, 89, 0.3);
+  border-radius: 1px;
   transition: all 0.2s ease;
 }
 
 .modal-scroll::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, rgba(255, 222, 89, 0.8), rgba(255, 193, 7, 0.8));
+  background: rgba(255, 222, 89, 0.6);
+}
+
+/* Invisible scrollbar that appears on hover for content areas */
+.content-scroll::-webkit-scrollbar {
+  width: 1px;
+}
+
+.content-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.content-scroll::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 1px;
+  transition: background 0.2s ease;
+}
+
+.content-scroll:hover::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.4);
+}
+
+.content-scroll:hover::-webkit-scrollbar {
+  width: 2px;
 }
