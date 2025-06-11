@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { 
   Play, 
   CheckCircle, 
@@ -38,10 +38,10 @@ const ResourceCard = ({ resource, onProgressUpdate, showTimeTracking = true }) =
       setElapsedTime(existingElapsed);
       startTimer();
     }
-  }, [resource.id]);
+  }, [resource.id, startTimer]);
 
   // Start the visual timer
-  const startTimer = () => {
+  const startTimer = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
     
     timerRef.current = setInterval(() => {
@@ -53,7 +53,7 @@ const ResourceCard = ({ resource, onProgressUpdate, showTimeTracking = true }) =
         setElapsedTime(0);
       }
     }, 1000);
-  };
+  }, [resource.id]);
 
   // Cleanup timer on unmount
   useEffect(() => {

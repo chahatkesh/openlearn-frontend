@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Users, 
   Search, 
@@ -42,9 +42,9 @@ const AdminProgressManagement = ({ user }) => {
       fetchCohorts();
       fetchLeagues();
     }
-  }, [user, filters.page, filters.limit, filters.cohortId, filters.leagueId, filters.userId]);
+  }, [user, filters.page, filters.limit, filters.cohortId, filters.leagueId, filters.userId, fetchEnrollments]);
 
-  const fetchEnrollments = async () => {
+  const fetchEnrollments = useCallback(async () => {
     setLoading(true);
     setError(null);
     
@@ -58,7 +58,7 @@ const AdminProgressManagement = ({ user }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters]);
 
   const fetchCohorts = async () => {
     try {
@@ -106,16 +106,8 @@ const AdminProgressManagement = ({ user }) => {
     }));
   };
 
-  const handleEnrollUser = async (userId, cohortId, leagueId) => {
-    try {
-      await ProgressService.enrollUser(cohortId, leagueId, userId);
-      alert('User enrolled successfully!');
-      fetchEnrollments();
-    } catch (err) {
-      console.error('Error enrolling user:', err);
-      alert(`Enrollment failed: ${err.message}`);
-    }
-  };
+  // Note: handleEnrollUser function prepared for future manual enrollment UI
+  // const handleEnrollUser = async (userId, cohortId, leagueId) => { ... }
 
   const handleViewUserProgress = async (userId) => {
     try {

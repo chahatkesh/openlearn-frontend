@@ -20,7 +20,7 @@ import BadgeService from '../../utils/badgeService';
  * Enhanced Progress Dashboard Component
  * Displays comprehensive progress statistics, badges, and learning analytics
  */
-const ProgressDashboard = ({ user, refreshTrigger = 0 }) => {
+const ProgressDashboard = ({ refreshTrigger = 0 }) => {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

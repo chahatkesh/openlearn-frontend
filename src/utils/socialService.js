@@ -1,4 +1,4 @@
-/**
+ /**
  * Social Service for OpenLearn Platform
  * Handles all social sharing API calls and functionality
  */
@@ -364,58 +364,6 @@ Learning never stops! 💪
     } catch (error) {
       console.error('Failed to copy to clipboard:', error);
       return { success: false, message: 'Failed to copy to clipboard' };
-    }
-  }
-
-  /**
-   * Show share modal with multiple platform options
-   * @param {string} type - Type of share (section, week, badge, progress, league)
-   * @param {Object} data - Data to share
-   * @param {Function} onShare - Callback when sharing is completed
-   */
-  static showShareModal(type, data, onShare = null) {
-    let message = '';
-    
-    switch (type) {
-      case 'section':
-        message = this.generateSectionShareMessage(data);
-        break;
-      case 'week':
-        message = this.generateWeekShareMessage(data);
-        break;
-      case 'badge':
-        message = this.generateBadgeShareMessage(data);
-        break;
-      case 'progress':
-        message = this.generateProgressShareMessage(data);
-        break;
-      case 'league':
-        message = this.generateLeagueShareMessage(data);
-        break;
-      default:
-        message = `🚀 Making great progress on my learning journey with @OpenLearn! #Learning #Progress #OpenLearn ${window.location.origin}`;
-    }
-
-    // Create a simple share modal (you can replace this with a more sophisticated modal)
-    const shareOptions = [
-      { name: 'Twitter', action: () => this.shareOnTwitter(message) },
-      { name: 'LinkedIn', action: () => this.shareOnLinkedIn(message) },
-      { name: 'Facebook', action: () => this.shareOnFacebook(message) },
-      { name: 'Copy Link', action: async () => {
-        const result = await this.copyToClipboard(message);
-        alert(result.message);
-      }}
-    ];
-
-    // Simple implementation - you can enhance this with a proper modal component
-    const choice = window.prompt(
-      `Share your achievement!\n\nMessage: ${message}\n\nChoose platform:\n1. Twitter\n2. LinkedIn\n3. Facebook\n4. Copy to Clipboard\n\nEnter number (1-4):`
-    );
-
-    const choiceIndex = parseInt(choice) - 1;
-    if (choiceIndex >= 0 && choiceIndex < shareOptions.length) {
-      shareOptions[choiceIndex].action();
-      if (onShare) onShare(shareOptions[choiceIndex].name);
     }
   }
 

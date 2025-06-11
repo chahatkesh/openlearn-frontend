@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   BookOpen, 
   CheckCircle, 
@@ -33,9 +33,9 @@ const SectionProgress = ({ sectionId, onSectionComplete }) => {
     if (sectionId) {
       fetchSectionProgress();
     }
-  }, [sectionId]);
+  }, [sectionId, fetchSectionProgress]);
 
-  const fetchSectionProgress = async () => {
+  const fetchSectionProgress = useCallback(async () => {
     setLoading(true);
     setError(null);
     
@@ -48,7 +48,7 @@ const SectionProgress = ({ sectionId, onSectionComplete }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [sectionId]);
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -362,7 +362,7 @@ const SectionProgress = ({ sectionId, onSectionComplete }) => {
       {/* Resources List */}
       <div className="space-y-4">
         {filteredResources.length > 0 ? (
-          filteredResources.map((resource, index) => (
+          filteredResources.map((resource) => (
             <ResourceCard
               key={resource.id}
               resource={resource}

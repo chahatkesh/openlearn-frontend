@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { LogOut } from 'lucide-react';
 import PendingApprovalPage from '../components/dashboard/PendingApprovalPage';
 import UserProfileSection from '../components/dashboard/UserProfileSection';

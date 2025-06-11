@@ -23,7 +23,7 @@ const ResourceManagement = ({
   onCreateResource,
   onUpdateResource,
   onDeleteResource,
-  onReorderResources,
+  // onReorderResources, // Reserved for future drag-and-drop functionality
   selectedLeagueId,
   selectedWeekId,
   selectedSectionId,

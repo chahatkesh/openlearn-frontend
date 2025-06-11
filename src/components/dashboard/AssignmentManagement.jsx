@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   FileText, 
   Upload, 
@@ -32,14 +32,7 @@ const AssignmentManagement = ({ leagueId, leagueName }) => {
     description: ''
   });
 
-  useEffect(() => {
-    if (leagueId) {
-      fetchAssignment();
-      fetchSubmissions();
-    }
-  }, [leagueId]);
-
-  const fetchAssignment = async () => {
+  const fetchAssignment = useCallback(async () => {
     try {
       const data = await DataService.getLeagueAssignment(leagueId);
       setAssignment(data);
@@ -47,9 +40,9 @@ const AssignmentManagement = ({ leagueId, leagueName }) => {
       console.error('Error fetching assignment:', err);
       setError('Failed to load assignment');
     }
-  };
+  }, [leagueId]);
 
-  const fetchSubmissions = async () => {
+  const fetchSubmissions = useCallback(async () => {
     try {
       const data = await DataService.getMySubmissions();
       // Filter submissions for this league
@@ -62,7 +55,14 @@ const AssignmentManagement = ({ leagueId, leagueName }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [leagueId]);
+
+  useEffect(() => {
+    if (leagueId) {
+      fetchAssignment();
+      fetchSubmissions();
+    }
+  }, [leagueId, fetchAssignment, fetchSubmissions]);
 
   const handleSubmissionSubmit = async (e) => {
     e.preventDefault();

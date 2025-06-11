@@ -112,18 +112,8 @@ const BadgeManagement = ({ user }) => {
     }
   };
 
-  const handleRevokeBadge = async (badgeId, userId, reason) => {
-    if (confirm('Are you sure you want to revoke this badge?')) {
-      try {
-        await BadgeService.revokeBadge(badgeId, userId, reason);
-        fetchBadges();
-        fetchAnalytics();
-        alert('Badge revoked successfully!');
-      } catch (err) {
-        alert(`Failed to revoke badge: ${err.message}`);
-      }
-    }
-  };
+  // Note: handleRevokeBadge function prepared for future badge revocation UI
+  // const handleRevokeBadge = async (badgeId, userId, reason) => { ... }
 
   const handleDeleteBadge = async (badgeId) => {
     if (confirm('Are you sure you want to delete this badge? This action cannot be undone.')) {

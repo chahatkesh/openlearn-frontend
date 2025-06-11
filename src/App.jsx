@@ -6,7 +6,6 @@ import SignUpPage from './pages/SignUpPage'
 import DashboardPage from './pages/DashboardPage'
 import LogoutPage from './pages/LogoutPage'
 import AdminPage from './pages/AdminPage'
-import ResourceProgressDemoPage from './pages/ResourceProgressDemoPage'
 import { AuthProvider } from './context/AuthContext'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
 
@@ -18,7 +17,6 @@ const App = () => {
         <Route path="/" element={<LandingPage />} />
         <Route path="/signin" element={<SignInPage />} />
         <Route path="/signup" element={<SignUpPage />} />
-        <Route path="/demo" element={<ResourceProgressDemoPage />} />
 
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>

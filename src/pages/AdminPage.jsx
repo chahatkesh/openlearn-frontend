@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { LogOut, Users, Archive, BookOpen, Award, Layers, Calendar, FileText, Database, Settings, Activity } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import UserManagement from '../components/admin/UserManagement';

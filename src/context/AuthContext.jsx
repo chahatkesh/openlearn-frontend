@@ -1,8 +1,8 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { AuthContext } from './AuthContextProvider';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const API_BASE_URL = `${BASE_URL}/api/auth`;
-const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -78,7 +78,8 @@ export const AuthProvider = ({ children }) => {
       setUser(result.data.user);
       
       return true;
-    } catch (err) {
+    } catch (error) {
+      console.error('Login error:', error);
       setError('Network error. Please try again.');
       return false;
     }
@@ -111,7 +112,8 @@ export const AuthProvider = ({ children }) => {
       setUser(result.data.user);
       
       return true;
-    } catch (err) {
+    } catch (error) {
+      console.error('Signup error:', error);
       setError('Network error. Please try again.');
       return false;
     }
@@ -222,12 +224,4 @@ export const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 };

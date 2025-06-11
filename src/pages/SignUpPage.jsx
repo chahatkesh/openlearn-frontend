@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import AuthError from '../components/auth/AuthError';
 import AuthLayout from '../components/auth/AuthLayout';
 import LoadingSpinner from '../components/common/LoadingSpinner';
