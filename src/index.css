@@ -348,8 +348,6 @@ html {
 
 /* Enhanced Dashboard-specific scrollbar styling */
 .dashboard-scroll::-webkit-scrollbar {
-  /* Modern Minimal Scrollbar for Dashboard */
-.dashboard-scroll::-webkit-scrollbar {
   width: 2px;
 }
 

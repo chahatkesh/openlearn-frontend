@@ -22,6 +22,7 @@ import {
 import ProgressService from '../../utils/progressService';
 import BadgeService from '../../utils/badgeService';
 import SocialService from '../../utils/socialService';
+import { getUserAvatarUrl } from '../../utils/avatarService.jsx';
 import { useAuth } from '../../hooks/useAuth';
 
 // BadgesModal Component
@@ -429,8 +430,31 @@ const UserProfileSection = ({ user, dashboardData = null }) => {
           {/* Avatar with enhanced design */}
           <div className="relative mx-auto w-20 h-20 mb-4">
             <div className={`w-full h-full rounded-full bg-gradient-to-r ${roleInfo.gradient} p-0.5 shadow-lg`}>
-              <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
-                <User size={28} className={roleInfo.textColor} />
+              <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden">
+                <img
+                  src={getUserAvatarUrl(user, 'avataaars', 80)}
+                  alt={`${user?.name || 'User'} avatar`}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    // Fallback to User icon if avatar fails to load
+                    e.target.style.display = 'none';
+                    const fallbackDiv = e.target.nextSibling;
+                    if (fallbackDiv) {
+                      fallbackDiv.style.display = 'flex';
+                    }
+                  }}
+                  onLoad={(e) => {
+                    // Hide fallback when image loads successfully
+                    const fallbackDiv = e.target.nextSibling;
+                    if (fallbackDiv) {
+                      fallbackDiv.style.display = 'none';
+                    }
+                  }}
+                />
+                {/* Fallback icon display */}
+                <div className={`absolute inset-0 flex items-center justify-center ${roleInfo.textColor}`} style={{ display: 'none' }}>
+                  <User size={28} />
+                </div>
               </div>
             </div>
             {/* Status Indicator */}
@@ -919,7 +943,7 @@ const SocialEditModal = ({ isOpen, onClose, user, onSave }) => {
           >
             Cancel
           </button>
-          <button
+````````````````````````````````````````````````          <button
             onClick={handleSave}
             disabled={loading}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"

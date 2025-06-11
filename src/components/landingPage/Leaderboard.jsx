@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Trophy, Medal, Star, Lock, TrendingUp, Users, Sparkles } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import DataService from '../../utils/dataService';
+import { getUserAvatarUrl } from '../../utils/avatarService.jsx';
 
 const Leaderboard = () => {
   const { isAuthenticated } = useAuth();
@@ -180,10 +181,31 @@ const Leaderboard = () => {
 
                   {/* Student Avatar and Name */}
                   <div className="text-center mb-4">
-                    <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-r from-gray-300 to-gray-400 flex items-center justify-center">
-                      <span className="text-lg font-bold text-white">
+                    <div className="w-16 h-16 mx-auto mb-3 rounded-full overflow-hidden border-2 border-white shadow-sm">
+                      <img
+                        src={getUserAvatarUrl(student, 'avataaars', 64)}
+                        alt={`${student.name} avatar`}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          // Fallback to initials if avatar fails to load
+                          e.target.style.display = 'none';
+                          const fallbackDiv = e.target.nextSibling;
+                          if (fallbackDiv) {
+                            fallbackDiv.style.display = 'flex';
+                          }
+                        }}
+                        onLoad={(e) => {
+                          // Hide fallback when image loads successfully
+                          const fallbackDiv = e.target.nextSibling;
+                          if (fallbackDiv) {
+                            fallbackDiv.style.display = 'none';
+                          }
+                        }}
+                      />
+                      {/* Fallback initials display */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-gray-300 to-gray-400 flex items-center justify-center text-white font-bold text-lg" style={{ display: 'none' }}>
                         {student.name.charAt(0).toUpperCase()}
-                      </span>
+                      </div>
                     </div>
                     <h3 className="font-bold text-gray-900 text-lg">
                       {student.name}

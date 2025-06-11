@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Users, UserCheck, UserX, Filter } from 'lucide-react';
+import { getUserAvatarUrl } from '../../utils/avatarService.jsx';
 
 const UserManagement = ({ 
   users, 
@@ -159,10 +160,31 @@ const UserManagement = ({
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-10 w-10">
-                        <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
-                          <span className="text-sm font-medium text-gray-700">
+                        <div className="h-10 w-10 rounded-full overflow-hidden border border-gray-200">
+                          <img
+                            src={getUserAvatarUrl(user, 'avataaars', 40)}
+                            alt={`${user.name} avatar`}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              // Fallback to initials if avatar fails to load
+                              e.target.style.display = 'none';
+                              const fallbackDiv = e.target.nextSibling;
+                              if (fallbackDiv) {
+                                fallbackDiv.style.display = 'flex';
+                              }
+                            }}
+                            onLoad={(e) => {
+                              // Hide fallback when image loads successfully
+                              const fallbackDiv = e.target.nextSibling;
+                              if (fallbackDiv) {
+                                fallbackDiv.style.display = 'none';
+                              }
+                            }}
+                          />
+                          {/* Fallback initials display */}
+                          <div className="absolute inset-0 bg-gray-300 flex items-center justify-center text-sm font-medium text-gray-700" style={{ display: 'none' }}>
                             {user.name?.charAt(0).toUpperCase() || 'U'}
-                          </span>
+                          </div>
                         </div>
                       </div>
                       <div className="ml-4">
