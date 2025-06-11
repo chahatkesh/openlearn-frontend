@@ -285,6 +285,52 @@ class DataService {
     return handleResponse(response);
   }
 
+  /**
+   * Get leaderboard data (top 10 users by resource completion)
+   * @returns {Promise} Leaderboard data
+   */
+  static async getLeaderboard() {
+    const response = await fetch(`${API_BASE_URL}/leaderboard`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+
+  /**
+   * Get current user's rank and nearby users
+   * @returns {Promise} User rank data
+   */
+  static async getMyRank() {
+    const response = await fetch(`${API_BASE_URL}/leaderboard/my-rank`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+
+  /**
+   * Get filtered leaderboard with optional filters
+   * @param {Object} filters - Filter options
+   * @param {string} filters.specialization - Filter by specialization ID
+   * @param {string} filters.league - Filter by league ID
+   * @param {number} filters.limit - Number of users to return (max 50, default 10)
+   * @returns {Promise} Filtered leaderboard data
+   */
+  static async getFilteredLeaderboard(filters = {}) {
+    const url = new URL(`${API_BASE_URL}/leaderboard/filtered`);
+    
+    // Add query parameters
+    Object.keys(filters).forEach(key => {
+      if (filters[key] !== undefined && filters[key] !== null) {
+        url.searchParams.append(key, filters[key]);
+      }
+    });
+    
+    const response = await fetch(url, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+
   // ==================== USER PROFILE ====================
 
   /**

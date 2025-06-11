@@ -1,25 +1,43 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, LayoutDashboard } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 
 const Hero = () => {
+  const { user, isAuthenticated } = useAuth();
+
   return (
     <section className="relative min-h-[100vh] flex flex-col justify-center hero-pattern" style={{backgroundColor: '#FFDE59'}}>
       <div className="absolute top-0 right-0 flex items-center py-4 px-6">
-        <Link 
-          to="/signin"
-          className="mr-4 text-black hover:text-gray-800 font-medium transition duration-150 ease-in-out"
-        >
-          Sign In
-        </Link>
-        <Link 
-          to="/signup"
-          className="px-4 py-2 text-white font-medium rounded-md shadow-sm transition duration-300 ease-in-out"
-          style={{ backgroundColor: '#000000' }}
-          onMouseEnter={(e) => e.target.style.backgroundColor = '#1F2937'}
-          onMouseLeave={(e) => e.target.style.backgroundColor = '#000000'}
-        >
-          Sign Up
-        </Link>
+        {isAuthenticated ? (
+          <Link 
+            to="/dashboard"
+            className="flex items-center px-4 py-2 text-white font-medium rounded-md shadow-sm transition duration-300 ease-in-out"
+            style={{ backgroundColor: '#000000' }}
+            onMouseEnter={(e) => e.target.style.backgroundColor = '#1F2937'}
+            onMouseLeave={(e) => e.target.style.backgroundColor = '#000000'}
+          >
+            <LayoutDashboard size={16} className="mr-2" />
+            Dashboard
+          </Link>
+        ) : (
+          <>
+            <Link 
+              to="/signin"
+              className="mr-4 text-black hover:text-gray-800 font-medium transition duration-150 ease-in-out"
+            >
+              Sign In
+            </Link>
+            <Link 
+              to="/signup"
+              className="px-4 py-2 text-white font-medium rounded-md shadow-sm transition duration-300 ease-in-out"
+              style={{ backgroundColor: '#000000' }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = '#1F2937'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = '#000000'}
+            >
+              Sign Up
+            </Link>
+          </>
+        )}
       </div>
       <div className="container max-w-[80vw] mx-auto px-4 py-16 pt-32 md:pt-20">
         <div className="flex flex-col lg:flex-row items-center">

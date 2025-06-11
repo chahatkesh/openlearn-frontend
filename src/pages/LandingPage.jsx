@@ -1,6 +1,7 @@
 import React from 'react'
 import Hero from '../components/landingPage/Hero'
 import Cohort from '../components/landingPage/Cohort'
+import Leaderboard from '../components/landingPage/Leaderboard'
 import Team from '../components/landingPage/Team'
 import About from '../components/landingPage/About'
 import Cta from '../components/landingPage/Cta'
@@ -13,6 +14,7 @@ const LandingPage = () => {
     <>
       <Hero />
       <Cohort />
+      <Leaderboard />
       <Team />
       <About />
       <Cta />
