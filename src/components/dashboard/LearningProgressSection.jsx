@@ -200,7 +200,7 @@ const LearningProgressSection = ({ user }) => {
       </div>
     );
   }  return (
-    <div className="h-full bg-gradient-to-br from-slate-50 via-white to-yellow-50/30 overflow-hidden">
+    <div className="h-full bg-transparent overflow-hidden">
       <div className="h-full p-6 space-y-6 overflow-y-auto">
         
         {/* Header Section */}
@@ -232,9 +232,67 @@ const LearningProgressSection = ({ user }) => {
                   
                   return (
                     <>
+                      {/* Active Leagues Count */}
+                      <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
+                        <div className="relative inline-flex items-center justify-center w-20 h-20">
+                          <svg className="w-20 h-20 transform -rotate-90" viewBox="0 0 36 36">
+                            <path
+                              d="M18 2.0845 A 15.9155 15.9155 0 0 1 18 33.9155"
+                              fill="none"
+                              stroke="#DBEAFE"
+                              strokeWidth="3"
+                            />
+                            <path
+                              d="M18 2.0845 A 15.9155 15.9155 0 0 1 18 33.9155"
+                              fill="none"
+                              stroke="#3B82F6"
+                              strokeWidth="3"
+                              strokeDasharray={`${leagues.length > 0 ? Math.round((dashboardData.enrollments.length / leagues.length) * 50) : 0}, 100`}
+                              className="transition-all duration-1000 ease-out"
+                            />
+                          </svg>
+                          <span className="absolute text-sm font-bold text-gray-900">
+                            {leagues.length > 0 ? Math.round((dashboardData.enrollments.length / leagues.length) * 100) : 0}%
+                          </span>
+                        </div>
+                        <div className="text-sm font-semibold text-gray-900 mb-1">Active Leagues</div>
+                        <div className="text-xs text-gray-600">
+                          {dashboardData.enrollments.length} of {leagues.length} leagues
+                        </div>
+                      </div>
+
+                      {/* Sections Progress */}
+                      <div className="text-center p-6 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-100">
+                        <div className="relative inline-flex items-center justify-center w-20 h-20">
+                          <svg className="w-20 h-20 transform -rotate-90" viewBox="0 0 36 36">
+                            <path
+                              d="M18 2.0845 A 15.9155 15.9155 0 0 1 18 33.9155"
+                              fill="none"
+                              stroke="#D1FAE5"
+                              strokeWidth="3"
+                            />
+                            <path
+                              d="M18 2.0845 A 15.9155 15.9155 0 0 1 18 33.9155"
+                              fill="none"
+                              stroke="#10B981"
+                              strokeWidth="3"
+                              strokeDasharray={`${accurateSectionProgress.sectionCompletionPercentage / 2}, 100`}
+                              className="transition-all duration-1000 ease-out"
+                            />
+                          </svg>
+                          <span className="absolute text-sm font-bold text-gray-900">
+                            {accurateSectionProgress.sectionCompletionPercentage}%
+                          </span>
+                        </div>
+                        <div className="text-sm font-semibold text-gray-900 mb-1">Sections Complete</div>
+                        <div className="text-xs text-gray-600">
+                          {accurateSectionProgress.completedSections} of {accurateSectionProgress.totalSections} total
+                        </div>
+                      </div>
+
                       {/* Overall Resource Progress */}
                       <div className="text-center p-6 bg-gradient-to-br from-yellow-50 to-amber-50 rounded-xl border border-yellow-100">
-                        <div className="relative inline-flex items-center justify-center w-20 h-20 mb-4">
+                        <div className="relative inline-flex items-center justify-center w-20 h-20">
                           <svg className="w-20 h-20 transform -rotate-90" viewBox="0 0 36 36">
                             <path
                               d="M18 2.0845 A 15.9155 15.9155 0 0 1 18 33.9155"
@@ -247,41 +305,17 @@ const LearningProgressSection = ({ user }) => {
                               fill="none"
                               stroke="#FFDE59"
                               strokeWidth="3"
-                              strokeDasharray={`${accurateProgress.overallResourceProgress}, 100`}
+                              strokeDasharray={`${accurateProgress.overallResourceProgress / 2}, 100`}
                               className="transition-all duration-1000 ease-out"
                             />
                           </svg>
-                          <span className="absolute text-lg font-bold text-gray-900">
+                          <span className="absolute text-sm font-bold text-gray-900">
                             {accurateProgress.overallResourceProgress}%
                           </span>
                         </div>
                         <div className="text-sm font-semibold text-gray-900 mb-1">Resources Completed</div>
                         <div className="text-xs text-gray-600">
                           {accurateProgress.completedResources} of {accurateProgress.totalResources}
-                        </div>
-                      </div>
-
-                      {/* Active Leagues Count */}
-                      <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
-                        <div className="w-20 h-20 bg-gradient-to-r from-black to-gray-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                          <BookOpen size={28} className="text-white" />
-                        </div>
-                        <div className="text-2xl font-bold text-gray-900 mb-1">{dashboardData.enrollments.length}</div>
-                        <div className="text-sm font-semibold text-gray-900 mb-1">Active Leagues</div>
-                        <div className="text-xs text-gray-600">Currently enrolled</div>
-                      </div>
-
-                      {/* Sections Progress */}
-                      <div className="text-center p-6 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-100">
-                        <div className="w-20 h-20 bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                          <CheckSquare size={28} className="text-white" />
-                        </div>
-                        <div className="text-2xl font-bold text-gray-900 mb-1">
-                          {accurateSectionProgress.completedSections}
-                        </div>
-                        <div className="text-sm font-semibold text-gray-900 mb-1">Sections Complete</div>
-                        <div className="text-xs text-gray-600">
-                          of {accurateSectionProgress.totalSections} total
                         </div>
                       </div>
                     </>
