@@ -467,35 +467,40 @@ const LearningProgressSection = ({ user }) => {
                     };
                   })();
                   
-                  // Calculate enrollment duration
+                  // Calculate enrollment duration and weeks completed
                   const enrollmentDate = new Date(enrollment.enrolledAt || enrollment.createdAt);
-                  const daysSinceEnrollment = Math.floor((Date.now() - enrollmentDate.getTime()) / (1000 * 60 * 60 * 24));
+                  
+                  // Calculate weeks completed based on actual progress
+                  const weeksCompleted = Math.floor(leagueSectionProgress.progressPercentage / 100 * (leagueStatistics[enrollment.league.id]?.weeksCount || 1));
                   
                   return (
                     <div 
                       key={enrollment.league.id} 
-                      className="group bg-white/40 backdrop-blur-sm rounded-xl border border-white/20 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
+                      className="group bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all duration-300 overflow-hidden"
                     >
                       {/* League Header */}
-                      <div className="relative p-5 bg-gradient-to-br from-gray-50 to-white">
+                      <div className="p-5 border-b border-gray-100">
                         <div className="flex items-start justify-between mb-3">
                           <div className="flex-1">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-black transition-colors">
-                              {enrollment.league.name}
-                            </h3>
+                            <div className="flex items-center mb-2">
+                              <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+                              <h3 className="text-lg font-semibold text-gray-900 group-hover:text-black transition-colors">
+                                {enrollment.league.name}
+                              </h3>
+                            </div>
                             <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
                               {enrollment.league.description}
                             </p>
                           </div>
                           
-                          {/* Progress Badge */}
-                          <div className="ml-3 flex-shrink-0">
-                            <div className="relative w-12 h-12">
-                              <svg className="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
+                          {/* Circular Progress Badge */}
+                          <div className="ml-4 flex-shrink-0">
+                            <div className="relative w-14 h-14">
+                              <svg className="w-14 h-14 transform -rotate-90" viewBox="0 0 36 36">
                                 <path
                                   d="M18 2.0845 A 15.9155 15.9155 0 0 1 18 33.9155"
                                   fill="none"
-                                  stroke="#E5E7EB"
+                                  stroke="#F3F4F6"
                                   strokeWidth="3"
                                 />
                                 <path
@@ -513,46 +518,58 @@ const LearningProgressSection = ({ user }) => {
                             </div>
                           </div>
                         </div>
-                        
-                        {/* Stats Grid */}
+                      </div>
+                      
+                      {/* Stats Section */}
+                      <div className="p-5">
+                        {/* Key Metrics Grid */}
                         <div className="grid grid-cols-3 gap-3 mb-4">
-                          <div className="text-center bg-white/50 rounded-lg p-2 hover:bg-white/70 transition-colors">
-                            <Target size={14} className="mx-auto mb-1 text-green-500" />
-                            <div className="text-sm font-bold text-gray-900">{leagueSectionProgress.completed}</div>
-                            <div className="text-xs text-gray-600">Sections</div>
+                          <div className="text-center p-3 bg-blue-50 rounded-lg border border-blue-100">
+                            <div className="flex items-center justify-center mb-1">
+                              <Target size={12} className="text-blue-600 mr-1" />
+                              <span className="text-xs font-medium text-blue-700">Sections</span>
+                            </div>
+                            <div className="text-lg font-bold text-blue-900">{leagueSectionProgress.completed}</div>
+                            <div className="text-xs text-blue-600">of {leagueSectionProgress.total}</div>
                           </div>
-                          <div className="text-center bg-white/50 rounded-lg p-2 hover:bg-white/70 transition-colors">
-                            <BookOpen size={14} className="mx-auto mb-1 text-blue-500" />
-                            <div className="text-sm font-bold text-gray-900">{leagueSectionProgress.resourcesCompleted}</div>
-                            <div className="text-xs text-gray-600">Resources</div>
+                          
+                          <div className="text-center p-3 bg-green-50 rounded-lg border border-green-100">
+                            <div className="flex items-center justify-center mb-1">
+                              <CheckSquare size={12} className="text-green-600 mr-1" />
+                              <span className="text-xs font-medium text-green-700">Resources</span>
+                            </div>
+                            <div className="text-lg font-bold text-green-900">{leagueSectionProgress.resourcesCompleted}</div>
+                            <div className="text-xs text-green-600">of {leagueSectionProgress.resourcesTotal}</div>
                           </div>
-                          <div className="text-center bg-white/50 rounded-lg p-2 hover:bg-white/70 transition-colors">
-                            <Clock size={14} className="mx-auto mb-1 text-amber-500" />
-                            <div className="text-sm font-bold text-gray-900">{daysSinceEnrollment}</div>
-                            <div className="text-xs text-gray-600">Days Active</div>
-                          </div>
-                        </div>
-                        
-                        {/* Progress Bar */}
-                        <div className="mb-3">
-                          <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
-                            <span>Progress</span>
-                            <span>{leagueSectionProgress.completed} of {leagueSectionProgress.total} sections</span>
-                          </div>
-                          <div className="w-full bg-gray-200 rounded-full h-1.5">
-                            <div 
-                              className="bg-gradient-to-r from-[#FFDE59] to-[#FFD700] h-1.5 rounded-full transition-all duration-500"
-                              style={{ width: `${leagueSectionProgress.progressPercentage}%` }}
-                            ></div>
+                          
+                          <div className="text-center p-3 bg-amber-50 rounded-lg border border-amber-100">
+                            <div className="flex items-center justify-center mb-1">
+                              <Clock size={12} className="text-amber-600 mr-1" />
+                              <span className="text-xs font-medium text-amber-700">Week</span>
+                            </div>
+                            <div className="text-lg font-bold text-amber-900">{weeksCompleted}</div>
+                            <div className="text-xs text-amber-600">of {leagueSectionProgress.weeksCount}</div>
                           </div>
                         </div>
                         
-                        {/* Action Button - Smaller */}
+                        {/* Additional Stats */}
+                        <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
+                          <span className="flex items-center">
+                            <Trophy size={12} className="mr-1" />
+                            Enrolled {enrollmentDate.toLocaleDateString('en-US', { 
+                              month: 'short', 
+                              day: 'numeric', 
+                              year: 'numeric' 
+                            })}
+                          </span>
+                        </div>
+                        
+                        {/* Action Button - Made Smaller */}
                         <button
                           onClick={() => handleLeagueClick(enrollment.league)}
-                          className="w-full bg-gradient-to-r from-black to-gray-800 text-white px-3 py-2 rounded-lg text-sm font-medium hover:from-gray-800 hover:to-black transition-all duration-300 flex items-center justify-center group-hover:shadow-md"
+                          className="w-full bg-gradient-to-r from-black to-gray-800 text-white px-3 py-2.5 rounded-lg text-sm font-medium hover:from-gray-800 hover:to-black transition-all duration-300 flex items-center justify-center group-hover:shadow-lg cursor-pointer"
                         >
-                          <Play size={14} className="mr-1.5" />
+                          <Play size={14} className="mr-2" />
                           Continue Learning
                         </button>
                       </div>
