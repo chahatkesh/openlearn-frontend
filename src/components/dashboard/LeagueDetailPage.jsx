@@ -17,7 +17,6 @@ import {
   Loader2
 } from 'lucide-react';
 import ProgressService from '../../utils/progressService';
-import DataService from '../../utils/dataService';
 import ResourceProgressService from '../../utils/resourceProgressService';
 import SocialService from '../../utils/socialService';
 
@@ -47,7 +46,7 @@ const LeagueDetailPage = ({ league, onBack }) => {
       if (data.progress.weeks) {
         const initialExpanded = {};
         data.progress.weeks.forEach(week => {
-          initialExpanded[week.id] = true; // Default to expanded
+          initialExpanded[week.id] = false; // Default to expanded
         });
         setExpandedWeeks(initialExpanded);
         
@@ -252,6 +251,20 @@ const LeagueDetailPage = ({ league, onBack }) => {
         return <FileText size={16} className="text-gray-600" />;
     }
   };
+  const getResourceTypeName = (type) => {
+    switch (type?.toUpperCase()) {
+      case 'VIDEO':
+        return 'Video';
+      case 'ARTICLE':
+        return 'Article';
+      case 'EXTERNAL_LINK':
+        return 'Link';
+      case 'BLOG':
+        return 'Blog';
+      default:
+        return 'File';
+    }
+  };
 
   if (loading) {
     return (
@@ -287,7 +300,7 @@ const LeagueDetailPage = ({ league, onBack }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <button 
             onClick={onBack}
-            className="flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors mb-4"
+            className="flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors mb-4 cursor-pointer"
           >
             <ArrowLeft size={16} className="mr-2" />
             Back to Dashboard
@@ -313,7 +326,7 @@ const LeagueDetailPage = ({ league, onBack }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <button 
             onClick={onBack}
-            className="flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors mb-4"
+            className="flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors mb-4 cursor-pointer"
           >
             <ArrowLeft size={16} className="mr-2" />
             Back to Dashboard
@@ -336,7 +349,7 @@ const LeagueDetailPage = ({ league, onBack }) => {
           <div className="flex items-center justify-between mb-4">
             <button 
               onClick={onBack}
-              className="flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+              className="flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors cursor-pointer"
             >
               <ArrowLeft size={16} className="mr-2" />
               Back to Dashboard
@@ -378,7 +391,7 @@ const LeagueDetailPage = ({ league, onBack }) => {
                         fill="none"
                         stroke="#FFDE59"
                         strokeWidth="3"
-                        strokeDasharray={`${calculateOverallProgress().percentage}, 100`}
+                        strokeDasharray={`${calculateOverallProgress().percentage/2}, 100`}
                         className="transition-all duration-1000 ease-out"
                       />
                     </svg>
@@ -490,8 +503,20 @@ const LeagueDetailPage = ({ league, onBack }) => {
 
                             {/* Compact Resources Table */}
                             {resources.length > 0 && (
-                              <div className="divide-y divide-gray-100">
-                                {resources.map((resource) => {
+                              <div>
+                                {/* Table Header */}
+                                <div className="grid grid-cols-12 gap-2 px-4 py-2 bg-gray-100 border-b border-gray-200 text-xs font-medium text-gray-700 uppercase tracking-wider">
+                                  <div className="col-span-1 flex justify-center">Status</div>
+                                  <div className="col-span-5">Title</div>
+                                  <div className="col-span-2 text-center">Type</div>
+                                  <div className="col-span-1 text-center">Link</div>
+                                  <div className="col-span-2 text-center">Note</div>
+                                  <div className="col-span-1 text-center">Share</div>
+                                </div>
+                                
+                                {/* Table Rows */}
+                                <div>
+                                  {resources.map((resource) => {
                                   const progress = resourceProgress[resource.id];
                                   const isCompleted = progress?.isCompleted || false;
                                   const hasNote = progress?.personalNote;
@@ -499,10 +524,10 @@ const LeagueDetailPage = ({ league, onBack }) => {
                                   return (
                                     <div 
                                       key={resource.id} 
-                                      className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors"
+                                      className="grid grid-cols-12 gap-2 items-center px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0"
                                     >
-                                      {/* Left side - Status and Title */}
-                                      <div className="flex items-center space-x-3 flex-1">
+                                      {/* Status Column */}
+                                      <div className="col-span-1 flex justify-center">
                                         <button
                                           onClick={() => handleResourceComplete(resource.id, isCompleted)}
                                           disabled={processingResources.has(resource.id)}
@@ -523,25 +548,44 @@ const LeagueDetailPage = ({ league, onBack }) => {
                                             <Check size={12} className="completion-checkmark" />
                                           ) : null}
                                         </button>
-                                        
-                                        <div className="flex items-center space-x-2">
+                                      </div>
+
+                                      {/* Title Column */}
+                                      <div className="col-span-5">
+                                        <span className={`text-sm ${isCompleted ? 'line-through text-gray-500' : 'text-gray-900'} truncate block`}>
+                                          {resource.title}
+                                        </span>
+                                      </div>
+
+                                      {/* Type Column */}
+                                      <div className="col-span-2 flex justify-center">
+                                        <div className="flex items-center space-x-1">
                                           {getResourceTypeIcon(resource.type)}
-                                          <span className={`text-sm ${isCompleted ? 'line-through text-gray-500' : 'text-gray-900'}`}>
-                                            {resource.title}
+                                          <span className="text-xs text-gray-600 capitalize">
+                                            {getResourceTypeName(resource.type)}
                                           </span>
                                         </div>
                                       </div>
 
-                                      {/* Right side - Actions */}
-                                      <div className="flex items-center space-x-2">
-                                        {/* Note */}
+                                      {/* Link Column */}
+                                      <div className="col-span-1 flex justify-center">
+                                        <button
+                                          onClick={() => window.open(resource.url, '_blank')}
+                                          className="px-2 py-1 text-xs font-medium bg-[#FFDE59] text-gray-900 rounded hover:bg-[#FFD700] transition-colors cursor-pointer"
+                                        >
+                                          Open
+                                        </button>
+                                      </div>
+
+                                      {/* Note Column */}
+                                      <div className="col-span-2 flex justify-center">
                                         {editingNote === resource.id ? (
-                                          <div className="flex items-center space-x-2">
+                                          <div className="flex items-center space-x-1 w-full">
                                             <input
                                               type="text"
                                               value={noteText}
                                               onChange={(e) => setNoteText(e.target.value)}
-                                              className="w-32 px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:border-[#FFDE59]"
+                                              className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:border-[#FFDE59]"
                                               placeholder="Add note..."
                                               onKeyPress={(e) => {
                                                 if (e.key === 'Enter') {
@@ -551,9 +595,9 @@ const LeagueDetailPage = ({ league, onBack }) => {
                                             />
                                             <button
                                               onClick={() => handleResourceNote(resource.id, noteText)}
-                                              className="text-green-600 hover:text-green-700"
+                                              className="text-green-600 hover:text-green-700 flex-shrink-0"
                                             >
-                                              <Check size={14} />
+                                              <Check size={12} />
                                             </button>
                                           </div>
                                         ) : (
@@ -562,25 +606,23 @@ const LeagueDetailPage = ({ league, onBack }) => {
                                               setEditingNote(resource.id);
                                               setNoteText(hasNote || '');
                                             }}
-                                            className="text-xs text-gray-500 hover:text-gray-700 px-2 py-1 rounded hover:bg-gray-100"
+                                            className="px-2 py-1 text-xs text-gray-500 hover:text-gray-700 rounded hover:bg-gray-100 max-w-full truncate"
                                             title={hasNote ? `Note: ${hasNote}` : 'Add note'}
                                           >
-                                            {hasNote ? 'Note' : 'Add note'}
+                                            {hasNote ? (
+                                              <span className="truncate block max-w-20">{hasNote}</span>
+                                            ) : (
+                                              '➕ Note'
+                                            )}
                                           </button>
                                         )}
+                                      </div>
 
-                                        {/* Link */}
-                                        <button
-                                          onClick={() => window.open(resource.url, '_blank')}
-                                          className="px-3 py-1 text-xs font-medium bg-[#FFDE59] text-gray-900 rounded hover:bg-[#FFD700] transition-colors"
-                                        >
-                                          Open
-                                        </button>
-
-                                        {/* Share */}
+                                      {/* Share Column */}
+                                      <div className="col-span-1 flex justify-center">
                                         <button
                                           onClick={() => handleShareOnTwitter(resource.title, leagueProgress.league.name)}
-                                          className="text-gray-400 hover:text-blue-500 transition-colors"
+                                          className="text-gray-400 hover:text-blue-500 transition-colors p-1"
                                           title="Share on Twitter"
                                         >
                                           <Twitter size={14} />
@@ -589,6 +631,7 @@ const LeagueDetailPage = ({ league, onBack }) => {
                                     </div>
                                   );
                                 })}
+                                </div>
                               </div>
                             )}
 
