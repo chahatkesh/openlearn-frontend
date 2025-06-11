@@ -19,12 +19,85 @@ const LearningProgressSection = ({ user }) => {
   const [allResourceProgress, setAllResourceProgress] = useState({});
   const [allSectionResources, setAllSectionResources] = useState({});
   const [sectionToLeagueMap, setSectionToLeagueMap] = useState({});
+  const [leagueStatistics, setLeagueStatistics] = useState({});
 
   useEffect(() => {
     fetchDashboardData();
     fetchCohorts();
     fetchLeagues();
   }, []);
+
+  // Function to calculate real league statistics
+  const calculateLeagueStatistics = useCallback(async (leagueId) => {
+    try {
+      console.log(`Calculating statistics for league: ${leagueId}`);
+      const leagueData = await ProgressService.getLeagueProgress(leagueId);
+      
+      if (leagueData?.progress?.weeks) {
+        let totalWeeks = leagueData.progress.weeks.length;
+        let totalSections = 0;
+        let totalResources = 0;
+        
+        console.log(`League ${leagueId} has ${totalWeeks} weeks`);
+        
+        // Count sections and resources from the actual league structure
+        for (const week of leagueData.progress.weeks) {
+          if (week.sections) {
+            totalSections += week.sections.length;
+            console.log(`Week ${week.id} has ${week.sections.length} sections`);
+            
+            // Fetch resources for each section to get accurate count
+            for (const section of week.sections) {
+              try {
+                const sectionData = await ResourceProgressService.getSectionResourcesProgress(section.id);
+                if (sectionData?.resources) {
+                  totalResources += sectionData.resources.length;
+                  console.log(`Section ${section.id} has ${sectionData.resources.length} resources`);
+                }
+              } catch (err) {
+                console.warn(`Failed to fetch resources for section ${section.id}:`, err);
+              }
+            }
+          }
+        }
+        
+        const stats = {
+          weeksCount: totalWeeks,
+          sectionsCount: totalSections,
+          resourcesCount: totalResources
+        };
+        
+        console.log(`Final stats for league ${leagueId}:`, stats);
+        return stats;
+      }
+    } catch (err) {
+      console.warn(`Failed to calculate statistics for league ${leagueId}:`, err);
+    }
+    
+    return {
+      weeksCount: 0,
+      sectionsCount: 0,
+      resourcesCount: 0
+    };
+  }, []);
+
+  // Fetch statistics for all leagues
+  useEffect(() => {
+    const fetchAllLeagueStatistics = async () => {
+      if (leagues.length > 0) {
+        const statistics = {};
+        
+        for (const league of leagues) {
+          const stats = await calculateLeagueStatistics(league.id);
+          statistics[league.id] = stats;
+        }
+        
+        setLeagueStatistics(statistics);
+      }
+    };
+    
+    fetchAllLeagueStatistics();
+  }, [leagues, calculateLeagueStatistics]);
 
     const fetchAllResourceProgress = useCallback(async () => {
     if (!dashboardData?.enrollments) return;
@@ -434,88 +507,101 @@ const LearningProgressSection = ({ user }) => {
         {/* Available Learning Paths */}
         <div id="available-leagues" className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="p-6">
-            <div className="flex items-center mb-6">
-              <div>
-                <h3 className="text-xl font-bold text-gray-900">Available Learning Paths</h3>
-                <p className="text-sm text-gray-600">Discover new leagues and expand your skills</p>
-              </div>
-            </div>
-            
             {cohorts.length > 0 ? (
               <div className="space-y-6">
                 {cohorts.map((cohort) => (
                   <div key={cohort.id} className="relative">
-                    <div className="flex items-start mb-4">
-                      <div className="w-1 h-16 bg-gradient-to-b from-yellow-400 to-amber-500 rounded-full mr-4 mt-1"></div>
+                    <div className="flex items-start mb-6">
                       <div>
-                        <h4 className="font-semibold text-gray-900 mb-1">{cohort.name}</h4>
-                        <p className="text-gray-600 text-sm leading-relaxed">{cohort.description}</p>
+                        <h4 className="text-xl font-bold text-gray-900">{cohort.name || 'Learning Cohort'}</h4>
+                        <p className="text-sm text-gray-600">{cohort.description || 'Explore available learning leagues'}</p>
                       </div>
                     </div>
                     
                     {/* Leagues Grid */}
                     <div className="ml-5 grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {leagues.map((league) => {
-                        const isEnrolled = dashboardData?.enrollments?.some(
-                          enrollment => enrollment.league.id === league.id
-                        );
+                      {leagues.filter(league => league && league.id && league.name).length > 0 ? (
+                        leagues.filter(league => league && league.id && league.name).map((league) => {
+                          const isEnrolled = dashboardData?.enrollments?.some(
+                            enrollment => enrollment.league.id === league.id
+                          );
 
-                        return (
-                          <div 
-                            key={league.id}
-                            className={`group relative bg-gradient-to-br from-gray-50 to-white rounded-xl border transition-all duration-300 ${
-                              isEnrolled 
-                                ? 'border-green-200 hover:border-green-300 cursor-pointer hover:shadow-md' 
-                                : 'border-gray-100 hover:border-gray-200 hover:shadow-md'
-                            }`}
-                            onClick={() => {
-                              if (isEnrolled) {
-                                handleLeagueClick(league);
-                              }
-                            }}
-                          >
-                            <div className="p-5">
-                              <div className="flex items-start justify-between">
-                                <div className="flex-1">
-                                  <h5 className="font-semibold text-gray-900 mb-2 group-hover:text-black transition-colors">
-                                    {league.name}
-                                  </h5>
-                                  <p className="text-sm text-gray-600 mb-3 leading-relaxed line-clamp-2">
-                                    {league.description}
-                                  </p>
-                                  <div className="flex items-center space-x-4 text-xs text-gray-500">
-                                    <span className="flex items-center">
-                                      <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-1"></div>
-                                      {league.weeksCount} weeks
-                                    </span>
-                                    <span className="flex items-center">
-                                      <div className="w-1.5 h-1.5 bg-green-400 rounded-full mr-1"></div>
-                                      {league.sectionsCount} sections
-                                    </span>
+                          // Better data validation for league stats with dynamic calculation
+                          const dynamicStats = leagueStatistics[league.id];
+                          const weeksCount = dynamicStats?.weeksCount || league.weeksCount || league.weeks_count || league.totalWeeks || league._count?.weeks || 0;
+                          const sectionsCount = dynamicStats?.sectionsCount || league.sectionsCount || league.sections_count || league.totalSections || league._count?.sections || 0;
+                          const resourcesCount = dynamicStats?.resourcesCount || league.totalResources || league.resources_count || league._count?.resources || 0;
+                          const leagueName = league.name || 'Learning League';
+                          const leagueDescription = league.description || 'A comprehensive learning journey designed to build your skills.';
+
+                          return (
+                            <div 
+                              key={league.id}
+                              className={`group relative bg-gradient-to-br from-gray-50 to-white rounded-xl border transition-all duration-300 ${
+                                isEnrolled 
+                                  ? 'border-green-200 hover:border-green-300 cursor-pointer hover:shadow-sm' 
+                                  : 'border-gray-100 hover:border-gray-200 hover:shadow-md'
+                              }`}
+                              onClick={() => {
+                                if (isEnrolled) {
+                                  handleLeagueClick(league);
+                                }
+                              }}
+                            >
+                              <div className="p-5">
+                                <div className="flex items-start justify-between">
+                                  <div className="flex-1">
+                                    <h5 className="font-semibold text-gray-900 mb-2 group-hover:text-black transition-colors">
+                                      {leagueName}
+                                    </h5>
+                                    <p className="text-sm text-gray-600 mb-3 leading-relaxed line-clamp-2">
+                                      {leagueDescription}
+                                    </p>
+                                    <div className="flex items-center space-x-4 text-xs text-gray-500">
+                                      <span className="flex items-center">
+                                        <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-1"></div>
+                                        {dynamicStats ? weeksCount : '...'} {weeksCount === 1 ? 'week' : 'weeks'}
+                                      </span>
+                                      <span className="flex items-center">
+                                        <div className="w-1.5 h-1.5 bg-green-400 rounded-full mr-1"></div>
+                                        {dynamicStats ? sectionsCount : '...'} {sectionsCount === 1 ? 'section' : 'sections'}
+                                      </span>
+                                      <span className="flex items-center">
+                                        <div className="w-1.5 h-1.5 bg-purple-400 rounded-full mr-1"></div>
+                                        {dynamicStats ? resourcesCount : '...'} {resourcesCount === 1 ? 'resource' : 'resources'}
+                                      </span>
+                                    </div>
                                   </div>
+                                  
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (!isEnrolled) {
+                                        handleEnrollment(cohort.id, league.id);
+                                      }
+                                    }}
+                                    disabled={isEnrolled}
+                                    className={`ml-3 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
+                                      isEnrolled
+                                        ? 'bg-green-100 text-green-700 cursor-not-allowed border border-green-200'
+                                        : 'bg-gradient-to-r from-black to-gray-800 text-white hover:from-gray-800 hover:to-black hover:shadow-lg'
+                                    }`}
+                                  >
+                                    {isEnrolled ? 'Enrolled' : 'Enroll'}
+                                  </button>
                                 </div>
-                                
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (!isEnrolled) {
-                                      handleEnrollment(cohort.id, league.id);
-                                    }
-                                  }}
-                                  disabled={isEnrolled}
-                                  className={`ml-3 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
-                                    isEnrolled
-                                      ? 'bg-green-100 text-green-700 cursor-not-allowed border border-green-200'
-                                      : 'bg-gradient-to-r from-black to-gray-800 text-white hover:from-gray-800 hover:to-black hover:shadow-lg'
-                                  }`}
-                                >
-                                  {isEnrolled ? 'Enrolled' : 'Enroll'}
-                                </button>
                               </div>
                             </div>
+                          );
+                        })
+                      ) : (
+                        <div className="col-span-full text-center py-8">
+                          <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                            <BookOpen size={20} className="text-gray-400" />
                           </div>
-                        );
-                      })}
+                          <p className="text-sm text-gray-600">No leagues available in this cohort yet</p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -526,7 +612,7 @@ const LearningProgressSection = ({ user }) => {
                   <BookOpen size={24} className="text-gray-400" />
                 </div>
                 <h3 className="font-medium text-gray-900 mb-1">No Learning Paths Available</h3>
-                <p className="text-sm text-gray-600">Check back later for new cohorts and leagues</p>
+                <p className="text-sm text-gray-600">Learning cohorts will appear here when they become available. Check back soon!</p>
               </div>
             )}
           </div>
