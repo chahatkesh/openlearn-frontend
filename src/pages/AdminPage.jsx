@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../hooks/useAuth';
-import { LogOut, Users, Archive, BookOpen, Award, Layers, Calendar, FileText, Database, Settings, Activity } from 'lucide-react';
+import { LogOut, Users, Archive, BookOpen, Award, Layers, Calendar, FileText, Database, Activity } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import UserManagement from '../components/admin/UserManagement';
 import CohortManagement from '../components/admin/CohortManagement';
@@ -9,7 +9,6 @@ import SpecializationManagement from '../components/admin/SpecializationManageme
 import WeekManagement from '../components/admin/WeekManagement';
 import SectionManagement from '../components/admin/SectionManagement';
 import ResourceManagement from '../components/admin/ResourceManagement';
-import ComprehensiveAPITests from '../components/admin/ComprehensiveAPITests';
 import AdminService from '../utils/adminService';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -105,8 +104,8 @@ const AdminPage = () => {
           }
           break;
         }
-        case 'api-tests':
-          // This tab doesn't need data fetching
+        default:
+          // No data fetching needed for unknown tabs
           break;
       }
     } catch (err) {
@@ -1004,17 +1003,6 @@ const AdminPage = () => {
               <Database size={16} className="mr-2" />
               Resources
             </button>
-            <button
-              className={`${
-                activeTab === 'api-tests'
-                  ? 'border-black text-black'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center`}
-              onClick={() => setActiveTab('api-tests')}
-            >
-              <Settings size={16} className="mr-2" />
-              API Tests
-            </button>
           </nav>
         </div>
 
@@ -1048,7 +1036,6 @@ const AdminPage = () => {
             {activeTab === 'weeks' && renderWeeks()}
             {activeTab === 'sections' && renderSections()}
             {activeTab === 'resources' && renderResources()}
-            {activeTab === 'api-tests' && <ComprehensiveAPITests user={user} />}
           </div>
         )}
       </main>
