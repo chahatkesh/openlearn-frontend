@@ -505,6 +505,77 @@ class ProgressService {
   }
 
   /**
+   * Calculate accurate section and week progress based on resource completion
+   * @param {Object} dashboardData - Dashboard data from API
+   * @param {Object} allResourceProgress - All resource progress data from sections
+   * @param {Object} allSectionResources - Mapping of section ID to resources array
+   * @returns {Object} Accurate section and week progress statistics
+   */
+  static calculateAccurateSectionProgress(dashboardData, allResourceProgress = {}, allSectionResources = {}) {
+    if (!dashboardData?.enrollments) {
+      return {
+        totalSections: 0,
+        completedSections: 0,
+        totalWeeks: 0,
+        completedWeeks: 0,
+        sectionProgress: {},
+        weekProgress: {}
+      };
+    }
+
+    const { enrollments = [] } = dashboardData;
+    let totalSections = 0;
+    let completedSections = 0;
+    let totalWeeks = 0;
+    let completedWeeks = 0;
+    const sectionProgress = {};
+    const weekProgress = {};
+
+    enrollments.forEach(enrollment => {
+      // Use section count from enrollment or fall back to estimation
+      const enrollmentSections = enrollment?.progress?.totalSections || 0;
+      totalSections += enrollmentSections;
+    });
+
+    // Calculate actual section completion from resource data
+    Object.keys(allSectionResources).forEach(sectionId => {
+      const sectionResources = allSectionResources[sectionId] || [];
+      const totalResourcesInSection = sectionResources.length;
+      const completedResourcesInSection = sectionResources.filter(resource => 
+        allResourceProgress[resource.id]?.isCompleted
+      ).length;
+
+      if (totalResourcesInSection > 0) {
+        const sectionCompletionPercentage = Math.round(
+          (completedResourcesInSection / totalResourcesInSection) * 100
+        );
+        
+        sectionProgress[sectionId] = {
+          completed: completedResourcesInSection,
+          total: totalResourcesInSection,
+          percentage: sectionCompletionPercentage,
+          isComplete: sectionCompletionPercentage === 100
+        };
+
+        // Count completed sections
+        if (sectionCompletionPercentage === 100) {
+          completedSections++;
+        }
+      }
+    });
+
+    return {
+      totalSections,
+      completedSections,
+      totalWeeks,
+      completedWeeks,
+      sectionProgress,
+      weekProgress,
+      sectionCompletionPercentage: totalSections > 0 ? Math.round((completedSections / totalSections) * 100) : 0
+    };
+  }
+
+  /**
    * Calculate accurate resource progress using actual resource completion data
    * @param {Object} dashboardData - Dashboard data from API
    * @param {Object} allResourceProgress - All resource progress data from sections

@@ -17,6 +17,8 @@ const LearningProgressSection = ({ user }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [allResourceProgress, setAllResourceProgress] = useState({});
+  const [allSectionResources, setAllSectionResources] = useState({});
+  const [sectionToLeagueMap, setSectionToLeagueMap] = useState({});
 
   useEffect(() => {
     fetchDashboardData();
@@ -24,34 +26,14 @@ const LearningProgressSection = ({ user }) => {
     fetchLeagues();
   }, []);
 
-  useEffect(() => {
-    if (dashboardData?.enrollments?.length > 0) {
-      fetchAllResourceProgress();
-    }
-  }, [dashboardData]);
-
-  const fetchDashboardData = async () => {
-    try {
-      const data = await ProgressService.getUserDashboard();
-      setDashboardData(data);
-    } catch (err) {
-      console.error('Error fetching dashboard data:', err);
-      setError(`Connection to learning platform failed. Running in demo mode. (${err.message})`);
-      
-      // Set minimal mock data to prevent crashes
-      setDashboardData({
-        enrollments: [],
-        badges: []
-      });
-    }
-  };
-
-  const fetchAllResourceProgress = useCallback(async () => {
+    const fetchAllResourceProgress = useCallback(async () => {
     if (!dashboardData?.enrollments) return;
     
     try {
       // Fetch league progress for each enrollment to get section data
       const allProgress = {};
+      const allSections = {};
+      const sectionLeagueMap = {};
       
       for (const enrollment of dashboardData.enrollments) {
         try {
@@ -65,6 +47,13 @@ const LearningProgressSection = ({ user }) => {
                   const sectionData = await ResourceProgressService.getSectionResourcesProgress(section.id);
                   
                   if (sectionData?.resources) {
+                    // Store section resources for section completion calculation
+                    allSections[section.id] = sectionData.resources;
+                    
+                    // Map section to league
+                    sectionLeagueMap[section.id] = enrollment.league.id;
+                    
+                    // Store individual resource progress
                     sectionData.resources.forEach(resource => {
                       if (resource.progress) {
                         allProgress[resource.id] = resource.progress;
@@ -83,10 +72,34 @@ const LearningProgressSection = ({ user }) => {
       }
       
       setAllResourceProgress(allProgress);
+      setAllSectionResources(allSections);
+      setSectionToLeagueMap(sectionLeagueMap);
     } catch (err) {
       console.warn('Failed to fetch resource progress:', err);
     }
   }, [dashboardData]);
+
+  useEffect(() => {
+    if (dashboardData?.enrollments?.length > 0) {
+      fetchAllResourceProgress();
+    }
+  }, [dashboardData, fetchAllResourceProgress]);
+
+  const fetchDashboardData = async () => {
+    try {
+      const data = await ProgressService.getUserDashboard();
+      setDashboardData(data);
+    } catch (err) {
+      console.error('Error fetching dashboard data:', err);
+      setError(`Connection to learning platform failed. Running in demo mode. (${err.message})`);
+      
+      // Set minimal mock data to prevent crashes
+      setDashboardData({
+        enrollments: [],
+        badges: []
+      });
+    }
+  };
 
   const fetchCohorts = async () => {
     try {
@@ -215,7 +228,7 @@ const LearningProgressSection = ({ user }) => {
                 {(() => {
                   // Calculate accurate progress once and reuse
                   const accurateProgress = ProgressService.calculateAccurateResourceProgress(dashboardData, allResourceProgress);
-                  const progressStats = ProgressService.calculateProgressStats(dashboardData);
+                  const accurateSectionProgress = ProgressService.calculateAccurateSectionProgress(dashboardData, allResourceProgress, allSectionResources);
                   
                   return (
                     <>
@@ -264,11 +277,11 @@ const LearningProgressSection = ({ user }) => {
                           <CheckSquare size={28} className="text-white" />
                         </div>
                         <div className="text-2xl font-bold text-gray-900 mb-1">
-                          {progressStats.completedSections}
+                          {accurateSectionProgress.completedSections}
                         </div>
                         <div className="text-sm font-semibold text-gray-900 mb-1">Sections Complete</div>
                         <div className="text-xs text-gray-600">
-                          of {progressStats.totalSections} total
+                          of {accurateSectionProgress.totalSections} total
                         </div>
                       </div>
                     </>
@@ -299,37 +312,79 @@ const LearningProgressSection = ({ user }) => {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {dashboardData.enrollments.map((enrollment) => (
-                  <div 
-                    key={enrollment.league.id} 
-                    className="group p-5 bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-100 hover:border-gray-200 hover:shadow-md transition-all duration-300"
-                  >
-                    {/* League Info */}
-                    <div className="mb-4">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-black transition-colors">
-                        {enrollment.league.name}
-                      </h3>
-                      <p className="text-gray-600 text-sm leading-relaxed mb-3 line-clamp-2">
-                        {enrollment.league.description}
-                      </p>
-                      
-                      {/* Progress Info */}
-                      <div className="flex items-center text-sm text-gray-600 mb-3">
-                        <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                        {enrollment.progress.completedSections} of {enrollment.progress.totalSections} sections completed
-                      </div>
-                    </div>
+                {dashboardData.enrollments.map((enrollment) => {
+                  // Calculate accurate section progress for this specific league
+                  const leagueSectionProgress = (() => {
+                    let completedSections = 0;
+                    let totalSections = 0;
+                    
+                    // Count sections that belong to this league and have all resources completed
+                    Object.entries(allSectionResources).forEach(([sectionId, resources]) => {
+                      // Only count sections that belong to this league
+                      if (sectionToLeagueMap[sectionId] === enrollment.league.id && resources.length >= 0) {
+                        totalSections++;
+                      }
+                    });
 
-                    {/* Action Button */}
-                    <button
-                      onClick={() => handleLeagueClick(enrollment.league)}
-                      className="w-full bg-gradient-to-r from-black to-gray-800 text-white px-4 py-3 rounded-xl font-medium hover:from-gray-800 hover:to-black transition-all duration-300 flex items-center justify-center group-hover:shadow-lg"
+                    Object.entries(allSectionResources).forEach(([sectionId, resources]) => {
+                      // Only count sections that belong to this league
+                      if (sectionToLeagueMap[sectionId] === enrollment.league.id && resources.length > 0) {
+                        const completedResources = resources.filter(resource => 
+                          allResourceProgress[resource.id]?.isCompleted
+                        ).length;
+                        
+                        if (completedResources === resources.length) {
+                          completedSections++;
+                        }
+                      }
+                    });
+                    
+                    // Fall back to enrollment data if no resource data available
+                    if (totalSections === 0) {
+                      return {
+                        completed: enrollment.progress.completedSections || 0,
+                        total: enrollment.progress.totalSections || 0
+                      };
+                    }
+                    
+                    return {
+                      completed: completedSections,
+                      total: totalSections
+                    };
+                  })();
+                  
+                  return (
+                    <div 
+                      key={enrollment.league.id} 
+                      className="group p-5 bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-100 hover:border-gray-200 hover:shadow-md transition-all duration-300"
                     >
-                      <Play size={16} className="mr-2" />
-                      Continue Learning
-                    </button>
-                  </div>
-                ))}
+                      {/* League Info */}
+                      <div className="mb-4">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-black transition-colors">
+                          {enrollment.league.name}
+                        </h3>
+                        <p className="text-gray-600 text-sm leading-relaxed mb-3 line-clamp-2">
+                          {enrollment.league.description}
+                        </p>
+                        
+                        {/* Progress Info */}
+                        <div className="flex items-center text-sm text-gray-600 mb-3">
+                          <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                          {leagueSectionProgress.completed} of {leagueSectionProgress.total} sections completed
+                        </div>
+                      </div>
+
+                      {/* Action Button */}
+                      <button
+                        onClick={() => handleLeagueClick(enrollment.league)}
+                        className="w-full bg-gradient-to-r from-black to-gray-800 text-white px-4 py-3 rounded-xl font-medium hover:from-gray-800 hover:to-black transition-all duration-300 flex items-center justify-center group-hover:shadow-lg"
+                      >
+                        <Play size={16} className="mr-2" />
+                        Continue Learning
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
