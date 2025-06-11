@@ -273,8 +273,8 @@ const LearningProgressSection = ({ user }) => {
       </div>
     );
   }  return (
-    <div className="h-full bg-transparent overflow-hidden">
-      <div className="h-full p-6 space-y-6 overflow-y-auto">
+    <div className="bg-transparent">
+      <div className="p-6 space-y-6">
         
         {/* Header Section */}
         <div className="relative">

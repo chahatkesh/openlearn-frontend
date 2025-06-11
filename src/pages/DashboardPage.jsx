@@ -71,15 +71,15 @@ const DashboardPage = () => {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 h-[calc(100vh-88px)]">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 h-full">
           {/* Left Section - 25% Width (User Profile) */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 h-full overflow-y-auto dashboard-scroll">
             <UserProfileSection user={user} dashboardData={dashboardData} />
           </div>
           
           {/* Right Section - 75% Width (Learning Progress) */}
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-3 h-full overflow-y-auto dashboard-scroll">
             <LearningProgressSection user={user} />
           </div>
         </div>

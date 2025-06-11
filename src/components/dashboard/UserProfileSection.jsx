@@ -152,7 +152,7 @@ const BadgesModal = ({ isOpen, onClose, user, userBadges }) => {
         </div>
 
         {/* Modal Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(80vh-100px)]">
+        <div className="p-6 overflow-y-auto max-h-[calc(80vh-100px)] modal-scroll">
           {loading ? (
             <div className="text-center py-8">
               <div className="animate-spin w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full mx-auto mb-4"></div>
@@ -420,9 +420,9 @@ const UserProfileSection = ({ user, dashboardData = null }) => {
   const RoleIcon = roleInfo.icon;
 
   return (
-    <div className="h-full bg-transparent overflow-hidden">
+    <div className="bg-transparent">
       {/* Main Content */}
-      <div className="h-full p-6 space-y-6 overflow-y-auto">
+      <div className="p-6 space-y-6">
         
         {/* Profile Header */}
         <div className="relative text-center">
