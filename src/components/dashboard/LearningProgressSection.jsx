@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { TrendingUp, BookOpen, Users, Star, ChevronRight, Play, CheckSquare, AlertCircle } from 'lucide-react';
+import { TrendingUp, BookOpen, Users, Star, ChevronRight, Play, CheckSquare, AlertCircle, Trophy, Clock, Target } from 'lucide-react';
 import LeagueDetailPage from './LeagueDetailPage';
 import WelcomeBanner from './WelcomeBanner';
 import AssignmentManagement from './AssignmentManagement';
@@ -424,23 +424,22 @@ const LearningProgressSection = ({ user }) => {
                   const leagueSectionProgress = (() => {
                     let completedSections = 0;
                     let totalSections = 0;
+                    let completedResources = 0;
+                    let totalResources = 0;
                     
                     // Count sections that belong to this league and have all resources completed
                     Object.entries(allSectionResources).forEach(([sectionId, resources]) => {
                       // Only count sections that belong to this league
                       if (sectionToLeagueMap[sectionId] === enrollment.league.id && resources.length >= 0) {
                         totalSections++;
-                      }
-                    });
-
-                    Object.entries(allSectionResources).forEach(([sectionId, resources]) => {
-                      // Only count sections that belong to this league
-                      if (sectionToLeagueMap[sectionId] === enrollment.league.id && resources.length > 0) {
-                        const completedResources = resources.filter(resource => 
+                        totalResources += resources.length;
+                        
+                        const sectionCompletedResources = resources.filter(resource => 
                           allResourceProgress[resource.id]?.isCompleted
                         ).length;
+                        completedResources += sectionCompletedResources;
                         
-                        if (completedResources === resources.length) {
+                        if (resources.length > 0 && sectionCompletedResources === resources.length) {
                           completedSections++;
                         }
                       }
@@ -450,45 +449,113 @@ const LearningProgressSection = ({ user }) => {
                     if (totalSections === 0) {
                       return {
                         completed: enrollment.progress.completedSections || 0,
-                        total: enrollment.progress.totalSections || 0
+                        total: enrollment.progress.totalSections || 0,
+                        resourcesCompleted: 0,
+                        resourcesTotal: 0,
+                        progressPercentage: enrollment.progress.progressPercentage || 0
                       };
                     }
                     
+                    const progressPercentage = totalResources > 0 ? Math.round((completedResources / totalResources) * 100) : 0;
+                    
                     return {
                       completed: completedSections,
-                      total: totalSections
+                      total: totalSections,
+                      resourcesCompleted: completedResources,
+                      resourcesTotal: totalResources,
+                      progressPercentage
                     };
                   })();
+                  
+                  // Calculate enrollment duration
+                  const enrollmentDate = new Date(enrollment.enrolledAt || enrollment.createdAt);
+                  const daysSinceEnrollment = Math.floor((Date.now() - enrollmentDate.getTime()) / (1000 * 60 * 60 * 24));
                   
                   return (
                     <div 
                       key={enrollment.league.id} 
-                      className="group p-5 bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-100 hover:border-gray-200 hover:shadow-md transition-all duration-300"
+                      className="group bg-white/40 backdrop-blur-sm rounded-xl border border-white/20 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
                     >
-                      {/* League Info */}
-                      <div className="mb-4">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-black transition-colors">
-                          {enrollment.league.name}
-                        </h3>
-                        <p className="text-gray-600 text-sm leading-relaxed mb-3 line-clamp-2">
-                          {enrollment.league.description}
-                        </p>
-                        
-                        {/* Progress Info */}
-                        <div className="flex items-center text-sm text-gray-600 mb-3">
-                          <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                          {leagueSectionProgress.completed} of {leagueSectionProgress.total} sections completed
+                      {/* League Header */}
+                      <div className="relative p-5 bg-gradient-to-br from-gray-50 to-white">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex-1">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-black transition-colors">
+                              {enrollment.league.name}
+                            </h3>
+                            <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
+                              {enrollment.league.description}
+                            </p>
+                          </div>
+                          
+                          {/* Progress Badge */}
+                          <div className="ml-3 flex-shrink-0">
+                            <div className="relative w-12 h-12">
+                              <svg className="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
+                                <path
+                                  d="M18 2.0845 A 15.9155 15.9155 0 0 1 18 33.9155"
+                                  fill="none"
+                                  stroke="#E5E7EB"
+                                  strokeWidth="3"
+                                />
+                                <path
+                                  d="M18 2.0845 A 15.9155 15.9155 0 0 1 18 33.9155"
+                                  fill="none"
+                                  stroke="#FFDE59"
+                                  strokeWidth="3"
+                                  strokeDasharray={`${leagueSectionProgress.progressPercentage / 2}, 100`}
+                                  className="transition-all duration-1000 ease-out"
+                                />
+                              </svg>
+                              <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-900">
+                                {leagueSectionProgress.progressPercentage}%
+                              </span>
+                            </div>
+                          </div>
                         </div>
+                        
+                        {/* Stats Grid */}
+                        <div className="grid grid-cols-3 gap-3 mb-4">
+                          <div className="text-center bg-white/50 rounded-lg p-2 hover:bg-white/70 transition-colors">
+                            <Target size={14} className="mx-auto mb-1 text-green-500" />
+                            <div className="text-sm font-bold text-gray-900">{leagueSectionProgress.completed}</div>
+                            <div className="text-xs text-gray-600">Sections</div>
+                          </div>
+                          <div className="text-center bg-white/50 rounded-lg p-2 hover:bg-white/70 transition-colors">
+                            <BookOpen size={14} className="mx-auto mb-1 text-blue-500" />
+                            <div className="text-sm font-bold text-gray-900">{leagueSectionProgress.resourcesCompleted}</div>
+                            <div className="text-xs text-gray-600">Resources</div>
+                          </div>
+                          <div className="text-center bg-white/50 rounded-lg p-2 hover:bg-white/70 transition-colors">
+                            <Clock size={14} className="mx-auto mb-1 text-amber-500" />
+                            <div className="text-sm font-bold text-gray-900">{daysSinceEnrollment}</div>
+                            <div className="text-xs text-gray-600">Days Active</div>
+                          </div>
+                        </div>
+                        
+                        {/* Progress Bar */}
+                        <div className="mb-3">
+                          <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
+                            <span>Progress</span>
+                            <span>{leagueSectionProgress.completed} of {leagueSectionProgress.total} sections</span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-1.5">
+                            <div 
+                              className="bg-gradient-to-r from-[#FFDE59] to-[#FFD700] h-1.5 rounded-full transition-all duration-500"
+                              style={{ width: `${leagueSectionProgress.progressPercentage}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                        
+                        {/* Action Button - Smaller */}
+                        <button
+                          onClick={() => handleLeagueClick(enrollment.league)}
+                          className="w-full bg-gradient-to-r from-black to-gray-800 text-white px-3 py-2 rounded-lg text-sm font-medium hover:from-gray-800 hover:to-black transition-all duration-300 flex items-center justify-center group-hover:shadow-md"
+                        >
+                          <Play size={14} className="mr-1.5" />
+                          Continue Learning
+                        </button>
                       </div>
-
-                      {/* Action Button */}
-                      <button
-                        onClick={() => handleLeagueClick(enrollment.league)}
-                        className="w-full bg-gradient-to-r from-black to-gray-800 text-white px-4 py-3 rounded-xl font-medium hover:from-gray-800 hover:to-black transition-all duration-300 flex items-center justify-center group-hover:shadow-lg"
-                      >
-                        <Play size={16} className="mr-2" />
-                        Continue Learning
-                      </button>
                     </div>
                   );
                 })}
