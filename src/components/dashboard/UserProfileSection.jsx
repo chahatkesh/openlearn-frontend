@@ -14,10 +14,15 @@ import {
   X,
   Award,
   CheckCircle,
-  Lock
+  Lock,
+  Edit3,
+  Save,
+  AlertCircle
 } from 'lucide-react';
 import ProgressService from '../../utils/progressService';
 import BadgeService from '../../utils/badgeService';
+import SocialService from '../../utils/socialService';
+import { useAuth } from '../../hooks/useAuth';
 
 // BadgesModal Component
 const BadgesModal = ({ isOpen, onClose, user, userBadges }) => {
@@ -271,6 +276,7 @@ const BadgesModal = ({ isOpen, onClose, user, userBadges }) => {
 };
 
 const UserProfileSection = ({ user, dashboardData = null }) => {
+  const { refreshUser } = useAuth();
   const [userStats, setUserStats] = useState({
     badgesCount: 0,
     leaguesCount: 0
@@ -278,6 +284,7 @@ const UserProfileSection = ({ user, dashboardData = null }) => {
   const [loading, setLoading] = useState(false);
   const [isBadgesModalOpen, setIsBadgesModalOpen] = useState(false);
   const [userBadges, setUserBadges] = useState([]);
+  const [isSocialEditModalOpen, setIsSocialEditModalOpen] = useState(false);
 
   // Helper function to count role badges based on hierarchy
   const getRoleBadgesCount = (userRole) => {
@@ -413,7 +420,7 @@ const UserProfileSection = ({ user, dashboardData = null }) => {
   const RoleIcon = roleInfo.icon;
 
   return (
-    <div className="h-full bg-gradient-to-br from-gray-50/50 via-white to-blue-50/30 overflow-hidden">
+    <div className="h-full bg-transparent overflow-hidden">
       {/* Main Content */}
       <div className="h-full p-6 space-y-6 overflow-y-auto">
         
@@ -510,7 +517,16 @@ const UserProfileSection = ({ user, dashboardData = null }) => {
 
         {/* Social Connections */}
         <div className="bg-white/30 backdrop-blur-sm rounded-xl p-4 border border-white/20 shadow-sm space-y-3">
-          <h3 className="text-sm font-medium text-gray-700">Social Connections</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-medium text-gray-700">Social Connections</h3>
+            <button
+              onClick={() => setIsSocialEditModalOpen(true)}
+              className="p-1.5 hover:bg-white/50 rounded-lg transition-colors group"
+              title="Edit social connections"
+            >
+              <Edit3 size={14} className="text-gray-500 group-hover:text-gray-700" />
+            </button>
+          </div>
           
           <div className="space-y-2">
             {/* Twitter */}
@@ -525,7 +541,7 @@ const UserProfileSection = ({ user, dashboardData = null }) => {
                   <div className="w-7 h-7 rounded-lg bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
                     <Twitter size={14} className="text-blue-600" />
                   </div>
-                  <span className="text-sm text-gray-700 group-hover:text-blue-700 font-medium">@{user.twitterHandle}</span>
+                  <span className="text-sm text-gray-700 group-hover:text-blue-700 font-medium">{user.twitterHandle}</span>
                 </div>
                 <ExternalLink size={12} className="text-gray-400 group-hover:text-blue-600" />
               </a>
@@ -725,6 +741,203 @@ const UserProfileSection = ({ user, dashboardData = null }) => {
         user={user} 
         userBadges={userBadges}
       />
+
+      {/* Social Edit Modal */}
+      <SocialEditModal 
+        isOpen={isSocialEditModalOpen} 
+        onClose={() => setIsSocialEditModalOpen(false)} 
+        user={user}
+        onSave={async (socialData) => {
+          try {
+            // Update social handles via API
+            await SocialService.updateSocialHandles(socialData);
+            
+            // Refresh user data to reflect the changes
+            await refreshUser();
+            
+            console.log('Social handles updated successfully');
+          } catch (error) {
+            console.error('Error updating social handles:', error);
+            throw error; // Re-throw to let the modal handle the error display
+          }
+        }}
+      />
+    </div>
+  );
+};
+
+// SocialEditModal Component
+const SocialEditModal = ({ isOpen, onClose, user, onSave }) => {
+  const [formData, setFormData] = useState({
+    twitterHandle: user?.twitterHandle || '',
+    linkedinUrl: user?.linkedinUrl || '',
+    githubUsername: user?.githubUsername || '',
+    kaggleUsername: user?.kaggleUsername || ''
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (isOpen && user) {
+      setFormData({
+        twitterHandle: user?.twitterHandle || '',
+        linkedinUrl: user?.linkedinUrl || '',
+        githubUsername: user?.githubUsername || '',
+        kaggleUsername: user?.kaggleUsername || ''
+      });
+      setError('');
+    }
+  }, [isOpen, user]);
+
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSave = async () => {
+    setLoading(true);
+    setError('');
+    
+    try {
+      // Call the onSave callback with updated data
+      if (onSave) {
+        await onSave(formData);
+      }
+      
+      onClose();
+    } catch (err) {
+      setError(err.message || 'Failed to update social connections. Please try again.');
+      console.error('Error updating social connections:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/45 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-gray-200">
+        {/* Modal Header */}
+        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">Edit Social Connections</h2>
+            <p className="text-sm text-gray-600">Update your social media profiles</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          >
+            <X size={20} className="text-gray-600" />
+          </button>
+        </div>
+
+        {/* Modal Content */}
+        <div className="p-6 space-y-4">
+          {error && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
+              <AlertCircle size={16} className="text-red-600" />
+              <span className="text-sm text-red-700">{error}</span>
+            </div>
+          )}
+
+          {/* Twitter Handle */}
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+              <Twitter size={16} className="text-blue-600" />
+              Twitter Handle
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">@</span>
+              <input
+                type="text"
+                value={formData.twitterHandle}
+                onChange={(e) => handleInputChange('twitterHandle', e.target.value)}
+                className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                placeholder="username"
+              />
+            </div>
+          </div>
+
+          {/* LinkedIn URL */}
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+              <Linkedin size={16} className="text-blue-600" />
+              LinkedIn Profile URL
+            </label>
+            <input
+              type="url"
+              value={formData.linkedinUrl}
+              onChange={(e) => handleInputChange('linkedinUrl', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              placeholder="https://linkedin.com/in/username"
+            />
+          </div>
+
+          {/* GitHub Username */}
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+              <Github size={16} className="text-gray-700" />
+              GitHub Username
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">@</span>
+              <input
+                type="text"
+                value={formData.githubUsername}
+                onChange={(e) => handleInputChange('githubUsername', e.target.value)}
+                className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                placeholder="username"
+              />
+            </div>
+          </div>
+
+          {/* Kaggle Username */}
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+              <BarChart3 size={16} className="text-cyan-600" />
+              Kaggle Username
+            </label>
+            <input
+              type="text"
+              value={formData.kaggleUsername}
+              onChange={(e) => handleInputChange('kaggleUsername', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              placeholder="username"
+            />
+          </div>
+        </div>
+
+        {/* Modal Footer */}
+        <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            disabled={loading}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={loading}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          >
+            {loading ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save size={16} />
+                Save Changes
+              </>
+            )}
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

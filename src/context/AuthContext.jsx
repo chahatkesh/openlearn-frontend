@@ -191,6 +191,35 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Refresh user data from server
+  const refreshUser = async () => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      
+      if (!token) {
+        return false;
+      }
+      
+      const response = await fetch(`${API_BASE_URL}/profile`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        setUser(result.data);
+        return true;
+      }
+      
+      return false;
+    } catch (err) {
+      console.error('Error refreshing user data:', err);
+      return false;
+    }
+  };
+
   // Check if user is authenticated
   const isAuthenticated = () => {
     return !!user;
@@ -215,6 +244,7 @@ export const AuthProvider = ({ children }) => {
     signup,
     logout,
     refreshToken,
+    refreshUser,
     isAuthenticated,
     hasRole
   };

@@ -38,9 +38,7 @@ const DashboardPage = () => {
       <header className="bg-white shadow-sm sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <Link to="/" className="text-2xl font-bold text-black flex items-center">
-            <div className="bg-[#FFDE59] w-8 h-8 rounded-full mr-2 flex items-center justify-center text-black font-bold">
-              O
-            </div>
+            <img className='h-8 mr-3' src="/favicon.png" alt="" />
             OpenLearn
           </Link>
           

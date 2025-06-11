@@ -1,4 +1,4 @@
- /**
+/**
  * Social Service for OpenLearn Platform
  * Handles all social sharing API calls and functionality
  */
@@ -446,6 +446,33 @@ Learning never stops! 💪
     
     // Could send analytics to your backend
     // analytics.track('social_share', { platform, type, contentId });
+  }
+
+  /**
+   * Update user social handles/profiles
+   * @param {Object} socialHandles - Social handles data
+   * @param {string} socialHandles.twitterHandle - Twitter username (without @)
+   * @param {string} socialHandles.linkedinUrl - LinkedIn profile URL
+   * @param {string} socialHandles.githubUsername - GitHub username (without @)
+   * @param {string} socialHandles.kaggleUsername - Kaggle username
+   * @returns {Promise} Updated user data
+   */
+  static async updateSocialHandles(socialHandles) {
+    // Transform the data to match backend API format for profile update
+    const payload = {
+      twitterHandle: socialHandles.twitterHandle || null,
+      linkedinUrl: socialHandles.linkedinUrl || null,
+      githubUsername: socialHandles.githubUsername || null,
+      kaggleUsername: socialHandles.kaggleUsername || null
+    };
+
+    const response = await fetch(`${BASE_URL}/api/auth/profile`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(payload)
+    });
+    
+    return handleResponse(response);
   }
 }
 
