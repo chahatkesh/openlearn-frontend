@@ -9,7 +9,6 @@ const LeagueCard = ({
   isLocked = false, 
   prerequisite = null, 
   accentColor = "#4F46E5",
-  iconColor = "#FFDE59",
   gradientFrom = "#667eea",
   gradientTo = "#764ba2"
 }) => {
@@ -51,20 +50,6 @@ const LeagueCard = ({
 
       {/* League Icon & Title */}
       <div className="flex items-center mb-6">
-        <div 
-          className={`inline-flex items-center justify-center rounded-xl w-14 h-14 mr-4 transition-all duration-300 ${
-            isLocked ? 'bg-gray-200' : 'shadow-lg group-hover:scale-110'
-          }`}
-          style={{ 
-            backgroundColor: isLocked ? "#E5E7EB" : iconColor,
-            boxShadow: !isLocked ? `0 8px 25px ${iconColor}40` : 'none'
-          }}>
-          {title.includes("ML") ? (
-            <Zap size={24} className={isLocked ? "text-gray-400" : "text-gray-800"} />
-          ) : (
-            <TrendingUp size={24} className={isLocked ? "text-gray-400" : "text-gray-800"} />
-          )}
-        </div>
         <h3 className={`text-2xl font-bold transition-colors duration-300 ${
           isLocked ? 'text-gray-500' : 'text-gray-800 group-hover:text-gray-900'
         }`}>
@@ -86,10 +71,14 @@ const LeagueCard = ({
             ? 'bg-gray-50 border-gray-300' 
             : 'bg-amber-50 border-amber-400 hover:bg-amber-100'
         }`}>
-          <p className="text-sm flex items-start">
+          <p className="text-sm flex items-center">
             <span className="mr-2 text-amber-500 text-lg">⚠️</span>
             <span>
-              <strong className="text-amber-700">Prerequisite:</strong>{" "}
+              <strong className={`${
+          isLocked 
+            ? 'text-gray-500' 
+            : 'text-amber-700'
+        }`}>Prerequisite:</strong>
               <span className={isLocked ? 'text-gray-600' : 'text-amber-600'}>
                 {prerequisite}
               </span>
@@ -165,7 +154,6 @@ const Cohort = () => {
                 certification="ML League Certificate"
                 prerequisite="Basic Python knowledge required."
                 accentColor="#3B82F6"
-                iconColor="#FBBF24"
                 gradientFrom="#3B82F6"
                 gradientTo="#1D4ED8"
               />
@@ -180,8 +168,7 @@ const Cohort = () => {
                 certification="Specialisation Certificate in ML + Finance"
                 prerequisite="Completion of ML League required."
                 isLocked={true}
-                accentColor="#059669"
-                iconColor="#FBBF24"
+                accentColor="#777777"
                 gradientFrom="#059669"
                 gradientTo="#047857"
               />
