@@ -1,33 +1,40 @@
 import React from 'react';
-import { Linkedin, Twitter, Crown, Star, Users } from 'lucide-react';
+import { Crown, Star, Users } from 'lucide-react';
+import { FaLinkedinIn, FaXTwitter, FaInstagram } from 'react-icons/fa6';
 
-// Modern Team Member Card
-const TeamMemberCard = ({ name, role, imageUrl, linkedin, twitter, level }) => {
+// Modern Team Member Card with Enhanced UI/UX
+const TeamMemberCard = ({ name, role, imageUrl, linkedin, twitter, instagram, level }) => {
   const getLevelStyles = () => {
     switch (level) {
       case 'grand':
         return {
-          container: 'bg-gradient-to-br from-[#FFDE59] via-yellow-300 to-amber-300 p-4 shadow-lg hover:shadow-xl',
-          image: 'w-16 h-16 ring-3 ring-black',
-          nameSize: 'text-lg font-bold text-black',
-          roleSize: 'text-sm text-gray-800',
-          icon: <Crown size={16} className="text-black" />
+          container: 'bg-gradient-to-br from-[#FFDE59] via-yellow-300 to-amber-400 p-6 shadow-md hover:shadow-lg border-2 border-yellow-400 hover:border-yellow-500 transform hover:-translate-y-2 hover:scale-[1.02] cursor-pointer transition-all duration-300 rounded-xl',
+          image: 'w-24 h-24 ring-4 ring-black hover:ring-gray-800',
+          nameSize: 'text-xl font-bold text-black mb-1',
+          roleSize: 'text-sm font-semibold text-gray-800 mb-3',
+          icon: <Crown size={20} className="text-black drop-shadow-sm" />,
+          badge: 'bg-black text-[#FFDE59] px-3 py-1 text-xs font-bold rounded-full shadow-lg',
+          socialContainer: 'bg-yellow-100 rounded-lg p-3 mt-4'
         };
       case 'chief':
         return {
-          container: 'bg-white p-4 shadow-md hover:shadow-lg border border-gray-200',
-          image: 'w-14 h-14 ring-2 ring-[#FFDE59]',
-          nameSize: 'text-base font-semibold text-gray-900',
-          roleSize: 'text-sm text-gray-600',
-          icon: <Star size={14} className="text-[#FFDE59]" />
+          container: 'bg-white p-5 shadow-md hover:shadow-lg border-2 border-gray-200 hover:border-[#FFDE59] rounded-xl transform hover:-translate-y-1 hover:scale-[1.01] transition-all duration-300',
+          image: 'w-20 h-20 ring-3 ring-[#FFDE59] hover:ring-yellow-400',
+          nameSize: 'text-lg font-bold text-gray-900 mb-1',
+          roleSize: 'text-sm font-medium text-gray-600 mb-3',
+          icon: <Star size={18} className="text-[#FFDE59] drop-shadow-sm" />,
+          badge: 'bg-[#FFDE59] text-black px-3 py-1 text-xs font-bold rounded-full shadow-md',
+          socialContainer: 'bg-gray-50 rounded-lg p-3 mt-4'
         };
       default:
         return {
-          container: 'bg-white p-3 shadow-sm hover:shadow-md border border-gray-100',
-          image: 'w-12 h-12 ring-2 ring-gray-300',
-          nameSize: 'text-sm font-medium text-gray-900',
-          roleSize: 'text-xs text-gray-600',
-          icon: <Users size={12} className="text-gray-500" />
+          container: 'bg-white p-4 border border-gray-200 hover:border-gray-300 rounded-lg transform hover:-translate-y-1 transition-all duration-300',
+          image: 'w-16 h-16 ring-2 ring-gray-300 hover:ring-[#FFDE59]',
+          nameSize: 'text-base font-semibold text-gray-900 mb-1',
+          roleSize: 'text-sm text-gray-600 mb-3',
+          icon: <Users size={16} className="text-gray-500" />,
+          badge: 'bg-gray-100 text-gray-700 px-2 py-1 text-xs font-medium rounded-full',
+          socialContainer: 'bg-gray-50 rounded-lg p-2 mt-3'
         };
     }
   };
@@ -35,48 +42,49 @@ const TeamMemberCard = ({ name, role, imageUrl, linkedin, twitter, level }) => {
   const styles = getLevelStyles();
 
   return (
-    <div className={`rounded-lg transition-all duration-300 hover:-translate-y-1 ${styles.container}`}>
-      {/* Level indicator */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center space-x-1">
-          {styles.icon}
-          <span className={`text-xs font-medium ${level === 'grand' ? 'text-gray-800' : 'text-gray-500'}`}>
-            {level === 'grand' ? 'Leader' : level === 'chief' ? 'Head' : 'Member'}
-          </span>
+    <div className={`rounded-xl transition-all duration-500 ease-out group ${styles.container}`}>
+      {/* Profile Section */}
+      <div className="text-center my-4">
+        <div className="relative inline-block mb-3">
+          <img
+            src={imageUrl || `https://ui-avatars.com/api/?name=${name}&background=${level === 'grand' ? '000000' : 'FFDE59'}&color=${level === 'grand' ? 'FFDE59' : '000000'}&bold=true&size=128`}
+            alt={name}
+            className={`${styles.image} rounded-lg mx-auto object-cover transition-all duration-300 group-hover:brightness-110`}
+            onError={(e) => {
+              e.target.src = `https://ui-avatars.com/api/?name=${name}&background=${level === 'grand' ? '000000' : 'FFDE59'}&color=${level === 'grand' ? 'FFDE59' : '000000'}&bold=true&size=128`;
+            }}
+          />
+          {/* Online indicator */}
+          <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${level === 'grand' ? 'bg-green-500' : level === 'chief' ? 'bg-blue-500' : 'bg-gray-400'} shadow-lg`}></div>
         </div>
+        
+        <h3 className={`${styles.nameSize} transition-colors duration-300 group-hover:text-opacity-80`}>
+          {name}
+        </h3>
+        <p className={styles.roleSize}>
+          {role}
+        </p>
       </div>
 
-      {/* Profile section */}
-      <div className="text-center mb-3">
-        <img
-          src={imageUrl || `https://ui-avatars.com/api/?name=${name}&background=${level === 'grand' ? '000000' : 'FFDE59'}&color=${level === 'grand' ? 'FFDE59' : '000000'}&bold=true&size=128`}
-          alt={name}
-          className={`${styles.image} rounded-lg mx-auto mb-2 object-cover`}
-          onError={(e) => {
-            e.target.src = `https://ui-avatars.com/api/?name=${name}&background=${level === 'grand' ? '000000' : 'FFDE59'}&color=${level === 'grand' ? 'FFDE59' : '000000'}&bold=true&size=128`;
-          }}
-        />
-        <h3 className={styles.nameSize}>{name}</h3>
-        <p className={styles.roleSize}>{role}</p>
-      </div>
-
-      {/* Details */}
-      <div className="space-y-2">
-        {/* Social Links */}
-        {(linkedin || twitter) && (
-          <div className="flex justify-center space-x-2 pt-2 border-t border-gray-200 border-opacity-50">
+      {/* Social Links */}
+      {(linkedin || twitter || instagram) && (
+        <div className={styles.socialContainer}>
+          <div className="flex justify-center space-x-3">
             {linkedin && (
               <a 
                 href={linkedin} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className={`p-1.5 rounded-md transition-colors ${
+                className={`group/social flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 transform hover:scale-110 ${
                   level === 'grand'
-                    ? 'bg-black bg-opacity-20 hover:bg-opacity-30 text-[#FFDE59] hover:text-yellow-500'
-                    : 'bg-gray-100 hover:bg-blue-100 text-gray-600 hover:text-blue-600'
+                    ? 'bg-white hover:bg-blue-600 text-gray-600 hover:text-white shadow-md border border-gray-200'
+                    : level === 'chief'
+                    ? 'bg-white hover:bg-blue-600 text-gray-600 hover:text-white shadow-md border border-gray-200'
+                    : 'bg-white hover:bg-blue-600 text-gray-600 hover:text-white shadow-sm border border-gray-200'
                 }`}
+                title="LinkedIn Profile"
               >
-                <Linkedin size={14} />
+                <FaLinkedinIn size={16} className="transition-transform duration-300 group-hover/social:scale-110" />
               </a>
             )}
             {twitter && (
@@ -84,18 +92,43 @@ const TeamMemberCard = ({ name, role, imageUrl, linkedin, twitter, level }) => {
                 href={twitter} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className={`p-1.5 rounded-md transition-colors ${
+                className={`group/social flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 transform hover:scale-110 ${
                   level === 'grand'
-                    ? 'bg-black bg-opacity-20 hover:bg-opacity-30 text-[#FFDE59] hover:text-yellow-500'
-                    : 'bg-gray-100 hover:bg-blue-100 text-gray-600 hover:text-blue-400'
+                    ? 'bg-white hover:bg-black text-gray-600 hover:text-white shadow-md border border-gray-200'
+                    : level === 'chief'
+                    ? 'bg-white hover:bg-black text-gray-600 hover:text-white shadow-md border border-gray-200'
+                    : 'bg-white hover:bg-black text-gray-600 hover:text-white shadow-sm border border-gray-200'
                 }`}
+                title="X (Twitter) Profile"
               >
-                <Twitter size={14} />
+                <FaXTwitter size={16} className="transition-transform duration-300 group-hover/social:scale-110" />
+              </a>
+            )}
+            {instagram && (
+              <a 
+                href={instagram} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className={`group/social flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 transform hover:scale-110 ${
+                  level === 'grand'
+                    ? 'bg-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 text-gray-600 hover:text-white shadow-md border border-gray-200'
+                    : level === 'chief'
+                    ? 'bg-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 text-gray-600 hover:text-white shadow-md border border-gray-200'
+                    : 'bg-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 text-gray-600 hover:text-white shadow-sm border border-gray-200'
+                }`}
+                title="Instagram Profile"
+              >
+                <FaInstagram size={16} className="transition-transform duration-300 group-hover/social:scale-110" />
               </a>
             )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
+
+      {/* Hover effect overlay */}
+      <div className={`absolute inset-0 rounded-xl opacity-0 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none ${
+        level === 'grand' ? 'bg-black' : level === 'chief' ? 'bg-[#FFDE59]' : 'bg-gray-900'
+      }`}></div>
     </div>
   );
 };
@@ -158,8 +191,8 @@ const Team = () => {
           name: "Kunal",
           role: "AI Pathfinder",
           imageUrl: "https://example.com/kunal.jpg",
-          linkedin: "https://linkedin.com/in/kunal",
-          twitter: "https://x.com/kunal",
+          linkedin: "",
+          twitter: "",
         },
         {
           name: "Achintya",
@@ -178,6 +211,7 @@ const Team = () => {
         imageUrl: "https://pbs.twimg.com/profile_images/1912598869587730432/FDosdz9t_400x400.jpg",
         linkedin: "https://linkedin.com/in/chahatkesharwani",
         twitter: "https://x.com/chahatkesh",
+        instagram: "https://instagram.com/chahat.kesharwanii",
       },
       team: [
         {
@@ -199,16 +233,24 @@ const Team = () => {
   ];
 
   return (
-    <section id="team" className="py-16 bg-white relative overflow-hidden">
-      <div className="container mx-auto px-4 max-w-6xl">
-        {/* Section Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-black">
-            Meet the Pathfinders
+    <section id="team" className="py-20 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-10 left-10 w-72 h-72 bg-[#FFDE59] rounded-full opacity-5 blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-r from-[#FFDE59] to-yellow-300 rounded-full opacity-5 blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gray-200 rounded-full opacity-10 blur-2xl animate-pulse" style={{ animationDelay: '4s' }}></div>
+      </div>
+
+      <div className="container mx-auto px-4 max-w-6xl relative z-10">
+        {/* Enhanced Section Header */}
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-black leading-tight">
+            Meet the <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFDE59] to-amber-500">Pathfinders</span>
           </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Visionary leaders and dedicated team members driving OpenLearn's mission.
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            Visionary leaders and dedicated team members driving OpenLearn's mission forward with passion and expertise.
           </p>
+          <div className="mt-8 w-24 h-1 bg-gradient-to-r from-[#FFDE59] to-amber-500 mx-auto rounded-full"></div>
         </div>
 
         {/* Compact Hierarchy Layout */}
