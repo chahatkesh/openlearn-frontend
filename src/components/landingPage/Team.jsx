@@ -234,23 +234,16 @@ const Team = () => {
 
   return (
     <section id="team" className="py-20 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-10 left-10 w-72 h-72 bg-[#FFDE59] rounded-full opacity-5 blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-r from-[#FFDE59] to-yellow-300 rounded-full opacity-5 blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gray-200 rounded-full opacity-10 blur-2xl animate-pulse" style={{ animationDelay: '4s' }}></div>
-      </div>
-
       <div className="container mx-auto px-4 max-w-6xl relative z-10">
-        {/* Enhanced Section Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-black leading-tight">
-            Meet the <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFDE59] to-amber-500">Pathfinders</span>
+        {/* Header Section */}
+        <div className="text-center mb-20 max-w-4xl mx-auto">
+          <h2 className="text-5xl font-bold mb-6 bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 bg-clip-text text-transparent">
+            Meet the Pathfinders
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Visionary leaders and dedicated team members driving OpenLearn's mission forward with passion and expertise.
+          
+          <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+          Visionary leaders and dedicated team members driving OpenLearn's mission forward with passion and expertise.
           </p>
-          <div className="mt-8 w-24 h-1 bg-gradient-to-r from-[#FFDE59] to-amber-500 mx-auto rounded-full"></div>
         </div>
 
         {/* Compact Hierarchy Layout */}
@@ -382,10 +375,6 @@ const Team = () => {
           </div>
         </div>
       </div>
-      
-      {/* Subtle Background Decorations */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-[#FFDE59] rounded-full -translate-y-1/2 translate-x-1/2 opacity-5"></div>
-      <div className="absolute bottom-0 left-0 w-48 h-48 bg-gray-200 rounded-full translate-y-1/2 -translate-x-1/2 opacity-30"></div>
     </section>
   );
 };

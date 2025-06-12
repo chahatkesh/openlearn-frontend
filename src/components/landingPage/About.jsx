@@ -222,16 +222,13 @@ const About = () => {
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Part 1: About OpenLearn - Enhanced with animations */}
-        <div className="max-w-4xl mx-auto mb-24 text-center">
-          <h2 className="text-4xl md:text-6xl font-bold mb-10 text-gray-900">
-            <span className="relative inline-block">
-              About OpenLearn
-              <span className="absolute -bottom-4 left-0 right-0 h-1 bg-[#FFDE59]"></span>
-            </span>
+        <div className="text-center mb-20 max-w-4xl mx-auto">
+          <h2 className="text-5xl font-bold mb-6 bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 bg-clip-text text-transparent">
+            About OpenLearn
           </h2>
           
-          <p className="text-xl md:text-2xl text-gray-700 mb-10 font-medium">
-            OpenLearn is a student-led, cohort-based learning community at NIT Jalandhar.
+          <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+          OpenLearn is a student-led, cohort-based learning community at NIT Jalandhar.
           </p>
         </div>
 
