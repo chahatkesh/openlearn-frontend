@@ -8,7 +8,7 @@ const TeamMemberCard = ({ name, role, imageUrl, linkedin, twitter, instagram, le
     switch (level) {
       case 'grand':
         return {
-          container: 'bg-gradient-to-r from-[#FFDE59] via-yellow-300 to-amber-400 p-8 shadow-xl hover:shadow-2xl border-2 border-yellow-400 hover:border-yellow-500 transform hover:-translate-y-1 hover:scale-[1.01] cursor-pointer transition-all duration-300 rounded-2xl',
+          container: 'bg-gradient-to-r from-[#FFDE59] via-yellow-300 to-amber-400 p-8 border-2 border-yellow-400 hover:border-yellow-500 transform hover:-translate-y-1 hover:scale-[1.01] cursor-pointer transition-all duration-300 rounded-2xl',
           image: 'w-36 h-36 ring-4 ring-black hover:ring-gray-800',
           nameSize: 'text-2xl font-bold text-black mb-2',
           roleSize: 'text-base font-semibold text-gray-800 mb-4',
@@ -77,7 +77,7 @@ const TeamMemberCard = ({ name, role, imageUrl, linkedin, twitter, instagram, le
 
             {/* Social Links */}
             {(linkedin || twitter || instagram) && (
-                <div className="flex justify-center md:justify-start space-x-4">
+                <div className="flex justify-center md:justify-start mt-6 space-x-4">
                   {linkedin && (
                     <a 
                       href={linkedin} 
@@ -337,7 +337,7 @@ const Team = () => {
               <h3 className="text-2xl font-bold text-gray-800">Grand Pathfinder</h3>
             </div>
             <div className="flex justify-center">
-              <div className="w-full max-w-2xl">
+              <div className="w-full max-w-md">
                 <TeamMemberCard {...grandPathfinder} level="grand" />
               </div>
             </div>
