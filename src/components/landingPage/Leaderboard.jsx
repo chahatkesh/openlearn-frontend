@@ -12,7 +12,7 @@ const Leaderboard = () => {
 
   useEffect(() => {
     const loadLeaderboardData = async () => {
-      if (isAuthenticated) {
+      if (isAuthenticated()) {
         try {
           setLoading(true);
           const response = await DataService.getLeaderboard();
@@ -73,7 +73,7 @@ const Leaderboard = () => {
     });
   };
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated()) {
     return (
       <section className="py-16 bg-gradient-to-br from-gray-50 to-gray-100" style={{ backgroundColor: '#F9FAFB' }}>
         <div className="container max-w-4xl mx-auto px-4">

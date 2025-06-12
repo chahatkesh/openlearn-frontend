@@ -3,12 +3,12 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 
 const Hero = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   return (
     <section className="relative min-h-[100vh] flex flex-col justify-center hero-pattern" style={{backgroundColor: '#FFDE59'}}>
       <div className="absolute top-0 right-0 flex items-center py-4 px-6">
-        {isAuthenticated ? (
+        {isAuthenticated() ? (
           <Link 
             to="/dashboard"
             className="flex items-center px-4 py-2 text-white font-medium rounded-md shadow-sm transition duration-300 ease-in-out"

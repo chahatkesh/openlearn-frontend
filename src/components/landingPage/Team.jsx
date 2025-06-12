@@ -1,373 +1,349 @@
-import React, { useState } from 'react';
-import { Linkedin, Twitter, X } from 'lucide-react';
+import React from 'react';
+import { Linkedin, Twitter, Crown, Star, Users } from 'lucide-react';
 
-// InfoCard component for hover details
-const InfoCard = ({ role, branch, batch, linkedin, twitter, onClose, position }) => {
-  // Position styles based on the calculated position
-  const cardStyle = {
-    left: `${position.x}px`,
-    top: `${position.y}px`,
+// Modern Team Member Card
+const TeamMemberCard = ({ name, role, imageUrl, linkedin, twitter, level }) => {
+  const getLevelStyles = () => {
+    switch (level) {
+      case 'grand':
+        return {
+          container: 'bg-gradient-to-br from-[#FFDE59] via-yellow-300 to-amber-300 p-4 shadow-lg hover:shadow-xl',
+          image: 'w-16 h-16 ring-3 ring-black',
+          nameSize: 'text-lg font-bold text-black',
+          roleSize: 'text-sm text-gray-800',
+          icon: <Crown size={16} className="text-black" />
+        };
+      case 'chief':
+        return {
+          container: 'bg-white p-4 shadow-md hover:shadow-lg border border-gray-200',
+          image: 'w-14 h-14 ring-2 ring-[#FFDE59]',
+          nameSize: 'text-base font-semibold text-gray-900',
+          roleSize: 'text-sm text-gray-600',
+          icon: <Star size={14} className="text-[#FFDE59]" />
+        };
+      default:
+        return {
+          container: 'bg-white p-3 shadow-sm hover:shadow-md border border-gray-100',
+          image: 'w-12 h-12 ring-2 ring-gray-300',
+          nameSize: 'text-sm font-medium text-gray-900',
+          roleSize: 'text-xs text-gray-600',
+          icon: <Users size={12} className="text-gray-500" />
+        };
+    }
   };
-  
+
+  const styles = getLevelStyles();
+
   return (
-    <div 
-      className="fixed z-50 bg-white rounded-md shadow-xl p-3 w-[200px] animate-fadeIn"
-      style={cardStyle}
-    >
-      <button 
-        className="absolute top-1 right-1 text-gray-400 hover:text-gray-600" 
-        onClick={onClose}
-      >
-        <X size={12} />
-      </button>
-      
-      <div>
-        <h4 className="font-medium text-xs mb-2">{role}</h4>
-        
-        {/* Branch & Batch in single row */}
-        {(branch || batch) && (
-          <div className="flex items-center mb-2 gap-2 flex-wrap">
-            {branch && (
-              <span className="inline-block text-[10px] bg-gray-100 px-2 py-0.5 rounded-full">
-                {branch}
-              </span>
+    <div className={`rounded-lg transition-all duration-300 hover:-translate-y-1 ${styles.container}`}>
+      {/* Level indicator */}
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center space-x-1">
+          {styles.icon}
+          <span className={`text-xs font-medium ${level === 'grand' ? 'text-gray-800' : 'text-gray-500'}`}>
+            {level === 'grand' ? 'Leader' : level === 'chief' ? 'Head' : 'Member'}
+          </span>
+        </div>
+      </div>
+
+      {/* Profile section */}
+      <div className="text-center mb-3">
+        <img
+          src={imageUrl || `https://ui-avatars.com/api/?name=${name}&background=${level === 'grand' ? '000000' : 'FFDE59'}&color=${level === 'grand' ? 'FFDE59' : '000000'}&bold=true&size=128`}
+          alt={name}
+          className={`${styles.image} rounded-lg mx-auto mb-2 object-cover`}
+          onError={(e) => {
+            e.target.src = `https://ui-avatars.com/api/?name=${name}&background=${level === 'grand' ? '000000' : 'FFDE59'}&color=${level === 'grand' ? 'FFDE59' : '000000'}&bold=true&size=128`;
+          }}
+        />
+        <h3 className={styles.nameSize}>{name}</h3>
+        <p className={styles.roleSize}>{role}</p>
+      </div>
+
+      {/* Details */}
+      <div className="space-y-2">
+        {/* Social Links */}
+        {(linkedin || twitter) && (
+          <div className="flex justify-center space-x-2 pt-2 border-t border-gray-200 border-opacity-50">
+            {linkedin && (
+              <a 
+                href={linkedin} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className={`p-1.5 rounded-md transition-colors ${
+                  level === 'grand'
+                    ? 'bg-black bg-opacity-20 hover:bg-opacity-30 text-[#FFDE59] hover:text-yellow-500'
+                    : 'bg-gray-100 hover:bg-blue-100 text-gray-600 hover:text-blue-600'
+                }`}
+              >
+                <Linkedin size={14} />
+              </a>
             )}
-            {batch && (
-              <span className="inline-block text-[10px] bg-yellow-50 px-2 py-0.5 rounded-full">
-                {batch}
-              </span>
+            {twitter && (
+              <a 
+                href={twitter} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className={`p-1.5 rounded-md transition-colors ${
+                  level === 'grand'
+                    ? 'bg-black bg-opacity-20 hover:bg-opacity-30 text-[#FFDE59] hover:text-yellow-500'
+                    : 'bg-gray-100 hover:bg-blue-100 text-gray-600 hover:text-blue-400'
+                }`}
+              >
+                <Twitter size={14} />
+              </a>
             )}
           </div>
         )}
-        
-        {/* Social Links */}
-        <div className="flex space-x-3 mt-2 border-t pt-2 border-gray-100">
-          {linkedin && (
-            <a href={linkedin} target="_blank" rel="noopener noreferrer" 
-              className="text-gray-600 hover:text-blue-700 transition-colors">
-              <Linkedin size={14} />
-            </a>
-          )}
-          {twitter && (
-            <a href={twitter} target="_blank" rel="noopener noreferrer" 
-              className="text-gray-600 hover:text-blue-500 transition-colors">
-              <Twitter size={14} />
-            </a>
-          )}
-        </div>
       </div>
-    </div>
-  );
-};
-
-// PathfinderNode component for each team member
-const PathfinderNode = ({ name, role, branch, batch, imageUrl, linkedin, twitter, tier, isChief }) => {
-  const [isInfoVisible, setIsInfoVisible] = useState(false);
-  const [infoPosition, setInfoPosition] = useState({ x: 0, y: 0 });
-  
-  const handleMouseEnter = (e) => {
-    // Calculate position for info card
-    const rect = e.currentTarget.getBoundingClientRect();
-    const windowWidth = window.innerWidth;
-    
-    // Default position (centered below the node)
-    let xPosition = rect.left + (rect.width / 2) - 110; // Center the 220px wide card
-    
-    // Make sure the card doesn't go offscreen
-    if (xPosition < 10) xPosition = 10; // Keep 10px margin from left edge
-    if (xPosition + 220 > windowWidth - 10) xPosition = windowWidth - 230; // Keep 10px margin from right edge
-    
-    setInfoPosition({
-      x: xPosition,
-      y: rect.bottom + window.scrollY + 10, // Position below the node with 10px gap
-    });
-    setIsInfoVisible(true);
-  };
-  
-  return (
-    <div className="relative">
-      <div 
-        className="flex flex-col items-center justify-center"
-        style={{ width: '72px', height: tier === 1 ? '90px' : '85px' }}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={() => setIsInfoVisible(false)}
-        onClick={handleMouseEnter}
-        onTouchStart={(e) => {
-          e.preventDefault();
-          handleMouseEnter(e);
-        }}
-      >
-        {/* Profile Image - Fixed Size */}
-        <div 
-          className={`rounded-full overflow-hidden mb-2 border-2 transition-all duration-200
-            ${tier === 1 ? 'border-yellow-500' : isChief ? 'border-yellow-400' : 'border-gray-200'}
-            hover:border-yellow-400 hover:scale-105`}
-          style={{ width: tier === 1 ? '60px' : '54px', height: tier === 1 ? '60px' : '54px' }}
-        >
-          <img
-            src={imageUrl || `https://placehold.co/100x100/FFDE59/000000?text=${name.charAt(0)}`}
-            alt={name}
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              e.target.src = `https://placehold.co/100x100/FFDE59/000000?text=${name.charAt(0)}`;
-            }}
-          />
-        </div>
-        
-        {/* Name - Fixed Size, 12px */}
-        <h3 className="font-medium text-[12px] text-center leading-none mb-0.5 max-w-[70px] mx-auto truncate">{name}</h3>
-        
-        {/* Role - Fixed Size, 11px */}
-        <p className="text-[11px] text-gray-500 text-center leading-none max-w-[70px] mx-auto truncate">{role.replace('Pathfinder', '')}</p>
-      </div>
-      
-      {/* Info Card on Hover */}
-      {isInfoVisible && (
-        <InfoCard 
-          role={role}
-          branch={branch}
-          batch={batch}
-          linkedin={linkedin}
-          twitter={twitter}
-          onClose={() => setIsInfoVisible(false)}
-          position={infoPosition}
-        />
-      )}
     </div>
   );
 };
 
 const Team = () => {
   // Team data - organized hierarchically
-  const pathfinders = {
-    grand: {
-      name: "Vatsal Khanna",
-      role: "Grand Pathfinder",
-      branch: "ECE",
-      batch: "2027",
-      imageUrl: "https://example.com/vatsal.jpg",
-      linkedin: "https://linkedin.com/in/vatsal-khanna",
-      twitter: "https://twitter.com/vatsalkhanna",
-    },
-    chiefs: [
-      {
-        name: "Rhythm Goyal",
-        role: "Chief Finance Pathfinder",
-        branch: "ECE",
-        batch: "2026",
-        imageUrl: "https://example.com/rhythm.jpg",
-        linkedin: "https://linkedin.com/in/rhythmgoyal",
-        twitter: "https://twitter.com/rhythmgoyal",
-        domain: "Finance",
-        team: [
-          {
-            name: "Pratham",
-            role: "Finance Pathfinder",
-            imageUrl: "https://example.com/pratham.jpg",
-            linkedin: "https://linkedin.com/in/pratham",
-            twitter: "https://twitter.com/pratham",
-          },
-          {
-            name: "Tanveer",
-            role: "Finance Pathfinder",
-            imageUrl: "https://example.com/tanveer.jpg",
-            linkedin: "https://linkedin.com/in/tanveer",
-            twitter: "https://twitter.com/tanveer",
-          }
-        ]
-      },
-      {
-        name: "Ratinderdeep Singh",
-        role: "Chief AI Pathfinder",
-        branch: "ECE",
-        batch: "2027",
-        imageUrl: "https://example.com/ratinder.jpg",
-        linkedin: "https://linkedin.com/in/ratinderdeep",
-        twitter: "https://twitter.com/ratinderdeep",
-        domain: "AI",
-        team: [
-          {
-            name: "Adesh",
-            role: "AI Pathfinder",
-            imageUrl: "https://example.com/adesh.jpg",
-            linkedin: "https://linkedin.com/in/adesh",
-            twitter: "https://twitter.com/adesh",
-          },
-          {
-            name: "Kunal",
-            role: "AI Pathfinder",
-            imageUrl: "https://example.com/kunal.jpg",
-            linkedin: "https://linkedin.com/in/kunal",
-            twitter: "https://twitter.com/kunal",
-          },
-          {
-            name: "Achintya",
-            role: "AI Pathfinder",
-            imageUrl: "https://example.com/achintya.jpg",
-            linkedin: "https://linkedin.com/in/achintya",
-            twitter: "https://twitter.com/achintya",
-          }
-        ]
-      },
-      {
-        name: "Chahat Kesharwani",
-        role: "Chief Creative Pathfinder",
-        branch: "ICE",
-        batch: "2027",
-        imageUrl: "https://example.com/chahat.jpg",
-        linkedin: "https://linkedin.com/in/chahatkesharwani",
-        twitter: "https://twitter.com/chahatkesharwani",
-        domain: "Creative",
-        team: [
-          {
-            name: "Rishi",
-            role: "Creative Pathfinder",
-            imageUrl: "https://example.com/rishi.jpg",
-            linkedin: "https://linkedin.com/in/rishi",
-            twitter: "https://twitter.com/rishi",
-          },
-          {
-            name: "Achintya",
-            role: "Creative Pathfinder",
-            imageUrl: "https://example.com/achintya.jpg",
-            linkedin: "https://linkedin.com/in/achintya",
-            twitter: "https://twitter.com/achintya",
-          }
-        ]
-      }
-    ]
+  const grandPathfinder = {
+    name: "Vatsal Khanna",
+    role: "Grand Pathfinder",
+    imageUrl: "https://pbs.twimg.com/profile_images/1903807740192923648/im6TgSDi_400x400.jpg",
+    linkedin: "https://www.linkedin.com/in/vatsalkhanna/",
+    twitter: "https://x.com/vatsalkhanna55",
   };
 
+  const departments = [
+    {
+      name: "Finance",
+      chief: {
+        name: "Rhythm Goyal",
+        role: "Chief Finance Pathfinder",
+        imageUrl: "https://pbs.twimg.com/profile_images/1912483598835261440/sn7EUmiA_400x400.jpg",
+        linkedin: "https://www.linkedin.com/in/rhythm-goyal-a14a53263/",
+        twitter: "https://x.com/RhythmGoyal90",
+      },
+      team: [
+        {
+          name: "Pratham",
+          role: "Finance Pathfinder",
+          imageUrl: "https://media.licdn.com/dms/image/v2/D4D03AQFgxvkhODCGCw/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1687340486079?e=1755129600&v=beta&t=0ONStROffU6T6lRBcXlKTPoYzBRZovHHiXzh3B-HV-0",
+          linkedin: "https://www.linkedin.com/in/prathamandotra/",
+          twitter: "https://x.com/thisisPrathamA",
+        },
+        {
+          name: "Tanveer",
+          role: "Finance Pathfinder",
+          imageUrl: "https://example.com/tanveer.jpg",
+          linkedin: "",
+          twitter: "",
+        }
+      ]
+    },
+    {
+      name: "AI",
+      chief: {
+        name: "Ratinderdeep Singh",
+        role: "Chief AI Pathfinder",
+        imageUrl: "https://pbs.twimg.com/profile_images/1872598069209903104/5oF9lITe_400x400.jpg",
+        linkedin: "https://www.linkedin.com/in/ratinderdeepsingh/",
+        twitter: "https://x.com/Ratinder_999",
+      },
+      team: [
+        {
+          name: "Adesh",
+          role: "AI Pathfinder",
+          imageUrl: "https://media.licdn.com/dms/image/v2/D5635AQFPFG3L2CG6fA/profile-framedphoto-shrink_800_800/B56ZacRdGUG4Ak-/0/1746378546937?e=1750327200&v=beta&t=vQNjTfZf4A8ehuLfzX13hqFJ09_9GFog92OKzIcRcXI",
+          linkedin: "https://www.linkedin.com/in/adesh-anurag-176a44254/",
+          twitter: "https://x.com/adexxhhh",
+        },
+        {
+          name: "Kunal",
+          role: "AI Pathfinder",
+          imageUrl: "https://example.com/kunal.jpg",
+          linkedin: "https://linkedin.com/in/kunal",
+          twitter: "https://x.com/kunal",
+        },
+        {
+          name: "Achintya",
+          role: "AI Pathfinder",
+          imageUrl: "https://media.licdn.com/dms/image/v2/D4D35AQGPp7GSbCZKKg/profile-framedphoto-shrink_800_800/B4DZbu_CP1H8Ag-/0/1747766224218?e=1750327200&v=beta&t=AmTyCDGeIf6qLFhFYeGQj2_84h-MFLWEoVyuoyYaxts",
+          linkedin: "https://www.linkedin.com/in/achintyasharma47/",
+          twitter: "",
+        },
+      ]
+    },
+    {
+      name: "Creative",
+      chief: {
+        name: "Chahat Kesharwani",
+        role: "Chief Creative Pathfinder",
+        imageUrl: "https://pbs.twimg.com/profile_images/1912598869587730432/FDosdz9t_400x400.jpg",
+        linkedin: "https://linkedin.com/in/chahatkesharwani",
+        twitter: "https://x.com/chahatkesh",
+      },
+      team: [
+        {
+          name: "Rishi",
+          role: "Creative Pathfinder",
+          imageUrl: "https://media.licdn.com/dms/image/v2/D4E03AQG87n2sers9aA/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1725363814807?e=1755129600&v=beta&t=9wo-YEMq1ekgXYrmJMpuS_eq9OimJs2NDU6kVMwiDNU",
+          linkedin: "https://www.linkedin.com/in/rishi-ahuja-b1a224310/",
+          twitter: "https://x.com/Rishi2220",
+        },
+        {
+          name: "Achintya",
+          role: "AI Pathfinder",
+          imageUrl: "https://media.licdn.com/dms/image/v2/D4D35AQGPp7GSbCZKKg/profile-framedphoto-shrink_800_800/B4DZbu_CP1H8Ag-/0/1747766224218?e=1750327200&v=beta&t=AmTyCDGeIf6qLFhFYeGQj2_84h-MFLWEoVyuoyYaxts",
+          linkedin: "https://www.linkedin.com/in/achintyasharma47/",
+          twitter: "",
+        },
+      ]
+    }
+  ];
+
   return (
-    <section id="team" className="py-16 bg-gray-50 relative overflow-hidden">
-      <div className="container mx-auto px-4">
-        {/* Section Heading */}
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold mb-4">Meet the Pathfinders</h2>
+    <section id="team" className="py-16 bg-white relative overflow-hidden">
+      <div className="container mx-auto px-4 max-w-6xl">
+        {/* Section Header */}
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-black">
+            Meet the Pathfinders
+          </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            The minds and hearts behind OpenLearn – from visionary leads to hands-on community champions.
+            Visionary leaders and dedicated team members driving OpenLearn's mission.
           </p>
-          <div className="text-center text-yellow-600 text-sm mt-2">
-            <p className="hidden md:block">Hover over each pathfinder to learn more</p>
-            <p className="block md:hidden">Tap on a pathfinder to see details</p>
-          </div>
         </div>
 
-        {/* Organization Tree Structure - Simplified & Perfect */}
-        <div className="max-w-3xl mx-auto relative">
-          {/* SVG Tree Structure - Perfect lines and connections */}
-          <div className="absolute inset-0 w-full h-full pointer-events-none hidden md:block">
-            <svg width="100%" height="100%" viewBox="0 0 800 400" preserveAspectRatio="xMidYMin slice">
-              {/* Vertical line from Grand to middle Chief */}
-              <line x1="400" y1="70" x2="400" y2="150" stroke="#FBBF24" strokeWidth="2" />
-              
-              {/* Horizontal line connecting all chiefs */}
-              <line x1="200" y1="150" x2="600" y2="150" stroke="#FBBF24" strokeWidth="2" />
-              
-              {/* Vertical lines from horizontal to each Chief */}
-              <line x1="200" y1="150" x2="200" y2="170" stroke="#FBBF24" strokeWidth="2" />
-              <line x1="400" y1="150" x2="400" y2="170" stroke="#FBBF24" strokeWidth="2" />
-              <line x1="600" y1="150" x2="600" y2="170" stroke="#FBBF24" strokeWidth="2" />
-              
-              {/* Vertical lines from Chiefs to their teams */}
-              <line x1="200" y1="230" x2="200" y2="280" stroke="#D1D5DB" strokeWidth="2" />
-              <line x1="400" y1="230" x2="400" y2="280" stroke="#D1D5DB" strokeWidth="2" />
-              <line x1="600" y1="230" x2="600" y2="280" stroke="#D1D5DB" strokeWidth="2" />
-              
-              {/* Horizontal lines for each team */}
-              <line x1="150" y1="280" x2="250" y2="280" stroke="#D1D5DB" strokeWidth="2" />
-              <line x1="350" y1="280" x2="450" y2="280" stroke="#D1D5DB" strokeWidth="2" />
-              <line x1="550" y1="280" x2="650" y2="280" stroke="#D1D5DB" strokeWidth="2" />
-              
-              {/* Vertical connections to each team member */}
-              <line x1="150" y1="280" x2="150" y2="300" stroke="#D1D5DB" strokeWidth="2" />
-              <line x1="250" y1="280" x2="250" y2="300" stroke="#D1D5DB" strokeWidth="2" />
-              <line x1="350" y1="280" x2="350" y2="300" stroke="#D1D5DB" strokeWidth="2" />
-              <line x1="450" y1="280" x2="450" y2="300" stroke="#D1D5DB" strokeWidth="2" />
-              <line x1="550" y1="280" x2="550" y2="300" stroke="#D1D5DB" strokeWidth="2" />
-              <line x1="650" y1="280" x2="650" y2="300" stroke="#D1D5DB" strokeWidth="2" />
-            </svg>
-          </div>
-          
-          {/* Tier 1: Grand Pathfinder (Center-Top) */}
-          <div className="flex justify-center mb-24 relative">
-            <div className="relative z-10">
-              <PathfinderNode 
-                {...pathfinders.grand}
-                tier={1}
-                isChief={true}
-              />
+        {/* Compact Hierarchy Layout */}
+        <div className="space-y-10">
+          {/* Level 1: Grand Pathfinder */}
+          <div className="text-center">
+            <div className="flex items-center justify-center space-x-2 mb-4">
+              <Crown size={18} className="text-[#FFDE59]" />
+              <h3 className="text-xl font-bold text-gray-800">Grand Pathfinder</h3>
             </div>
-            
-            {/* Mobile only: vertical connector line */}
-            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full w-0.5 h-8 bg-yellow-400 md:hidden"></div>
+            <div className="flex justify-center">
+              <div className="w-full max-w-xs">
+                <TeamMemberCard {...grandPathfinder} level="grand" />
+              </div>
+            </div>
           </div>
 
-          {/* Tier 2: Chief Pathfinders */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-0 mb-24 relative">
-            {pathfinders.chiefs.map((chief, index) => (
-              <div key={index} className="flex flex-col items-center relative">
-                {/* Mobile only: vertical connector line */}
-                {index === 1 && (
-                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 w-0.5 h-8 bg-yellow-400 md:hidden"></div>
-                )}
-                
-                {/* Chief Node */}
-                <div className="relative z-10">
-                  <PathfinderNode 
-                    {...chief}
-                    tier={2}
-                    isChief={true}
-                  />
-                </div>
-                
-                {/* Domain Badge */}
-                <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 bg-yellow-50 border border-yellow-100 px-2 py-0.5 rounded-full text-[10px] text-yellow-700 whitespace-nowrap">
-                  {chief.domain}
-                </div>
-                
-                {/* Mobile only: vertical connector line */}
-                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full w-0.5 h-8 bg-gray-300 md:hidden"></div>
-              </div>
-            ))}
+          {/* Level 2: Chief Pathfinders */}
+          <div>
+            <div className="flex items-center justify-center space-x-2 mb-6">
+              <Star size={18} className="text-[#FFDE59]" />
+              <h3 className="text-xl font-bold text-gray-800">Chief Pathfinders</h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+              {departments.map((dept, index) => (
+                <TeamMemberCard key={index} {...dept.chief} level="chief" />
+              ))}
+            </div>
           </div>
-          
-          {/* Tier 3: Team Members */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-0">
-            {pathfinders.chiefs.map((chief, chiefIndex) => (
-              <div key={chiefIndex} className="flex flex-col items-center">
-                {/* Team Members Row - Perfect symmetry */}
-                <div className="grid grid-cols-2 gap-x-10 gap-y-4">
-                  {chief.team.map((member, memberIndex) => (
-                    <div key={memberIndex} className="relative flex justify-center">
-                      <PathfinderNode 
-                        {...member}
-                        tier={3}
-                        isChief={false}
-                      />
-                    </div>
-                  ))}
+
+          {/* Level 3: Department Teams */}
+          <div className="space-y-6">
+            <div className="flex items-center justify-center space-x-2 mb-6">
+              <Users size={18} className="text-[#FFDE59]" />
+              <h3 className="text-xl font-bold text-gray-800">Team Members</h3>
+            </div>
+            
+            {(() => {
+              // Sort departments by team size (smallest first)
+              const sortedDepts = [...departments].sort((a, b) => a.team.length - b.team.length);
+              
+              // Function to calculate how many teams can fit in a row (max 4 members total)
+              const getTeamsPerRow = (depts) => {
+                const maxMembersPerRow = 4;
+                let currentRow = [];
+                let rows = [];
+                let currentRowMemberCount = 0;
+                
+                for (let i = 0; i < depts.length; i++) {
+                  const dept = depts[i];
+                  const teamSize = dept.team.length;
+                  
+                  // Check if adding this team would exceed the 4-member limit
+                  if (currentRowMemberCount + teamSize <= maxMembersPerRow) {
+                    currentRow.push(i);
+                    currentRowMemberCount += teamSize;
+                  } else {
+                    // Start a new row if current row has teams
+                    if (currentRow.length > 0) {
+                      rows.push([...currentRow]);
+                    }
+                    currentRow = [i];
+                    currentRowMemberCount = teamSize;
+                  }
+                }
+                
+                // Add the last row if it has teams
+                if (currentRow.length > 0) {
+                  rows.push(currentRow);
+                }
+                
+                return rows;
+              };
+              
+              // Get team arrangement
+              const teamRows = getTeamsPerRow(sortedDepts);
+              
+              return teamRows.map((rowIndices, rowIndex) => (
+                <div key={rowIndex} className="grid gap-6" style={{
+                  gridTemplateColumns: `repeat(${rowIndices.length}, 1fr)`
+                }}>
+                  {rowIndices.map((deptIndex) => {
+                    const dept = sortedDepts[deptIndex];
+                    const teamSize = dept.team.length;
+                    
+                    return (
+                      <div key={dept.name} className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                        <div className="text-center mb-4">
+                          <h4 className="text-base font-bold text-gray-800 mb-1">{dept.name} Team</h4>
+                          <p className="text-xs text-gray-600">Led by {dept.chief.name}</p>
+                        </div>
+                        
+                        <div className={`grid gap-3 ${
+                          teamSize <= 2 ? 'grid-cols-2' :
+                          teamSize <= 3 ? 'grid-cols-3' :
+                          teamSize <= 4 ? 'grid-cols-2' :
+                          'grid-cols-3'
+                        }`}>
+                          {dept.team.map((member, memberIndex) => (
+                            <TeamMemberCard key={memberIndex} {...member} level="member" />
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
+              ));
+            })()}
+          </div>
+
+          {/* Compact Statistics */}
+          <div className="bg-black rounded-lg p-6 text-center">
+            <div className="grid grid-cols-3 gap-6 text-[#FFDE59]">
+              <div>
+                <div className="text-2xl font-bold mb-1">
+                  {1 + departments.reduce((acc, dept) => acc + dept.team.length + 1, 0)}
+                </div>
+                <div className="text-sm opacity-90">Total Members</div>
               </div>
-            ))}
+              <div>
+                <div className="text-2xl font-bold mb-1">{departments.length}</div>
+                <div className="text-sm opacity-90">Departments</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold mb-1">24/7</div>
+                <div className="text-sm opacity-90">Support</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
       
-      {/* CSS for animations */}
-      <style jsx>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(5px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.2s ease-out forwards;
-        }
-      `}</style>
-      
-      {/* Decorative elements */}
-      <div className="absolute top-0 right-0 w-40 h-40 bg-yellow-200 rounded-full -translate-y-1/2 translate-x-1/2 opacity-10"></div>
-      <div className="absolute bottom-0 left-0 w-56 h-56 bg-yellow-200 rounded-full translate-y-1/2 -translate-x-1/2 opacity-10"></div>
+      {/* Subtle Background Decorations */}
+      <div className="absolute top-0 right-0 w-64 h-64 bg-[#FFDE59] rounded-full -translate-y-1/2 translate-x-1/2 opacity-5"></div>
+      <div className="absolute bottom-0 left-0 w-48 h-48 bg-gray-200 rounded-full translate-y-1/2 -translate-x-1/2 opacity-30"></div>
     </section>
   );
 };
