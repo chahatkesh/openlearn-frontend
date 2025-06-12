@@ -8,13 +8,13 @@ const TeamMemberCard = ({ name, role, imageUrl, linkedin, twitter, instagram, le
     switch (level) {
       case 'grand':
         return {
-          container: 'bg-gradient-to-br from-[#FFDE59] via-yellow-300 to-amber-400 p-6 shadow-md hover:shadow-lg border-2 border-yellow-400 hover:border-yellow-500 transform hover:-translate-y-2 hover:scale-[1.02] cursor-pointer transition-all duration-300 rounded-xl',
-          image: 'w-24 h-24 ring-4 ring-black hover:ring-gray-800',
-          nameSize: 'text-xl font-bold text-black mb-1',
-          roleSize: 'text-sm font-semibold text-gray-800 mb-3',
-          icon: <Crown size={20} className="text-black drop-shadow-sm" />,
-          badge: 'bg-black text-[#FFDE59] px-3 py-1 text-xs font-bold rounded-full shadow-lg',
-          socialContainer: 'bg-yellow-100 rounded-lg p-3 mt-4'
+          container: 'bg-gradient-to-r from-[#FFDE59] via-yellow-300 to-amber-400 p-8 shadow-xl hover:shadow-2xl border-2 border-yellow-400 hover:border-yellow-500 transform hover:-translate-y-1 hover:scale-[1.01] cursor-pointer transition-all duration-300 rounded-2xl',
+          image: 'w-36 h-36 ring-4 ring-black hover:ring-gray-800',
+          nameSize: 'text-2xl font-bold text-black mb-2',
+          roleSize: 'text-base font-semibold text-gray-800 mb-4',
+          icon: <Crown size={24} className="text-black drop-shadow-sm" />,
+          badge: 'bg-black text-[#FFDE59] px-4 py-2 text-sm font-bold rounded-full shadow-lg',
+          socialContainer: 'bg-yellow-100 rounded-xl p-4'
         };
       case 'chief':
         return {
@@ -41,6 +41,88 @@ const TeamMemberCard = ({ name, role, imageUrl, linkedin, twitter, instagram, le
 
   const styles = getLevelStyles();
 
+  // Special horizontal layout for grand pathfinder
+  if (level === 'grand') {
+    return (
+      <div className={`rounded-2xl transition-all duration-500 ease-out group ${styles.container}`}>
+        {/* Horizontal Layout for Grand Pathfinder */}
+        <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
+          {/* Left side - Profile Image */}
+          <div className="flex-shrink-0">
+            <div className="relative inline-block">
+              <img
+                src={imageUrl || `https://ui-avatars.com/api/?name=${name}&background=000000&color=FFDE59&bold=true&size=128`}
+                alt={name}
+                className={`${styles.image} rounded-xl object-cover transition-all duration-300 group-hover:brightness-110`}
+                onError={(e) => {
+                  e.target.src = `https://ui-avatars.com/api/?name=${name}&background=000000&color=FFDE59&bold=true&size=128`;
+                }}
+              />
+              {/* Online indicator */}
+              <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-green-500 rounded-full border-4 border-white shadow-lg"></div>
+            </div>
+          </div>
+
+          {/* Right side - Content */}
+          <div className="flex-1 text-center md:text-left">
+            {/* Name and Role */}
+            <div className="mb-4">
+              <h3 className={`${styles.nameSize} transition-colors duration-300 group-hover:text-opacity-80`}>
+                {name}
+              </h3>
+              <p className={styles.roleSize}>
+                {role}
+              </p>
+            </div>
+
+            {/* Social Links */}
+            {(linkedin || twitter || instagram) && (
+                <div className="flex justify-center md:justify-start space-x-4">
+                  {linkedin && (
+                    <a 
+                      href={linkedin} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="group/social flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-300 transform hover:scale-110 bg-white hover:bg-blue-600 text-gray-600 hover:text-white shadow-lg border border-gray-200"
+                      title="LinkedIn Profile"
+                    >
+                      <FaLinkedinIn size={20} className="transition-transform duration-300 group-hover/social:scale-110" />
+                    </a>
+                  )}
+                  {twitter && (
+                    <a 
+                      href={twitter} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="group/social flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-300 transform hover:scale-110 bg-white hover:bg-black text-gray-600 hover:text-white shadow-lg border border-gray-200"
+                      title="X (Twitter) Profile"
+                    >
+                      <FaXTwitter size={20} className="transition-transform duration-300 group-hover/social:scale-110" />
+                    </a>
+                  )}
+                  {instagram && (
+                    <a 
+                      href={instagram} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="group/social flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-300 transform hover:scale-110 bg-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 text-gray-600 hover:text-white shadow-lg border border-gray-200"
+                      title="Instagram Profile"
+                    >
+                      <FaInstagram size={20} className="transition-transform duration-300 group-hover/social:scale-110" />
+                    </a>
+                  )}
+                </div>
+            )}
+          </div>
+        </div>
+
+        {/* Hover effect overlay */}
+        <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none bg-black"></div>
+      </div>
+    );
+  }
+
+  // Regular vertical layout for other team members
   return (
     <div className={`rounded-xl transition-all duration-500 ease-out group ${styles.container}`}>
       {/* Profile Section */}
@@ -250,12 +332,12 @@ const Team = () => {
         <div className="space-y-10">
           {/* Level 1: Grand Pathfinder */}
           <div className="text-center">
-            <div className="flex items-center justify-center space-x-2 mb-4">
-              <Crown size={18} className="text-[#FFDE59]" />
-              <h3 className="text-xl font-bold text-gray-800">Grand Pathfinder</h3>
+            <div className="flex items-center justify-center space-x-2 mb-6">
+              <Crown size={20} className="text-[#FFDE59]" />
+              <h3 className="text-2xl font-bold text-gray-800">Grand Pathfinder</h3>
             </div>
             <div className="flex justify-center">
-              <div className="w-full max-w-xs">
+              <div className="w-full max-w-2xl">
                 <TeamMemberCard {...grandPathfinder} level="grand" />
               </div>
             </div>

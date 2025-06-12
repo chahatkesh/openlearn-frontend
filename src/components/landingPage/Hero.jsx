@@ -43,9 +43,14 @@ const Hero = () => {
         <div className="flex flex-col lg:flex-row items-center">
           <div className="lg:w-1/2 lg:pr-12">
             <div className="animate-fade-in">
-              <span className="bg-black text-white px-4 py-1 rounded-full text-sm font-medium inline-block mb-4">
-                Starting June 15th, 2025
-              </span>
+              <div className="flex flex-wrap gap-3 mb-4">
+                <span className="bg-black text-white px-4 py-1 rounded-full text-sm font-medium">
+                  Starting June 15th, 2025
+                </span>
+                <span className="bg-gradient-to-r from-orange-600 to-amber-600 text-white px-4 py-1 rounded-full text-sm font-medium animate-pulse">
+                  Upcoming: Biggest AI+Finance Hackathon - September 2025
+                </span>
+              </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight" style={{color: '#000000'}}>
                 1st MLxFinance Cohort
               </h1>

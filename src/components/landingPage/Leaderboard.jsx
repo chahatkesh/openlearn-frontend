@@ -110,16 +110,13 @@ const Leaderboard = () => {
   return (
     <section className="py-16 bg-gradient-to-br from-yellow-50 to-orange-50" style={{ backgroundColor: '#FFFBEB' }}>
       <div className="container max-w-6xl mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Top Performers
+        {/* Header Section */}
+        <div className="text-center mb-20 max-w-4xl mx-auto">
+          <h2 className="text-5xl font-bold mb-6 bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 bg-clip-text text-transparent">
+             Top Performers
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Celebrating our most dedicated learners - ranked by resources completed.
-            <br />
-            <span className="text-sm text-gray-500 mt-2 block">
-              Showing Pioneers and Luminaries only
-            </span>
+          <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+          Celebrating our most dedicated learners - ranked by resources completed.
           </p>
         </div>
 
