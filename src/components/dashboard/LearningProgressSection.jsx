@@ -293,17 +293,17 @@ const LearningProgressSection = ({ user }) => {
           </div>
         )}
 
-        {/* Learning Progress Section */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="p-6">
-            <div className="flex items-center mb-6">
-              <div>
-                <h2 className="text-xl font-bold text-gray-900">Learning Progress</h2>
-                <p className="text-sm text-gray-600">Your overall learning statistics</p>
+        {/* Learning Progress Section - Only show if user has enrollments */}
+        {dashboardData?.enrollments?.length > 0 && (
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="p-6">
+              <div className="flex items-center mb-6">
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">Learning Progress</h2>
+                  <p className="text-sm text-gray-600">Your overall learning statistics</p>
+                </div>
               </div>
-            </div>
-            
-            {dashboardData?.enrollments?.length > 0 ? (
+              
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {(() => {
                   // Calculate accurate progress once and reuse
@@ -402,17 +402,9 @@ const LearningProgressSection = ({ user }) => {
                   );
                 })()}
               </div>
-            ) : (
-              <div className="text-center py-8">
-                <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <BookOpen size={24} className="text-gray-400" />
-                </div>
-                <h3 className="font-semibold text-gray-900 mb-2">Start Your Learning Journey</h3>
-                <p className="text-gray-600 text-sm">Enroll in leagues below to track your progress</p>
-              </div>
-            )}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Active Leagues Section */}
         {dashboardData?.enrollments?.length > 0 && (

@@ -83,7 +83,7 @@ const TeamMemberCard = ({ name, role, imageUrl, linkedin, twitter, instagram, le
                       href={linkedin} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="group/social flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-300 transform hover:scale-110 bg-white hover:bg-blue-600 text-gray-600 hover:text-white shadow-lg border border-gray-200"
+                      className="group/social flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-300 transform hover:scale-110 bg-white hover:bg-blue-600 text-gray-600 hover:text-white shadow-sm border border-gray-200"
                       title="LinkedIn Profile"
                     >
                       <FaLinkedinIn size={20} className="transition-transform duration-300 group-hover/social:scale-110" />
@@ -94,7 +94,7 @@ const TeamMemberCard = ({ name, role, imageUrl, linkedin, twitter, instagram, le
                       href={twitter} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="group/social flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-300 transform hover:scale-110 bg-white hover:bg-black text-gray-600 hover:text-white shadow-lg border border-gray-200"
+                      className="group/social flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-300 transform hover:scale-110 bg-white hover:bg-black text-gray-600 hover:text-white shadow-sm border border-gray-200"
                       title="X (Twitter) Profile"
                     >
                       <FaXTwitter size={20} className="transition-transform duration-300 group-hover/social:scale-110" />
@@ -105,7 +105,7 @@ const TeamMemberCard = ({ name, role, imageUrl, linkedin, twitter, instagram, le
                       href={instagram} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="group/social flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-300 transform hover:scale-110 bg-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 text-gray-600 hover:text-white shadow-lg border border-gray-200"
+                      className="group/social flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-300 transform hover:scale-110 bg-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 text-gray-600 hover:text-white shadow-sm border border-gray-200"
                       title="Instagram Profile"
                     >
                       <FaInstagram size={20} className="transition-transform duration-300 group-hover/social:scale-110" />
@@ -223,6 +223,7 @@ const Team = () => {
     imageUrl: "https://pbs.twimg.com/profile_images/1903807740192923648/im6TgSDi_400x400.jpg",
     linkedin: "https://www.linkedin.com/in/vatsalkhanna/",
     twitter: "https://x.com/vatsalkhanna55",
+    instagram: "https://www.instagram.com/vatsalkhanna5/",
   };
 
   const departments = [
