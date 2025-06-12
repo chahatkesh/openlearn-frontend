@@ -286,6 +286,13 @@ const LearningProgressSection = ({ user }) => {
           </div>
         </div>
 
+        {/* Welcome Banner for New Users */}
+        {(!dashboardData?.enrollments || dashboardData.enrollments.length === 0) && (
+          <div className="bg-gradient-to-r from-yellow-50 to-amber-50 rounded-2xl border border-yellow-100 shadow-sm overflow-hidden">
+            <WelcomeBanner user={user} onExploreClick={scrollToLeagues} />
+          </div>
+        )}
+
         {/* Learning Progress Section */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="p-6">
@@ -578,13 +585,6 @@ const LearningProgressSection = ({ user }) => {
                 })}
               </div>
             </div>
-          </div>
-        )}
-
-        {/* Welcome Banner for New Users */}
-        {(!dashboardData?.enrollments || dashboardData.enrollments.length === 0) && (
-          <div className="bg-gradient-to-r from-yellow-50 to-amber-50 rounded-2xl border border-yellow-100 shadow-sm overflow-hidden">
-            <WelcomeBanner user={user} onExploreClick={scrollToLeagues} />
           </div>
         )}
 
