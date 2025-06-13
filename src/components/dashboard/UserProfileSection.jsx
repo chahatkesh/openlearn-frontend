@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { 
   User,
   ExternalLink, 
-  Twitter, 
   Linkedin,
   Github,
   BarChart3,
@@ -19,6 +18,7 @@ import {
   Save,
   AlertCircle
 } from 'lucide-react';
+import { FaXTwitter } from 'react-icons/fa6';
 import ProgressService from '../../utils/progressService';
 import BadgeService from '../../utils/badgeService';
 import SocialService from '../../utils/socialService';
@@ -563,7 +563,7 @@ const UserProfileSection = ({ user, dashboardData = null }) => {
               >
                 <div className="flex items-center gap-2.5">
                   <div className="w-7 h-7 rounded-lg bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                    <Twitter size={14} className="text-blue-600" />
+                    <FaXTwitter size={14} className="text-blue-600" />
                   </div>
                   <span className="text-sm text-gray-700 group-hover:text-blue-700 font-medium">{user.twitterHandle}</span>
                 </div>
@@ -573,9 +573,9 @@ const UserProfileSection = ({ user, dashboardData = null }) => {
               <div className="flex items-center justify-between p-2.5 rounded-lg bg-gray-50/50 border border-gray-100">
                 <div className="flex items-center gap-2.5">
                   <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center">
-                    <Twitter size={14} className="text-gray-400" />
+                    <FaXTwitter size={14} className="text-gray-400" />
                   </div>
-                  <span className="text-sm text-gray-500">Twitter</span>
+                  <span className="text-sm text-gray-500">X (Twitter)</span>
                 </div>
                 <span className="text-xs text-gray-400">Not connected</span>
               </div>
@@ -870,8 +870,8 @@ const SocialEditModal = ({ isOpen, onClose, user, onSave }) => {
           {/* Twitter Handle */}
           <div className="space-y-2">
             <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-              <Twitter size={16} className="text-blue-600" />
-              Twitter Handle
+              <FaXTwitter size={16} className="text-blue-600" />
+              X (Twitter) Handle
             </label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">@</span>

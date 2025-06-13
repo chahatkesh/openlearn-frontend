@@ -216,7 +216,7 @@ class ProgressService {
   }
 
   /**
-   * Share on Twitter
+   * Share on X (Twitter)
    * @param {string} message - Message to share
    */
   static shareOnTwitter(message) {

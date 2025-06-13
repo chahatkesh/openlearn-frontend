@@ -3,13 +3,8 @@ import {
   Users, 
   UserCheck, 
   UserX, 
-  Filter, 
   Search, 
-  MoreHorizontal, 
   Eye, 
-  Edit, 
-  Trash2,
-  Twitter,
   Linkedin,
   Github,
   BarChart3,
@@ -21,9 +16,9 @@ import {
   Crown,
   Sparkles,
   ChevronDown,
-  Loader2,
-  RefreshCw
+  Loader2
 } from 'lucide-react';
+import { FaXTwitter } from 'react-icons/fa6';
 import { getUserAvatarUrl } from '../../utils/avatarService.jsx';
 
 const UserManagement = ({ 
@@ -37,10 +32,8 @@ const UserManagement = ({
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [roleFilter, setRoleFilter] = useState('ALL');
   const [searchTerm, setSearchTerm] = useState('');
-  const [showActions, setShowActions] = useState({});
   const [sortBy, setSortBy] = useState('name');
   const [sortDirection, setSortDirection] = useState('asc');
-  const [selectedUsers, setSelectedUsers] = useState(new Set());
   const [userDetailModal, setUserDetailModal] = useState(null);
   
   const handleRoleChange = (userId, role) => {
@@ -62,37 +55,12 @@ const UserManagement = ({
     }
   };
 
-  const toggleActions = (userId) => {
-    setShowActions(prev => ({
-      ...prev,
-      [userId]: !prev[userId]
-    }));
-  };
-
   const handleSort = (field) => {
     if (sortBy === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
       setSortBy(field);
       setSortDirection('asc');
-    }
-  };
-
-  const toggleUserSelection = (userId) => {
-    const newSelected = new Set(selectedUsers);
-    if (newSelected.has(userId)) {
-      newSelected.delete(userId);
-    } else {
-      newSelected.add(userId);
-    }
-    setSelectedUsers(newSelected);
-  };
-
-  const selectAllUsers = () => {
-    if (selectedUsers.size === filteredUsers.length) {
-      setSelectedUsers(new Set());
-    } else {
-      setSelectedUsers(new Set(filteredUsers.map(user => user.id)));
     }
   };
 
@@ -211,9 +179,9 @@ const UserManagement = ({
           </div>
         </div>
 
-        {/* Enhanced Filters and Search */}
-        <div className="p-6 bg-gray-50/50">
-          <div className="flex flex-col lg:flex-row gap-4">
+        {/* Compact Filters and Search */}
+        <div className="p-4 bg-gray-50/50">
+          <div className="flex flex-col sm:flex-row gap-3">
             {/* Search */}
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -222,72 +190,52 @@ const UserManagement = ({
                 placeholder="Search users by name, email, or social handles..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors cursor-text"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors cursor-text text-sm"
               />
             </div>
             
             {/* Filters */}
-            <div className="flex flex-wrap gap-3">
-              <div className="relative">
-                <label className="block text-xs font-medium text-gray-600 mb-1">Status</label>
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="px-3 py-2.5 pr-8 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-sm cursor-pointer transition-colors"
-                >
-                  <option value="ALL">All Status</option>
-                  <option value="ACTIVE">Active</option>
-                  <option value="PENDING">Pending</option>
-                  <option value="SUSPENDED">Suspended</option>
-                </select>
-              </div>
+            <div className="flex flex-wrap gap-2">
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-3 py-2 pr-8 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-sm cursor-pointer transition-colors"
+              >
+                <option value="ALL">All Status</option>
+                <option value="ACTIVE">Active</option>
+                <option value="PENDING">Pending</option>
+                <option value="SUSPENDED">Suspended</option>
+              </select>
               
-              <div className="relative">
-                <label className="block text-xs font-medium text-gray-600 mb-1">Role</label>
-                <select
-                  value={roleFilter}
-                  onChange={(e) => setRoleFilter(e.target.value)}
-                  className="px-3 py-2.5 pr-8 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-sm cursor-pointer transition-colors"
-                >
-                  <option value="ALL">All Roles</option>
-                  <option value="PIONEER">Pioneer</option>
-                  <option value="PATHFINDER">Pathfinder</option>
-                  <option value="CHIEF_PATHFINDER">Chief Pathfinder</option>
-                  <option value="LUMINARY">Luminary</option>
-                </select>
-              </div>
+              <select
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+                className="px-3 py-2 pr-8 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-sm cursor-pointer transition-colors"
+              >
+                <option value="ALL">All Roles</option>
+                <option value="PIONEER">Pioneer</option>
+                <option value="PATHFINDER">Pathfinder</option>
+                <option value="CHIEF_PATHFINDER">Chief Pathfinder</option>
+                <option value="LUMINARY">Luminary</option>
+              </select>
               
-              <div className="flex items-end">
-                <button
-                  onClick={() => {
-                    setSearchTerm('');
-                    setStatusFilter('ALL');
-                    setRoleFilter('ALL');
-                  }}
-                  className="px-4 py-2.5 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer text-sm font-medium"
-                >
-                  Clear
-                </button>
-              </div>
+              <button
+                onClick={() => {
+                  setSearchTerm('');
+                  setStatusFilter('ALL');
+                  setRoleFilter('ALL');
+                }}
+                className="px-3 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer text-sm font-medium"
+              >
+                Clear
+              </button>
             </div>
           </div>
           
-          <div className="flex items-center justify-between mt-4">
+          <div className="mt-3">
             <p className="text-sm text-gray-600">
               Showing <span className="font-medium">{filteredUsers.length}</span> of <span className="font-medium">{eligibleUsers.length}</span> users
             </p>
-            
-            {selectedUsers.size > 0 && (
-              <div className="flex items-center gap-3">
-                <span className="text-sm text-gray-600">{selectedUsers.size} selected</span>
-                <button
-                  onClick={() => setSelectedUsers(new Set())}
-                  className="text-sm text-blue-600 hover:text-blue-700 cursor-pointer font-medium"
-                >
-                  Clear selection
-                </button>
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -299,14 +247,6 @@ const UserManagement = ({
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-4 text-left">
-                  <input
-                    type="checkbox"
-                    checked={selectedUsers.size === filteredUsers.length && filteredUsers.length > 0}
-                    onChange={selectAllUsers}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
-                  />
-                </th>
                 <th 
                   className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
                   onClick={() => handleSort('name')}
@@ -339,7 +279,7 @@ const UserManagement = ({
             <tbody className="bg-white divide-y divide-gray-200">
               {loading ? (
                 <tr>
-                  <td colSpan="6" className="px-6 py-12 text-center">
+                  <td colSpan="5" className="px-6 py-12 text-center">
                     <div className="flex items-center justify-center">
                       <Loader2 className="h-6 w-6 animate-spin text-gray-400 mr-3" />
                       <span className="text-gray-500">Loading users...</span>
@@ -348,7 +288,7 @@ const UserManagement = ({
                 </tr>
               ) : filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="px-6 py-12 text-center">
+                  <td colSpan="5" className="px-6 py-12 text-center">
                     <div className="text-gray-500">
                       <Users className="h-8 w-8 mx-auto mb-2 text-gray-300" />
                       <p>No users found matching your filters</p>
@@ -362,16 +302,6 @@ const UserManagement = ({
                   
                   return (
                     <tr key={user.id} className="hover:bg-gray-50/50 transition-colors group">
-                      {/* Selection Checkbox */}
-                      <td className="px-6 py-4">
-                        <input
-                          type="checkbox"
-                          checked={selectedUsers.has(user.id)}
-                          onChange={() => toggleUserSelection(user.id)}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
-                        />
-                      </td>
-
                       {/* User Details */}
                       <td className="px-6 py-4">
                         <div className="flex items-center cursor-pointer" onClick={() => setUserDetailModal(user)}>
@@ -472,7 +402,7 @@ const UserManagement = ({
                               className="w-8 h-8 rounded-lg bg-blue-50 hover:bg-blue-100 flex items-center justify-center text-blue-600 hover:text-blue-700 transition-colors cursor-pointer group/social"
                               title={`@${user.twitterHandle}`}
                             >
-                              <Twitter size={14} className="group-hover/social:scale-110 transition-transform" />
+                              <FaXTwitter size={14} className="group-hover/social:scale-110 transition-transform" />
                             </a>
                           )}
                           
@@ -714,10 +644,10 @@ const UserDetailModal = ({ user, onClose, onUpdateStatus, onApproveUser }) => {
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center">
-                        <Twitter size={16} className="text-white" />
+                        <FaXTwitter size={16} className="text-white" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900">Twitter</p>
+                        <p className="text-sm font-medium text-gray-900">X (Twitter)</p>
                         <p className="text-xs text-gray-600">@{user.twitterHandle}</p>
                       </div>
                     </div>
@@ -727,10 +657,10 @@ const UserDetailModal = ({ user, onClose, onUpdateStatus, onApproveUser }) => {
                   <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50 border border-gray-200">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-lg bg-gray-300 flex items-center justify-center">
-                        <Twitter size={16} className="text-gray-500" />
+                        <FaXTwitter size={16} className="text-gray-500" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900">Twitter</p>
+                        <p className="text-sm font-medium text-gray-900">X (Twitter)</p>
                         <p className="text-xs text-gray-500">Not connected</p>
                       </div>
                     </div>
