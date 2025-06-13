@@ -17,7 +17,6 @@ const SectionManagement = ({
   const [editingSection, setEditingSection] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
-    description: '',
     order: 1,
     weekId: ''
   });
@@ -65,7 +64,6 @@ const SectionManagement = ({
   const resetForm = () => {
     setFormData({
       name: '',
-      description: '',
       order: 1,
       weekId: selectedWeekId || ''
     });
@@ -77,7 +75,6 @@ const SectionManagement = ({
   const handleEdit = (section) => {
     setFormData({
       name: section.name,
-      description: section.description || '',
       order: section.order,
       weekId: section.weekId
     });
@@ -230,18 +227,6 @@ const SectionManagement = ({
                 {errors.weekId && <p className="text-red-600 text-xs mt-1">{errors.weekId}</p>}
               </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Description
-              </label>
-              <textarea
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                rows={3}
-                className="block w-full border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-black focus:border-black"
-                placeholder="Describe what students will learn in this section..."
-              />
-            </div>
             <div className="w-24">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Order *
@@ -328,9 +313,6 @@ const SectionManagement = ({
                               Order {section.order}
                             </span>
                           </div>
-                          {section.description && (
-                            <p className="text-sm text-gray-600 mt-1">{section.description}</p>
-                          )}
                           <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
                             <span>
                               {section._count?.resources || 0} resource{(section._count?.resources || 0) !== 1 ? 's' : ''}

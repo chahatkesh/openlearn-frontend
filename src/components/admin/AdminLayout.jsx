@@ -204,9 +204,6 @@ const AdminLayout = () => {
         {/* Enhanced Admin Panel Title */}
         <div className="mb-8 bg-gradient-to-r from-gray-50 to-gray-100/50 rounded-xl p-6 border border-gray-200/30">
           <div className="flex items-center space-x-4">
-            <div className="p-3 bg-gray-800 rounded-lg shadow-md">
-              <Settings className="h-6 w-6 text-white" />
-            </div>
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-1">Admin Panel</h1>
               <p className="text-sm text-gray-600 leading-relaxed">
