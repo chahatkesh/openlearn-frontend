@@ -12,6 +12,17 @@ import { AuthProvider } from './context/AuthContext'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
 import ScrollToTop from './components/common/ScrollToTop'
 
+// Admin components
+import AdminLayout from './components/admin/AdminLayout'
+import AdminUsersPage from './pages/admin/AdminUsersPage'
+import AdminCohortsPage from './pages/admin/AdminCohortsPage'
+import AdminLeaguesPage from './pages/admin/AdminLeaguesPage'
+import AdminSpecializationsPage from './pages/admin/AdminSpecializationsPage'
+import AdminWeeksPage from './pages/admin/AdminWeeksPage'
+import AdminSectionsPage from './pages/admin/AdminSectionsPage'
+import AdminResourcesPage from './pages/admin/AdminResourcesPage'
+import AdminAssignmentsPage from './pages/admin/AdminAssignmentsPage'
+
 const App = () => {
   return (
     <AuthProvider>
@@ -32,8 +43,20 @@ const App = () => {
         </Route>
         
         {/* Routes with specific role requirements */}
-        <Route element={<ProtectedRoute requiredRoles={['GRAND_PATHFINDER', 'CHIEF_PATHFINDER']} />}>
-          <Route path="/admin" element={<AdminPage />} />
+        <Route element={<ProtectedRoute requiredRoles={['ADMIN', 'GRAND_PATHFINDER', 'CHIEF_PATHFINDER']} />}>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<Navigate to="/admin/users" replace />} />
+            <Route path="users" element={<AdminUsersPage />} />
+            <Route path="cohorts" element={<AdminCohortsPage />} />
+            <Route path="leagues" element={<AdminLeaguesPage />} />
+            <Route path="specializations" element={<AdminSpecializationsPage />} />
+            <Route path="weeks" element={<AdminWeeksPage />} />
+            <Route path="sections" element={<AdminSectionsPage />} />
+            <Route path="resources" element={<AdminResourcesPage />} />
+            <Route path="assignments" element={<AdminAssignmentsPage />} />
+          </Route>
+          {/* Legacy redirect for old admin page */}
+          <Route path="/admin-old" element={<AdminPage />} />
         </Route>
 
         {/* Fallback route - redirect to home */}
