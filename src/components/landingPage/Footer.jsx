@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Linkedin, Twitter, Instagram, MapPin } from 'lucide-react';
+import { Linkedin, Instagram, MapPin } from 'lucide-react';
+import { RiTwitterXFill } from 'react-icons/ri';
 
 const Footer = () => {
   return (
@@ -92,10 +93,10 @@ const Footer = () => {
                     href="https://x.com/OpenLearn_NITJ" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="w-9 h-9 rounded-full bg-gray-800 flex items-center justify-center hover:bg-[#1DA1F2] transition-colors"
-                    aria-label="Twitter"
+                    className="w-9 h-9 rounded-full bg-gray-800 flex items-center justify-center hover:bg-black transition-colors"
+                    aria-label="X (formerly Twitter)"
                   >
-                    <Twitter size={16} />
+                    <RiTwitterXFill size={16} />
                   </a>
                   <a 
                     href="https://www.instagram.com/openlearn_nitj" 
