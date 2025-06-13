@@ -14,7 +14,6 @@ const WeekManagement = ({
   const [editingWeek, setEditingWeek] = useState(null);
   const [weekForm, setWeekForm] = useState({
     name: '',
-    description: '',
     order: '',
     leagueId: ''
   });
@@ -74,7 +73,6 @@ const WeekManagement = ({
   const resetForm = () => {
     setWeekForm({
       name: '',
-      description: '',
       order: '',
       leagueId: selectedLeagueId || (leagues.length > 0 ? leagues[0].id : '')
     });
@@ -85,7 +83,6 @@ const WeekManagement = ({
   const startEdit = (week) => {
     setWeekForm({
       name: week.name,
-      description: week.description || '',
       order: week.order,
       leagueId: week.leagueId
     });
@@ -101,7 +98,6 @@ const WeekManagement = ({
     
     setWeekForm({
       name: '',
-      description: '',
       order: nextOrder,
       leagueId: selectedLeagueId || (leagues.length > 0 ? leagues[0].id : '')
     });
@@ -168,20 +164,6 @@ const WeekManagement = ({
                 required
                 placeholder="e.g. Week 1: Introduction to Machine Learning"
               />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-                Description
-              </label>
-              <textarea
-                id="description"
-                name="description"
-                value={weekForm.description}
-                onChange={handleFormChange}
-                rows="3"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-black"
-                placeholder="Describe the content and objectives of this week"
-              ></textarea>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="mb-4">
@@ -288,9 +270,6 @@ const WeekManagement = ({
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-900">
                       <div className="font-medium">{week.name}</div>
-                      {week.description && (
-                        <div className="text-gray-500 text-xs mt-1 max-w-md truncate">{week.description}</div>
-                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {league.name}
