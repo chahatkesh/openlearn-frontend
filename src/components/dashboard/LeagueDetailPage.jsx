@@ -492,31 +492,14 @@ const LeagueDetailPage = ({ league, onBack }) => {
                     <div className="space-y-4">
                       {week.sections.map((section) => {
                         const resources = sectionResources[section.id] || [];
-                        const sectionProgress = resources.length > 0 
-                          ? Math.round((resources.filter(r => resourceProgress[r.id]?.isCompleted).length / resources.length) * 100)
-                          : 0;
-
                         return (
                           <div key={section.id} className="border mt-4 border-gray-100 rounded-lg">
                             {/* Compact Section Header */}
                             <div className="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-t-lg border-b border-gray-100">
                               <div className="flex items-center space-x-3">
                                 <h3 className="font-medium text-gray-900">{section.name}</h3>
-                                <span className="text-sm text-gray-500">
-                                  {resources.filter(r => resourceProgress[r.id]?.isCompleted).length}/{resources.length}
-                                </span>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <span className="text-sm font-medium text-gray-900">{sectionProgress}%</span>
-                                <div className="w-16 bg-gray-200 rounded-full h-1.5">
-                                  <div 
-                                    className="bg-gradient-to-r from-[#FFDE59] to-[#FFD700] h-1.5 rounded-full transition-all duration-500"
-                                    style={{ width: `${sectionProgress}%` }}
-                                  ></div>
-                                </div>
                               </div>
                             </div>
-
                             {/* Compact Resources Table */}
                             {resources.length > 0 && (
                               <div>
@@ -524,7 +507,7 @@ const LeagueDetailPage = ({ league, onBack }) => {
                                 <div className="grid grid-cols-12 gap-2 px-4 py-2 bg-gray-100 border-b border-gray-200 text-xs font-medium text-gray-700 uppercase tracking-wider">
                                   <div className="col-span-1 flex justify-center">Status</div>
                                   <div className="col-span-5">Title</div>
-                                  <div className="col-span-2 text-center">Type</div>
+                                  <div className="col-span-2 text-center">Resources</div>
                                   <div className="col-span-1 text-center">Link</div>
                                   <div className="col-span-2 text-center">Note</div>
                                   <div className="col-span-1 text-center">Share</div>
