@@ -199,19 +199,19 @@ class ProgressService {
     
     switch (type) {
       case 'section':
-        return `🎉 Just completed "${data.sectionName}" in ${data.leagueName} on @OpenLearn! #Learning #Progress #OpenLearn ${baseUrl}`;
+        return `🎉 Just completed "${data.sectionName}" in ${data.leagueName} on @OpenLearn_nitj! #Learning #Progress #OpenLearn ${baseUrl}`;
       
       case 'week':
         return `📚 Finished Week ${data.weekNumber}: "${data.weekName}" in ${data.leagueName}! Another step forward in my learning journey. #WeekComplete #OpenLearn ${baseUrl}`;
       
       case 'badge':
-        return `🏆 Earned the "${data.badgeName}" badge on @OpenLearn! Proud to have completed all sections in ${data.leagueName}. #Achievement #Badge #OpenLearn ${baseUrl}`;
+        return `🏆 Earned the "${data.badgeName}" badge on @OpenLearn_nitj! Proud to have completed all sections in ${data.leagueName}. #Achievement #Badge #OpenLearn ${baseUrl}`;
       
       case 'league':
-        return `🎓 Successfully completed the entire "${data.leagueName}" league on @OpenLearn! ${data.sectionsCount} sections mastered! #LeagueComplete #Achievement #OpenLearn ${baseUrl}`;
+        return `🎓 Successfully completed the entire "${data.leagueName}" league on @OpenLearn_nitj! ${data.sectionsCount} sections mastered! #LeagueComplete #Achievement #OpenLearn ${baseUrl}`;
       
       default:
-        return `🚀 Making great progress on my learning journey with @OpenLearn! #Learning #Progress #OpenLearn ${baseUrl}`;
+        return `🚀 Making great progress on my learning journey with @OpenLearn_nitj! #Learning #Progress #OpenLearn ${baseUrl}`;
     }
   }
 
