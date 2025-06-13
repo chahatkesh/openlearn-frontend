@@ -33,7 +33,7 @@ const AdminLayout = () => {
     { id: 'leagues', label: 'Leagues', icon: BookOpen, path: '/admin/leagues' },
     { id: 'specializations', label: 'Specializations', icon: Award, path: '/admin/specializations' },
     { id: 'weeks', label: 'Weeks', icon: Calendar, path: '/admin/weeks' },
-    { id: 'sections', label: 'Sections', icon: FileText, path: '/admin/sections' },
+    { id: 'sections', label: 'Days', icon: FileText, path: '/admin/sections' },
     { id: 'resources', label: 'Resources', icon: Database, path: '/admin/resources' },
     { id: 'assignments', label: 'Assignments', icon: ClipboardList, path: '/admin/assignments' }
   ];

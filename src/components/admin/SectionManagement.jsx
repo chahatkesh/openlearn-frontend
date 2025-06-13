@@ -27,9 +27,9 @@ const SectionManagement = ({
     const newErrors = {};
     
     if (!formData.name.trim()) {
-      newErrors.name = 'Section name is required';
+      newErrors.name = 'Day name is required';
     } else if (formData.name.length > 100) {
-      newErrors.name = 'Section name must be 100 characters or less';
+      newErrors.name = 'Day name must be 100 characters or less';
     }
     
     if (!formData.weekId) {
@@ -83,7 +83,7 @@ const SectionManagement = ({
   };
 
   const handleDelete = async (sectionId, sectionName) => {
-    if (window.confirm(`Are you sure you want to delete section "${sectionName}"? This will also delete all associated resources and progress records.`)) {
+    if (window.confirm(`Are you sure you want to delete day "${sectionName}"? This will also delete all associated resources and progress records.`)) {
       try {
         await onDeleteSection(sectionId);
       } catch (error) {
@@ -129,9 +129,9 @@ const SectionManagement = ({
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-lg font-medium text-gray-900">Section Management</h3>
+          <h3 className="text-lg font-medium text-gray-900">Day Management</h3>
           <p className="mt-1 text-sm text-gray-600">
-            Manage learning sections within weeks. Sections contain educational resources and activities.
+            Manage learning days within weeks. Days contain educational resources and activities.
           </p>
         </div>
         <button
@@ -139,7 +139,7 @@ const SectionManagement = ({
           className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-black hover:bg-gray-800"
         >
           <Plus size={16} className="mr-2" />
-          Create Section
+          Create Day
         </button>
       </div>
 
@@ -187,13 +187,13 @@ const SectionManagement = ({
       {showCreateForm && (
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <h4 className="text-lg font-medium text-gray-900 mb-4">
-            {editingSection ? 'Edit Section' : 'Create New Section'}
+            {editingSection ? 'Edit Day' : 'Create New Day'}
           </h4>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Section Name *
+                  Day Name *
                 </label>
                 <input
                   type="text"
@@ -254,7 +254,7 @@ const SectionManagement = ({
                 type="submit"
                 className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-black hover:bg-gray-800"
               >
-                {editingSection ? 'Update Section' : 'Create Section'}
+                {editingSection ? 'Update Day' : 'Create Day'}
               </button>
             </div>
           </form>
@@ -270,11 +270,11 @@ const SectionManagement = ({
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
-            <h3 className="text-sm font-medium text-gray-900">No sections found</h3>
+            <h3 className="text-sm font-medium text-gray-900">No days found</h3>
             <p className="text-sm text-gray-500 mt-1">
               {selectedWeekId || selectedLeagueId 
-                ? 'No sections match your current filters.' 
-                : 'Get started by creating your first section.'
+                ? 'No days match your current filters.' 
+                : 'Get started by creating your first day.'
               }
             </p>
           </div>
@@ -328,14 +328,14 @@ const SectionManagement = ({
                         <button
                           onClick={() => handleEdit(section)}
                           className="p-2 text-gray-400 hover:text-gray-600"
-                          title="Edit Section"
+                          title="Edit Day"
                         >
                           <Edit size={16} />
                         </button>
                         <button
                           onClick={() => handleDelete(section.id, section.name)}
                           className="p-2 text-gray-400 hover:text-red-600"
-                          title="Delete Section"
+                          title="Delete Day"
                         >
                           <Trash2 size={16} />
                         </button>
