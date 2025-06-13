@@ -10,7 +10,6 @@ import {
   Play,
   ChevronDown,
   ChevronRight,
-  Twitter,
   Check,
   X,
   RotateCcw,
@@ -19,11 +18,13 @@ import {
   Calendar,
   Send
 } from 'lucide-react';
+import { RiTwitterXFill } from 'react-icons/ri';
 import ProgressService from '../../utils/progressService';
 import ResourceProgressService from '../../utils/resourceProgressService';
 import SocialService from '../../utils/socialService';
 import DataService from '../../utils/dataService';
 import AssignmentManagement from './AssignmentManagement';
+import PageHead from '../common/PageHead';
 
 const LeagueDetailPage = ({ league, onBack }) => {
   const [leagueProgress, setLeagueProgress] = useState(null);
@@ -353,6 +354,11 @@ const LeagueDetailPage = ({ league, onBack }) => {
 
   return (
     <div className="min-h-screen bg-gray-50 content-scroll">
+      <PageHead 
+        title={`${leagueProgress.league.name} - OpenLearn`}
+        description={`Learn and track your progress in ${leagueProgress.league.name}. Complete resources, submit assignments, and advance your learning journey with OpenLearn.`}
+        keywords={`${leagueProgress.league.name}, online learning, programming course, skill development, progress tracking, assignments, OpenLearn`}
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Compact Header */}
         <div className="mb-6">
@@ -632,10 +638,10 @@ const LeagueDetailPage = ({ league, onBack }) => {
                                       <div className="col-span-1 flex justify-center">
                                         <button
                                           onClick={() => handleShareOnTwitter(resource.title, leagueProgress.league.name)}
-                                          className="text-gray-400 hover:text-blue-500 transition-colors p-1"
-                                          title="Share on Twitter"
+                                          className="text-gray-400 hover:text-black transition-colors p-1"
+                                          title="Share on X (formerly Twitter)"
                                         >
-                                          <Twitter size={14} />
+                                          <RiTwitterXFill size={14} />
                                         </button>
                                       </div>
                                     </div>

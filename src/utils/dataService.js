@@ -450,13 +450,37 @@ class DataService {
   /**
    * Get assignment for a specific league
    * @param {string} leagueId - League ID
-   * @returns {Promise} Assignment data
+   * @returns {Promise} Assignment data or null if no assignment exists
    */
   static async getLeagueAssignment(leagueId) {
-    const response = await fetch(`${API_BASE_URL}/assignments/league/${leagueId}`, {
-      headers: getAuthHeaders()
-    });
-    return handleResponse(response);
+    try {
+      console.log(`Fetching assignment for league ${leagueId} from:`, `${API_BASE_URL}/assignments/league/${leagueId}`);
+      
+      const response = await fetch(`${API_BASE_URL}/assignments/league/${leagueId}`, {
+        headers: getAuthHeaders()
+      });
+      
+      console.log(`Assignment API response status: ${response.status}`);
+      
+      // Handle 404 gracefully - no assignment exists for this league
+      if (response.status === 404) {
+        console.log('No assignment found for this league (404)');
+        return null;
+      }
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      return handleResponse(response);
+    } catch (error) {
+      // Check if it's a network error
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        console.log('Network error - API might be unavailable');
+        throw new Error('Unable to connect to the server. Please check your internet connection.');
+      }
+      throw error;
+    }
   }
 
   /**

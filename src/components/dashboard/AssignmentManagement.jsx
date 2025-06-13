@@ -32,12 +32,31 @@ const AssignmentManagement = ({ leagueId }) => {
   });
 
   const fetchAssignment = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    
     try {
+      console.log('Fetching assignment for league:', leagueId);
       const data = await DataService.getLeagueAssignment(leagueId);
-      setAssignment(data);
+      console.log('Assignment data received:', data);
+      setAssignment(data); // data will be null if no assignment exists
     } catch (err) {
       console.error('Error fetching assignment:', err);
-      setError('Failed to load assignment');
+      
+      // Handle different types of errors
+      if (err.message && (err.message.includes('404') || err.message.includes('Not Found'))) {
+        // If it's a 404, just set assignment to null (no assignment exists)
+        console.log('No assignment found for this league (404)');
+        setAssignment(null);
+      } else if (err.message && err.message.includes('Unable to connect')) {
+        // Network error
+        setError('Unable to connect to the server. Please check your internet connection and try again.');
+      } else {
+        // Other errors
+        setError(`Failed to load assignment: ${err.message}`);
+      }
+    } finally {
+      setLoading(false);
     }
   }, [leagueId]);
 
@@ -51,15 +70,18 @@ const AssignmentManagement = ({ leagueId }) => {
       setSubmissions(leagueSubmissions);
     } catch (err) {
       console.error('Error fetching submissions:', err);
-    } finally {
-      setLoading(false);
+      // Don't show error for submissions if it's just a network issue - submissions are optional
+      setSubmissions([]);
     }
   }, [leagueId]);
 
   useEffect(() => {
     if (leagueId) {
-      fetchAssignment();
-      fetchSubmissions();
+      const loadData = async () => {
+        await fetchAssignment();
+        await fetchSubmissions();
+      };
+      loadData();
     }
   }, [leagueId, fetchAssignment, fetchSubmissions]);
 
@@ -165,9 +187,9 @@ const AssignmentManagement = ({ leagueId }) => {
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mt-4">
         <div className="text-center py-8">
           <FileText size={48} className="mx-auto text-gray-300 mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No Assignment Available</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Assignment Coming Soon</h3>
           <p className="text-gray-600">
-            This league doesn't have an assignment yet.
+            Assignments will be uploaded soon. Check back later for exciting project challenges!
           </p>
         </div>
       </div>
