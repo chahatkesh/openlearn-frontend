@@ -5,6 +5,7 @@ import { useAuth } from '../hooks/useAuth';
 import AuthError from '../components/auth/AuthError';
 import AuthLayout from '../components/auth/AuthLayout';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import PageHead from '../components/common/PageHead';
 
 const SignInPage = () => {
   const [email, setEmail] = useState('');
@@ -44,11 +45,18 @@ const SignInPage = () => {
   }
 
   return (
-    <AuthLayout 
-      title="Sign In" 
-      subtitle="Welcome back to the OpenLearn community"
-    >
-      <AuthError message={error} />
+    <>
+      <PageHead 
+        title="Sign In"
+        description="Sign in to your OpenLearn account and continue your gamified learning journey. Access your dashboard, track progress, and compete with fellow learners at NIT Jalandhar."
+        keywords="sign in, login, student portal, dashboard access, OpenLearn account"
+      />
+      
+      <AuthLayout 
+        title="Sign In" 
+        subtitle="Welcome back to the OpenLearn community"
+      >
+        <AuthError message={error} />
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
@@ -140,6 +148,7 @@ const SignInPage = () => {
         </p>
       </div>
     </AuthLayout>
+    </>
   );
 };
 

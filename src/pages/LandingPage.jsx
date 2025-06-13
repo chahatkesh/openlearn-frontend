@@ -7,11 +7,18 @@ import About from '../components/landingPage/About'
 import Cta from '../components/landingPage/Cta'
 import Note from '../components/landingPage/Note'
 import Footer from '../components/landingPage/Footer'
+import PageHead from '../components/common/PageHead'
 
 
 const LandingPage = () => {
   return (
     <>
+      <PageHead 
+        title=""
+        description="Join OpenLearn at NIT Jalandhar - Experience gamified cohort-based learning with competitive leagues, achievement badges, and collaborative programming education. Transform your learning journey today!"
+        keywords="gamified learning, NIT Jalandhar, cohort learning, programming education, competitive learning, achievement badges, educational gaming"
+      />
+      
       <Hero />
       <Cohort />
       <Leaderboard />

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { LogOut, ArrowRight } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import PageHead from '../components/common/PageHead';
 
 const LogoutPage = () => {
   const { logout, isAuthenticated } = useAuth();
@@ -28,6 +29,12 @@ const LogoutPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
+      <PageHead 
+        title="Logout"
+        description="Logout from your OpenLearn account securely. Thank you for using our gamified learning platform. See you again soon!"
+        keywords="logout, sign out, session end, secure logout"
+      />
+      
       <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
         <div className="flex items-center justify-center mb-6">
           <div className="bg-[#FFDE59] rounded-full p-3">

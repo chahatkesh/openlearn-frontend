@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Linkedin, Twitter, Instagram, MapPin } from 'lucide-react';
 
 const Footer = () => {
@@ -32,7 +33,9 @@ const Footer = () => {
                 />
               </div>
               <div>
-                <div className="text-white font-bold text-2xl">OpenLearn</div>
+                <Link to="/" className="text-white font-bold text-2xl hover:text-[#FFDE59] transition-colors">
+                  OpenLearn
+                </Link>
                 <p className="text-gray-400 text-sm">
                   Gamified Learning for NITJ Innovators
                 </p>
@@ -116,12 +119,12 @@ const Footer = () => {
               © {new Date().getFullYear()} OpenLearn | All rights reserved.
             </p>
             <div className="flex space-x-6">
-              <a href="/privacy" className="text-xs text-gray-500 hover:text-[#FFDE59] transition-colors">
+              <Link to="/privacy" className="text-xs text-gray-500 hover:text-[#FFDE59] transition-colors">
                 Privacy Policy
-              </a>
-              <a href="/terms" className="text-xs text-gray-500 hover:text-[#FFDE59] transition-colors">
+              </Link>
+              <Link to="/terms" className="text-xs text-gray-500 hover:text-[#FFDE59] transition-colors">
                 Terms of Service
-              </a>
+              </Link>
             </div>
           </div>
         </div>

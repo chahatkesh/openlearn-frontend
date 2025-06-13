@@ -23,6 +23,7 @@ Welcome to the OpenLearn Platform documentation. This directory contains compreh
 - [Learning Progress](./user-guide/learning-progress.md)
 - [Achievements & Badges](./user-guide/achievements.md)
 - [Social Features](./user-guide/social-features.md)
+- [Legal Pages](./user-guide/legal-pages.md)
 
 ### [Admin Guide](./admin-guide/)
 - [Admin Panel Overview](./admin-guide/admin-overview.md)

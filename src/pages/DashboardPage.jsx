@@ -6,6 +6,7 @@ import PendingApprovalPage from '../components/dashboard/PendingApprovalPage';
 import UserProfileSection from '../components/dashboard/UserProfileSection';
 import LearningProgressSection from '../components/dashboard/LearningProgressSection';
 import ProgressService from '../utils/progressService';
+import PageHead from '../components/common/PageHead';
 
 const DashboardPage = () => {
   const { user } = useAuth();
@@ -34,6 +35,12 @@ const DashboardPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <PageHead 
+        title="Dashboard"
+        description="Access your personalized OpenLearn dashboard. Track learning progress, view achievements, manage assignments, and compete in leagues with fellow NIT Jalandhar students."
+        keywords="student dashboard, learning progress, achievements, assignments, league competition, personal learning"
+      />
+      
       {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">

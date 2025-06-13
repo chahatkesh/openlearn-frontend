@@ -11,6 +11,7 @@ import SectionManagement from '../components/admin/SectionManagement';
 import ResourceManagement from '../components/admin/ResourceManagement';
 import AssignmentManagement from '../components/admin/AssignmentManagement';
 import AdminService from '../utils/adminService';
+import PageHead from '../components/common/PageHead';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const API_BASE_URL = `${BASE_URL}/api`;
@@ -886,6 +887,12 @@ const AdminPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <PageHead 
+        title="Admin Panel"
+        description="Access the OpenLearn admin panel to manage users, cohorts, leagues, specializations, and educational content. Administrative dashboard for platform management."
+        keywords="admin panel, user management, cohort management, league administration, educational content management"
+      />
+      
       {/* Header */}
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">

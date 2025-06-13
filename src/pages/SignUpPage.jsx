@@ -5,6 +5,7 @@ import { useAuth } from '../hooks/useAuth';
 import AuthError from '../components/auth/AuthError';
 import AuthLayout from '../components/auth/AuthLayout';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import PageHead from '../components/common/PageHead';
 
 const SignUpPage = () => {
   const [name, setName] = useState('');
@@ -45,10 +46,17 @@ const SignUpPage = () => {
   }
 
   return (
-    <AuthLayout 
-      title="Create an Account" 
-      subtitle="Join the OpenLearn community today"
-    >
+    <>
+      <PageHead 
+        title="Sign Up"
+        description="Create your OpenLearn account and start your gamified learning journey at NIT Jalandhar. Join cohorts, earn badges, and compete with fellow students in an innovative educational experience."
+        keywords="sign up, create account, student registration, join OpenLearn, NIT Jalandhar registration"
+      />
+      
+      <AuthLayout 
+        title="Create an Account" 
+        subtitle="Join the OpenLearn community today"
+      >
       <AuthError message={error} />
 
       <form onSubmit={handleSubmit} className="space-y-5">
@@ -160,6 +168,7 @@ const SignUpPage = () => {
         </p>
       </div>
     </AuthLayout>
+    </>
   );
 };
 
