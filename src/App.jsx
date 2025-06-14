@@ -4,6 +4,9 @@ import LandingPage from './pages/LandingPage'
 import SignInPage from './pages/SignInPage'
 import SignUpPage from './pages/SignUpPage'
 import DashboardPage from './pages/DashboardPage'
+import DashboardLayout from './components/dashboard/DashboardLayout'
+import DashboardMainPage from './pages/DashboardMainPage'
+import LeagueDetailPageRoute from './pages/LeagueDetailPageRoute'
 import LogoutPage from './pages/LogoutPage'
 import AdminPage from './pages/AdminPage'
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
@@ -38,8 +41,13 @@ const App = () => {
 
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
-          {/* Add your protected routes here */}
-          <Route path="/dashboard" element={<DashboardPage />} />
+          {/* Dashboard routes with layout */}
+          <Route path="/dashboard" element={<DashboardLayout />}>
+            <Route index element={<DashboardMainPage />} />
+            <Route path="league/:id" element={<LeagueDetailPageRoute />} />
+          </Route>
+          {/* Legacy dashboard route for backward compatibility */}
+          <Route path="/dashboard-old" element={<DashboardPage />} />
           <Route path="/logout" element={<LogoutPage />} />
         </Route>
         

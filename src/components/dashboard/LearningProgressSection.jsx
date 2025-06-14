@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { TrendingUp, BookOpen, Users, Star, ChevronRight, Play, CheckSquare, AlertCircle, Trophy, Clock, Target } from 'lucide-react';
-import LeagueDetailPage from './LeagueDetailPage';
 import WelcomeBanner from './WelcomeBanner';
 import AssignmentManagement from './AssignmentManagement';
 import ProgressService from '../../utils/progressService';
@@ -8,10 +8,10 @@ import ResourceProgressService from '../../utils/resourceProgressService';
 import DataService from '../../utils/dataService';
 
 const LearningProgressSection = ({ user }) => {
+  const navigate = useNavigate();
   const [dashboardData, setDashboardData] = useState(null);
   const [cohorts, setCohorts] = useState([]);
   const [leagues, setLeagues] = useState([]);
-  const [selectedLeague, setSelectedLeague] = useState(null);
   const [selectedView, setSelectedView] = useState('dashboard'); // dashboard, assignments
   const [selectedAssignmentLeague, setSelectedAssignmentLeague] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -206,18 +206,13 @@ const LearningProgressSection = ({ user }) => {
   };
 
   const handleLeagueClick = (league) => {
-    setSelectedLeague(league);
+    navigate(`/dashboard/league/${league.id}`);
   };
 
   // Navigation handlers
-  const handleBackFromLeague = () => {
-    setSelectedLeague(null);
-  };
-
   const handleBackToMain = () => {
     setSelectedView('dashboard');
     setSelectedAssignmentLeague(null);
-    setSelectedLeague(null);
   };
 
   const scrollToLeagues = () => {
@@ -238,16 +233,6 @@ const LearningProgressSection = ({ user }) => {
           </div>
         </div>
       </div>
-    );
-  }
-
-  // If viewing league details
-  if (selectedLeague) {
-    return (
-      <LeagueDetailPage 
-        league={selectedLeague} 
-        onBack={handleBackFromLeague}
-      />
     );
   }
 

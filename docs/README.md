@@ -34,6 +34,7 @@ Welcome to the OpenLearn Platform documentation. This directory contains compreh
 
 ### [Development Guide](./development/)
 - [Development Setup](./development/setup.md)
+- [Dashboard Routing Implementation](./development/dashboard-routing.md)
 - [Coding Standards](./development/coding-standards.md)
 - [Component Guidelines](./development/component-guidelines.md)
 - [Testing Guide](./development/testing.md)
