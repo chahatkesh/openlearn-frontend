@@ -244,7 +244,7 @@ const LeagueDetailPage = ({ league, onBack }) => {
   };
 
   const handleShareOnTwitter = (resourceTitle, leagueName) => {
-    const message = `📚 Just completed "${resourceTitle}" in ${leagueName} on @OpenLearn! #Learning #Progress #OpenLearn`;
+    const message = `📚 Just completed "${resourceTitle}" in ${leagueName} on @OpenLearn_nitj! #Learning #Progress #OpenLearn`;
     SocialService.shareOnTwitter(message);
   };
 

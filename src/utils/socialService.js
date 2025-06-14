@@ -89,7 +89,7 @@ class SocialService {
    * @param {Object} progressData - Progress data to share
    */
   static shareProgress(progressData) {
-    const message = `🚀 Making great progress on @OpenLearnPlatform! 
+    const message = `🚀 Making great progress on @openlearn_nitj! 
 
 📊 Overall Progress: ${progressData.overallProgress}%
 ✅ Completed: ${progressData.completedSections}/${progressData.totalSections} sections
@@ -106,7 +106,7 @@ Join me in this learning journey! 🎓
    * @param {Object} leagueData - League progress data
    */
   static shareLeagueProgress(leagueData) {
-    const message = `🎯 Making progress in ${leagueData.leagueName} on @OpenLearnPlatform!
+    const message = `🎯 Making progress in ${leagueData.leagueName} on @openlearn_nitj!
 
 📈 Progress: ${leagueData.progressPercentage}%
 ✅ Completed: ${leagueData.completedSections}/${leagueData.totalSections} sections
@@ -280,7 +280,7 @@ Learning never stops! 💪
    */
   static generateSectionShareMessage(sectionData) {
     const baseUrl = window.location.origin;
-    return `🎉 Just completed "${sectionData.name}" in ${sectionData.leagueName} on @OpenLearn! Making great progress in my learning journey. #Learning #Progress #OpenLearn ${baseUrl}`;
+    return `🎉 Just completed "${sectionData.name}" in ${sectionData.leagueName} on @OpenLearn_nitj! Making great progress in my learning journey. #Learning #Progress #OpenLearn ${baseUrl}`;
   }
 
   /**
@@ -300,7 +300,7 @@ Learning never stops! 💪
    */
   static generateBadgeShareMessage(badgeData) {
     const baseUrl = window.location.origin;
-    return `🏆 Earned the "${badgeData.name}" badge on @OpenLearn! ${badgeData.description || 'Proud of this achievement!'} #Achievement #Badge #OpenLearn ${baseUrl}`;
+    return `🏆 Earned the "${badgeData.name}" badge on @OpenLearn_nitj! ${badgeData.description || 'Proud of this achievement!'} #Achievement #Badge #OpenLearn ${baseUrl}`;
   }
 
   /**
@@ -312,7 +312,7 @@ Learning never stops! 💪
     const baseUrl = window.location.origin;
     const { overallProgress, completedSections, totalSections, enrollments } = progressData;
     
-    return `🚀 Making amazing progress on @OpenLearn! ${overallProgress}% complete across ${enrollments} leagues (${completedSections}/${totalSections} sections). #LearningJourney #Progress #OpenLearn ${baseUrl}`;
+    return `🚀 Making amazing progress on @OpenLearn_nitj! ${overallProgress}% complete across ${enrollments} leagues (${completedSections}/${totalSections} sections). #LearningJourney #Progress #OpenLearn ${baseUrl}`;
   }
 
   /**
@@ -322,7 +322,7 @@ Learning never stops! 💪
    */
   static generateLeagueShareMessage(leagueData) {
     const baseUrl = window.location.origin;
-    return `🎓 Successfully completed the entire "${leagueData.name}" league on @OpenLearn! ${leagueData.sectionsCount} sections mastered! Ready for the next challenge. #LeagueComplete #Achievement #OpenLearn ${baseUrl}`;
+    return `🎓 Successfully completed the entire "${leagueData.name}" league on @OpenLearn_nitj! ${leagueData.sectionsCount} sections mastered! Ready for the next challenge. #LeagueComplete #Achievement #OpenLearn ${baseUrl}`;
   }
 
   /**
@@ -430,7 +430,7 @@ Learning never stops! 💪
       case 'league':
         return this.generateLeagueShareMessage(data);
       default:
-        return `🚀 Making great progress on my learning journey with @OpenLearn! #Learning #Progress #OpenLearn ${window.location.origin}`;
+        return `🚀 Making great progress on my learning journey with @OpenLearn_nitj! #Learning #Progress #OpenLearn ${window.location.origin}`;
     }
   }
 

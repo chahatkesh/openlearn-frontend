@@ -3,38 +3,38 @@ import { Crown, Star, Users } from 'lucide-react';
 import { FaLinkedinIn, FaXTwitter, FaInstagram } from 'react-icons/fa6';
 
 // Modern Team Member Card with Enhanced UI/UX
-const TeamMemberCard = ({ name, role, imageUrl, linkedin, twitter, instagram, level }) => {
+const TeamMemberCard = ({ name, role, linkedin, twitter, instagram, level }) => {
   const getLevelStyles = () => {
     switch (level) {
       case 'grand':
         return {
-          container: 'bg-gradient-to-r from-[#FFDE59] via-yellow-300 to-amber-400 p-8 border-2 border-yellow-400 hover:border-yellow-500 transform hover:-translate-y-1 hover:scale-[1.01] cursor-pointer transition-all duration-300 rounded-2xl',
-          image: 'w-36 h-36 ring-4 ring-black hover:ring-gray-800',
-          nameSize: 'text-2xl font-bold text-black mb-2',
-          roleSize: 'text-base font-semibold text-gray-800 mb-4',
+          container: 'bg-gradient-to-r from-[#FFDE59] via-yellow-300 to-amber-400 p-4 sm:p-6 md:p-8 border-2 border-yellow-400 hover:border-yellow-500 transform hover:-translate-y-1 hover:scale-[1.01] cursor-pointer transition-all duration-300 rounded-2xl',
+          image: 'w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 ring-4 ring-black hover:ring-gray-800',
+          nameSize: 'text-lg sm:text-xl md:text-2xl font-bold text-black mb-2',
+          roleSize: 'text-sm sm:text-base font-semibold text-gray-800 mb-4',
           icon: <Crown size={24} className="text-black drop-shadow-sm" />,
           badge: 'bg-black text-[#FFDE59] px-4 py-2 text-sm font-bold rounded-full shadow-lg',
           socialContainer: 'bg-yellow-100 rounded-xl p-4'
         };
       case 'chief':
         return {
-          container: 'bg-white p-5 shadow-md hover:shadow-lg border-2 border-gray-200 hover:border-[#FFDE59] rounded-xl transform hover:-translate-y-1 hover:scale-[1.01] transition-all duration-300',
-          image: 'w-20 h-20 ring-3 ring-[#FFDE59] hover:ring-yellow-400',
-          nameSize: 'text-lg font-bold text-gray-900 mb-1',
-          roleSize: 'text-sm font-medium text-gray-600 mb-3',
+          container: 'bg-white p-3 sm:p-4 md:p-5 shadow-md hover:shadow-lg border-2 border-gray-200 hover:border-[#FFDE59] rounded-xl transform hover:-translate-y-1 hover:scale-[1.01] transition-all duration-300',
+          image: 'w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 ring-3 ring-[#FFDE59] hover:ring-yellow-400',
+          nameSize: 'text-base sm:text-lg font-bold text-gray-900 mb-1',
+          roleSize: 'text-xs sm:text-sm font-medium text-gray-600 mb-3',
           icon: <Star size={18} className="text-[#FFDE59] drop-shadow-sm" />,
           badge: 'bg-[#FFDE59] text-black px-3 py-1 text-xs font-bold rounded-full shadow-md',
-          socialContainer: 'bg-gray-50 rounded-lg p-3 mt-4'
+          socialContainer: 'bg-gray-50 rounded-lg p-2 sm:p-3 mt-3 sm:mt-4'
         };
       default:
         return {
-          container: 'bg-white p-4 border border-gray-200 hover:border-gray-300 rounded-lg transform hover:-translate-y-1 transition-all duration-300',
-          image: 'w-16 h-16 ring-2 ring-gray-300 hover:ring-[#FFDE59]',
-          nameSize: 'text-base font-semibold text-gray-900 mb-1',
-          roleSize: 'text-sm text-gray-600 mb-3',
+          container: 'bg-white p-2 sm:p-3 md:p-4 border border-gray-200 hover:border-gray-300 rounded-lg transform hover:-translate-y-1 transition-all duration-300',
+          image: 'w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 ring-2 ring-gray-300 hover:ring-[#FFDE59]',
+          nameSize: 'text-sm sm:text-base font-semibold text-gray-900 mb-1',
+          roleSize: 'text-xs sm:text-sm text-gray-600 mb-2 sm:mb-3',
           icon: <Users size={16} className="text-gray-500" />,
           badge: 'bg-gray-100 text-gray-700 px-2 py-1 text-xs font-medium rounded-full',
-          socialContainer: 'bg-gray-50 rounded-lg p-2 mt-3'
+          socialContainer: 'bg-gray-50 rounded-lg p-1 sm:p-2 mt-2 sm:mt-3'
         };
     }
   };
@@ -51,7 +51,7 @@ const TeamMemberCard = ({ name, role, imageUrl, linkedin, twitter, instagram, le
           <div className="flex-shrink-0">
             <div className="relative inline-block">
               <img
-                src={imageUrl || `https://ui-avatars.com/api/?name=${name}&background=000000&color=FFDE59&bold=true&size=128`}
+                src={`/team/${name.toLowerCase().replace(/\s+/g, '-')}.jpg`}
                 alt={name}
                 className={`${styles.image} rounded-xl object-cover transition-all duration-300 group-hover:brightness-110`}
                 onError={(e) => {
@@ -77,16 +77,17 @@ const TeamMemberCard = ({ name, role, imageUrl, linkedin, twitter, instagram, le
 
             {/* Social Links */}
             {(linkedin || twitter || instagram) && (
-                <div className="flex justify-center md:justify-start mt-6 space-x-4">
+                <div className="flex justify-center md:justify-start mt-4 sm:mt-6 space-x-3 sm:space-x-4">
                   {linkedin && (
                     <a 
                       href={linkedin} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="group/social flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-300 transform hover:scale-110 bg-white hover:bg-blue-600 text-gray-600 hover:text-white shadow-sm border border-gray-200"
+                      className="group/social flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl transition-all duration-300 transform hover:scale-110 bg-white hover:bg-blue-600 text-gray-600 hover:text-white shadow-sm border border-gray-200"
                       title="LinkedIn Profile"
                     >
-                      <FaLinkedinIn size={20} className="transition-transform duration-300 group-hover/social:scale-110" />
+                      <FaLinkedinIn size={16} className="sm:hidden transition-transform duration-300 group-hover/social:scale-110" />
+                      <FaLinkedinIn size={20} className="hidden sm:block transition-transform duration-300 group-hover/social:scale-110" />
                     </a>
                   )}
                   {twitter && (
@@ -94,10 +95,11 @@ const TeamMemberCard = ({ name, role, imageUrl, linkedin, twitter, instagram, le
                       href={twitter} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="group/social flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-300 transform hover:scale-110 bg-white hover:bg-black text-gray-600 hover:text-white shadow-sm border border-gray-200"
+                      className="group/social flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl transition-all duration-300 transform hover:scale-110 bg-white hover:bg-black text-gray-600 hover:text-white shadow-sm border border-gray-200"
                       title="X (Twitter) Profile"
                     >
-                      <FaXTwitter size={20} className="transition-transform duration-300 group-hover/social:scale-110" />
+                      <FaXTwitter size={16} className="sm:hidden transition-transform duration-300 group-hover/social:scale-110" />
+                      <FaXTwitter size={20} className="hidden sm:block transition-transform duration-300 group-hover/social:scale-110" />
                     </a>
                   )}
                   {instagram && (
@@ -105,10 +107,11 @@ const TeamMemberCard = ({ name, role, imageUrl, linkedin, twitter, instagram, le
                       href={instagram} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="group/social flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-300 transform hover:scale-110 bg-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 text-gray-600 hover:text-white shadow-sm border border-gray-200"
+                      className="group/social flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl transition-all duration-300 transform hover:scale-110 bg-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 text-gray-600 hover:text-white shadow-sm border border-gray-200"
                       title="Instagram Profile"
                     >
-                      <FaInstagram size={20} className="transition-transform duration-300 group-hover/social:scale-110" />
+                      <FaInstagram size={16} className="sm:hidden transition-transform duration-300 group-hover/social:scale-110" />
+                      <FaInstagram size={20} className="hidden sm:block transition-transform duration-300 group-hover/social:scale-110" />
                     </a>
                   )}
                 </div>
@@ -129,7 +132,7 @@ const TeamMemberCard = ({ name, role, imageUrl, linkedin, twitter, instagram, le
       <div className="text-center my-4">
         <div className="relative inline-block mb-3">
           <img
-            src={imageUrl || `https://ui-avatars.com/api/?name=${name}&background=${level === 'grand' ? '000000' : 'FFDE59'}&color=${level === 'grand' ? 'FFDE59' : '000000'}&bold=true&size=128`}
+            src={`/team/${name.toLowerCase().replace(/\s+/g, '-')}.jpg`}
             alt={name}
             className={`${styles.image} rounded-lg mx-auto object-cover transition-all duration-300 group-hover:brightness-110`}
             onError={(e) => {
@@ -151,13 +154,13 @@ const TeamMemberCard = ({ name, role, imageUrl, linkedin, twitter, instagram, le
       {/* Social Links */}
       {(linkedin || twitter || instagram) && (
         <div className={styles.socialContainer}>
-          <div className="flex justify-center space-x-3">
+          <div className="flex justify-center space-x-2 sm:space-x-3">
             {linkedin && (
               <a 
                 href={linkedin} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className={`group/social flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 transform hover:scale-110 ${
+                className={`group/social flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-all duration-300 transform hover:scale-110 ${
                   level === 'grand'
                     ? 'bg-white hover:bg-blue-600 text-gray-600 hover:text-white shadow-md border border-gray-200'
                     : level === 'chief'
@@ -166,7 +169,7 @@ const TeamMemberCard = ({ name, role, imageUrl, linkedin, twitter, instagram, le
                 }`}
                 title="LinkedIn Profile"
               >
-                <FaLinkedinIn size={16} className="transition-transform duration-300 group-hover/social:scale-110" />
+                <FaLinkedinIn size={level === 'member' ? 12 : 16} className="transition-transform duration-300 group-hover/social:scale-110" />
               </a>
             )}
             {twitter && (
@@ -174,7 +177,7 @@ const TeamMemberCard = ({ name, role, imageUrl, linkedin, twitter, instagram, le
                 href={twitter} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className={`group/social flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 transform hover:scale-110 ${
+                className={`group/social flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-all duration-300 transform hover:scale-110 ${
                   level === 'grand'
                     ? 'bg-white hover:bg-black text-gray-600 hover:text-white shadow-md border border-gray-200'
                     : level === 'chief'
@@ -183,7 +186,7 @@ const TeamMemberCard = ({ name, role, imageUrl, linkedin, twitter, instagram, le
                 }`}
                 title="X (Twitter) Profile"
               >
-                <FaXTwitter size={16} className="transition-transform duration-300 group-hover/social:scale-110" />
+                <FaXTwitter size={level === 'member' ? 12 : 16} className="transition-transform duration-300 group-hover/social:scale-110" />
               </a>
             )}
             {instagram && (
@@ -191,7 +194,7 @@ const TeamMemberCard = ({ name, role, imageUrl, linkedin, twitter, instagram, le
                 href={instagram} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className={`group/social flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 transform hover:scale-110 ${
+                className={`group/social flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-all duration-300 transform hover:scale-110 ${
                   level === 'grand'
                     ? 'bg-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 text-gray-600 hover:text-white shadow-md border border-gray-200'
                     : level === 'chief'
@@ -200,7 +203,7 @@ const TeamMemberCard = ({ name, role, imageUrl, linkedin, twitter, instagram, le
                 }`}
                 title="Instagram Profile"
               >
-                <FaInstagram size={16} className="transition-transform duration-300 group-hover/social:scale-110" />
+                <FaInstagram size={level === 'member' ? 12 : 16} className="transition-transform duration-300 group-hover/social:scale-110" />
               </a>
             )}
           </div>
@@ -220,7 +223,6 @@ const Team = () => {
   const grandPathfinder = {
     name: "Vatsal Khanna",
     role: "Grand Pathfinder",
-    imageUrl: "https://pbs.twimg.com/profile_images/1903807740192923648/im6TgSDi_400x400.jpg",
     linkedin: "https://www.linkedin.com/in/vatsalkhanna/",
     twitter: "https://x.com/vatsalkhanna55",
     instagram: "https://www.instagram.com/vatsalkhanna5/",
@@ -232,23 +234,20 @@ const Team = () => {
       chief: {
         name: "Rhythm Goyal",
         role: "Chief Finance Pathfinder",
-        imageUrl: "https://pbs.twimg.com/profile_images/1912483598835261440/sn7EUmiA_400x400.jpg",
         linkedin: "https://www.linkedin.com/in/rhythm-goyal-a14a53263/",
         twitter: "https://x.com/RhythmGoyal90",
       },
       team: [
         {
-          name: "Pratham",
+          name: "Pratham Andotra",
           role: "Finance Pathfinder",
-          imageUrl: "https://media.licdn.com/dms/image/v2/D4D03AQFgxvkhODCGCw/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1687340486079?e=1755129600&v=beta&t=0ONStROffU6T6lRBcXlKTPoYzBRZovHHiXzh3B-HV-0",
           linkedin: "https://www.linkedin.com/in/prathamandotra/",
           twitter: "https://x.com/thisisPrathamA",
         },
         {
-          name: "Tanveer",
+          name: "Tanveer Singh",
           role: "Finance Pathfinder",
-          imageUrl: "https://example.com/tanveer.jpg",
-          linkedin: "",
+          linkedin: "https://www.linkedin.com/in/tanveer-singh-a4160126b/",
           twitter: "",
         }
       ]
@@ -258,29 +257,25 @@ const Team = () => {
       chief: {
         name: "Ratinderdeep Singh",
         role: "Chief AI Pathfinder",
-        imageUrl: "https://pbs.twimg.com/profile_images/1872598069209903104/5oF9lITe_400x400.jpg",
         linkedin: "https://www.linkedin.com/in/ratinderdeepsingh/",
         twitter: "https://x.com/Ratinder_999",
       },
       team: [
         {
-          name: "Adesh",
+          name: "Adesh Anurag",
           role: "AI Pathfinder",
-          imageUrl: "https://media.licdn.com/dms/image/v2/D5635AQFPFG3L2CG6fA/profile-framedphoto-shrink_800_800/B56ZacRdGUG4Ak-/0/1746378546937?e=1750327200&v=beta&t=vQNjTfZf4A8ehuLfzX13hqFJ09_9GFog92OKzIcRcXI",
           linkedin: "https://www.linkedin.com/in/adesh-anurag-176a44254/",
           twitter: "https://x.com/adexxhhh",
         },
         {
           name: "Kunal",
           role: "AI Pathfinder",
-          imageUrl: "https://example.com/kunal.jpg",
           linkedin: "",
           twitter: "",
         },
         {
           name: "Achintya",
           role: "AI Pathfinder",
-          imageUrl: "https://media.licdn.com/dms/image/v2/D4D35AQGPp7GSbCZKKg/profile-framedphoto-shrink_800_800/B4DZbu_CP1H8Ag-/0/1747766224218?e=1750327200&v=beta&t=AmTyCDGeIf6qLFhFYeGQj2_84h-MFLWEoVyuoyYaxts",
           linkedin: "https://www.linkedin.com/in/achintyasharma47/",
           twitter: "",
         },
@@ -291,24 +286,21 @@ const Team = () => {
       chief: {
         name: "Chahat Kesharwani",
         role: "Chief Creative Pathfinder",
-        imageUrl: "https://pbs.twimg.com/profile_images/1912598869587730432/FDosdz9t_400x400.jpg",
         linkedin: "https://linkedin.com/in/chahatkesharwani",
         twitter: "https://x.com/chahatkesh",
         instagram: "https://instagram.com/chahat.kesharwanii",
       },
       team: [
         {
-          name: "Rishi",
+          name: "Rishi Ahuja",
           role: "Creative Pathfinder",
-          imageUrl: "https://media.licdn.com/dms/image/v2/D4E03AQG87n2sers9aA/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1725363814807?e=1755129600&v=beta&t=9wo-YEMq1ekgXYrmJMpuS_eq9OimJs2NDU6kVMwiDNU",
           linkedin: "https://www.linkedin.com/in/rishi-ahuja-b1a224310/",
           twitter: "https://x.com/Rishi2220",
         },
         {
-          name: "Achintya",
-          role: "AI Pathfinder",
-          imageUrl: "https://media.licdn.com/dms/image/v2/D4D35AQGPp7GSbCZKKg/profile-framedphoto-shrink_800_800/B4DZbu_CP1H8Ag-/0/1747766224218?e=1750327200&v=beta&t=AmTyCDGeIf6qLFhFYeGQj2_84h-MFLWEoVyuoyYaxts",
-          linkedin: "https://www.linkedin.com/in/achintyasharma47/",
+          name: "Samaira Wahi",
+          role: "Creative Pathfinder",
+          linkedin: "https://www.linkedin.com/in/samaira-wahi-91678a349/",
           twitter: "",
         },
       ]
@@ -316,29 +308,30 @@ const Team = () => {
   ];
 
   return (
-    <section id="team" className="py-20 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
-      <div className="container mx-auto px-4 max-w-6xl relative z-10">
+    <section id="team" className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
+      <div className="container mx-auto px-3 sm:px-4 max-w-6xl relative z-10">
         {/* Header Section */}
-        <div className="text-center mb-20 max-w-4xl mx-auto">
-          <h2 className="text-5xl font-bold mb-6 bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 bg-clip-text text-transparent">
+        <div className="text-center mb-12 sm:mb-16 md:mb-20 max-w-4xl mx-auto px-2">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 bg-clip-text text-transparent">
             Meet the Pathfinders
           </h2>
           
-          <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl text-gray-600 mb-6 sm:mb-8 leading-relaxed px-4">
           Visionary leaders and dedicated team members driving OpenLearn's mission forward with passion and expertise.
           </p>
         </div>
 
         {/* Compact Hierarchy Layout */}
-        <div className="space-y-10">
+        <div className="space-y-8 sm:space-y-10">
           {/* Level 1: Grand Pathfinder */}
           <div className="text-center">
-            <div className="flex items-center justify-center space-x-2 mb-6">
-              <Crown size={20} className="text-[#FFDE59]" />
-              <h3 className="text-2xl font-bold text-gray-800">Grand Pathfinder</h3>
+            <div className="flex items-center justify-center space-x-2 mb-4 sm:mb-6">
+              <Crown size={18} className="text-[#FFDE59] sm:hidden" />
+              <Crown size={20} className="text-[#FFDE59] hidden sm:block" />
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-800">Grand Pathfinder</h3>
             </div>
             <div className="flex justify-center">
-              <div className="w-full max-w-md">
+              <div className="w-full max-w-sm sm:max-w-md">
                 <TeamMemberCard {...grandPathfinder} level="grand" />
               </div>
             </div>
@@ -346,115 +339,40 @@ const Team = () => {
 
           {/* Level 2: Chief Pathfinders */}
           <div>
-            <div className="flex items-center justify-center space-x-2 mb-6">
-              <Star size={18} className="text-[#FFDE59]" />
-              <h3 className="text-xl font-bold text-gray-800">Chief Pathfinders</h3>
+            <div className="flex items-center justify-center space-x-2 mb-4 sm:mb-6">
+              <Star size={16} className="text-[#FFDE59] sm:hidden" />
+              <Star size={18} className="text-[#FFDE59] hidden sm:block" />
+              <h3 className="text-lg sm:text-xl font-bold text-gray-800">Chief Pathfinders</h3>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto">
               {departments.map((dept, index) => (
                 <TeamMemberCard key={index} {...dept.chief} level="chief" />
               ))}
             </div>
           </div>
 
-          {/* Level 3: Department Teams */}
-          <div className="space-y-6">
-            <div className="flex items-center justify-center space-x-2 mb-6">
-              <Users size={18} className="text-[#FFDE59]" />
-              <h3 className="text-xl font-bold text-gray-800">Team Members</h3>
+          {/* Level 3: Pathfinders */}
+          <div className="space-y-4 sm:space-y-6">
+            <div className="flex items-center justify-center space-x-2 mb-4 sm:mb-6">
+              <Users size={16} className="text-[#FFDE59] sm:hidden" />
+              <Users size={18} className="text-[#FFDE59] hidden sm:block" />
+              <h3 className="text-lg sm:text-xl font-bold text-gray-800">Pathfinders</h3>
             </div>
             
             {(() => {
-              // Sort departments by team size (smallest first)
-              const sortedDepts = [...departments].sort((a, b) => a.team.length - b.team.length);
+              // Flatten all team members from all departments
+              const allTeamMembers = departments.reduce((acc, dept) => {
+                return [...acc, ...dept.team];
+              }, []);
               
-              // Function to calculate how many teams can fit in a row (max 4 members total)
-              const getTeamsPerRow = (depts) => {
-                const maxMembersPerRow = 4;
-                let currentRow = [];
-                let rows = [];
-                let currentRowMemberCount = 0;
-                
-                for (let i = 0; i < depts.length; i++) {
-                  const dept = depts[i];
-                  const teamSize = dept.team.length;
-                  
-                  // Check if adding this team would exceed the 4-member limit
-                  if (currentRowMemberCount + teamSize <= maxMembersPerRow) {
-                    currentRow.push(i);
-                    currentRowMemberCount += teamSize;
-                  } else {
-                    // Start a new row if current row has teams
-                    if (currentRow.length > 0) {
-                      rows.push([...currentRow]);
-                    }
-                    currentRow = [i];
-                    currentRowMemberCount = teamSize;
-                  }
-                }
-                
-                // Add the last row if it has teams
-                if (currentRow.length > 0) {
-                  rows.push(currentRow);
-                }
-                
-                return rows;
-              };
-              
-              // Get team arrangement
-              const teamRows = getTeamsPerRow(sortedDepts);
-              
-              return teamRows.map((rowIndices, rowIndex) => (
-                <div key={rowIndex} className="grid gap-6" style={{
-                  gridTemplateColumns: `repeat(${rowIndices.length}, 1fr)`
-                }}>
-                  {rowIndices.map((deptIndex) => {
-                    const dept = sortedDepts[deptIndex];
-                    const teamSize = dept.team.length;
-                    
-                    return (
-                      <div key={dept.name} className="bg-gray-50 rounded-xl p-4 border border-gray-200">
-                        <div className="text-center mb-4">
-                          <h4 className="text-base font-bold text-gray-800 mb-1">{dept.name} Team</h4>
-                          <p className="text-xs text-gray-600">Led by {dept.chief.name}</p>
-                        </div>
-                        
-                        <div className={`grid gap-3 ${
-                          teamSize <= 2 ? 'grid-cols-2' :
-                          teamSize <= 3 ? 'grid-cols-3' :
-                          teamSize <= 4 ? 'grid-cols-2' :
-                          'grid-cols-3'
-                        }`}>
-                          {dept.team.map((member, memberIndex) => (
-                            <TeamMemberCard key={memberIndex} {...member} level="member" />
-                          ))}
-                        </div>
-                      </div>
-                    );
-                  })}
+              return (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 max-w-6xl mx-auto">
+                  {allTeamMembers.map((member, index) => (
+                    <TeamMemberCard key={index} {...member} level="member" />
+                  ))}
                 </div>
-              ));
+              );
             })()}
-          </div>
-
-          {/* Compact Statistics */}
-          <div className="bg-black rounded-lg p-6 text-center">
-            <div className="grid grid-cols-3 gap-6 text-[#FFDE59]">
-              <div>
-                <div className="text-2xl font-bold mb-1">
-                  {1 + departments.reduce((acc, dept) => acc + dept.team.length + 1, 0)}
-                </div>
-                <div className="text-sm opacity-90">Total Members</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold mb-1">{departments.length}</div>
-                <div className="text-sm opacity-90">Departments</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold mb-1">24/7</div>
-                <div className="text-sm opacity-90">Support</div>
-              </div>
-            </div>
           </div>
         </div>
       </div>

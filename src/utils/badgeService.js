@@ -177,7 +177,7 @@ class BadgeService {
    */
   static generateBadgeShareMessage(badge) {
     const baseUrl = window.location.origin;
-    return `🏆 Just earned the "${badge.name}" badge on @OpenLearn! ${badge.description} #Achievement #Badge #OpenLearn ${baseUrl}`;
+    return `🏆 Just earned the "${badge.name}" badge on @OpenLearn_nitj! ${badge.description} #Achievement #Badge #OpenLearn ${baseUrl}`;
   }
 
   /**
