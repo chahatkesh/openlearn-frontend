@@ -24,6 +24,7 @@ import BadgeService from '../../utils/badgeService';
 import SocialService from '../../utils/socialService';
 import { getUserAvatarUrl } from '../../utils/avatarService.jsx';
 import { useAuth } from '../../hooks/useAuth';
+import ModalPortal from '../common/ModalPortal';
 
 // BadgesModal Component
 const BadgesModal = ({ isOpen, onClose, user, userBadges }) => {
@@ -133,10 +134,9 @@ const BadgesModal = ({ isOpen, onClose, user, userBadges }) => {
   const roleBadges = getRoleBadges(user?.role);
   const earnedBadgeIds = new Set(userBadges?.map(b => b.badge?.id || b.id) || []);
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 bg-black/45 flex items-center justify-center z-50 p-4">
+    <ModalPortal isOpen={isOpen}>
+      <div className="fixed inset-0 bg-black/45 flex items-center justify-center z-[9999] p-4">
       <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden shadow-2xl border border-yellow-200">
         {/* Modal Header */}
         <div className="flex items-center justify-between p-6 border-b border-yellow-200 bg-white/50">
@@ -273,6 +273,7 @@ const BadgesModal = ({ isOpen, onClose, user, userBadges }) => {
         </div>
       </div>
     </div>
+    </ModalPortal>
   );
 };
 
@@ -839,10 +840,9 @@ const SocialEditModal = ({ isOpen, onClose, user, onSave }) => {
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 bg-black/45 flex items-center justify-center z-50 p-4">
+    <ModalPortal isOpen={isOpen}>
+      <div className="fixed inset-0 bg-black/45 flex items-center justify-center z-[9999] p-4">
       <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-gray-200">
         {/* Modal Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
@@ -852,7 +852,7 @@ const SocialEditModal = ({ isOpen, onClose, user, onSave }) => {
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
           >
             <X size={20} className="text-gray-600" />
           </button>
@@ -938,15 +938,15 @@ const SocialEditModal = ({ isOpen, onClose, user, onSave }) => {
         <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
             disabled={loading}
           >
             Cancel
           </button>
-````````````````````````````````````````````````          <button
+          <button
             onClick={handleSave}
             disabled={loading}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer"
           >
             {loading ? (
               <>
@@ -963,6 +963,7 @@ const SocialEditModal = ({ isOpen, onClose, user, onSave }) => {
         </div>
       </div>
     </div>
+    </ModalPortal>
   );
 };
 
