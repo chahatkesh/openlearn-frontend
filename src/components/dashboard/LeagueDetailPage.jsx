@@ -16,13 +16,16 @@ import {
   Loader2,
   ClipboardList,
   Calendar,
-  Send
+  Send,
+  Edit,
+  Save
 } from 'lucide-react';
 import { RiTwitterXFill } from 'react-icons/ri';
 import ProgressService from '../../utils/progressService';
 import ResourceProgressService from '../../utils/resourceProgressService';
 import SocialService from '../../utils/socialService';
 import DataService from '../../utils/dataService';
+import FaviconService from '../../utils/faviconService'; // @see docs/development/favicon-service.md
 import AssignmentManagement from './AssignmentManagement';
 import PageHead from '../common/PageHead';
 
@@ -30,8 +33,11 @@ const LeagueDetailPage = ({ league, onBack }) => {
   const [leagueProgress, setLeagueProgress] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [editingNote, setEditingNote] = useState(null);
   const [noteText, setNoteText] = useState('');
+  const [showNoteModal, setShowNoteModal] = useState(false);
+  const [selectedResource, setSelectedResource] = useState(null);
+  const [favicons, setFavicons] = useState({});
+  const [loadingFavicons, setLoadingFavicons] = useState(new Set());
   const [expandedWeeks, setExpandedWeeks] = useState({});
   const [sectionResources, setSectionResources] = useState({});
   const [resourceProgress, setResourceProgress] = useState({});
@@ -39,6 +45,113 @@ const LeagueDetailPage = ({ league, onBack }) => {
   const [recentlyCompleted, setRecentlyCompleted] = useState(new Set());
   const [showSuccessToast, setShowSuccessToast] = useState(null);
   const [toastType, setToastType] = useState('success'); // 'success' or 'undo'
+
+    // Fetch favicon for a resource
+  const fetchResourceFavicon = async (resourceId, resourceUrl, resourceType) => {
+    setLoadingFavicons(prev => new Set([...prev, resourceId]));
+    
+    try {
+      const iconData = await FaviconService.getResourceIcon(resourceUrl, resourceType);
+      
+      setFavicons(prev => ({
+        ...prev,
+        [resourceId]: iconData
+      }));
+    } catch (error) {
+      console.warn('Failed to fetch favicon for resource:', resourceId, error);
+    } finally {
+      setLoadingFavicons(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(resourceId);
+        return newSet;
+      });
+    }
+  };
+
+  // Preload favicons for all resources in current view
+  const preloadFavicons = useCallback(async () => {
+    if (!leagueProgress?.progress?.weeks) return;
+
+    const allResources = [];
+    const resourceUrls = [];
+    
+    leagueProgress.progress.weeks.forEach(week => {
+      week.sections?.forEach(section => {
+        const resources = sectionResources[section.id] || [];
+        resources.forEach(resource => {
+          allResources.push(resource);
+          resourceUrls.push(resource.url);
+        });
+      });
+    });
+
+    // Preload favicons in bulk for better performance
+    try {
+      await FaviconService.preloadFavicons(resourceUrls);
+      
+      // Fetch favicons for all resources
+      const faviconPromises = allResources.map(resource => 
+        fetchResourceFavicon(resource.id, resource.url, resource.type)
+      );
+      
+      await Promise.allSettled(faviconPromises);
+    } catch (error) {
+      console.warn('Error preloading favicons:', error);
+    }
+  }, [leagueProgress, sectionResources]);
+
+  // Resource Icon Component with Favicon
+  const ResourceIcon = ({ resource, showDomain = false }) => {
+    const faviconData = favicons[resource.id];
+    const isLoading = loadingFavicons.has(resource.id);
+
+    if (isLoading) {
+      return (
+        <div className="flex items-center space-x-1">
+          <div className="w-4 h-4 bg-gray-200 rounded-sm animate-pulse"></div>
+          {showDomain && (
+            <div className="w-12 h-3 bg-gray-200 rounded animate-pulse"></div>
+          )}
+        </div>
+      );
+    }
+
+    if (faviconData?.type === 'favicon') {
+      return (
+        <div className="flex items-center space-x-1">
+          <img 
+            src={faviconData.url} 
+            alt={`${faviconData.domain} favicon`}
+            className="w-4 h-4 rounded-sm object-cover"
+            onError={() => {
+              // Fallback to type icon on error
+              setFavicons(prev => ({
+                ...prev,
+                [resource.id]: { type: 'fallback', url: null }
+              }));
+            }}
+          />
+          {showDomain && faviconData.domain && (
+            <span className="text-xs text-gray-500 truncate max-w-20">
+              {faviconData.domain}
+            </span>
+          )}
+        </div>
+      );
+    }
+
+    // Fallback to type-based icons
+    return (
+      <div className="flex items-center space-x-1">
+        {getResourceTypeIcon(resource.type)}
+        {showDomain && (
+          <span className="text-xs text-gray-500">
+            {getResourceTypeName(resource.type)}
+          </span>
+        )}
+      </div>
+    );
+  };
 
   // Assignment-related state - no longer needed as handled by AssignmentManagement component
 
@@ -72,6 +185,13 @@ const LeagueDetailPage = ({ league, onBack }) => {
       setLoading(false);
     }
   }, [league.id]);
+
+  // Preload favicons when resources are loaded
+  useEffect(() => {
+    if (Object.keys(sectionResources).length > 0) {
+      preloadFavicons();
+    }
+  }, [sectionResources, preloadFavicons]);
 
   // Assignment functions - no longer needed as handled by AssignmentManagement component
 
@@ -235,8 +355,6 @@ const LeagueDetailPage = ({ league, onBack }) => {
         ...prev,
         [resourceId]: { ...prev[resourceId], personalNote: note }
       }));
-      setEditingNote(null);
-      setNoteText('');
     } catch (err) {
       console.error('Error updating resource note:', err);
       alert('Failed to update note. Please try again.');
@@ -262,6 +380,21 @@ const LeagueDetailPage = ({ league, onBack }) => {
         return <FileText size={16} className="text-gray-600" />;
     }
   };
+
+  const getResourceTypeColor = (type) => {
+    switch (type?.toUpperCase()) {
+      case 'VIDEO':
+        return 'bg-red-50 text-red-700 border-red-200';
+      case 'ARTICLE':
+        return 'bg-blue-50 text-blue-700 border-blue-200';
+      case 'EXTERNAL_LINK':
+        return 'bg-green-50 text-green-700 border-green-200';
+      case 'BLOG':
+        return 'bg-purple-50 text-purple-700 border-purple-200';
+      default:
+        return 'bg-gray-50 text-gray-700 border-gray-200';
+    }
+  };
   const getResourceTypeName = (type) => {
     switch (type?.toUpperCase()) {
       case 'VIDEO':
@@ -275,6 +408,140 @@ const LeagueDetailPage = ({ league, onBack }) => {
       default:
         return 'File';
     }
+  };
+
+  const openNoteModal = (resource) => {
+    setSelectedResource(resource);
+    const progress = resourceProgress[resource.id];
+    setNoteText(progress?.personalNote || '');
+    setShowNoteModal(true);
+  };
+
+  const closeNoteModal = () => {
+    setShowNoteModal(false);
+    setSelectedResource(null);
+    setNoteText('');
+  };
+
+  const saveNote = async () => {
+    if (selectedResource) {
+      await handleResourceNote(selectedResource.id, noteText);
+      closeNoteModal();
+    }
+  };
+
+  const openResourceWithType = (resource) => {
+    window.open(resource.url, '_blank');
+  };
+
+  // Note Modal Component
+  const NoteModal = () => {
+    if (!showNoteModal || !selectedResource) return null;
+
+    const progress = resourceProgress[selectedResource.id];
+    const currentNote = progress?.personalNote || '';
+
+    // Handle keyboard shortcuts
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        closeNoteModal();
+      } else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+        saveNote();
+      }
+    };
+
+    return (
+      <div 
+        className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+        onKeyDown={handleKeyDown}
+        tabIndex={-1}
+      >
+        <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
+          {/* Modal Header */}
+          <div className="flex items-center justify-between p-4 border-b border-gray-200">
+            <div className="flex items-center space-x-2">
+              <Edit size={20} className="text-gray-600" />
+              <h3 className="text-lg font-medium text-gray-900">Resource Note</h3>
+            </div>
+            <button
+              onClick={closeNoteModal}
+              className="text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X size={20} />
+            </button>
+          </div>
+
+          {/* Modal Body */}
+          <div className="p-4">
+            <div className="mb-4">
+              <h4 className="text-sm font-medium text-gray-700 mb-2">Resource:</h4>
+              <div className="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg">
+                <ResourceIcon resource={selectedResource} />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-900">{selectedResource.title}</p>
+                  <p className="text-xs text-gray-500">{getResourceTypeName(selectedResource.type)}</p>
+                </div>
+                <button
+                  onClick={() => openResourceWithType(selectedResource)}
+                  className="px-2 py-1 text-xs bg-[#FFDE59] text-gray-900 rounded hover:bg-[#FFD700] transition-colors flex items-center space-x-1"
+                >
+                  <ExternalLink size={12} />
+                  <span>View</span>
+                </button>
+              </div>
+            </div>
+            
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Personal Note
+              </label>
+              <textarea
+                value={noteText}
+                onChange={(e) => setNoteText(e.target.value.slice(0, 500))}
+                placeholder="Add your thoughts, key learnings, or reminders about this resource..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FFDE59] focus:border-transparent resize-none"
+                rows={4}
+                maxLength={500}
+              />
+              <div className="flex justify-between items-center mt-1">
+                <p className={`text-xs ${noteText.length > 450 ? 'text-red-500' : 'text-gray-500'}`}>
+                  {noteText.length}/500 characters
+                </p>
+                {noteText.length > 450 && (
+                  <p className="text-xs text-red-500">Character limit approaching</p>
+                )}
+              </div>
+            </div>
+
+            {currentNote && (
+              <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                <p className="text-xs text-gray-600 mb-1">Current note:</p>
+                <p className="text-sm text-gray-800">{currentNote?.slice(0, 50) || "No content"}...</p>
+              </div>
+            )}
+          </div>
+
+          {/* Modal Footer */}
+          <div className="flex items-center justify-between p-4 border-t border-gray-200">
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={closeNoteModal}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={saveNote}
+                className="px-4 py-2 text-sm font-medium text-gray-900 bg-[#FFDE59] rounded-lg hover:bg-[#FFD700] transition-colors flex items-center space-x-2"
+              >
+                <Save size={16} />
+                <span>Save Note</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   if (loading) {
@@ -506,10 +773,9 @@ const LeagueDetailPage = ({ league, onBack }) => {
                                 {/* Table Header */}
                                 <div className="grid grid-cols-12 gap-2 px-4 py-2 bg-gray-100 border-b border-gray-200 text-xs font-medium text-gray-700 uppercase tracking-wider">
                                   <div className="col-span-1 flex justify-center">Status</div>
-                                  <div className="col-span-5">Title</div>
-                                  <div className="col-span-2 text-center">Resources</div>
-                                  <div className="col-span-1 text-center">Link</div>
-                                  <div className="col-span-2 text-center">Note</div>
+                                  <div className="col-span-4">Title</div>
+                                  <div className="col-span-3 text-center">Resource</div>
+                                  <div className="col-span-3 text-center">Note</div>
                                   <div className="col-span-1 text-center">Share</div>
                                 </div>
                                 
@@ -550,78 +816,48 @@ const LeagueDetailPage = ({ league, onBack }) => {
                                       </div>
 
                                       {/* Title Column */}
-                                      <div className="col-span-5">
+                                      <div className="col-span-4">
                                         <span className={`text-sm ${isCompleted ? 'line-through text-gray-500' : 'text-gray-900'} truncate block`}>
                                           {resource.title}
                                         </span>
                                       </div>
 
-                                      {/* Type Column */}
-                                      <div className="col-span-2 flex justify-center">
-                                        <div className="flex items-center space-x-1">
-                                          {getResourceTypeIcon(resource.type)}
-                                          <span className="text-xs text-gray-600 capitalize">
-                                            {getResourceTypeName(resource.type)}
-                                          </span>
-                                        </div>
-                                      </div>
-
-                                      {/* Link Column */}
-                                      <div className="col-span-1 flex justify-center">
-                                        <button
-                                          onClick={() => window.open(resource.url, '_blank')}
-                                          className="px-2 py-1 text-xs font-medium bg-[#FFDE59] text-gray-900 rounded hover:bg-[#FFD700] transition-colors cursor-pointer"
+                                      {/* Resource Column */}
+                                      <div className="col-span-3 flex items-center justify-center space-x-2">
+                                        <button onClick={() => openResourceWithType(resource)} 
+                                          className={`flex items-center space-x-2 px-2 py-1 rounded-full border text-xs font-medium ${getResourceTypeColor(resource.type)}`}
+                                          title={favicons[resource.id]?.domain ? `Source: ${favicons[resource.id].domain}` : `Resource type: ${getResourceTypeName(resource.type)}`}
                                         >
-                                          Open
+                                          <ResourceIcon resource={resource} />
+                                          <span>{getResourceTypeName(resource.type)}</span>
                                         </button>
                                       </div>
 
                                       {/* Note Column */}
-                                      <div className="col-span-2 flex justify-center">
-                                        {editingNote === resource.id ? (
-                                          <div className="flex items-center space-x-1 w-full">
-                                            <input
-                                              type="text"
-                                              value={noteText}
-                                              onChange={(e) => setNoteText(e.target.value)}
-                                              className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:border-[#FFDE59]"
-                                              placeholder="Add note..."
-                                              onKeyPress={(e) => {
-                                                if (e.key === 'Enter') {
-                                                  handleResourceNote(resource.id, noteText);
-                                                }
-                                              }}
-                                            />
-                                            <button
-                                              onClick={() => handleResourceNote(resource.id, noteText)}
-                                              className="text-green-600 hover:text-green-700 flex-shrink-0"
-                                            >
-                                              <Check size={12} />
-                                            </button>
-                                          </div>
-                                        ) : (
-                                          <button
-                                            onClick={() => {
-                                              setEditingNote(resource.id);
-                                              setNoteText(hasNote || '');
-                                            }}
-                                            className="px-2 py-1 text-xs text-gray-500 hover:text-gray-700 rounded hover:bg-gray-100 max-w-full truncate"
-                                            title={hasNote ? `Note: ${hasNote}` : 'Add note'}
-                                          >
-                                            {hasNote ? (
-                                              <span className="truncate block max-w-20">{hasNote}</span>
-                                            ) : (
-                                              '➕ Note'
-                                            )}
-                                          </button>
-                                        )}
+                                      <div className="col-span-3 flex justify-center">
+                                        <button
+                                          onClick={() => openNoteModal(resource)}
+                                          className={`px-3 py-1 text-xs rounded-full flex items-center space-x-1 max-w-full transition-all duration-200 ${
+                                            hasNote 
+                                              ? 'bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100' 
+                                              : 'bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100'
+                                          }`}
+                                          title={hasNote ? `Note: ${hasNote}` : 'Add note'}
+                                        >
+                                          <Edit size={12} />
+                                          {hasNote ? (
+                                            <span className="truncate block max-w-20 font-medium">{hasNote}</span>
+                                          ) : (
+                                            <span>Add Note</span>
+                                          )}
+                                        </button>
                                       </div>
 
                                       {/* Share Column */}
                                       <div className="col-span-1 flex justify-center">
                                         <button
                                           onClick={() => handleShareOnTwitter(resource.title, leagueProgress.league.name)}
-                                          className="text-gray-400 hover:text-black transition-colors p-1"
+                                          className="text-gray-400 hover:text-black transition-colors p-2 rounded-full hover:bg-gray-100"
                                           title="Share on X (formerly Twitter)"
                                         >
                                           <RiTwitterXFill size={14} />
@@ -695,6 +931,9 @@ const LeagueDetailPage = ({ league, onBack }) => {
           </div>
         </div>
       )}
+
+      {/* Note Modal */}
+      <NoteModal />
     </div>
   );
 };

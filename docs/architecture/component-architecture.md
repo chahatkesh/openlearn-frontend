@@ -362,4 +362,29 @@ const useUserData = () => {
 };
 ```
 
+## 🛠️ Utility Services
+
+### Favicon Service
+- **Location**: `src/utils/faviconService.js`
+- **Purpose**: Fetches and caches website favicons for resource display
+- **Features**: Multi-source fetching, intelligent caching, fallback icons
+- **Integration**: LeagueDetailPage resources table
+- **Documentation**: [Favicon Service Guide](../development/favicon-service.md)
+
+```jsx
+// Usage in components
+const ResourceIcon = ({ resource }) => {
+  const [faviconData, setFaviconData] = useState(null);
+  
+  useEffect(() => {
+    FaviconService.getResourceIcon(resource.url, resource.type)
+      .then(setFaviconData);
+  }, [resource]);
+  
+  return faviconData?.type === 'favicon' 
+    ? <img src={faviconData.url} alt="favicon" />
+    : <TypeIcon type={resource.type} />;
+};
+```
+
 This component architecture ensures scalability, maintainability, and consistent user experience across the OpenLearn platform.
