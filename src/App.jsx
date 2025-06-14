@@ -57,10 +57,10 @@ const App = () => {
             <Route index element={<AdminDefaultRedirect />} />
             <Route element={<ProtectedRoute requiredRoles={['GRAND_PATHFINDER']} />}>
               <Route path="users" element={<AdminUsersPage />} />
+              <Route path="specializations" element={<AdminSpecializationsPage />} />
             </Route>
             <Route path="cohorts" element={<AdminCohortsPage />} />
             <Route path="leagues" element={<AdminLeaguesPage />} />
-            <Route path="specializations" element={<AdminSpecializationsPage />} />
             <Route path="weeks" element={<AdminWeeksPage />} />
             <Route path="sections" element={<AdminSectionsPage />} />
             <Route path="resources" element={<AdminResourcesPage />} />

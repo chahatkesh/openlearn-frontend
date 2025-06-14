@@ -27,8 +27,8 @@ const AdminLayout = () => {
     const tabMatch = path.match(/\/admin\/(.+)/);
     const requestedTab = tabMatch ? tabMatch[1] : 'users';
     
-    // If trying to access users tab but not GRAND_PATHFINDER, redirect to cohorts
-    if (requestedTab === 'users' && user?.role !== 'GRAND_PATHFINDER') {
+    // If trying to access restricted tabs but not GRAND_PATHFINDER, redirect to cohorts
+    if ((requestedTab === 'users' || requestedTab === 'specializations') && user?.role !== 'GRAND_PATHFINDER') {
       return 'cohorts';
     }
     
@@ -49,9 +49,9 @@ const AdminLayout = () => {
     { id: 'assignments', label: 'Assignments', icon: ClipboardList, path: '/admin/assignments' }
   ];
 
-  // Filter tabs based on user role - only GRAND_PATHFINDER can see Users tab
+  // Filter tabs based on user role - only GRAND_PATHFINDER can see Users and Specializations tabs
   const tabs = allTabs.filter(tab => {
-    if (tab.id === 'users') {
+    if (tab.id === 'users' || tab.id === 'specializations') {
       return user?.role === 'GRAND_PATHFINDER';
     }
     return true; // Show all other tabs for any admin role

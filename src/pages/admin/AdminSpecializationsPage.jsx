@@ -1,16 +1,28 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import SpecializationManagement from '../../components/admin/SpecializationManagement';
 import AdminService from '../../utils/adminService';
+import { useAuth } from '../../hooks/useAuth';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const API_BASE_URL = `${BASE_URL}/api`;
 
 const AdminSpecializationsPage = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [specializations, setSpecializations] = useState([]);
   const [cohorts, setCohorts] = useState([]);
   const [leagues, setLeagues] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Check if user has Grand Pathfinder role
+  useEffect(() => {
+    if (user && user.role !== 'GRAND_PATHFINDER') {
+      navigate('/admin/cohorts', { replace: true });
+      return;
+    }
+  }, [user, navigate]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -141,6 +153,25 @@ const AdminSpecializationsPage = () => {
     return (
       <div className="flex justify-center py-12">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-black"></div>
+      </div>
+    );
+  }
+
+  // Additional protection: don't render if user doesn't have proper role
+  if (!user || user.role !== 'GRAND_PATHFINDER') {
+    return (
+      <div className="flex justify-center items-center py-12">
+        <div className="text-center">
+          <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+            <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <h3 className="mt-2 text-sm font-medium text-gray-900">Access Denied</h3>
+          <p className="mt-1 text-sm text-gray-500">
+            Only Grand Pathfinders can access Specialization Management.
+          </p>
+        </div>
       </div>
     );
   }
