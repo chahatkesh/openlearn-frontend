@@ -164,7 +164,7 @@ const Cohort = () => {
               <LeagueCard
                 title="Finance"
                 description="A comprehensive finance foundation built for students who want to understand money, markets, and modern financial systems."
-                poweredBy="FinNest – Finance Club of NITJ"
+                poweredBy="FinNest – Finance Society of NITJ"
                 certification="Specialisation Certificate in ML + Finance"
                 prerequisite="Completion of ML League required."
                 isLocked={true}
