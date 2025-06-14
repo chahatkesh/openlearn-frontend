@@ -20,14 +20,25 @@ const AdminLayout = () => {
   // Extract the current tab from the URL path
   const getCurrentTab = () => {
     const path = location.pathname;
-    if (path === '/admin' || path === '/admin/') return 'users';
+    if (path === '/admin' || path === '/admin/') {
+      // Default to cohorts for non-GRAND_PATHFINDER users, users for GRAND_PATHFINDER
+      return user?.role === 'GRAND_PATHFINDER' ? 'users' : 'cohorts';
+    }
     const tabMatch = path.match(/\/admin\/(.+)/);
-    return tabMatch ? tabMatch[1] : 'users';
+    const requestedTab = tabMatch ? tabMatch[1] : 'users';
+    
+    // If trying to access users tab but not GRAND_PATHFINDER, redirect to cohorts
+    if (requestedTab === 'users' && user?.role !== 'GRAND_PATHFINDER') {
+      return 'cohorts';
+    }
+    
+    return requestedTab;
   };
 
   const activeTab = getCurrentTab();
 
-  const tabs = [
+  // Define all available tabs
+  const allTabs = [
     { id: 'users', label: 'Users', icon: Users, path: '/admin/users' },
     { id: 'cohorts', label: 'Cohorts', icon: Archive, path: '/admin/cohorts' },
     { id: 'leagues', label: 'Leagues', icon: BookOpen, path: '/admin/leagues' },
@@ -37,6 +48,14 @@ const AdminLayout = () => {
     { id: 'resources', label: 'Resources', icon: Database, path: '/admin/resources' },
     { id: 'assignments', label: 'Assignments', icon: ClipboardList, path: '/admin/assignments' }
   ];
+
+  // Filter tabs based on user role - only GRAND_PATHFINDER can see Users tab
+  const tabs = allTabs.filter(tab => {
+    if (tab.id === 'users') {
+      return user?.role === 'GRAND_PATHFINDER';
+    }
+    return true; // Show all other tabs for any admin role
+  });
 
   return (
     <div className="min-h-screen bg-gray-50">

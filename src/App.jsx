@@ -14,6 +14,7 @@ import ScrollToTop from './components/common/ScrollToTop'
 
 // Admin components
 import AdminLayout from './components/admin/AdminLayout'
+import AdminDefaultRedirect from './components/admin/AdminDefaultRedirect'
 import AdminUsersPage from './pages/admin/AdminUsersPage'
 import AdminCohortsPage from './pages/admin/AdminCohortsPage'
 import AdminLeaguesPage from './pages/admin/AdminLeaguesPage'
@@ -45,8 +46,10 @@ const App = () => {
         {/* Routes with specific role requirements */}
         <Route element={<ProtectedRoute requiredRoles={['ADMIN', 'GRAND_PATHFINDER', 'CHIEF_PATHFINDER']} />}>
           <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<Navigate to="/admin/users" replace />} />
-            <Route path="users" element={<AdminUsersPage />} />
+            <Route index element={<AdminDefaultRedirect />} />
+            <Route element={<ProtectedRoute requiredRoles={['GRAND_PATHFINDER']} />}>
+              <Route path="users" element={<AdminUsersPage />} />
+            </Route>
             <Route path="cohorts" element={<AdminCohortsPage />} />
             <Route path="leagues" element={<AdminLeaguesPage />} />
             <Route path="specializations" element={<AdminSpecializationsPage />} />
