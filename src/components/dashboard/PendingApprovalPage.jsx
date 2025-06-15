@@ -20,7 +20,7 @@ const PendingApprovalPage = ({ user }) => {
         {/* Description */}
         <p className="text-gray-600 mb-6 leading-relaxed">
           Hi <strong>{user?.name}</strong>, your account is currently under review. 
-          You'll be able to access your dashboard once a pathfinder approves your registration.
+          You'll be able to access your dashboard once admin approves your registration.
         </p>
 
         {/* User Info Card */}
@@ -48,11 +48,10 @@ const PendingApprovalPage = ({ user }) => {
 
         {/* Next Steps */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-          <h3 className="font-medium text-blue-900 mb-2">What happens next?</h3>
+          <h3 className="font-medium text-blue-900 mb-2">What to do?</h3>
           <ul className="text-sm text-blue-700 space-y-1 text-left">
-            <li>• A pathfinder will review your application</li>
-            <li>• You'll receive an email notification</li>
-            <li>• Access to courses and learning materials</li>
+            <li>• Wait for admin approval, which may take up to 24 hours</li>
+            <li>• Ensure your profile is complete(add social handles)</li>
           </ul>
         </div>
 
