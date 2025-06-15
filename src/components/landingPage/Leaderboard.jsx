@@ -22,7 +22,13 @@ const Leaderboard = () => {
             entry.user.role === 'PIONEER' || entry.user.role === 'LUMINARY'
           ) || [];
           
-          setLeaderboardData(filteredData);
+          // Recalculate ranks after filtering
+          const rerankedData = filteredData.map((entry, index) => ({
+            ...entry,
+            rank: index + 1 // Assign new rank based on filtered position
+          }));
+          
+          setLeaderboardData(rerankedData);
         } catch (err) {
           setError('Failed to load leaderboard data');
           console.error('Leaderboard error:', err);
@@ -144,128 +150,173 @@ const Leaderboard = () => {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {leaderboardData.map((entry) => {
-              const { rank, user: student, stats, recentActivity } = entry;
-              const RoleIcon = getRoleIcon(student.role);
-              
-              return (
-                <div
-                  key={student.id}
-                  className={`bg-white rounded-2xl shadow-lg border-2 p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${
-                    rank <= 3
-                      ? 'border-yellow-300 bg-gradient-to-br from-white to-yellow-50'
-                      : 'border-gray-200'
-                  }`}
-                >
-                  {/* Position and Role */}
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      {getPositionIcon(rank)}
-                      {rank <= 3 && (
-                        <span className="text-xs font-medium px-2 py-1 rounded-full bg-yellow-100 text-yellow-800">
-                          Top {rank}
-                        </span>
-                      )}
-                    </div>
-                    <div className={`flex items-center gap-1 px-3 py-1 rounded-full ${getRoleBgColor(student.role)}`}>
-                      <RoleIcon className={`w-4 h-4 ${getRoleColor(student.role)}`} />
-                      <span className={`text-xs font-medium ${getRoleColor(student.role)}`}>
-                        {student.role}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Student Avatar and Name */}
-                  <div className="text-center mb-4">
-                    <div className="w-16 h-16 mx-auto mb-3 rounded-full overflow-hidden border-2 border-white shadow-sm">
-                      <img
-                        src={getUserAvatarUrl(student, 'avataaars', 64)}
-                        alt={`${student.name} avatar`}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          // Fallback to initials if avatar fails to load
-                          e.target.style.display = 'none';
-                          const fallbackDiv = e.target.nextSibling;
-                          if (fallbackDiv) {
-                            fallbackDiv.style.display = 'flex';
-                          }
-                        }}
-                        onLoad={(e) => {
-                          // Hide fallback when image loads successfully
-                          const fallbackDiv = e.target.nextSibling;
-                          if (fallbackDiv) {
-                            fallbackDiv.style.display = 'none';
-                          }
-                        }}
-                      />
-                      {/* Fallback initials display */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-gray-300 to-gray-400 flex items-center justify-center text-white font-bold text-lg" style={{ display: 'none' }}>
-                        {student.name.charAt(0).toUpperCase()}
-                      </div>
-                    </div>
-                    <h3 className="font-bold text-gray-900 text-lg">
-                      {student.name}
-                    </h3>
-                  </div>
-
-                  {/* Stats */}
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Resources Completed</span>
-                      <span className="font-bold text-lg text-gray-900">
-                        {stats.resourcesCompleted}/{stats.totalResources}
-                      </span>
-                    </div>
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+            {/* Table Header */}
+            <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-gray-600" />
+                Community Leaderboard
+              </h3>
+            </div>
+            
+            {/* Table */}
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[800px]">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                  <tr>
+                    <th className="px-4 sm:px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Rank
+                    </th>
+                    <th className="px-4 sm:px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Student
+                    </th>
+                    <th className="px-4 sm:px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Role
+                    </th>
+                    <th className="px-4 sm:px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Resources
+                    </th>
+                    <th className="px-4 sm:px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Progress
+                    </th>
+                    <th className="px-4 sm:px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Badges
+                    </th>
+                    <th className="px-4 sm:px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
+                      Recent Activity
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {leaderboardData.map((entry) => {
+                    const { rank, user: student, stats, recentActivity } = entry;
+                    const RoleIcon = getRoleIcon(student.role);
+                    const isTopThree = rank <= 3;
                     
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Badges Earned</span>
-                      <span className="font-medium text-amber-600">
-                        {stats.badgesEarned}
-                      </span>
-                    </div>
-                    
-                    {/* Progress Bar */}
-                    <div>
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-sm text-gray-600">Progress</span>
-                        <span className="text-sm font-medium text-gray-900">
-                          {stats.completionPercentage}%
-                        </span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="bg-gradient-to-r from-green-400 to-green-600 h-2 rounded-full transition-all duration-300"
-                          style={{ width: `${stats.completionPercentage}%` }}
-                        />
-                      </div>
-                    </div>
+                    return (
+                      <tr 
+                        key={student.id}
+                        className={`hover:bg-gray-50 transition-colors duration-200 ${
+                          isTopThree ? 'bg-gradient-to-r from-yellow-50 to-orange-50' : ''
+                        }`}
+                      >
+                        {/* Rank Column */}
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center gap-2 sm:gap-3">
+                            {getPositionIcon(rank)}
+                            {isTopThree && (
+                              <span className="text-xs font-medium px-2 py-1 rounded-full bg-yellow-100 text-yellow-800 hidden sm:inline-block">
+                                Top {rank}
+                              </span>
+                            )}
+                          </div>
+                        </td>
 
-                    {/* Recent Activity */}
-                    {recentActivity?.lastCompletedResource && (
-                      <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                        <p className="text-xs text-gray-500 mb-1">Latest Achievement</p>
-                        <p className="text-sm font-medium text-gray-900">
-                          {recentActivity.lastCompletedResource.name}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          {formatDate(recentActivity.lastCompletedResource.completedAt)}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
+                        {/* Student Column */}
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center gap-2 sm:gap-3">
+                            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden border-2 border-white shadow-sm flex-shrink-0">
+                              <img
+                                src={getUserAvatarUrl(student, 'avataaars', 40)}
+                                alt={`${student.name} avatar`}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  e.target.style.display = 'none';
+                                  const fallbackDiv = e.target.nextSibling;
+                                  if (fallbackDiv) {
+                                    fallbackDiv.style.display = 'flex';
+                                  }
+                                }}
+                                onLoad={(e) => {
+                                  const fallbackDiv = e.target.nextSibling;
+                                  if (fallbackDiv) {
+                                    fallbackDiv.style.display = 'none';
+                                  }
+                                }}
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-r from-gray-300 to-gray-400 flex items-center justify-center text-white font-bold text-xs sm:text-sm" style={{ display: 'none' }}>
+                                {student.name.charAt(0).toUpperCase()}
+                              </div>
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <div className="font-medium text-gray-900 text-sm sm:text-base truncate">{student.name}</div>
+                              <div className="text-xs text-gray-500 hidden sm:block">ID: {student.id.slice(-6)}</div>
+                            </div>
+                          </div>
+                        </td>
 
-        {/* Footer Note */}
-        {!loading && !error && leaderboardData.length > 0 && (
-          <div className="text-center mt-12">
-            <p className="text-sm text-gray-500">
-              Rankings update in real-time based on completed resources. Keep learning to climb the leaderboard! 📚
-            </p>
+                        {/* Role Column */}
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-center">
+                          <div className={`inline-flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full ${getRoleBgColor(student.role)}`}>
+                            <RoleIcon className={`w-3 h-3 sm:w-4 sm:h-4 ${getRoleColor(student.role)}`} />
+                            <span className={`text-xs font-medium ${getRoleColor(student.role)} hidden sm:inline`}>
+                              {student.role}
+                            </span>
+                          </div>
+                        </td>
+
+                        {/* Resources Column */}
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-center">
+                          <div className="text-sm font-semibold text-gray-900">
+                            {stats.resourcesCompleted}/{stats.totalResources}
+                          </div>
+                          <div className="text-xs text-gray-500 hidden sm:block">completed</div>
+                        </td>
+
+                        {/* Progress Column */}
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-center">
+                          <div className="flex flex-col items-center gap-1">
+                            <span className="text-sm font-medium text-gray-900">
+                              {stats.completionPercentage}%
+                            </span>
+                            <div className="w-12 sm:w-16 bg-gray-200 rounded-full h-2">
+                              <div 
+                                className="bg-gradient-to-r from-green-400 to-green-600 h-2 rounded-full transition-all duration-300"
+                                style={{ width: `${stats.completionPercentage}%` }}
+                              />
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Badges Column */}
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-center">
+                          <div className="flex items-center justify-center gap-1">
+                            <Medal className="w-3 h-3 sm:w-4 sm:h-4 text-amber-500" />
+                            <span className="text-sm font-medium text-amber-600">
+                              {stats.badgesEarned}
+                            </span>
+                          </div>
+                        </td>
+
+                        {/* Recent Activity Column - Hidden on smaller screens */}
+                        <td className="px-4 sm:px-6 py-4 hidden lg:table-cell">
+                          {recentActivity?.lastCompletedResource ? (
+                            <div className="max-w-48">
+                              <div className="text-sm font-medium text-gray-900 truncate">
+                                {recentActivity.lastCompletedResource.name}
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                {formatDate(recentActivity.lastCompletedResource.completedAt)}
+                              </div>
+                            </div>
+                          ) : (
+                            <span className="text-sm text-gray-400">No recent activity</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            
+            {/* Table Footer */}
+            <div className="bg-gray-50 px-6 py-3 border-t border-gray-200">
+              <div className="flex items-center justify-between text-xs text-gray-500">
+                <span>Showing {leaderboardData.length} students</span>
+                <span>Rankings update in real-time</span>
+              </div>
+            </div>
           </div>
         )}
       </div>
