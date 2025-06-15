@@ -582,7 +582,7 @@ const LearningProgressSection = ({ user }) => {
                               <span className="text-xs font-medium text-amber-700">Week</span>
                             </div>
                             <div className="text-lg font-bold text-amber-900">{weeksCompleted}</div>
-                            <div className="text-xs text-amber-600">of {leagueSectionProgress.weeksCount}</div>
+                            <div className="text-xs text-amber-600">of {leagueStatistics[enrollment.league.id]?.weeksCount || 0}</div>
                           </div>
                         </div>
                         
