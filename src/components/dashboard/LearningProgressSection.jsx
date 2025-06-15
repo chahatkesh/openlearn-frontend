@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TrendingUp, BookOpen, Users, Star, ChevronRight, Play, CheckSquare, AlertCircle, Trophy, Clock, Target } from 'lucide-react';
+import { TrendingUp, BookOpen, Users, Star, ChevronRight, Play, CheckSquare, AlertCircle, Trophy, Clock, Target, Search } from 'lucide-react';
 import WelcomeBanner from './WelcomeBanner';
 import AssignmentManagement from './AssignmentManagement';
 import ProgressService from '../../utils/progressService';
@@ -20,11 +20,25 @@ const LearningProgressSection = ({ user }) => {
   const [allSectionResources, setAllSectionResources] = useState({});
   const [sectionToLeagueMap, setSectionToLeagueMap] = useState({});
   const [leagueStatistics, setLeagueStatistics] = useState({});
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isSearchActive, setIsSearchActive] = useState(false);
 
   useEffect(() => {
     fetchDashboardData();
     fetchCohorts();
     fetchLeagues();
+  }, []);
+
+  // Listen for search events from the header
+  useEffect(() => {
+    const handleSearchEvent = (event) => {
+      const { searchTerm, isActive } = event.detail;
+      setSearchTerm(searchTerm.toLowerCase());
+      setIsSearchActive(isActive);
+    };
+
+    window.addEventListener('dashboardSearch', handleSearchEvent);
+    return () => window.removeEventListener('dashboardSearch', handleSearchEvent);
   }, []);
 
   // Function to calculate real league statistics
@@ -216,6 +230,25 @@ const LearningProgressSection = ({ user }) => {
     }
   };
 
+  // Filter functions for search
+  const filterEnrollments = useCallback((enrollments) => {
+    if (!isSearchActive || !searchTerm) return enrollments;
+    
+    return enrollments.filter(enrollment => 
+      enrollment.league.name.toLowerCase().includes(searchTerm) ||
+      enrollment.league.description?.toLowerCase().includes(searchTerm)
+    );
+  }, [searchTerm, isSearchActive]);
+
+  const filterLeagues = useCallback((leagues) => {
+    if (!isSearchActive || !searchTerm) return leagues;
+    
+    return leagues.filter(league => 
+      league.name.toLowerCase().includes(searchTerm) ||
+      league.description?.toLowerCase().includes(searchTerm)
+    );
+  }, [searchTerm, isSearchActive]);
+
   if (loading) {
     return (
       <div className="space-y-6">
@@ -263,6 +296,28 @@ const LearningProgressSection = ({ user }) => {
               <p className="text-sm text-gray-600">Track your progress and continue your journey</p>
             </div>
           </div>
+          
+          {/* Search Results Indicator */}
+          {isSearchActive && (
+            <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-center gap-2 text-blue-800">
+                <Search className="h-4 w-4" />
+                <span className="text-sm font-medium">
+                  Showing search results for: "<span className="font-semibold">{searchTerm}</span>"
+                </span>
+                <button
+                  onClick={() => {
+                    window.dispatchEvent(new CustomEvent('dashboardSearch', {
+                      detail: { searchTerm: '', isActive: false }
+                    }));
+                  }}
+                  className="ml-auto text-blue-600 hover:text-blue-800 text-sm underline"
+                >
+                  Clear search
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Welcome Banner for New Users */}
@@ -397,7 +452,8 @@ const LearningProgressSection = ({ user }) => {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {dashboardData.enrollments.map((enrollment) => {
+                {filterEnrollments(dashboardData.enrollments).length > 0 ? (
+                  filterEnrollments(dashboardData.enrollments).map((enrollment) => {
                   // Calculate accurate section progress for this specific league
                   const leagueSectionProgress = (() => {
                     let completedSections = 0;
@@ -553,7 +609,30 @@ const LearningProgressSection = ({ user }) => {
                       </div>
                     </div>
                   );
-                })}
+                })
+                ) : (
+                  // Show "No results found" message when search yields no results
+                  isSearchActive && searchTerm ? (
+                    <div className="col-span-full text-center py-12">
+                      <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <Search size={24} className="text-gray-400" />
+                      </div>
+                      <h3 className="font-medium text-gray-900 mb-2">No Active Leagues Found</h3>
+                      <p className="text-sm text-gray-600 mb-4">
+                        No leagues match your search for "<span className="font-medium">{searchTerm}</span>"
+                      </p>
+                      <button
+                        onClick={() => {
+                          // Clear search by dispatching event
+                          window.dispatchEvent(new CustomEvent('clearSearch'));
+                        }}
+                        className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                      >
+                        Clear search to see all leagues
+                      </button>
+                    </div>
+                  ) : null
+                )}
               </div>
             </div>
           </div>
@@ -575,8 +654,8 @@ const LearningProgressSection = ({ user }) => {
                     
                     {/* Leagues Grid */}
                     <div className="ml-5 grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {leagues.filter(league => league && league.id && league.name).length > 0 ? (
-                        leagues.filter(league => league && league.id && league.name).map((league) => {
+                      {filterLeagues(leagues.filter(league => league && league.id && league.name)).length > 0 ? (
+                        filterLeagues(leagues.filter(league => league && league.id && league.name)).map((league) => {
                           const isEnrolled = dashboardData?.enrollments?.some(
                             enrollment => enrollment.league.id === league.id
                           );
@@ -652,9 +731,31 @@ const LearningProgressSection = ({ user }) => {
                       ) : (
                         <div className="col-span-full text-center py-8">
                           <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                            <BookOpen size={20} className="text-gray-400" />
+                            {isSearchActive && searchTerm ? (
+                              <Search size={20} className="text-gray-400" />
+                            ) : (
+                              <BookOpen size={20} className="text-gray-400" />
+                            )}
                           </div>
-                          <p className="text-sm text-gray-600">No leagues available in this cohort yet</p>
+                          {isSearchActive && searchTerm ? (
+                            <>
+                              <h3 className="font-medium text-gray-900 mb-2">No Available Leagues Found</h3>
+                              <p className="text-sm text-gray-600 mb-4">
+                                No available leagues match your search for "<span className="font-medium">{searchTerm}</span>"
+                              </p>
+                              <button
+                                onClick={() => {
+                                  // Clear search by dispatching event
+                                  window.dispatchEvent(new CustomEvent('clearSearch'));
+                                }}
+                                className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                              >
+                                Clear search to see all leagues
+                              </button>
+                            </>
+                          ) : (
+                            <p className="text-sm text-gray-600">No leagues available in this cohort yet</p>
+                          )}
                         </div>
                       )}
                     </div>

@@ -1,10 +1,73 @@
 import React, { useState, useEffect } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import { LogOut, Settings, ChevronDown, Search, Home } from 'lucide-react';
+import { LogOut, Settings, ChevronDown, Search, Home, X } from 'lucide-react';
 import UserProfileSection from './UserProfileSection';
 import ProgressService from '../../utils/progressService';
 import { getUserAvatarUrl } from '../../utils/avatarService.jsx';
+import { SearchProvider } from '../../context/SearchContext.jsx';
+
+// Search Bar Component
+const SearchBar = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isSearchActive, setIsSearchActive] = useState(false);
+
+  // Listen for clear search events
+  useEffect(() => {
+    const handleClearSearch = () => {
+      setSearchTerm('');
+      setIsSearchActive(false);
+      window.dispatchEvent(new CustomEvent('dashboardSearch', {
+        detail: { searchTerm: '', isActive: false }
+      }));
+    };
+
+    window.addEventListener('clearSearch', handleClearSearch);
+    return () => window.removeEventListener('clearSearch', handleClearSearch);
+  }, []);
+
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    setIsSearchActive(value.length > 0);
+    
+    // Dispatch custom event to notify other components
+    window.dispatchEvent(new CustomEvent('dashboardSearch', {
+      detail: { searchTerm: value, isActive: value.length > 0 }
+    }));
+  };
+
+  const clearSearch = () => {
+    setSearchTerm('');
+    setIsSearchActive(false);
+    window.dispatchEvent(new CustomEvent('dashboardSearch', {
+      detail: { searchTerm: '', isActive: false }
+    }));
+  };
+
+  return (
+    <div className="relative w-full">
+      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <Search className="h-4 w-4 text-gray-400" />
+      </div>
+      <input
+        type="text"
+        placeholder="Search leagues, assignments..."
+        value={searchTerm}
+        onChange={handleSearchChange}
+        className="block w-full pl-10 pr-10 py-2 border border-gray-200 rounded-lg text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#FFDE59]/50 focus:border-[#FFDE59] bg-gray-50 focus:bg-white transition-all duration-200"
+      />
+      {isSearchActive && (
+        <button
+          onClick={clearSearch}
+          className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      )}
+    </div>
+  );
+};
 
 const DashboardLayout = () => {
   const { user } = useAuth();
@@ -35,7 +98,8 @@ const DashboardLayout = () => {
   }, [user]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <SearchProvider>
+      <div className="min-h-screen bg-gray-50">
       {/* Simplified Header with Clean Design */}
       <header className="sticky top-0 z-50 backdrop-blur-md bg-white/90 border-b border-gray-200 shadow-sm">
         {/* Simple gradient accent line */}
@@ -66,16 +130,7 @@ const DashboardLayout = () => {
 
             {/* Search Bar - Hidden on mobile */}
             <div className="hidden md:flex flex-1 max-w-md mx-8">
-              <div className="relative w-full">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Search className="h-4 w-4 text-gray-400" />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Search leagues, assignments..."
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#FFDE59]/50 focus:border-[#FFDE59] bg-gray-50 focus:bg-white transition-all duration-200"
-                />
-              </div>
+              <SearchBar />
             </div>
 
             {/* Simplified Right Section */}
@@ -208,6 +263,7 @@ const DashboardLayout = () => {
         </div>
       </main>
     </div>
+    </SearchProvider>
   );
 };
 

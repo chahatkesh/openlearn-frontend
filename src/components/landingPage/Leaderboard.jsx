@@ -122,7 +122,7 @@ const Leaderboard = () => {
              Top Performers
           </h2>
           <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-          Celebrating our most dedicated learners - ranked by resources completed.
+          Celebrating our most dedicated learners - ranked by tasks completed.
           </p>
         </div>
 
