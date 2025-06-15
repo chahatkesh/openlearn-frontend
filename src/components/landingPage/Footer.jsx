@@ -70,6 +70,7 @@ const Footer = () => {
                 <ul className="space-y-3">
                   <li><a href="#join-cohort" className="text-gray-400 hover:text-[#FFDE59] transition-colors text-sm">Join Cohort 1.0</a></li>
                   <li><a href="#cohort" className="text-gray-400 hover:text-[#FFDE59] transition-colors text-sm">Explore Leagues</a></li>
+                  <li><Link to="/updates" className="text-gray-400 hover:text-[#FFDE59] transition-colors text-sm">Platform Updates</Link></li>
                 </ul>
               </div>
               
@@ -125,6 +126,9 @@ const Footer = () => {
               </Link>
               <Link to="/terms" className="text-xs text-gray-500 hover:text-[#FFDE59] transition-colors">
                 Terms of Service
+              </Link>
+              <Link to="/updates" className="text-xs text-gray-500 hover:text-[#FFDE59] transition-colors">
+                Updates
               </Link>
             </div>
           </div>

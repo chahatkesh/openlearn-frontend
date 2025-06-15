@@ -11,6 +11,7 @@ import LogoutPage from './pages/LogoutPage'
 import AdminPage from './pages/AdminPage'
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 import TermsOfServicePage from './pages/TermsOfServicePage'
+import UpdatesPage from './pages/UpdatesPage'
 import { AuthProvider } from './context/AuthContext'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
 import ScrollToTop from './components/common/ScrollToTop'
@@ -38,6 +39,7 @@ const App = () => {
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/privacy" element={<PrivacyPolicyPage />} />
         <Route path="/terms" element={<TermsOfServicePage />} />
+        <Route path="/updates" element={<UpdatesPage />} />
 
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
