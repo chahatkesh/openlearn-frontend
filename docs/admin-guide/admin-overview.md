@@ -2,21 +2,59 @@
 
 Welcome to the OpenLearn Admin Panel. This comprehensive guide covers all administrative features available to Chief Pathfinders and Grand Pathfinders.
 
-## 🔐 Access Requirements
+[![Admin Access](https://img.shields.io/badge/Access-Role%20Based-blue?style=flat-square)]()
+[![Security Level](https://img.shields.io/badge/Security-Multi%20Layer-green?style=flat-square)]()
+[![Features](https://img.shields.io/badge/Features-Complete-brightgreen?style=flat-square)]()
+
+## Access Requirements
 
 ### Role-Based Access
-- **CHIEF_PATHFINDER**: Limited admin access
-- **GRAND_PATHFINDER**: Full administrative control
+- **CHIEF_PATHFINDER**: Limited admin access (excludes specialized management features)
+- **GRAND_PATHFINDER**: Full administrative control (all features including specialization management)
+
+### Access Control Levels
+The admin panel implements multi-layer security:
+- **Route-level Protection**: Unauthorized users redirected from admin routes
+- **UI-level Restrictions**: Menu items and buttons hidden based on permissions
+- **Component-level Security**: Features disabled for insufficient permission levels
+
+#### Restricted Features
+- **Specialization Management**: Available only to GRAND_PATHFINDER role
+- **System Configuration**: Limited to highest permission levels
+- **User Role Management**: Controlled access to role modification features
 
 ### Accessing the Admin Panel
 1. Sign in with your administrative account
 2. Look for the **"Admin Panel"** button in the dashboard header
 3. Click to enter the administrative interface
 
-## 🏗️ Admin Panel Structure
+## Admin Panel Structure
+
+### Administrative Hierarchy
+```mermaid
+graph TD
+    GP[GRAND_PATHFINDER] --> CP[CHIEF_PATHFINDER]
+    GP --> |Full Access| All[All Features]
+    CP --> |Limited Access| Standard[Standard Features]
+    
+    All --> UserMgmt[User Management]
+    All --> Content[Content Management]
+    All --> Spec[Specialization Management]
+    All --> System[System Configuration]
+    
+    Standard --> UserMgmt
+    Standard --> Content
+    Standard -.-> |Restricted| Spec
+    Standard -.-> |Restricted| System
+    
+    style GP fill:#ffebee
+    style CP fill:#fff3e0
+    style Spec fill:#f3e5f5
+    style System fill:#f3e5f5
+```
 
 ### Main Navigation Sections
-```
+````
 Admin Panel
 ├── User Management
 ├── Content Management
@@ -25,16 +63,38 @@ Admin Panel
 │   ├── Week Management
 │   ├── Section Management
 │   ├── Resource Management
-│   └── Specialization Management
+│   └── Specialization Management (GRAND_PATHFINDER only)
 ├── Badge Management
 ├── Assignment Management
 └── Progress Analytics
+````
+└── Progress Analytics
 ```
 
-## 👥 User Management
+└── Progress Analytics
+
+## User Management
 
 ### Overview
 The User Management section allows you to control user accounts, roles, and permissions across the platform.
+
+### User Management Workflow
+```mermaid
+flowchart TD
+    A[New User Registration] --> B[Pending Status]
+    B --> C{Admin Review}
+    C -->|Approve| D[Active Status]
+    C -->|Reject| E[Rejected Status]
+    D --> F[Role Assignment]
+    F --> G[Permission Granted]
+    
+    H[Role Updates] --> I[Permission Changes]
+    I --> J[User Notification]
+    
+    style D fill:#e8f5e8
+    style E fill:#ffebee
+    style G fill:#e8f5e8
+```
 
 ### Key Features
 

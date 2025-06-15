@@ -2,10 +2,34 @@
 
 Your OpenLearn dashboard is your central hub for tracking learning progress, managing enrollments, and celebrating achievements. This guide explains all dashboard features and how to use them effectively.
 
-## 🏠 Dashboard Layout
+[![User Interface](https://img.shields.io/badge/Interface-Responsive-blue?style=flat-square)]()
+[![Features](https://img.shields.io/badge/Features-Complete-brightgreen?style=flat-square)]()
+[![Mobile Support](https://img.shields.io/badge/Mobile-Optimized-green?style=flat-square)]()
+
+## Dashboard Layout
+
+### Navigation Flow
+```mermaid
+graph TD
+    Dashboard[Dashboard Home]
+    Dashboard --> Progress[Learning Progress]
+    Dashboard --> Profile[User Profile]
+    Dashboard --> Search[Search Results]
+    
+    Progress --> League[League Details]
+    League --> Resources[Resource Table]
+    Resources --> Revision[Revision System]
+    
+    Profile --> Settings[Profile Settings]
+    Profile --> Achievements[Achievement Gallery]
+    
+    Search --> FilteredResults[Filtered Content]
+    FilteredResults --> ClearSearch[Clear Search]
+```
 
 ### Header Section
 - **OpenLearn Logo**: Click to return to landing page
+- **Smart Search Bar**: Real-time search across leagues and assignments (see Search Features below)
 - **Welcome Message**: Personalized greeting with your name
 - **Admin Panel Button**: Visible for Chief Pathfinders and Grand Pathfinders
 - **Logout Button**: Safely sign out of your account
@@ -66,6 +90,35 @@ Each enrolled league is displayed as a progress card containing:
 - **Trophy Icon**: Appears when you complete a league (100%)
 - **Badge Notifications**: Pop-up alerts when you earn new badges
 - **Milestone Celebrations**: Special animations for major achievements
+
+## 🔍 Search Features
+
+### Dashboard Search Bar
+The search functionality allows you to quickly find content across your learning dashboard.
+
+#### How to Use Search
+1. **Locate the Search Bar**: Found in the dashboard header
+2. **Start Typing**: Enter keywords related to leagues, assignments, or content
+3. **Real-time Results**: Content filters instantly as you type
+4. **Clear Search**: Use the X button or "Clear search" link to reset
+
+#### What You Can Search
+- **League Names**: Find specific courses or subjects
+- **League Descriptions**: Search within course descriptions
+- **Assignment Content**: Locate specific assignments or projects
+- **Learning Paths**: Find available courses you can enroll in
+
+#### Search Results Display
+- **Active Leagues**: Your enrolled courses that match the search
+- **Available Leagues**: Courses you can enroll in that match the search
+- **Search Indicators**: Clear visual feedback showing search is active
+- **No Results Handling**: Helpful messages when no content matches your search
+
+#### Search Tips
+- **Use Keywords**: Try specific terms related to your learning goals
+- **Partial Matches**: Search works with partial words and phrases
+- **Clear and Retry**: If you don't find what you're looking for, try different keywords
+- **Browse vs Search**: Use search for specific content, browse normally for discovery
 
 ## 👤 User Profile Section
 
