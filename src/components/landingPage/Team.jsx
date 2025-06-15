@@ -1,6 +1,7 @@
 import React from 'react';
 import { Crown, Star, Users } from 'lucide-react';
 import { FaLinkedinIn, FaXTwitter, FaInstagram } from 'react-icons/fa6';
+import { motion } from 'framer-motion';
 
 // Modern Team Member Card with Enhanced UI/UX
 const TeamMemberCard = ({ name, role, linkedin, twitter, instagram, level }) => {
@@ -44,7 +45,17 @@ const TeamMemberCard = ({ name, role, linkedin, twitter, instagram, level }) => 
   // Special horizontal layout for grand pathfinder
   if (level === 'grand') {
     return (
-      <div className={`rounded-2xl transition-all duration-500 ease-out group ${styles.container}`}>
+      <motion.div 
+        className={`rounded-2xl transition-all duration-500 ease-out group ${styles.container}`}
+        initial={{ opacity: 0, scale: 0.9 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        whileHover={{ 
+          y: -5,
+          transition: { duration: 0.3 }
+        }}
+      >
         {/* Horizontal Layout for Grand Pathfinder */}
         <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
           {/* Left side - Profile Image */}
@@ -121,13 +132,23 @@ const TeamMemberCard = ({ name, role, linkedin, twitter, instagram, level }) => 
 
         {/* Hover effect overlay */}
         <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none bg-black"></div>
-      </div>
+      </motion.div>
     );
   }
 
   // Regular vertical layout for other team members
   return (
-    <div className={`rounded-xl transition-all duration-500 ease-out group ${styles.container}`}>
+    <motion.div 
+      className={`rounded-xl transition-all duration-500 ease-out group ${styles.container}`}
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      whileHover={{ 
+        y: -5,
+        transition: { duration: 0.3 }
+      }}
+    >
       {/* Profile Section */}
       <div className="text-center my-4">
         <div className="relative inline-block mb-3">
@@ -214,7 +235,7 @@ const TeamMemberCard = ({ name, role, linkedin, twitter, instagram, level }) => 
       <div className={`absolute inset-0 rounded-xl opacity-0 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none ${
         level === 'grand' ? 'bg-black' : level === 'chief' ? 'bg-[#FFDE59]' : 'bg-gray-900'
       }`}></div>
-    </div>
+    </motion.div>
   );
 };
 
@@ -308,37 +329,85 @@ const Team = () => {
   ];
 
   return (
-    <section id="team" className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
+    <motion.section 
+      id="team" 
+      className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden"
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6 }}
+    >
       <div className="container mx-auto px-3 sm:px-4 max-w-6xl relative z-10">
         {/* Header Section */}
-        <div className="text-center mb-12 sm:mb-16 md:mb-20 max-w-4xl mx-auto px-2">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 bg-clip-text text-transparent">
+        <motion.div 
+          className="text-center mb-12 sm:mb-16 md:mb-20 max-w-4xl mx-auto px-2"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          <motion.h2 
+            className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 bg-clip-text text-transparent"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
             Meet the Pathfinders
-          </h2>
+          </motion.h2>
           
-          <p className="text-base sm:text-lg md:text-xl text-gray-600 mb-6 sm:mb-8 leading-relaxed px-4">
+          <motion.p 
+            className="text-base sm:text-lg md:text-xl text-gray-600 mb-6 sm:mb-8 leading-relaxed px-4"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+          >
           Visionary leaders and dedicated team members driving OpenLearn's mission forward with passion and expertise.
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
 
         {/* Compact Hierarchy Layout */}
-        <div className="space-y-8 sm:space-y-10">
+        <motion.div 
+          className="space-y-8 sm:space-y-10"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.8 }}
+        >
           {/* Level 1: Grand Pathfinder */}
-          <div className="text-center">
-            <div className="flex items-center justify-center space-x-2 mb-4 sm:mb-6">
+          <motion.div 
+            className="text-center"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 1 }}
+          >
+            <motion.div 
+              className="flex items-center justify-center space-x-2 mb-4 sm:mb-6"
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 1.2 }}
+            >
               <Crown size={18} className="text-[#FFDE59] sm:hidden" />
               <Crown size={20} className="text-[#FFDE59] hidden sm:block" />
               <h3 className="text-xl sm:text-2xl font-bold text-gray-800">Grand Pathfinder</h3>
-            </div>
+            </motion.div>
             <div className="flex justify-center">
               <div className="w-full max-w-sm sm:max-w-md">
                 <TeamMemberCard {...grandPathfinder} level="grand" />
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Level 2: Chief Pathfinders */}
-          <div>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 1.4 }}
+          >
             <div className="flex items-center justify-center space-x-2 mb-4 sm:mb-6">
               <Star size={16} className="text-[#FFDE59] sm:hidden" />
               <Star size={18} className="text-[#FFDE59] hidden sm:block" />
@@ -349,10 +418,16 @@ const Team = () => {
                 <TeamMemberCard key={index} {...dept.chief} level="chief" />
               ))}
             </div>
-          </div>
+          </motion.div>
 
           {/* Level 3: Pathfinders */}
-          <div className="space-y-4 sm:space-y-6">
+          <motion.div 
+            className="space-y-4 sm:space-y-6"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 1.8 }}
+          >
             <div className="flex items-center justify-center space-x-2 mb-4 sm:mb-6">
               <Users size={16} className="text-[#FFDE59] sm:hidden" />
               <Users size={18} className="text-[#FFDE59] hidden sm:block" />
@@ -373,10 +448,10 @@ const Team = () => {
                 </div>
               );
             })()}
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
-    </section>
+    </motion.section>
   );
 };
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ExternalLink, Info, Users, Award, BookOpen } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 // CSS animation keyframes
 const animationKeyframes = `
@@ -60,19 +61,21 @@ const addAnimationStyles = () => {
 // Enhanced SupporterCard component with advanced interactivity
 const SupporterCard = ({ name, logo, supportType, description = "#" }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
-  
-  // Effect to trigger entrance animation
-  useEffect(() => {
-    setIsLoaded(true);
-  }, []);
   
   return (
-    <div 
-      className={`bg-white rounded-xl overflow-hidden hover:shadow-sm transition-all duration-500 group ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
-      style={{ transitionDelay: '150ms' }}
+    <motion.div 
+      className="bg-white rounded-xl overflow-hidden hover:shadow-sm transition-all duration-500 group"
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      whileHover={{ 
+        y: -5,
+        boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+        transition: { duration: 0.3 }
+      }}
     >
       <div 
         className={`flex items-center justify-center h-32 relative overflow-hidden ${isHovered ? 'bg-[#FFDE59]/10' : 'bg-gray-50'}`}
@@ -147,7 +150,7 @@ const SupporterCard = ({ name, logo, supportType, description = "#" }) => {
           {description}
         </p>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
@@ -192,9 +195,13 @@ const About = () => {
   ];
   
   return (
-    <section 
+    <motion.section 
       id="about" 
       className="py-24 relative overflow-hidden bg-white"
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6 }}
     >
       {/* Subtle pattern overlay */}
       <div className="absolute inset-0 overflow-hidden">
@@ -222,15 +229,33 @@ const About = () => {
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Part 1: About OpenLearn - Enhanced with animations */}
-        <div className="text-center mb-20 max-w-4xl mx-auto">
-          <h2 className="text-5xl font-bold mb-6 bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 bg-clip-text text-transparent">
+        <motion.div 
+          className="text-center mb-20 max-w-4xl mx-auto"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          <motion.h2 
+            className="text-5xl font-bold mb-6 bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 bg-clip-text text-transparent"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
             About OpenLearn
-          </h2>
+          </motion.h2>
           
-          <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+          <motion.p 
+            className="text-xl text-gray-600 mb-8 leading-relaxed"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+          >
           OpenLearn is a student-led, cohort-based learning community at NIT Jalandhar.
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
 
         {/* Part 2: Recognised & Supported By - with enhanced card hover effects */}
         <div className="mb-16 relative">
@@ -275,7 +300,7 @@ const About = () => {
       <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-[#FFDE59] rounded-full opacity-5 blur-3xl"></div>
       <div className="absolute top-1/4 -right-32 w-80 h-80 bg-[#FFDE59] rounded-full opacity-5 blur-3xl"></div>
       <div className="absolute bottom-1/4 left-1/3 w-40 h-40 bg-[#FFDE59] rounded-full opacity-5 blur-2xl"></div>
-    </section>
+    </motion.section>
   );
 };
 
