@@ -12,8 +12,16 @@ const AdminUsersPage = () => {
     setError(null);
     
     try {
-      const usersData = await AdminService.getAllUsers();
+      console.log('Fetching users data with strategic approach...');
+      const usersData = await AdminService.getAllUsersStrategic();
+      console.log('Received users data:', usersData);
       setAllUsers(usersData.users || []);
+      
+      // Show a info message if only pending users were loaded
+      if (usersData.note) {
+        console.warn(usersData.note);
+        setError(`Info: ${usersData.note}`);
+      }
     } catch (err) {
       console.error('Error fetching users data:', err);
       setError(`Failed to load users: ${err.message}`);

@@ -36,10 +36,12 @@ class AdminService {
   
   /**
    * Get all users (admin view)
+   * @param {number} page - Page number (default: 1)
+   * @param {number} limit - Items per page (default: 100 to get all users)
    * @returns {Promise} Users data
    */
-  static async getAllUsers() {
-    const response = await fetch(`${API_BASE_URL}/admin/users`, {
+  static async getAllUsers(page = 1, limit = 100) {
+    const response = await fetch(`${API_BASE_URL}/admin/users?page=${page}&limit=${limit}`, {
       headers: getAuthHeaders()
     });
     return handleResponse(response);
@@ -87,6 +89,239 @@ class AdminService {
       body: JSON.stringify({ userId, newStatus })
     });
     return handleResponse(response);
+  }
+
+  /**
+   * Get pending users
+   * @param {number} page - Page number (default: 1)
+   * @param {number} limit - Items per page (default: 100)
+   * @returns {Promise} Pending users data
+   */
+  static async getPendingUsers(page = 1, limit = 100) {
+    const response = await fetch(`${API_BASE_URL}/admin/pending-users?page=${page}&limit=${limit}`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+
+  /**
+   * Get all users by fetching all pages (tries multiple endpoints)
+   * @returns {Promise} All users data
+   */
+  static async getAllUsersComplete() {
+    try {
+      // First try the main admin users endpoint
+      try {
+        const firstPage = await this.getAllUsers(1, 100);
+        let allUsers = firstPage.users || [];
+        
+        // If there are more pages, fetch them
+        if (firstPage.pagination && firstPage.pagination.totalPages > 1) {
+          const promises = [];
+          for (let page = 2; page <= firstPage.pagination.totalPages; page++) {
+            promises.push(this.getAllUsers(page, 100));
+          }
+          
+          const additionalPages = await Promise.all(promises);
+          additionalPages.forEach(pageData => {
+            if (pageData.users) {
+              allUsers = allUsers.concat(pageData.users);
+            }
+          });
+        }
+        
+        return {
+          users: allUsers,
+          pagination: {
+            page: 1,
+            limit: allUsers.length,
+            total: allUsers.length,
+            totalPages: 1
+          }
+        };
+      } catch (error) {
+        console.warn('Main users endpoint failed, trying pending users endpoint:', error);
+        
+        // Fallback: try pending users endpoint
+        const pendingData = await this.getPendingUsers(1, 100);
+        let allUsers = pendingData.users || [];
+        
+        // Fetch all pages of pending users
+        if (pendingData.pagination && pendingData.pagination.totalPages > 1) {
+          const promises = [];
+          for (let page = 2; page <= pendingData.pagination.totalPages; page++) {
+            promises.push(this.getPendingUsers(page, 100));
+          }
+          
+          const additionalPages = await Promise.all(promises);
+          additionalPages.forEach(pageData => {
+            if (pageData.users) {
+              allUsers = allUsers.concat(pageData.users);
+            }
+          });
+        }
+        
+        return {
+          users: allUsers,
+          pagination: {
+            page: 1,
+            limit: allUsers.length,
+            total: allUsers.length,
+            totalPages: 1
+          }
+        };
+      }
+    } catch (error) {
+      console.error('Error fetching all users:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get all users with a high limit (simple approach)
+   * @param {number} limit - Items per page (default: 1000 to get all users)
+   * @returns {Promise} Users data
+   */
+  static async getAllUsersSimple(limit = 1000) {
+    console.log('Fetching users with limit:', limit);
+    
+    try {
+      // Try the main users endpoint first
+      const response = await fetch(`${API_BASE_URL}/admin/users?limit=${limit}`, {
+        headers: getAuthHeaders()
+      });
+      
+      if (!response.ok) {
+        console.warn(`/admin/users endpoint failed with status: ${response.status}`);
+        
+        // If that fails, try pending users endpoint as fallback
+        console.log('Trying pending users endpoint as fallback...');
+        const pendingResponse = await fetch(`${API_BASE_URL}/admin/pending-users?limit=${limit}`, {
+          headers: getAuthHeaders()
+        });
+        
+        if (!pendingResponse.ok) {
+          throw new Error(`Both endpoints failed. Pending users status: ${pendingResponse.status}`);
+        }
+        
+        const pendingResult = await handleResponse(pendingResponse);
+        console.log('Pending users response:', pendingResult);
+        
+        // Add a note that these are only pending users
+        return {
+          ...pendingResult,
+          note: 'Only pending users loaded - /admin/users endpoint not available'
+        };
+      }
+      
+      const result = await handleResponse(response);
+      console.log('All users response:', result);
+      return result;
+      
+    } catch (error) {
+      console.error('Error in getAllUsersSimple:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get all users using different strategies
+   * @returns {Promise} Users data
+   */
+  static async getAllUsersStrategic() {
+    console.log('Starting strategic user fetch...');
+    
+    // Strategy 1: Try high limit on main endpoint
+    try {
+      console.log('Strategy 1: Trying /admin/users with high limit...');
+      const response = await fetch(`${API_BASE_URL}/admin/users?limit=1000`, {
+        headers: getAuthHeaders()
+      });
+      
+      if (response.ok) {
+        const result = await handleResponse(response);
+        console.log('Strategy 1 success:', result);
+        return result;
+      } else {
+        console.log('Strategy 1 failed with status:', response.status);
+      }
+    } catch (error) {
+      console.log('Strategy 1 error:', error.message);
+    }
+    
+    // Strategy 2: Try pagination to get all pages
+    try {
+      console.log('Strategy 2: Trying paginated fetch...');
+      let allUsers = [];
+      let page = 1;
+      let hasMore = true;
+      
+      while (hasMore) {
+        const response = await fetch(`${API_BASE_URL}/admin/users?page=${page}&limit=50`, {
+          headers: getAuthHeaders()
+        });
+        
+        if (!response.ok) {
+          console.log('Strategy 2 failed on page', page, 'with status:', response.status);
+          break;
+        }
+        
+        const pageData = await handleResponse(response);
+        if (pageData.users && pageData.users.length > 0) {
+          allUsers = allUsers.concat(pageData.users);
+          hasMore = pageData.pagination && page < pageData.pagination.totalPages;
+          page++;
+          console.log(`Strategy 2: Loaded page ${page-1}, total users so far: ${allUsers.length}`);
+        } else {
+          hasMore = false;
+        }
+        
+        // Safety break to avoid infinite loops
+        if (page > 20) {
+          console.warn('Strategy 2: Breaking loop after 20 pages for safety');
+          break;
+        }
+      }
+      
+      if (allUsers.length > 0) {
+        console.log('Strategy 2 success: Total users loaded:', allUsers.length);
+        return {
+          users: allUsers,
+          pagination: {
+            page: 1,
+            limit: allUsers.length,
+            total: allUsers.length,
+            totalPages: 1
+          }
+        };
+      }
+    } catch (error) {
+      console.log('Strategy 2 error:', error.message);
+    }
+    
+    // Strategy 3: Try pending users as fallback
+    try {
+      console.log('Strategy 3: Trying pending users endpoint...');
+      const response = await fetch(`${API_BASE_URL}/admin/pending-users?limit=1000`, {
+        headers: getAuthHeaders()
+      });
+      
+      if (response.ok) {
+        const result = await handleResponse(response);
+        console.log('Strategy 3 success (pending users only):', result);
+        return {
+          ...result,
+          note: 'Only pending users loaded - main users endpoint not available'
+        };
+      } else {
+        console.log('Strategy 3 failed with status:', response.status);
+      }
+    } catch (error) {
+      console.log('Strategy 3 error:', error.message);
+    }
+    
+    // All strategies failed
+    throw new Error('All user fetching strategies failed. Please check if the backend endpoints exist.');
   }
 
   // ==================== COHORT MANAGEMENT ====================
