@@ -1,11 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { 
-  ArrowLeft, 
-  CheckSquare, 
-  Square, 
+  ArrowLeft,
   FileText, 
-  ExternalLink, 
-  Plus,
+  ExternalLink,
   BookOpen,
   Play,
   ChevronDown,
@@ -14,11 +11,9 @@ import {
   X,
   RotateCcw,
   Loader2,
-  ClipboardList,
-  Calendar,
-  Send,
   Edit,
-  Save
+  Save,
+  Star
 } from 'lucide-react';
 import { RiTwitterXFill } from 'react-icons/ri';
 import ProgressService from '../../utils/progressService';
@@ -337,6 +332,60 @@ const LeagueDetailPage = ({ league, onBack }) => {
         alert('Failed to mark resource as incomplete. Please try again.');
       } else {
         alert('Failed to mark resource as complete. Please try again.');
+      }
+    } finally {
+      // Remove from processing state
+      setProcessingResources(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(resourceId);
+        return newSet;
+      });
+    }
+  };
+
+  const handleResourceRevision = async (resourceId, currentRevisionStatus = false) => {
+    try {
+      // Add to processing state for loading indicator
+      setProcessingResources(prev => new Set([...prev, resourceId]));
+      
+      const resourceTitle = Object.values(sectionResources)
+        .flat()
+        .find(r => r.id === resourceId)?.title || 'Resource';
+      
+      if (currentRevisionStatus) {
+        // Unmark for revision
+        await ResourceProgressService.resetResourceProgress(resourceId);
+        setResourceProgress(prev => ({
+          ...prev,
+          [resourceId]: { ...prev[resourceId], markedForRevision: false }
+        }));
+        
+        setToastType('undo');
+        setShowSuccessToast(`"${resourceTitle}" unmarked for revision 🔄`);
+      } else {
+        // Mark for revision
+        await ResourceProgressService.markResourceForRevision(resourceId);
+        setResourceProgress(prev => ({
+          ...prev,
+          [resourceId]: { ...prev[resourceId], markedForRevision: true }
+        }));
+        
+        setToastType('success');
+        setShowSuccessToast(`"${resourceTitle}" marked for revision! 📝`);
+      }
+      
+      // Hide toast after 3 seconds
+      setTimeout(() => {
+        setShowSuccessToast(null);
+      }, 3000);
+      
+    } catch (err) {
+      console.error('Error updating resource revision status:', err);
+      
+      if (currentRevisionStatus) {
+        alert('Failed to unmark resource for revision. Please try again.');
+      } else {
+        alert('Failed to mark resource for revision. Please try again.');
       }
     } finally {
       // Remove from processing state
@@ -771,11 +820,12 @@ const LeagueDetailPage = ({ league, onBack }) => {
                             {resources.length > 0 && (
                               <div>
                                 {/* Table Header */}
-                                <div className="grid grid-cols-12 gap-2 px-4 py-2 bg-gray-100 border-b border-gray-200 text-xs font-medium text-gray-700 uppercase tracking-wider">
+                                <div className="grid grid-cols-16 gap-2 px-4 py-2 bg-gray-100 border-b border-gray-200 text-xs font-medium text-gray-700 uppercase tracking-wider">
                                   <div className="col-span-1 flex justify-center">Status</div>
-                                  <div className="col-span-4">Title</div>
-                                  <div className="col-span-3 text-center">Resource</div>
+                                  <div className="col-span-7 text-center">Title</div>
+                                  <div className="col-span-2 text-center">Resource</div>
                                   <div className="col-span-3 text-center">Note</div>
+                                  <div className="col-span-2 text-center">Revision</div>
                                   <div className="col-span-1 text-center">Share</div>
                                 </div>
                                 
@@ -785,11 +835,12 @@ const LeagueDetailPage = ({ league, onBack }) => {
                                   const progress = resourceProgress[resource.id];
                                   const isCompleted = progress?.isCompleted || false;
                                   const hasNote = progress?.personalNote;
+                                  const isMarkedForRevision = progress?.markedForRevision || false;
 
                                   return (
                                     <div 
                                       key={resource.id} 
-                                      className="grid grid-cols-12 gap-2 items-center px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0"
+                                      className="grid grid-cols-16 gap-2 items-center px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0"
                                     >
                                       {/* Status Column */}
                                       <div className="col-span-1 flex justify-center">
@@ -816,14 +867,14 @@ const LeagueDetailPage = ({ league, onBack }) => {
                                       </div>
 
                                       {/* Title Column */}
-                                      <div className="col-span-4">
+                                      <div className="col-span-7">
                                         <span className={`text-sm ${isCompleted ? 'line-through text-gray-500' : 'text-gray-900'} truncate block`}>
                                           {resource.title}
                                         </span>
                                       </div>
 
                                       {/* Resource Column */}
-                                      <div className="col-span-3 flex items-center justify-center space-x-2">
+                                      <div className="col-span-2 flex items-center justify-center space-x-2">
                                         <button onClick={() => openResourceWithType(resource)} 
                                           className={`flex items-center space-x-2 px-2 py-1 rounded-full border text-xs font-medium ${getResourceTypeColor(resource.type)}`}
                                           title={favicons[resource.id]?.domain ? `Source: ${favicons[resource.id].domain}` : `Resource type: ${getResourceTypeName(resource.type)}`}
@@ -850,6 +901,25 @@ const LeagueDetailPage = ({ league, onBack }) => {
                                           ) : (
                                             <span>Add Note</span>
                                           )}
+                                        </button>
+                                      </div>
+
+                                      {/* Revision Column */}
+                                      <div className="col-span-2 flex justify-center">
+                                        <button
+                                          onClick={() => handleResourceRevision(resource.id, isMarkedForRevision)}
+                                          disabled={processingResources.has(resource.id)}
+                                          className={`w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200 ${
+                                            isMarkedForRevision 
+                                              ? 'bg-orange-50 text-orange-600 border border-orange-200 hover:bg-orange-100' 
+                                              : 'bg-gray-50 text-gray-400 border border-gray-200 hover:bg-gray-100 hover:text-orange-500'
+                                          }`}
+                                          title={isMarkedForRevision ? 'Unmark for revision' : 'Mark for revision'}
+                                        >
+                                          <Star 
+                                            size={14} 
+                                            className={isMarkedForRevision ? 'fill-current' : ''} 
+                                          />
                                         </button>
                                       </div>
 
