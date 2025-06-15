@@ -779,8 +779,6 @@ const UserProfileSection = ({ user, dashboardData = null }) => {
             
             // Refresh user data to reflect the changes
             await refreshUser();
-            
-            console.log('Social handles updated successfully');
           } catch (error) {
             console.error('Error updating social handles:', error);
             throw error; // Re-throw to let the modal handle the error display

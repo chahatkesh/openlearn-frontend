@@ -30,7 +30,6 @@ const LearningProgressSection = ({ user }) => {
   // Function to calculate real league statistics
   const calculateLeagueStatistics = useCallback(async (leagueId) => {
     try {
-      console.log(`Calculating statistics for league: ${leagueId}`);
       const leagueData = await ProgressService.getLeagueProgress(leagueId);
       
       if (leagueData?.progress?.weeks) {
@@ -38,13 +37,10 @@ const LearningProgressSection = ({ user }) => {
         let totalSections = 0;
         let totalResources = 0;
         
-        console.log(`League ${leagueId} has ${totalWeeks} weeks`);
-        
         // Count sections and resources from the actual league structure
         for (const week of leagueData.progress.weeks) {
           if (week.sections) {
             totalSections += week.sections.length;
-            console.log(`Week ${week.id} has ${week.sections.length} sections`);
             
             // Fetch resources for each section to get accurate count
             for (const section of week.sections) {
@@ -52,7 +48,6 @@ const LearningProgressSection = ({ user }) => {
                 const sectionData = await ResourceProgressService.getSectionResourcesProgress(section.id);
                 if (sectionData?.resources) {
                   totalResources += sectionData.resources.length;
-                  console.log(`Section ${section.id} has ${sectionData.resources.length} resources`);
                 }
               } catch (err) {
                 console.warn(`Failed to fetch resources for section ${section.id}:`, err);
@@ -67,7 +62,6 @@ const LearningProgressSection = ({ user }) => {
           resourcesCount: totalResources
         };
         
-        console.log(`Final stats for league ${leagueId}:`, stats);
         return stats;
       }
     } catch (err) {

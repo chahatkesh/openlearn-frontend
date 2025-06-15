@@ -62,9 +62,8 @@ const ProgressDashboard = ({ refreshTrigger = 0 }) => {
   };
 
   const handleShare = (type, data) => {
-    SocialService.showShareModal(type, data, (platform) => {
+    SocialService.showShareModal(type, data, () => {
       // Track sharing if needed
-      console.log(`Shared ${type} on ${platform}`);
     });
   };
 

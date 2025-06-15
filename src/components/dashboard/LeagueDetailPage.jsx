@@ -19,7 +19,6 @@ import { RiTwitterXFill } from 'react-icons/ri';
 import ProgressService from '../../utils/progressService';
 import ResourceProgressService from '../../utils/resourceProgressService';
 import SocialService from '../../utils/socialService';
-import DataService from '../../utils/dataService';
 import FaviconService from '../../utils/faviconService'; // @see docs/development/favicon-service.md
 import AssignmentManagement from './AssignmentManagement';
 import PageHead from '../common/PageHead';

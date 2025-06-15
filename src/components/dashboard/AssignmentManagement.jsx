@@ -36,9 +36,7 @@ const AssignmentManagement = ({ leagueId }) => {
     setError(null);
     
     try {
-      console.log('Fetching assignment for league:', leagueId);
       const data = await DataService.getLeagueAssignment(leagueId);
-      console.log('Assignment data received:', data);
       setAssignment(data); // data will be null if no assignment exists
     } catch (err) {
       console.error('Error fetching assignment:', err);
@@ -46,7 +44,6 @@ const AssignmentManagement = ({ leagueId }) => {
       // Handle different types of errors
       if (err.message && (err.message.includes('404') || err.message.includes('Not Found'))) {
         // If it's a 404, just set assignment to null (no assignment exists)
-        console.log('No assignment found for this league (404)');
         setAssignment(null);
       } else if (err.message && err.message.includes('Unable to connect')) {
         // Network error
