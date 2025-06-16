@@ -71,8 +71,18 @@ const processCommitsToUpdates = (commits) => {
  * This function contains real commit data from the repository
  */
 const getProcessedCommits = () => {
-  // Complete real commit data from the repository (all 83 commits)
+  // Complete real commit data from the repository
   const realCommits = [
+    {"hash":"3b6d3db","date":"2025-06-16","time":"1750080535","author":"chahatkesh","message":"fix: Update Instagram link in Footer component for accuracy"},
+    {"hash":"7b1e47b","date":"2025-06-16","time":"1750012447","author":"chahatkesh","message":"docs: Add contributing guidelines and license information"},
+    {"hash":"601ef87","date":"2025-06-15","time":"1750010201","author":"chahatkesh","message":"feat: Implement strategic user fetching with improved error handling and logging"},
+    {"hash":"abfcc86","date":"2025-06-15","time":"1749992327","author":"chahatkesh","message":"fix: Update default sorting parameters in UserManagement component for consistency"},
+    {"hash":"d976308","date":"2025-06-15","time":"1749991261","author":"chahatkesh","message":"Implement code changes to enhance functionality and improve performance"},
+    {"hash":"39aed8d","date":"2025-06-15","time":"1749990678","author":"chahatkesh","message":"fix: Update weeks count display in LearningProgressSection for accurate league statistics"},
+    {"hash":"5506538","date":"2025-06-15","time":"1749990432","author":"chahatkesh","message":"feat: Revamp WelcomeBanner component with new layout and decorative elements"},
+    {"hash":"bff64d1","date":"2025-06-15","time":"1749990072","author":"chahatkesh","message":"Enhance landing page components with Framer Motion animations"},
+    {"hash":"b4e4361","date":"2025-06-15","time":"1749989537","author":"chahatkesh","message":"fix: Update Pending Approval page messaging for clarity on admin approval process"},
+    {"hash":"97b90e7","date":"2025-06-15","time":"1749988310","author":"chahatkesh","message":"feat: Add Updates page and integrate platform updates from git commit history"},
     {"hash":"543eaf8","date":"2025-06-15","time":"1749986952","author":"chahatkesh","message":"Enhance documentation and features for OpenLearn Platform"},
     {"hash":"3293ab0","date":"2025-06-15","time":"1749986074","author":"chahatkesh","message":"feat: Implement search functionality with context provider and event handling across dashboard components"},
     {"hash":"c1d6d2e","date":"2025-06-15","time":"1749985193","author":"chahatkesh","message":"feat: Enhance leaderboard display with recalculated ranks and improved table layout"},
