@@ -164,7 +164,7 @@ const Footer = () => {
                     <RiTwitterXFill size={16} />
                   </motion.a>
                   <motion.a 
-                    href="https://www.instagram.com/openlearn_nitj" 
+                    href="https://www.instagram.com/openlearn.org.in" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="w-9 h-9 rounded-full bg-gray-800 flex items-center justify-center hover:bg-[#E1306C] transition-colors"
