@@ -23,10 +23,37 @@ const Leaderboard = () => {
             entry.user.role === 'PIONEER' || entry.user.role === 'LUMINARY'
           ) || [];
           
-          // Recalculate ranks after filtering
-          const rerankedData = filteredData.map((entry, index) => ({
+          // Sort by completion percentage (descending), then by earliest completion time for ties
+          const sortedData = filteredData.sort((a, b) => {
+            const aProgress = a.stats?.completionPercentage || 0;
+            const bProgress = b.stats?.completionPercentage || 0;
+            
+            // First sort by completion percentage (higher is better)
+            if (aProgress !== bProgress) {
+              return bProgress - aProgress;
+            }
+            
+            // If completion percentages are the same, sort by earliest completion time
+            const aLastCompleted = a.recentActivity?.lastCompletedResource?.completedAt;
+            const bLastCompleted = b.recentActivity?.lastCompletedResource?.completedAt;
+            
+            // If both have completion times, earlier completion wins
+            if (aLastCompleted && bLastCompleted) {
+              return new Date(aLastCompleted) - new Date(bLastCompleted);
+            }
+            
+            // If only one has a completion time, that one ranks higher
+            if (aLastCompleted && !bLastCompleted) return -1;
+            if (!aLastCompleted && bLastCompleted) return 1;
+            
+            // If neither has completion times, maintain original order
+            return 0;
+          });
+          
+          // Recalculate ranks after sorting
+          const rerankedData = sortedData.map((entry, index) => ({
             ...entry,
-            rank: index + 1 // Assign new rank based on filtered position
+            rank: index + 1 // Assign new rank based on sorted position
           }));
           
           setLeaderboardData(rerankedData);
@@ -123,7 +150,7 @@ const Leaderboard = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.8 }}
               >
-                Sign in to view the community leaderboard and see top performers based on resources completed.
+                Sign in to view the community leaderboard and see top performers based on tasks completed.
               </motion.p>
               <motion.div 
                 className="flex flex-col sm:flex-row gap-4 justify-center"
@@ -242,7 +269,7 @@ const Leaderboard = () => {
               No Data Available
             </h3>
             <p className="text-gray-600">
-              Leaderboard will populate as students complete resources.
+              Leaderboard will populate as students complete tasks.
             </p>
           </motion.div>
         ) : (
@@ -276,7 +303,7 @@ const Leaderboard = () => {
                       Role
                     </th>
                     <th className="px-4 sm:px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Resources
+                      Tasks
                     </th>
                     <th className="px-4 sm:px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Progress
@@ -369,7 +396,7 @@ const Leaderboard = () => {
                           </div>
                         </td>
 
-                        {/* Resources Column */}
+                        {/* Tasks Column */}
                         <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-center">
                           <div className="text-sm font-semibold text-gray-900">
                             {stats.resourcesCompleted}/{stats.totalResources}
