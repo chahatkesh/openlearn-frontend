@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   ArrowLeft,
   FileText, 
@@ -23,6 +23,131 @@ import FaviconService from '../../utils/faviconService'; // @see docs/developmen
 import AssignmentManagement from './AssignmentManagement';
 import PageHead from '../common/PageHead';
 
+// Separate NoteModal component to prevent re-creation on every render
+const NoteModal = React.memo(({ 
+  showNoteModal, 
+  selectedResource, 
+  resourceProgress, 
+  noteText, 
+  setNoteText, 
+  closeNoteModal, 
+  saveNote, 
+  openResourceWithType, 
+  getResourceTypeName,
+  textareaRef,
+  ResourceIcon
+}) => {
+  if (!showNoteModal || !selectedResource) return null;
+
+  const progress = resourceProgress[selectedResource.id];
+  const currentNote = progress?.personalNote || '';
+
+  // Handle keyboard shortcuts
+  const handleKeyDown = (e) => {
+    if (e.key === 'Escape') {
+      closeNoteModal();
+    } else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+      saveNote();
+    }
+  };
+
+  return (
+    <div 
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+      onKeyDown={handleKeyDown}
+      tabIndex={-1}
+    >
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
+        {/* Modal Header */}
+        <div className="flex items-center justify-between p-4 border-b border-gray-200">
+          <div className="flex items-center space-x-2">
+            <Edit size={20} className="text-gray-600" />
+            <h3 className="text-lg font-medium text-gray-900">Resource Note</h3>
+          </div>
+          <button
+            onClick={closeNoteModal}
+            className="text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        {/* Modal Body */}
+        <div className="p-4">
+          <div className="mb-4">
+            <h4 className="text-sm font-medium text-gray-700 mb-2">Resource:</h4>
+            <div className="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg">
+              <ResourceIcon resource={selectedResource} />
+              <div className="flex-1">
+                <p className="text-sm font-medium text-gray-900">{selectedResource.title}</p>
+                <p className="text-xs text-gray-500">{getResourceTypeName(selectedResource.type)}</p>
+              </div>
+              <button
+                onClick={() => openResourceWithType(selectedResource)}
+                className="px-2 py-1 text-xs bg-[#FFDE59] text-gray-900 rounded hover:bg-[#FFD700] transition-colors flex items-center space-x-1"
+              >
+                <ExternalLink size={12} />
+                <span>View</span>
+              </button>
+            </div>
+          </div>
+          
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Personal Note
+            </label>
+            <textarea
+              ref={textareaRef}
+              value={noteText}
+              onChange={(e) => setNoteText(e.target.value.slice(0, 500))}
+              placeholder="Add your thoughts, key learnings, or reminders about this resource..."
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FFDE59] focus:border-transparent resize-none"
+              rows={4}
+              maxLength={500}
+            />
+            <div className="flex justify-between items-center mt-1">
+              <p className={`text-xs ${noteText.length > 450 ? 'text-red-500' : 'text-gray-500'}`}>
+                {noteText.length}/500 characters
+              </p>
+              {noteText.length > 450 && (
+                <p className="text-xs text-red-500">Character limit approaching</p>
+              )}
+            </div>
+          </div>
+
+          {currentNote && (
+            <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+              <p className="text-xs text-gray-600 mb-1">Current note:</p>
+              <p className="text-sm text-gray-800">{currentNote?.slice(0, 50) || "No content"}...</p>
+            </div>
+          )}
+        </div>
+
+        {/* Modal Footer */}
+        <div className="flex items-center justify-between p-4 border-t border-gray-200">
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={closeNoteModal}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={saveNote}
+              className="px-4 py-2 text-sm font-medium text-gray-900 bg-[#FFDE59] rounded-lg hover:bg-[#FFD700] transition-colors flex items-center space-x-2"
+            >
+              <Save size={16} />
+              <span>Save Note</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+});
+
+NoteModal.displayName = 'NoteModal';
+
 const LeagueDetailPage = ({ league, onBack }) => {
   const [leagueProgress, setLeagueProgress] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -39,6 +164,19 @@ const LeagueDetailPage = ({ league, onBack }) => {
   const [recentlyCompleted, setRecentlyCompleted] = useState(new Set());
   const [showSuccessToast, setShowSuccessToast] = useState(null);
   const [toastType, setToastType] = useState('success'); // 'success' or 'undo'
+  
+  // Ref for textarea to maintain focus
+  const textareaRef = useRef(null);
+
+  // Focus textarea when modal opens
+  useEffect(() => {
+    if (showNoteModal && textareaRef.current) {
+      // Small delay to ensure modal is rendered
+      setTimeout(() => {
+        textareaRef.current?.focus();
+      }, 100);
+    }
+  }, [showNoteModal]);
 
     // Fetch favicon for a resource
   const fetchResourceFavicon = async (resourceId, resourceUrl, resourceType) => {
@@ -482,116 +620,6 @@ const LeagueDetailPage = ({ league, onBack }) => {
     window.open(resource.url, '_blank');
   };
 
-  // Note Modal Component
-  const NoteModal = () => {
-    if (!showNoteModal || !selectedResource) return null;
-
-    const progress = resourceProgress[selectedResource.id];
-    const currentNote = progress?.personalNote || '';
-
-    // Handle keyboard shortcuts
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        closeNoteModal();
-      } else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-        saveNote();
-      }
-    };
-
-    return (
-      <div 
-        className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-        onKeyDown={handleKeyDown}
-        tabIndex={-1}
-      >
-        <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
-          {/* Modal Header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-200">
-            <div className="flex items-center space-x-2">
-              <Edit size={20} className="text-gray-600" />
-              <h3 className="text-lg font-medium text-gray-900">Resource Note</h3>
-            </div>
-            <button
-              onClick={closeNoteModal}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              <X size={20} />
-            </button>
-          </div>
-
-          {/* Modal Body */}
-          <div className="p-4">
-            <div className="mb-4">
-              <h4 className="text-sm font-medium text-gray-700 mb-2">Resource:</h4>
-              <div className="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg">
-                <ResourceIcon resource={selectedResource} />
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900">{selectedResource.title}</p>
-                  <p className="text-xs text-gray-500">{getResourceTypeName(selectedResource.type)}</p>
-                </div>
-                <button
-                  onClick={() => openResourceWithType(selectedResource)}
-                  className="px-2 py-1 text-xs bg-[#FFDE59] text-gray-900 rounded hover:bg-[#FFD700] transition-colors flex items-center space-x-1"
-                >
-                  <ExternalLink size={12} />
-                  <span>View</span>
-                </button>
-              </div>
-            </div>
-            
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Personal Note
-              </label>
-              <textarea
-                value={noteText}
-                onChange={(e) => setNoteText(e.target.value.slice(0, 500))}
-                placeholder="Add your thoughts, key learnings, or reminders about this resource..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FFDE59] focus:border-transparent resize-none"
-                rows={4}
-                maxLength={500}
-              />
-              <div className="flex justify-between items-center mt-1">
-                <p className={`text-xs ${noteText.length > 450 ? 'text-red-500' : 'text-gray-500'}`}>
-                  {noteText.length}/500 characters
-                </p>
-                {noteText.length > 450 && (
-                  <p className="text-xs text-red-500">Character limit approaching</p>
-                )}
-              </div>
-            </div>
-
-            {currentNote && (
-              <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-                <p className="text-xs text-gray-600 mb-1">Current note:</p>
-                <p className="text-sm text-gray-800">{currentNote?.slice(0, 50) || "No content"}...</p>
-              </div>
-            )}
-          </div>
-
-          {/* Modal Footer */}
-          <div className="flex items-center justify-between p-4 border-t border-gray-200">
-            <div className="flex items-center space-x-3">
-              <button
-                onClick={closeNoteModal}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={saveNote}
-                className="px-4 py-2 text-sm font-medium text-gray-900 bg-[#FFDE59] rounded-lg hover:bg-[#FFD700] transition-colors flex items-center space-x-2"
-              >
-                <Save size={16} />
-                <span>Save Note</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -1002,7 +1030,19 @@ const LeagueDetailPage = ({ league, onBack }) => {
       )}
 
       {/* Note Modal */}
-      <NoteModal />
+      <NoteModal 
+        showNoteModal={showNoteModal}
+        selectedResource={selectedResource}
+        resourceProgress={resourceProgress}
+        noteText={noteText}
+        setNoteText={setNoteText}
+        closeNoteModal={closeNoteModal}
+        saveNote={saveNote}
+        openResourceWithType={openResourceWithType}
+        getResourceTypeName={getResourceTypeName}
+        textareaRef={textareaRef}
+        ResourceIcon={ResourceIcon}
+      />
     </div>
   );
 };
