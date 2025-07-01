@@ -23,7 +23,7 @@ const AdminResourcesPage = () => {
     try {
       const [resourcesData, sectionsData, weeksData, leaguesData] = await Promise.all([
         AdminService.getAllResources(),
-        AdminService.getAllSections(),
+        AdminService.getAllSectionsComplete(),
         AdminService.getAllWeeks(),
         AdminService.getAllLeagues()
       ]);

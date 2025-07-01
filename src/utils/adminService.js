@@ -548,10 +548,12 @@ class AdminService {
 
   /**
    * Get all sections
+   * @param {number} limit - Items per page (default: 1000 to get all sections)
+   * @param {number} page - Page number (default: 1)
    * @returns {Promise} Sections data
    */
-  static async getAllSections() {
-    const response = await fetch(`${API_BASE_URL}/sections`, {
+  static async getAllSections(limit = 1000, page = 1) {
+    const response = await fetch(`${API_BASE_URL}/sections?limit=${limit}&page=${page}`, {
       headers: getAuthHeaders()
     });
     return handleResponse(response);
@@ -602,6 +604,51 @@ class AdminService {
       headers: getAuthHeaders()
     });
     return handleResponse(response);
+  }
+
+  /**
+   * Get all sections by fetching all pages
+   * @returns {Promise} All sections data
+   */
+  static async getAllSectionsComplete() {
+    try {
+      // First try the main sections endpoint with high limit
+      try {
+        const firstPage = await this.getAllSections(1000);
+        let allSections = firstPage.sections || [];
+        
+        // If there are more pages, fetch them
+        if (firstPage.pagination && firstPage.pagination.totalPages > 1) {
+          const promises = [];
+          for (let page = 2; page <= firstPage.pagination.totalPages; page++) {
+            promises.push(this.getAllSections(100, page));
+          }
+          
+          const additionalPages = await Promise.all(promises);
+          additionalPages.forEach(pageData => {
+            if (pageData.sections) {
+              allSections = allSections.concat(pageData.sections);
+            }
+          });
+        }
+        
+        return {
+          sections: allSections,
+          pagination: {
+            page: 1,
+            limit: allSections.length,
+            total: allSections.length,
+            totalPages: 1
+          }
+        };
+      } catch (error) {
+        console.error('Error fetching all sections:', error);
+        throw error;
+      }
+    } catch (error) {
+      console.error('Error in getAllSectionsComplete:', error);
+      throw error;
+    }
   }
 
   // ==================== RESOURCE MANAGEMENT ====================

@@ -93,7 +93,7 @@ const AdminPage = () => {
           break;
         }
         case 'sections': {
-          const sectionsData = await AdminService.getAllSections();
+          const sectionsData = await AdminService.getAllSectionsComplete();
           setSections(sectionsData.sections || []);
           // For sections, also fetch weeks and leagues if not already loaded
           if (weeks.length === 0) {
@@ -173,7 +173,7 @@ const AdminPage = () => {
 
   const fetchSections = async () => {
     try {
-      const data = await AdminService.getAllSections();
+      const data = await AdminService.getAllSectionsComplete();
       setSections(data.sections || []);
     } catch (err) {
       console.error('Error fetching sections:', err);
