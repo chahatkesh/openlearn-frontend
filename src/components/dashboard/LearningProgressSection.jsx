@@ -691,7 +691,7 @@ const LearningProgressSection = ({ user }) => {
                                     <p className="text-sm text-gray-600 mb-3 leading-relaxed line-clamp-2">
                                       {leagueDescription}
                                     </p>
-                                    <div className="flex items-center space-x-4 text-xs text-gray-500">
+                                    <div className="flex items-center space-x-2 text-xs text-gray-500">
                                       <span className="flex items-center">
                                         <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-1"></div>
                                         {dynamicStats ? weeksCount : '...'} {weeksCount === 1 ? 'week' : 'weeks'}
