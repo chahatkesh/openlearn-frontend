@@ -1,5 +1,14 @@
-import frontendCommits from '../data/frontendCommits.json'
-import backendCommits from '../data/backendCommits.json'
+import { getRealTimeCommits } from './githubService'
+
+/**
+ * Updates Service for processing and managing platform updates
+ * 
+ * Features:
+ * - Process git commits into structured updates
+ * - Support for fetching ALL commits or recent commits for performance
+ * - Advanced commit message parsing for type and category detection
+ * - Contributor analysis and statistics
+ */
 
 /**
  * Process raw commit data into updates format
@@ -21,52 +30,61 @@ const processCommitsToUpdates = (commits) => {
       category: parseCommitCategory(commit.message),
       commitHash: commit.hash,
       author: commit.author,
-      repo: commit.repo || 'unknown', // Include the repo field
-      timestamp: parseInt(commit.time) // Keep original timestamp for sorting
+      repo: commit.repo || 'unknown',
+      timestamp: parseInt(commit.time)
     }
-  }).sort((a, b) => b.timestamp - a.timestamp) // Sort by timestamp (latest first)
+  }).sort((a, b) => b.timestamp - a.timestamp)
 }
 
 /**
- * Get processed commits from JSON files
- * @returns {Array} Array of processed update objects
- */
-const getProcessedCommits = () => {
-  // Combine and sort by timestamp (newest first)
-  const allCommits = [...frontendCommits, ...backendCommits];
-  return processCommitsToUpdates(allCommits);
-}
-
-/**
- * Get all platform updates from JSON files
+ * Get all platform updates from real-time GitHub API
+ * @param {boolean} fetchAll - Whether to fetch all commits or just recent ones
+ * @param {number} recentCount - Number of recent commits if fetchAll is false
  * @returns {Promise<Array>} Array of update objects
  */
-export const getAllUpdates = async () => {
-  try {
-    return getProcessedCommits()
-  } catch (error) {
-    console.error('Error fetching updates:', error)
-    return []
-  }
+export const getAllUpdates = async (fetchAll = true, recentCount = 200) => {
+  const commits = await getRealTimeCommits(true, fetchAll, recentCount);
+  return processCommitsToUpdates(commits);
+}
+
+/**
+ * Get ALL platform updates (every single commit) from real-time GitHub API
+ * @returns {Promise<Array>} Array of all update objects
+ */
+export const getAllUpdatesComplete = async () => {
+  const commits = await getRealTimeCommits(true, true); // fetchAll = true, no limit
+  return processCommitsToUpdates(commits);
+}
+
+/**
+ * Get recent platform updates (for better performance)
+ * @param {number} recentCount - Number of recent updates to fetch
+ * @returns {Promise<Array>} Array of recent update objects
+ */
+export const getRecentUpdatesOptimized = async (recentCount = 200) => {
+  const commits = await getRealTimeCommits(true, false, recentCount); // fetchAll = false, with limit
+  return processCommitsToUpdates(commits);
 }
 
 /**
  * Get updates by type
  * @param {string} type - The type of update (feature, improvement, security, docs, etc.)
+ * @param {boolean} searchAll - Whether to search all commits or just recent ones
  * @returns {Promise<Array>} Filtered array of updates
  */
-export const getUpdatesByType = async (type) => {
-  const updates = await getAllUpdates()
+export const getUpdatesByType = async (type, searchAll = false) => {
+  const updates = searchAll ? await getAllUpdatesComplete() : await getAllUpdates(false, 500);
   return updates.filter(update => update.type === type)
 }
 
 /**
  * Get updates by category
  * @param {string} category - The category of update
+ * @param {boolean} searchAll - Whether to search all commits or just recent ones
  * @returns {Promise<Array>} Filtered array of updates
  */
-export const getUpdatesByCategory = async (category) => {
-  const updates = await getAllUpdates()
+export const getUpdatesByCategory = async (category, searchAll = false) => {
+  const updates = searchAll ? await getAllUpdatesComplete() : await getAllUpdates(false, 500);
   return updates.filter(update => update.category === category)
 }
 
@@ -76,17 +94,20 @@ export const getUpdatesByCategory = async (category) => {
  * @returns {Promise<Array>} Array of recent updates
  */
 export const getRecentUpdates = async (count = 5) => {
-  const updates = await getAllUpdates()
+  // For recent updates, we only need a reasonable amount to choose from
+  const updates = await getAllUpdates(false, Math.max(count * 2, 100));
   return updates.slice(0, count)
 }
 
 /**
  * Get unique contributors from all commits
+ * @param {boolean} searchAll - Whether to search all commits or just recent ones for performance
  * @returns {Promise<Array>} Array of unique contributor objects with username and commit count
  */
-export const getUniqueContributors = async () => {
+export const getUniqueContributors = async (searchAll = true) => {
   try {
-    const updates = await getAllUpdates()
+    // For contributors, we want to search all commits by default to get accurate counts
+    const updates = searchAll ? await getAllUpdatesComplete() : await getAllUpdates(false, 1000);
     const contributorMap = new Map()
     
     updates.forEach(update => {
