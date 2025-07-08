@@ -655,10 +655,12 @@ class AdminService {
 
   /**
    * Get all resources
+   * @param {number} limit - Items per page (default: 1000 to get all resources)
+   * @param {number} page - Page number (default: 1)
    * @returns {Promise} Resources data
    */
-  static async getAllResources() {
-    const response = await fetch(`${API_BASE_URL}/resources`, {
+  static async getAllResources(limit = 1000, page = 1) {
+    const response = await fetch(`${API_BASE_URL}/resources?limit=${limit}&page=${page}`, {
       headers: getAuthHeaders()
     });
     return handleResponse(response);
