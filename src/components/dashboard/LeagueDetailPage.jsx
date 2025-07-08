@@ -34,8 +34,7 @@ const NoteModal = React.memo(({
   saveNote, 
   openResourceWithType, 
   getResourceTypeName,
-  textareaRef,
-  ResourceIcon
+  textareaRef
 }) => {
   if (!showNoteModal || !selectedResource) return null;
 
