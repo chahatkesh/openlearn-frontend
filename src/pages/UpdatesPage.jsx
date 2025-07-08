@@ -60,15 +60,48 @@ const UpdatesPage = () => {
 
   const getTypeBgColor = (type) => {
     switch (type) {
+      // Core development types
       case 'feature': return 'bg-emerald-100 text-emerald-800 border-emerald-300'
       case 'fix': return 'bg-red-100 text-red-800 border-red-300'
-      case 'refactor': return 'bg-blue-100 text-blue-800 border-blue-300'
-      case 'docs': return 'bg-purple-100 text-purple-800 border-purple-300'
-      case 'style': return 'bg-pink-100 text-pink-800 border-pink-300'
-      case 'test': return 'bg-orange-100 text-orange-800 border-orange-300'
-      case 'security': return 'bg-red-200 text-red-900 border-red-400'
+      case 'hotfix': return 'bg-red-200 text-red-900 border-red-400'
       case 'improvement': return 'bg-indigo-100 text-indigo-800 border-indigo-300'
+      case 'update': return 'bg-cyan-100 text-cyan-800 border-cyan-300'
+      
+      // Code quality and maintenance
+      case 'refactor': return 'bg-blue-100 text-blue-800 border-blue-300'
       case 'chore': return 'bg-gray-100 text-gray-800 border-gray-300'
+      case 'performance': return 'bg-lime-100 text-lime-800 border-lime-300'
+      case 'cleanup': return 'bg-slate-100 text-slate-800 border-slate-300'
+      
+      // Documentation and testing
+      case 'docs': return 'bg-purple-100 text-purple-800 border-purple-300'
+      case 'test': return 'bg-orange-100 text-orange-800 border-orange-300'
+      
+      // Design and styling
+      case 'style': return 'bg-pink-100 text-pink-800 border-pink-300'
+      case 'ui': return 'bg-rose-100 text-rose-800 border-rose-300'
+      
+      // DevOps and deployment
+      case 'deploy': return 'bg-violet-100 text-violet-800 border-violet-300'
+      case 'ci': return 'bg-indigo-100 text-indigo-800 border-indigo-300'
+      case 'config': return 'bg-amber-100 text-amber-800 border-amber-300'
+      
+      // Security and critical changes
+      case 'security': return 'bg-red-200 text-red-900 border-red-400'
+      case 'critical': return 'bg-red-300 text-red-950 border-red-500'
+      case 'breaking': return 'bg-yellow-200 text-yellow-900 border-yellow-400'
+      
+      // Version control and collaboration
+      case 'merge': return 'bg-teal-100 text-teal-800 border-teal-300'
+      case 'revert': return 'bg-orange-200 text-orange-900 border-orange-400'
+      
+      // Project lifecycle
+      case 'init': return 'bg-green-100 text-green-800 border-green-300'
+      case 'release': return 'bg-purple-200 text-purple-900 border-purple-400'
+      case 'deps': return 'bg-blue-50 text-blue-700 border-blue-200'
+      case 'wip': return 'bg-yellow-100 text-yellow-800 border-yellow-300'
+      
+      // Default fallback
       default: return 'bg-slate-100 text-slate-800 border-slate-300'
     }
   }
@@ -81,44 +114,181 @@ const UpdatesPage = () => {
     }
   }
 
+  const getCategoryBgColor = (category) => {
+    switch (category) {
+      // Development domains
+      case 'DevOps': return 'bg-violet-50 text-violet-700 border-violet-200'
+      case 'Database': return 'bg-emerald-50 text-emerald-700 border-emerald-200'
+      case 'Authentication': return 'bg-red-50 text-red-700 border-red-200'
+      case 'Admin Panel': return 'bg-indigo-50 text-indigo-700 border-indigo-200'
+      case 'Learning Platform': return 'bg-blue-50 text-blue-700 border-blue-200'
+      case 'Gamification': return 'bg-purple-50 text-purple-700 border-purple-200'
+      case 'UI Components': return 'bg-pink-50 text-pink-700 border-pink-200'
+      case 'Backend API': return 'bg-green-50 text-green-700 border-green-200'
+      
+      // Quality and maintenance
+      case 'Code Quality': return 'bg-cyan-50 text-cyan-700 border-cyan-200'
+      case 'Documentation': return 'bg-amber-50 text-amber-700 border-amber-200'
+      case 'Quality Assurance': return 'bg-orange-50 text-orange-700 border-orange-200'
+      case 'Performance': return 'bg-lime-50 text-lime-700 border-lime-200'
+      case 'Configuration': return 'bg-yellow-50 text-yellow-700 border-yellow-200'
+      
+      // User experience
+      case 'Design & Styling': return 'bg-rose-50 text-rose-700 border-rose-200'
+      case 'User Experience': return 'bg-teal-50 text-teal-700 border-teal-200'
+      case 'Navigation': return 'bg-slate-50 text-slate-700 border-slate-200'
+      case 'Search & Filtering': return 'bg-sky-50 text-sky-700 border-sky-200'
+      
+      // Integration and external
+      case 'Integrations': return 'bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200'
+      case 'Version Control': return 'bg-stone-50 text-stone-700 border-stone-200'
+      case 'Legal & Privacy': return 'bg-neutral-50 text-neutral-700 border-neutral-200'
+      
+      // Special categories
+      case 'Critical': return 'bg-red-100 text-red-800 border-red-300'
+      case 'Features': return 'bg-emerald-50 text-emerald-700 border-emerald-200'
+      case 'Bug Fixes': return 'bg-red-50 text-red-700 border-red-200'
+      case 'Maintenance': return 'bg-gray-50 text-gray-700 border-gray-200'
+      
+      // Default fallback
+      default: return 'bg-gray-50 text-gray-600 border-gray-200'
+    }
+  }
+
   const getDotColor = (type) => {
     switch (type) {
+      // Core development types
       case 'feature': return 'border-emerald-300 group-hover:border-emerald-500'
       case 'fix': return 'border-red-300 group-hover:border-red-500'
-      case 'refactor': return 'border-blue-300 group-hover:border-blue-500'
-      case 'docs': return 'border-purple-300 group-hover:border-purple-500'
-      case 'style': return 'border-pink-300 group-hover:border-pink-500'
-      case 'test': return 'border-orange-300 group-hover:border-orange-500'
-      case 'security': return 'border-red-400 group-hover:border-red-600'
+      case 'hotfix': return 'border-red-400 group-hover:border-red-600'
       case 'improvement': return 'border-indigo-300 group-hover:border-indigo-500'
+      case 'update': return 'border-cyan-300 group-hover:border-cyan-500'
+      
+      // Code quality and maintenance
+      case 'refactor': return 'border-blue-300 group-hover:border-blue-500'
+      case 'chore': return 'border-gray-300 group-hover:border-gray-500'
+      case 'performance': return 'border-lime-300 group-hover:border-lime-500'
+      
+      // Documentation and testing
+      case 'docs': return 'border-purple-300 group-hover:border-purple-500'
+      case 'test': return 'border-orange-300 group-hover:border-orange-500'
+      
+      // Design and styling
+      case 'style': return 'border-pink-300 group-hover:border-pink-500'
+      case 'ui': return 'border-rose-300 group-hover:border-rose-500'
+      
+      // DevOps and deployment
+      case 'deploy': return 'border-violet-300 group-hover:border-violet-500'
+      case 'ci': return 'border-indigo-300 group-hover:border-indigo-500'
+      case 'config': return 'border-amber-300 group-hover:border-amber-500'
+      
+      // Security and critical changes
+      case 'security': return 'border-red-400 group-hover:border-red-600'
+      case 'critical': return 'border-red-500 group-hover:border-red-700'
+      case 'breaking': return 'border-yellow-400 group-hover:border-yellow-600'
+      
+      // Version control and collaboration
+      case 'merge': return 'border-teal-300 group-hover:border-teal-500'
+      case 'revert': return 'border-orange-400 group-hover:border-orange-600'
+      
+      // Project lifecycle
+      case 'init': return 'border-green-300 group-hover:border-green-500'
+      case 'release': return 'border-purple-400 group-hover:border-purple-600'
+      case 'deps': return 'border-blue-200 group-hover:border-blue-400'
+      case 'wip': return 'border-yellow-300 group-hover:border-yellow-500'
+      
       default: return 'border-gray-200 group-hover:border-[#FFDE59]'
     }
   }
 
   const getHoverBorderColor = (type) => {
     switch (type) {
+      // Core development types
       case 'feature': return 'hover:border-l-emerald-300'
       case 'fix': return 'hover:border-l-red-300'
-      case 'refactor': return 'hover:border-l-blue-300'
-      case 'docs': return 'hover:border-l-purple-300'
-      case 'style': return 'hover:border-l-pink-300'
-      case 'test': return 'hover:border-l-orange-300'
-      case 'security': return 'hover:border-l-red-400'
+      case 'hotfix': return 'hover:border-l-red-400'
       case 'improvement': return 'hover:border-l-indigo-300'
+      case 'update': return 'hover:border-l-cyan-300'
+      
+      // Code quality and maintenance
+      case 'refactor': return 'hover:border-l-blue-300'
+      case 'chore': return 'hover:border-l-gray-300'
+      case 'performance': return 'hover:border-l-lime-300'
+      
+      // Documentation and testing
+      case 'docs': return 'hover:border-l-purple-300'
+      case 'test': return 'hover:border-l-orange-300'
+      
+      // Design and styling
+      case 'style': return 'hover:border-l-pink-300'
+      case 'ui': return 'hover:border-l-rose-300'
+      
+      // DevOps and deployment
+      case 'deploy': return 'hover:border-l-violet-300'
+      case 'ci': return 'hover:border-l-indigo-300'
+      case 'config': return 'hover:border-l-amber-300'
+      
+      // Security and critical changes
+      case 'security': return 'hover:border-l-red-400'
+      case 'critical': return 'hover:border-l-red-500'
+      case 'breaking': return 'hover:border-l-yellow-400'
+      
+      // Version control and collaboration
+      case 'merge': return 'hover:border-l-teal-300'
+      case 'revert': return 'hover:border-l-orange-400'
+      
+      // Project lifecycle
+      case 'init': return 'hover:border-l-green-300'
+      case 'release': return 'hover:border-l-purple-400'
+      case 'deps': return 'hover:border-l-blue-200'
+      case 'wip': return 'hover:border-l-yellow-300'
+      
       default: return 'hover:border-l-[#FFDE59]'
     }
   }
 
   const getDotFillColor = (type) => {
     switch (type) {
+      // Core development types
       case 'feature': return 'bg-emerald-100 group-hover:bg-emerald-300'
       case 'fix': return 'bg-red-100 group-hover:bg-red-300'
-      case 'refactor': return 'bg-blue-100 group-hover:bg-blue-300'
-      case 'docs': return 'bg-purple-100 group-hover:bg-purple-300'
-      case 'style': return 'bg-pink-100 group-hover:bg-pink-300'
-      case 'test': return 'bg-orange-100 group-hover:bg-orange-300'
-      case 'security': return 'bg-red-200 group-hover:bg-red-400'
+      case 'hotfix': return 'bg-red-200 group-hover:bg-red-400'
       case 'improvement': return 'bg-indigo-100 group-hover:bg-indigo-300'
+      case 'update': return 'bg-cyan-100 group-hover:bg-cyan-300'
+      
+      // Code quality and maintenance
+      case 'refactor': return 'bg-blue-100 group-hover:bg-blue-300'
+      case 'chore': return 'bg-gray-100 group-hover:bg-gray-300'
+      case 'performance': return 'bg-lime-100 group-hover:bg-lime-300'
+      
+      // Documentation and testing
+      case 'docs': return 'bg-purple-100 group-hover:bg-purple-300'
+      case 'test': return 'bg-orange-100 group-hover:bg-orange-300'
+      
+      // Design and styling
+      case 'style': return 'bg-pink-100 group-hover:bg-pink-300'
+      case 'ui': return 'bg-rose-100 group-hover:bg-rose-300'
+      
+      // DevOps and deployment
+      case 'deploy': return 'bg-violet-100 group-hover:bg-violet-300'
+      case 'ci': return 'bg-indigo-100 group-hover:bg-indigo-300'
+      case 'config': return 'bg-amber-100 group-hover:bg-amber-300'
+      
+      // Security and critical changes
+      case 'security': return 'bg-red-200 group-hover:bg-red-400'
+      case 'critical': return 'bg-red-300 group-hover:bg-red-500'
+      case 'breaking': return 'bg-yellow-200 group-hover:bg-yellow-400'
+      
+      // Version control and collaboration
+      case 'merge': return 'bg-teal-100 group-hover:bg-teal-300'
+      case 'revert': return 'bg-orange-200 group-hover:bg-orange-400'
+      
+      // Project lifecycle
+      case 'init': return 'bg-green-100 group-hover:bg-green-300'
+      case 'release': return 'bg-purple-200 group-hover:bg-purple-400'
+      case 'deps': return 'bg-blue-50 group-hover:bg-blue-200'
+      case 'wip': return 'bg-yellow-100 group-hover:bg-yellow-300'
+      
       default: return 'bg-gray-100 group-hover:bg-[#FFDE59]'
     }
   }
@@ -263,7 +433,7 @@ const UpdatesPage = () => {
                           <ExternalLink className="w-3 h-3 ml-1 opacity-60" />
                         </a>
                         
-                        <span className="bg-gray-50 px-2 py-0.5 rounded text-gray-600">
+                        <span className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full border ${getCategoryBgColor(update.category)}`}>
                           {update.category}
                         </span>
                         <span>by {update.author}</span>

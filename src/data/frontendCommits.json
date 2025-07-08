@@ -1,4 +1,5 @@
 [
+  {"hash":"17be7dd","date":"2025-07-08","time":"1751974230","author":"chahatkesh","message":"Add comprehensive documentation for Platform Updates page and commit history visualization","repo":"frontend"},
   {"hash":"317dc87","date":"2025-07-08","time":"1751963314","author":"chahatkesh","message":"fix: remove unused ResourceIcon prop from NoteModal component","repo":"frontend"},
   {"hash":"ced9fd1","date":"2025-07-08","time":"1751959679","author":"chahatkesh","message":"feat: implement keyboard shortcuts for filter management and enhance filter UI","repo":"frontend"},
   {"hash":"a4b1cae","date":"2025-07-08","time":"1751956396","author":"chahatkesh","message":"feat: add pagination and limit parameters to getAllResources method","repo":"frontend"},
