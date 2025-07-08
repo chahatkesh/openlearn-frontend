@@ -1,46 +1,5 @@
-/**
- * Platform Updates Service
- * 
- * This service automatically fetches platform updates from git commit history
- * and processes them into a user-friendly timeline format.
- */
-
-/**
- * Fetch git commit history and convert to updates format
- * @param {number} limit - Number of commits to fetch
- * @returns {Promise<Array>} Array of update objects
- */
-export const fetchGitCommits = async (limit = 50) => {
-  try {
-    // Note: In a production environment, this would use a backend API
-    // that executes: git log --pretty=format:'{"hash":"%h","date":"%ad","time":"%at","author":"%an","message":"%s"}' --date=short -${limit}
-    
-    // For frontend, we'll need to call an API endpoint
-    // Since we can't execute shell commands directly from the browser,
-    // we'll simulate this with a fetch to a hypothetical API endpoint
-    
-    const response = await fetch(`/api/git/commits?limit=${limit}`, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-      }
-    }).catch(() => {
-      // Fallback: if no API is available, we'll use processed git data
-      throw new Error('Git API not available')
-    })
-
-    if (response.ok) {
-      const commits = await response.json()
-      return processCommitsToUpdates(commits)
-    } else {
-      throw new Error('Failed to fetch commits from API')
-    }
-  } catch (error) {
-    console.warn('Could not fetch from git API, using local processing:', error.message)
-    // Fallback to processing known git data
-    return getProcessedCommits()
-  }
-}
+import frontendCommits from '../data/frontendCommits.json'
+import backendCommits from '../data/backendCommits.json'
 
 /**
  * Process raw commit data into updates format
@@ -61,126 +20,33 @@ const processCommitsToUpdates = (commits) => {
       summary: parseCommitSummary(commit.message),
       category: parseCommitCategory(commit.message),
       commitHash: commit.hash,
-      author: commit.author
+      author: commit.author,
+      repo: commit.repo || 'unknown', // Include the repo field
+      timestamp: parseInt(commit.time) // Keep original timestamp for sorting
     }
-  }).sort((a, b) => new Date(b.date) - new Date(a.date))
+  }).sort((a, b) => b.timestamp - a.timestamp) // Sort by timestamp (latest first)
 }
 
 /**
- * Get processed commits with actual git data
- * This function contains real commit data from the repository
+ * Get processed commits from JSON files
+ * @returns {Array} Array of processed update objects
  */
 const getProcessedCommits = () => {
-  // Complete real commit data from the repository
-  const realCommits = [
-    {"hash":"3b6d3db","date":"2025-06-16","time":"1750080535","author":"chahatkesh","message":"fix: Update Instagram link in Footer component for accuracy"},
-    {"hash":"7b1e47b","date":"2025-06-16","time":"1750012447","author":"chahatkesh","message":"docs: Add contributing guidelines and license information"},
-    {"hash":"601ef87","date":"2025-06-15","time":"1750010201","author":"chahatkesh","message":"feat: Implement strategic user fetching with improved error handling and logging"},
-    {"hash":"abfcc86","date":"2025-06-15","time":"1749992327","author":"chahatkesh","message":"fix: Update default sorting parameters in UserManagement component for consistency"},
-    {"hash":"d976308","date":"2025-06-15","time":"1749991261","author":"chahatkesh","message":"Implement code changes to enhance functionality and improve performance"},
-    {"hash":"39aed8d","date":"2025-06-15","time":"1749990678","author":"chahatkesh","message":"fix: Update weeks count display in LearningProgressSection for accurate league statistics"},
-    {"hash":"5506538","date":"2025-06-15","time":"1749990432","author":"chahatkesh","message":"feat: Revamp WelcomeBanner component with new layout and decorative elements"},
-    {"hash":"bff64d1","date":"2025-06-15","time":"1749990072","author":"chahatkesh","message":"Enhance landing page components with Framer Motion animations"},
-    {"hash":"b4e4361","date":"2025-06-15","time":"1749989537","author":"chahatkesh","message":"fix: Update Pending Approval page messaging for clarity on admin approval process"},
-    {"hash":"97b90e7","date":"2025-06-15","time":"1749988310","author":"chahatkesh","message":"feat: Add Updates page and integrate platform updates from git commit history"},
-    {"hash":"543eaf8","date":"2025-06-15","time":"1749986952","author":"chahatkesh","message":"Enhance documentation and features for OpenLearn Platform"},
-    {"hash":"3293ab0","date":"2025-06-15","time":"1749986074","author":"chahatkesh","message":"feat: Implement search functionality with context provider and event handling across dashboard components"},
-    {"hash":"c1d6d2e","date":"2025-06-15","time":"1749985193","author":"chahatkesh","message":"feat: Enhance leaderboard display with recalculated ranks and improved table layout"},
-    {"hash":"aa8bdca","date":"2025-06-15","time":"1749983175","author":"chahatkesh","message":"refactor: Remove unnecessary console logs from various components for cleaner code"},
-    {"hash":"856de7c","date":"2025-06-15","time":"1749982371","author":"chahatkesh","message":"feat: Add resource revision functionality with toast notifications and UI updates"},
-    {"hash":"f3f1453","date":"2025-06-15","time":"1749934956","author":"chahatkesh","message":"feat: Add Specializations route and restrict access to Grand Pathfinders"},
-    {"hash":"2f3c39a","date":"2025-06-15","time":"1749934268","author":"chahatkesh","message":"feat: Implement Favicon Service for fetching and caching favicons across resources"},
-    {"hash":"78e5bf2","date":"2025-06-15","time":"1749932364","author":"chahatkesh","message":"Refactor code structure for improved readability and maintainability"},
-    {"hash":"c38d205","date":"2025-06-15","time":"1749927841","author":"chahatkesh","message":"feat: Refactor Note component to use react-icons for technology stack and enhance layout with minimal design"},
-    {"hash":"ca7ea15","date":"2025-06-15","time":"1749927099","author":"chahatkesh","message":"feat: Enhance Note component with improved layout, technology stack display, and additional links"},
-    {"hash":"73b1144","date":"2025-06-14","time":"1749924665","author":"chahatkesh","message":"feat: Implement dashboard routing with dedicated league detail pages and layout structure"},
-    {"hash":"e9b1c4d","date":"2025-06-14","time":"1749923905","author":"chahatkesh","message":"feat: Add Inter font family and apply to body for improved typography"},
-    {"hash":"5a7823f","date":"2025-06-14","time":"1749923649","author":"chahatkesh","message":"feat: Update hero-pattern background image for improved visual consistency"},
-    {"hash":"afe30d3","date":"2025-06-14","time":"1749923435","author":"chahatkesh","message":"feat: Update hero-pattern background image and add global cursor pointer for buttons"},
-    {"hash":"e209eba","date":"2025-06-14","time":"1749922564","author":"chahatkesh","message":"feat: Add AdminDefaultRedirect component for role-based navigation in admin panel"},
-    {"hash":"ccc70a7","date":"2025-06-14","time":"1749921792","author":"chahatkesh","message":"feat: Implement ModalPortal component for improved modal handling"},
-    {"hash":"7ffdf46","date":"2025-06-14","time":"1749920201","author":"chahatkesh","message":"feat: Update poweredBy text in LeagueCard component for consistency"},
-    {"hash":"c4dff37","date":"2025-06-14","time":"1749843214","author":"chahatkesh","message":"feat: Simplify section progress display by removing progress percentage and related elements in LeagueDetailPage"},
-    {"hash":"0a4b342","date":"2025-06-14","time":"1749841973","author":"chahatkesh","message":"feat: Rename 'Section' to 'Day' in SectionManagement component for clarity"},
-    {"hash":"a143ddd","date":"2025-06-14","time":"1749840130","author":"chahatkesh","message":"feat: Remove description field from WeekManagement component and related logic"},
-    {"hash":"b85fdf9","date":"2025-06-13","time":"1749838764","author":"chahatkesh","message":"feat: Update social sharing messages to include @OpenLearn_nitj for improved branding"},
-    {"hash":"085eebd","date":"2025-06-13","time":"1749838628","author":"chahatkesh","message":"feat: Remove description field from SectionManagement component and related logic"},
-    {"hash":"73728c3","date":"2025-06-13","time":"1749837486","author":"chahatkesh","message":"Add admin pages for managing assignments, cohorts, leagues, resources, sections, specializations, users, and weeks"},
-    {"hash":"079dd70","date":"2025-06-13","time":"1749795733","author":"chahatkesh","message":"feat: Update social sharing references from Twitter to X and enhance UI components across the application"},
-    {"hash":"0ee999c","date":"2025-06-13","time":"1749794250","author":"chahatkesh","message":"feat: Enhance User Management component with improved filtering, sorting, and user detail modal"},
-    {"hash":"ff68d6f","date":"2025-06-13","time":"1749793587","author":"chahatkesh","message":"feat: Enhance assignment fetching with error handling and update UI messages"},
-    {"hash":"3b19c58","date":"2025-06-13","time":"1749792642","author":"chahatkesh","message":"feat: Replace Twitter icon with updated branding and adjust hover effect in Footer component"},
-    {"hash":"6159fad","date":"2025-06-13","time":"1749792436","author":"chahatkesh","message":"Add Privacy Policy and Terms of Service pages with SEO enhancements"},
-    {"hash":"e1e554f","date":"2025-06-12","time":"1749729089","author":"chahatkesh","message":"Add comprehensive documentation for OpenLearn platform"},
-    {"hash":"0f4ac4a","date":"2025-06-12","time":"1749728054","author":"chahatkesh","message":"feat: Update Learning Progress Section to display only for enrolled users"},
-    {"hash":"566c901","date":"2025-06-12","time":"1749727646","author":"chahatkesh","message":"feat: Add Welcome Banner for new users in Learning Progress Section"},
-    {"hash":"a850205","date":"2025-06-12","time":"1749727188","author":"chahatkesh","message":"feat: Update TeamMemberCard styles for improved layout and spacing"},
-    {"hash":"5dc48e1","date":"2025-06-12","time":"1749727028","author":"chahatkesh","message":"feat: Enhance Hero, Leaderboard, and Team components with improved UI/UX, new styles, and social media links"},
-    {"hash":"5e1afd6","date":"2025-06-12","time":"1749726162","author":"chahatkesh","message":"feat: Refactor LeagueCard component by removing iconColor prop and adjusting styles for better UI consistency"},
-    {"hash":"ca2e3c1","date":"2025-06-12","time":"1749725766","author":"chahatkesh","message":"feat: Revamp About and Team sections with enhanced UI/UX and animations"},
-    {"hash":"27cfddf","date":"2025-06-12","time":"1749724160","author":"chahatkesh","message":"feat: Enhance TeamMemberCard UI/UX with new styles and social media icons"},
-    {"hash":"93262bd","date":"2025-06-12","time":"1749722562","author":"chahatkesh","message":"feat: Add react-icons dependency and update Hero, Leaderboard, and Team components for authentication checks and UI enhancements"},
-    {"hash":"3b1fe4e","date":"2025-06-12","time":"1749672718","author":"chahatkesh","message":"Fix Vercel configuration - remove invalid functions runtime"},
-    {"hash":"50f8961","date":"2025-06-12","time":"1749672624","author":"chahatkesh","message":"Add Vercel configuration for SPA routing and deployment"},
-    {"hash":"1ed3d20","date":"2025-06-12","time":"1749672401","author":"chahatkesh","message":"feat: Remove unnecessary 'dev' flags from package-lock.json"},
-    {"hash":"e0c1a87","date":"2025-06-12","time":"1749672326","author":"chahatkesh","message":"Fix deployment build issues"},
-    {"hash":"3d6cc39","date":"2025-06-12","time":"1749669441","author":"chahatkesh","message":"feat: Implement Assignment Management component for admin panel"},
-    {"hash":"74849d4","date":"2025-06-11","time":"1749666550","author":"chahatkesh","message":"feat: remove ComprehensiveAPITests component from AdminPage and update tab handling"},
-    {"hash":"94522cb","date":"2025-06-11","time":"1749666261","author":"chahatkesh","message":"feat: improve error handling and messaging in dashboard data fetching"},
-    {"hash":"a6bb2fd","date":"2025-06-11","time":"1749664834","author":"chahatkesh","message":"feat: implement user avatar generation and fallback mechanism across components"},
-    {"hash":"e95be58","date":"2025-06-11","time":"1749663851","author":"chahatkesh","message":"feat: enhance scrollbar styles for LeagueDetailPage and improve visibility on hover"},
-    {"hash":"e889600","date":"2025-06-11","time":"1749661505","author":"chahatkesh","message":"feat: update LeagueDetailPage layout and enhance resource display with new columns"},
-    {"hash":"59bdd1b","date":"2025-06-11","time":"1749656708","author":"chahatkesh","message":"feat: add Leaderboard component and integrate leaderboard data fetching"},
-    {"hash":"215900c","date":"2025-06-11","time":"1749645046","author":"chahatkesh","message":"feat: enhance scrollbar styling for modals and dashboard sections"},
-    {"hash":"3c08a1a","date":"2025-06-11","time":"1749644408","author":"chahatkesh","message":"feat: add SocialEditModal for updating user social connections and implement refreshUser functionality"},
-    {"hash":"c383a63","date":"2025-06-11","time":"1749643244","author":"chahatkesh","message":"feat: add BadgesModal component to display user badges and achievements"},
-    {"hash":"840ee2d","date":"2025-06-11","time":"1749641611","author":"chahatkesh","message":"feat: Improve enrollment statistics display and enhance UI elements in Learning Progress Section"},
-    {"hash":"831d30e","date":"2025-06-11","time":"1749640625","author":"chahatkesh","message":"feat: Enhance Learning Progress Section with detailed resource tracking and improved UI elements"},
-    {"hash":"75b461a","date":"2025-06-11","time":"1749640404","author":"chahatkesh","message":"feat: Add league statistics calculation and improve data validation in Learning Progress Section"},
-    {"hash":"bc72ce6","date":"2025-06-11","time":"1749639478","author":"chahatkesh","message":"feat: Revamp Learning Progress Section UI with enhanced resource and section progress displays"},
-    {"hash":"1cf743e","date":"2025-06-11","time":"1749638392","author":"chahatkesh","message":"feat: Implement accurate section progress calculation and enhance resource tracking in Learning Progress Section"},
-    {"hash":"8accf46","date":"2025-06-11","time":"1749637862","author":"chahatkesh","message":"feat: Enhance Learning Progress Section with accurate resource progress calculations and improved error handling"},
-    {"hash":"1b19ae5","date":"2025-06-11","time":"1749635448","author":"chahatkesh","message":"Refactor: Remove ServiceIntegrationManager component and related services"},
-    {"hash":"e4d5f22","date":"2025-06-11","time":"1749631245","author":"chahatkesh","message":"Enhance demo mode functionality and error handling across components"},
-    {"hash":"9fae232","date":"2025-06-11","time":"1749580485","author":"chahatkesh","message":"feat: Update Learning Progress Section with modern design and enhanced league statistics display"},
-    {"hash":"4ab8df2","date":"2025-06-10","time":"1749579907","author":"chahatkesh","message":"feat: Revamp Learning Progress Section and Progress Dashboard with modern design and enhanced user experience"},
-    {"hash":"a22a75c","date":"2025-06-10","time":"1749579036","author":"chahatkesh","message":"feat: Enhance UserProfileSection to fetch and display user statistics with loading state"},
-    {"hash":"d3000fa","date":"2025-06-10","time":"1749578003","author":"chahatkesh","message":"Implement code changes to enhance functionality and improve performance"},
-    {"hash":"63303c8","date":"2025-06-10","time":"1749575707","author":"chahatkesh","message":"Implement code changes to enhance functionality and improve performance"},
-    {"hash":"7635b30","date":"2025-06-10","time":"1749573479","author":"chahatkesh","message":"feat: Complete implementation of Resource Progress Tracking API integration"},
-    {"hash":"be13cee","date":"2025-06-10","time":"1749554224","author":"chahatkesh","message":"feat: Remove Goals & Milestones section from Progress Dashboard for cleaner UI"},
-    {"hash":"a5a85ac","date":"2025-06-10","time":"1749553410","author":"chahatkesh","message":"feat: Add Progress, Resource Progress, and Social Services for tracking and sharing user achievements"},
-    {"hash":"3e410c2","date":"2025-06-10","time":"1749522713","author":"chahatkesh","message":"feat: Update section creation API to include name, description, and weekId"},
-    {"hash":"0823bac","date":"2025-06-10","time":"1749521101","author":"chahatkesh","message":"feat: Add LeagueDetailPage component for detailed league view and progress tracking"},
-    {"hash":"e9cff3d","date":"2025-06-10","time":"1749518964","author":"chahatkesh","message":"feat: Update role requirements for admin access and enhance user role display in Dashboard"},
-    {"hash":"29009df","date":"2025-06-10","time":"1749518156","author":"chahatkesh","message":"feat: Remove Forgot Password page and update routing in SignIn and SignUp pages for better user flow"},
-    {"hash":"a7941e1","date":"2025-06-10","time":"1749517755","author":"chahatkesh","message":"feat: Add Resource Management component with CRUD functionality and integrate into AdminPage"},
-    {"hash":"a7677ac","date":"2025-06-10","time":"1749516597","author":"chahatkesh","message":"feat: Enhance User Management with filtering options and improved UI; update AdminPage to manage all users"},
-    {"hash":"5077c2f","date":"2025-06-10","time":"1749515577","author":"chahatkesh","message":"feat: Add Section Management component with CRUD functionality and integration into AdminPage"},
-    {"hash":"70a1432","date":"2025-06-10","time":"1749514269","author":"chahatkesh","message":"feat: Implement User Management and Week Management components"},
-    {"hash":"6d8be40","date":"2025-06-10","time":"1749511243","author":"chahatkesh","message":"Implement authentication flow with routing, including Sign In, Sign Up, Forgot Password, and Dashboard pages; add AuthContext and ProtectedRoute for user management"},
-    {"hash":"0fea95a","date":"2025-06-10","time":"1749508917","author":"chahatkesh","message":"Refactor code structure for improved readability and maintainability"},
-    {"hash":"2a814fa","date":"2025-06-10","time":"1749505056","author":"chahatkesh","message":"Add Team component with hierarchical structure and interactive InfoCard for team members"},
-    {"hash":"0692785","date":"2025-06-10","time":"1749502774","author":"chahatkesh","message":"Add Cohort component with LeagueCard subcomponent and enhanced layout"},
-    {"hash":"1f3e88b","date":"2025-06-10","time":"1749501227","author":"chahatkesh","message":"Enhance Hero component with new layout and content; add hero-pattern background to CSS"},
-    {"hash":"9c49894","date":"2025-06-10","time":"1749498742","author":"chahatkesh","message":"Add LandingPage component and related subcomponents"},
-    {"hash":"53d5341","date":"2025-06-10","time":"1749497542","author":"chahatkesh","message":"Initialize React application with Vite, Tailwind CSS, and basic routing setup"},
-    {"hash":"f13015f","date":"2025-06-10","time":"1749496698","author":"Chahat Kesharwani","message":"Initial commit"}
-  ]
-
-  return processCommitsToUpdates(realCommits)
+  // Combine and sort by timestamp (newest first)
+  const allCommits = [...frontendCommits, ...backendCommits];
+  return processCommitsToUpdates(allCommits);
 }
 
 /**
- * Get all platform updates from git history
+ * Get all platform updates from JSON files
  * @returns {Promise<Array>} Array of update objects
  */
 export const getAllUpdates = async () => {
   try {
-    return await fetchGitCommits()
+    return getProcessedCommits()
   } catch (error) {
     console.error('Error fetching updates:', error)
-    return getProcessedCommits()
+    return []
   }
 }
 
@@ -215,20 +81,269 @@ export const getRecentUpdates = async (count = 5) => {
 }
 
 /**
+ * Get unique contributors from all commits
+ * @returns {Promise<Array>} Array of unique contributor objects with username and commit count
+ */
+export const getUniqueContributors = async () => {
+  try {
+    const updates = await getAllUpdates()
+    const contributorMap = new Map()
+    
+    updates.forEach(update => {
+      const author = update.author
+      // Filter out authors with spaces in their names (likely display names, not usernames)
+      if (!author.includes(' ')) {
+        if (contributorMap.has(author)) {
+          contributorMap.set(author, contributorMap.get(author) + 1)
+        } else {
+          contributorMap.set(author, 1)
+        }
+      }
+    })
+    
+    return Array.from(contributorMap.entries())
+      .map(([username, commitCount]) => ({ username, commitCount }))
+      .sort((a, b) => b.commitCount - a.commitCount) // Sort by commit count descending
+  } catch (error) {
+    console.error('Error fetching contributors:', error)
+    return []
+  }
+}
+
+/**
  * Helper function to parse commit type from commit message
  * @param {string} message - Git commit message
  * @returns {string} Parsed type
  */
 const parseCommitType = (message) => {
-  const lowerMessage = message.toLowerCase()
-  if (lowerMessage.includes('feat:') || lowerMessage.includes('feature:')) return 'feature'
-  if (lowerMessage.includes('fix:') || lowerMessage.includes('bugfix:')) return 'fix'
-  if (lowerMessage.includes('docs:') || lowerMessage.includes('documentation:')) return 'docs'
-  if (lowerMessage.includes('security:') || lowerMessage.includes('sec:')) return 'security'
-  if (lowerMessage.includes('refactor:') || lowerMessage.includes('cleanup:')) return 'refactor'
-  if (lowerMessage.includes('style:') || lowerMessage.includes('ui:')) return 'style'
-  if (lowerMessage.includes('test:') || lowerMessage.includes('testing:')) return 'test'
-  if (lowerMessage.includes('enhance') || lowerMessage.includes('improve')) return 'improvement'
+  const lowerMessage = message.toLowerCase().trim()
+  
+  // Handle conventional commit prefixes with colon
+  if (lowerMessage.includes(':')) {
+    const prefix = lowerMessage.split(':')[0].trim()
+    
+    // Primary conventional commit types
+    if (prefix === 'feat' || prefix === 'feature') return 'feature'
+    if (prefix === 'fix' || prefix === 'bugfix') return 'fix'
+    if (prefix === 'docs' || prefix === 'doc' || prefix === 'documentation') return 'docs'
+    if (prefix === 'style' || prefix === 'ui' || prefix === 'design') return 'style'
+    if (prefix === 'refactor' || prefix === 'cleanup') return 'refactor'
+    if (prefix === 'test' || prefix === 'testing') return 'test'
+    if (prefix === 'chore' || prefix === 'maintenance') return 'chore'
+    if (prefix === 'perf' || prefix === 'performance') return 'performance'
+    if (prefix === 'ci' || prefix === 'build') return 'ci'
+    if (prefix === 'revert') return 'revert'
+    
+    // Extended conventional commit types
+    if (prefix === 'security' || prefix === 'sec') return 'security'
+    if (prefix === 'config' || prefix === 'conf') return 'config'
+    if (prefix === 'deploy' || prefix === 'deployment') return 'deploy'
+    if (prefix === 'hotfix' || prefix === 'patch') return 'hotfix'
+    if (prefix === 'breaking' || prefix === 'break') return 'breaking'
+    if (prefix === 'deps' || prefix === 'dependency') return 'deps'
+    if (prefix === 'wip' || prefix === 'work in progress') return 'wip'
+    if (prefix === 'init' || prefix === 'initial') return 'init'
+    if (prefix === 'release' || prefix === 'version') return 'release'
+    if (prefix === 'merge') return 'merge'
+    if (prefix === 'crit' || prefix === 'critical') return 'critical'
+  }
+  
+  // Handle messages without conventional prefixes
+  // Check for action words at the beginning
+  const words = lowerMessage.split(' ')
+  const firstWord = words[0]
+  const firstTwoWords = words.slice(0, 2).join(' ')
+  
+  // Action-based type detection
+  if (firstWord === 'add' || firstWord === 'added' || firstWord === 'adding') {
+    return 'feature'
+  }
+  if (firstWord === 'implement' || firstWord === 'implemented' || firstWord === 'implementing') {
+    return 'feature'
+  }
+  if (firstWord === 'create' || firstWord === 'created' || firstWord === 'creating') {
+    return 'feature'
+  }
+  if (firstWord === 'build' || firstWord === 'built' || firstWord === 'building') {
+    return 'feature'
+  }
+  if (firstWord === 'introduce' || firstWord === 'introduced' || firstWord === 'introducing') {
+    return 'feature'
+  }
+  
+  // Fix-related actions
+  if (firstWord === 'fix' || firstWord === 'fixed' || firstWord === 'fixing') {
+    return 'fix'
+  }
+  if (firstWord === 'resolve' || firstWord === 'resolved' || firstWord === 'resolving') {
+    return 'fix'
+  }
+  if (firstWord === 'correct' || firstWord === 'corrected' || firstWord === 'correcting') {
+    return 'fix'
+  }
+  if (firstWord === 'repair' || firstWord === 'repaired' || firstWord === 'repairing') {
+    return 'fix'
+  }
+  if (firstWord === 'patch' || firstWord === 'patched' || firstWord === 'patching') {
+    return 'fix'
+  }
+  
+  // Improvement-related actions
+  if (firstWord === 'improve' || firstWord === 'improved' || firstWord === 'improving') {
+    return 'improvement'
+  }
+  if (firstWord === 'enhance' || firstWord === 'enhanced' || firstWord === 'enhancing') {
+    return 'improvement'
+  }
+  if (firstWord === 'optimize' || firstWord === 'optimized' || firstWord === 'optimizing') {
+    return 'performance'
+  }
+  if (firstWord === 'upgrade' || firstWord === 'upgraded' || firstWord === 'upgrading') {
+    return 'improvement'
+  }
+  if (firstWord === 'refine' || firstWord === 'refined' || firstWord === 'refining') {
+    return 'improvement'
+  }
+  
+  // Refactor-related actions
+  if (firstWord === 'refactor' || firstWord === 'refactored' || firstWord === 'refactoring') {
+    return 'refactor'
+  }
+  if (firstWord === 'restructure' || firstWord === 'restructured' || firstWord === 'restructuring') {
+    return 'refactor'
+  }
+  if (firstWord === 'reorganize' || firstWord === 'reorganized' || firstWord === 'reorganizing') {
+    return 'refactor'
+  }
+  if (firstWord === 'cleanup' || firstWord === 'clean') {
+    return 'refactor'
+  }
+  if (firstWord === 'simplify' || firstWord === 'simplified' || firstWord === 'simplifying') {
+    return 'refactor'
+  }
+  
+  // Removal-related actions
+  if (firstWord === 'remove' || firstWord === 'removed' || firstWord === 'removing') {
+    return 'refactor'
+  }
+  if (firstWord === 'delete' || firstWord === 'deleted' || firstWord === 'deleting') {
+    return 'refactor'
+  }
+  if (firstWord === 'drop' || firstWord === 'dropped' || firstWord === 'dropping') {
+    return 'refactor'
+  }
+  
+  // Update-related actions
+  if (firstWord === 'update' || firstWord === 'updated' || firstWord === 'updating') {
+    return 'update'
+  }
+  if (firstWord === 'modify' || firstWord === 'modified' || firstWord === 'modifying') {
+    return 'update'
+  }
+  if (firstWord === 'change' || firstWord === 'changed' || firstWord === 'changing') {
+    return 'update'
+  }
+  if (firstWord === 'adjust' || firstWord === 'adjusted' || firstWord === 'adjusting') {
+    return 'update'
+  }
+  if (firstWord === 'revise' || firstWord === 'revised' || firstWord === 'revising') {
+    return 'update'
+  }
+  
+  // Merge-related
+  if (firstWord === 'merge' || firstWord === 'merged' || firstWord === 'merging') {
+    return 'merge'
+  }
+  if (firstTwoWords === 'merge pull' || firstTwoWords === 'merge branch') {
+    return 'merge'
+  }
+  
+  // Documentation-related
+  if (firstWord === 'document' || firstWord === 'documented' || firstWord === 'documenting') {
+    return 'docs'
+  }
+  if (firstWord === 'readme' || lowerMessage.includes('readme')) {
+    return 'docs'
+  }
+  
+  // Configuration-related
+  if (firstWord === 'configure' || firstWord === 'configured' || firstWord === 'configuring') {
+    return 'config'
+  }
+  if (firstWord === 'setup' || firstWord === 'set' || firstWord === 'install') {
+    return 'config'
+  }
+  
+  // Initial/Bootstrap
+  if (firstWord === 'initial' || firstWord === 'initialize' || firstWord === 'init') {
+    return 'init'
+  }
+  if (firstWord === 'bootstrap' || firstWord === 'scaffolding') {
+    return 'init'
+  }
+  
+  // Content-based detection (fallback)
+  if (lowerMessage.includes('security') || lowerMessage.includes('vulnerability') || 
+      lowerMessage.includes('permission') || lowerMessage.includes('auth')) {
+    return 'security'
+  }
+  
+  if (lowerMessage.includes('test') || lowerMessage.includes('testing') || 
+      lowerMessage.includes('spec') || lowerMessage.includes('unit test')) {
+    return 'test'
+  }
+  
+  if (lowerMessage.includes('style') || lowerMessage.includes('css') || 
+      lowerMessage.includes('styling') || lowerMessage.includes('design') ||
+      lowerMessage.includes('ui') || lowerMessage.includes('layout')) {
+    return 'style'
+  }
+  
+  if (lowerMessage.includes('performance') || lowerMessage.includes('optimize') || 
+      lowerMessage.includes('speed') || lowerMessage.includes('efficiency')) {
+    return 'performance'
+  }
+  
+  if (lowerMessage.includes('deploy') || lowerMessage.includes('deployment') || 
+      lowerMessage.includes('ci/cd') || lowerMessage.includes('build') ||
+      lowerMessage.includes('pipeline') || lowerMessage.includes('workflow')) {
+    return 'ci'
+  }
+  
+  if (lowerMessage.includes('dependency') || lowerMessage.includes('package') || 
+      lowerMessage.includes('deps') || lowerMessage.includes('npm') ||
+      lowerMessage.includes('yarn') || lowerMessage.includes('upgrade')) {
+    return 'deps'
+  }
+  
+  if (lowerMessage.includes('breaking') || lowerMessage.includes('break') || 
+      lowerMessage.includes('major') || lowerMessage.includes('incompatible')) {
+    return 'breaking'
+  }
+  
+  if (lowerMessage.includes('hotfix') || lowerMessage.includes('critical') || 
+      lowerMessage.includes('urgent') || lowerMessage.includes('emergency')) {
+    return 'hotfix'
+  }
+  
+  if (lowerMessage.includes('wip') || lowerMessage.includes('work in progress') || 
+      lowerMessage.includes('partial') || lowerMessage.includes('incomplete')) {
+    return 'wip'
+  }
+  
+  if (lowerMessage.includes('revert') || lowerMessage.includes('rollback') || 
+      lowerMessage.includes('undo')) {
+    return 'revert'
+  }
+  
+  // Check for improvement indicators
+  if (lowerMessage.includes('enhance') || lowerMessage.includes('improve') || 
+      lowerMessage.includes('better') || lowerMessage.includes('upgrade') ||
+      lowerMessage.includes('modernize') || lowerMessage.includes('revamp')) {
+    return 'improvement'
+  }
+  
+  // Default fallback
   return 'update'
 }
 
@@ -259,21 +374,210 @@ const parseCommitSummary = (message) => {
 const parseCommitCategory = (message) => {
   const lowerMessage = message.toLowerCase()
   
-  // Check for specific keywords in commit message
-  if (lowerMessage.includes('dashboard')) return 'Dashboard'
-  if (lowerMessage.includes('admin')) return 'Admin Panel'
-  if (lowerMessage.includes('auth') || lowerMessage.includes('login') || lowerMessage.includes('signin')) return 'Authentication'
-  if (lowerMessage.includes('ui') || lowerMessage.includes('component') || lowerMessage.includes('layout')) return 'UI/UX'
-  if (lowerMessage.includes('doc') || lowerMessage.includes('readme')) return 'Documentation'
-  if (lowerMessage.includes('security') || lowerMessage.includes('permission') || lowerMessage.includes('role')) return 'Security'
-  if (lowerMessage.includes('api') || lowerMessage.includes('service') || lowerMessage.includes('backend')) return 'Backend'
-  if (lowerMessage.includes('search')) return 'Search'
-  if (lowerMessage.includes('leaderboard') || lowerMessage.includes('league')) return 'Gaming'
-  if (lowerMessage.includes('resource') || lowerMessage.includes('learning')) return 'Learning'
-  if (lowerMessage.includes('refactor') || lowerMessage.includes('cleanup') || lowerMessage.includes('optimize')) return 'Code Quality'
-  if (lowerMessage.includes('font') || lowerMessage.includes('typography') || lowerMessage.includes('styling')) return 'Design'
-  if (lowerMessage.includes('routing') || lowerMessage.includes('navigation')) return 'Navigation'
-  if (lowerMessage.includes('modal') || lowerMessage.includes('portal')) return 'Components'
+  // Prioritize conventional commit prefixes first
+  if (lowerMessage.startsWith('feat:') || lowerMessage.startsWith('feature:')) {
+    return getCategoryFromFeature(lowerMessage)
+  }
+  if (lowerMessage.startsWith('fix:')) {
+    return getCategoryFromFix(lowerMessage)
+  }
+  if (lowerMessage.startsWith('chore:')) {
+    return 'Maintenance'
+  }
+  if (lowerMessage.startsWith('refactor:')) {
+    return 'Code Quality'
+  }
+  if (lowerMessage.startsWith('docs:')) {
+    return 'Documentation'
+  }
+  if (lowerMessage.startsWith('test:')) {
+    return 'Testing'
+  }
+  if (lowerMessage.startsWith('crit:')) {
+    return 'Critical'
+  }
   
+  // Check for deployment and DevOps patterns
+  if (lowerMessage.includes('deploy') || lowerMessage.includes('ci/cd') || lowerMessage.includes('workflow') || 
+      lowerMessage.includes('docker') || lowerMessage.includes('aws') || lowerMessage.includes('render') || 
+      lowerMessage.includes('vercel') || lowerMessage.includes('ec2') || lowerMessage.includes('production') ||
+      lowerMessage.includes('staging') || lowerMessage.includes('pipeline')) {
+    return 'DevOps'
+  }
+  
+  // Database and backend infrastructure
+  if (lowerMessage.includes('prisma') || lowerMessage.includes('schema') || lowerMessage.includes('migration') ||
+      lowerMessage.includes('database') || lowerMessage.includes('db') || lowerMessage.includes('health check') ||
+      lowerMessage.includes('keepalive') || lowerMessage.includes('status') || lowerMessage.includes('monitoring')) {
+    return 'Database'
+  }
+  
+  // Authentication and security
+  if (lowerMessage.includes('auth') || lowerMessage.includes('login') || lowerMessage.includes('signin') ||
+      lowerMessage.includes('signup') || lowerMessage.includes('permission') || lowerMessage.includes('role') ||
+      lowerMessage.includes('security') || lowerMessage.includes('approval') || lowerMessage.includes('access')) {
+    return 'Authentication'
+  }
+  
+  // Admin panel and management
+  if (lowerMessage.includes('admin') || lowerMessage.includes('management') || lowerMessage.includes('crud') ||
+      lowerMessage.includes('user management') || lowerMessage.includes('section management') ||
+      lowerMessage.includes('resource management') || lowerMessage.includes('week management') ||
+      lowerMessage.includes('cohort') || lowerMessage.includes('assignment')) {
+    return 'Admin Panel'
+  }
+  
+  // Learning and educational features
+  if (lowerMessage.includes('learning') || lowerMessage.includes('resource') || lowerMessage.includes('section') ||
+      lowerMessage.includes('progress') || lowerMessage.includes('badge') || lowerMessage.includes('completion') ||
+      lowerMessage.includes('enrollment') || lowerMessage.includes('specialization') || lowerMessage.includes('week')) {
+    return 'Learning Platform'
+  }
+  
+  // Gaming and social features
+  if (lowerMessage.includes('leaderboard') || lowerMessage.includes('league') || lowerMessage.includes('rank') ||
+      lowerMessage.includes('social') || lowerMessage.includes('sharing') || lowerMessage.includes('badge') ||
+      lowerMessage.includes('achievement') || lowerMessage.includes('statistics') || lowerMessage.includes('pathfinder')) {
+    return 'Gamification'
+  }
+  
+  // UI/UX and components
+  if (lowerMessage.includes('component') || lowerMessage.includes('modal') || lowerMessage.includes('portal') ||
+      lowerMessage.includes('layout') || lowerMessage.includes('hero') || lowerMessage.includes('banner') ||
+      lowerMessage.includes('card') || lowerMessage.includes('button') || lowerMessage.includes('form') ||
+      lowerMessage.includes('dropdown') || lowerMessage.includes('tooltip') || lowerMessage.includes('animation') ||
+      lowerMessage.includes('framer motion') || lowerMessage.includes('ui')) {
+    return 'UI Components'
+  }
+  
+  // Design and styling
+  if (lowerMessage.includes('styling') || lowerMessage.includes('css') || lowerMessage.includes('tailwind') ||
+      lowerMessage.includes('font') || lowerMessage.includes('typography') || lowerMessage.includes('color') ||
+      lowerMessage.includes('spacing') || lowerMessage.includes('layout') || lowerMessage.includes('design') ||
+      lowerMessage.includes('background') || lowerMessage.includes('scrollbar') || lowerMessage.includes('hover') ||
+      lowerMessage.includes('visual') || lowerMessage.includes('favicon') || lowerMessage.includes('icon')) {
+    return 'Design & Styling'
+  }
+  
+  // Navigation and routing
+  if (lowerMessage.includes('routing') || lowerMessage.includes('navigation') || lowerMessage.includes('redirect') ||
+      lowerMessage.includes('route') || lowerMessage.includes('page') || lowerMessage.includes('spa')) {
+    return 'Navigation'
+  }
+  
+  // Search and filtering
+  if (lowerMessage.includes('search') || lowerMessage.includes('filter') || lowerMessage.includes('pagination') ||
+      lowerMessage.includes('sorting') || lowerMessage.includes('limit') || lowerMessage.includes('query')) {
+    return 'Search & Filtering'
+  }
+  
+  // User experience improvements
+  if (lowerMessage.includes('keyboard') || lowerMessage.includes('shortcut') || lowerMessage.includes('focus') ||
+      lowerMessage.includes('accessibility') || lowerMessage.includes('ux') || lowerMessage.includes('experience') ||
+      lowerMessage.includes('interaction') || lowerMessage.includes('responsive') || lowerMessage.includes('mobile')) {
+    return 'User Experience'
+  }
+  
+  // API and backend services
+  if (lowerMessage.includes('api') || lowerMessage.includes('endpoint') || lowerMessage.includes('service') ||
+      lowerMessage.includes('controller') || lowerMessage.includes('backend') || lowerMessage.includes('server') ||
+      lowerMessage.includes('middleware') || lowerMessage.includes('validation') || lowerMessage.includes('error handling')) {
+    return 'Backend API'
+  }
+  
+  // Documentation and guides
+  if (lowerMessage.includes('doc') || lowerMessage.includes('readme') || lowerMessage.includes('contributing') ||
+      lowerMessage.includes('license') || lowerMessage.includes('guide') || lowerMessage.includes('changelog') ||
+      lowerMessage.includes('comment') || lowerMessage.includes('jsdoc') || lowerMessage.includes('documentation')) {
+    return 'Documentation'
+  }
+  
+  // Code quality and maintenance
+  if (lowerMessage.includes('refactor') || lowerMessage.includes('cleanup') || lowerMessage.includes('optimize') ||
+      lowerMessage.includes('performance') || lowerMessage.includes('lint') || lowerMessage.includes('format') ||
+      lowerMessage.includes('remove unused') || lowerMessage.includes('console log') || lowerMessage.includes('maintainability') ||
+      lowerMessage.includes('code structure') || lowerMessage.includes('readability')) {
+    return 'Code Quality'
+  }
+  
+  // Testing and quality assurance
+  if (lowerMessage.includes('test') || lowerMessage.includes('testing') || lowerMessage.includes('bug') ||
+      lowerMessage.includes('issue') || lowerMessage.includes('template') || lowerMessage.includes('qa') ||
+      lowerMessage.includes('quality') || lowerMessage.includes('validation') || lowerMessage.includes('integrity')) {
+    return 'Quality Assurance'
+  }
+  
+  // Version control and collaboration
+  if (lowerMessage.includes('merge') || lowerMessage.includes('pull request') || lowerMessage.includes('branch') ||
+      lowerMessage.includes('conflict') || lowerMessage.includes('upstream') || lowerMessage.includes('git') ||
+      lowerMessage.includes('commit')) {
+    return 'Version Control'
+  }
+  
+  // Third-party integrations
+  if (lowerMessage.includes('integration') || lowerMessage.includes('twitter') || lowerMessage.includes('instagram') ||
+      lowerMessage.includes('github') || lowerMessage.includes('linkedin') || lowerMessage.includes('external') ||
+      lowerMessage.includes('cdn') || lowerMessage.includes('dependency')) {
+    return 'Integrations'
+  }
+  
+  // Configuration and setup
+  if (lowerMessage.includes('config') || lowerMessage.includes('setup') || lowerMessage.includes('init') ||
+      lowerMessage.includes('package') || lowerMessage.includes('dependency') || lowerMessage.includes('env') ||
+      lowerMessage.includes('environment') || lowerMessage.includes('build') || lowerMessage.includes('vite') ||
+      lowerMessage.includes('webpack') || lowerMessage.includes('babel')) {
+    return 'Configuration'
+  }
+  
+  // Error handling and debugging
+  if (lowerMessage.includes('error') || lowerMessage.includes('exception') || lowerMessage.includes('debug') ||
+      lowerMessage.includes('troubleshoot') || lowerMessage.includes('logging') || lowerMessage.includes('catch') ||
+      lowerMessage.includes('handling') || lowerMessage.includes('fallback')) {
+    return 'Error Handling'
+  }
+  
+  // Privacy and legal
+  if (lowerMessage.includes('privacy') || lowerMessage.includes('terms') || lowerMessage.includes('policy') ||
+      lowerMessage.includes('legal') || lowerMessage.includes('compliance') || lowerMessage.includes('gdpr')) {
+    return 'Legal & Privacy'
+  }
+  
+  // Performance and optimization
+  if (lowerMessage.includes('performance') || lowerMessage.includes('optimization') || lowerMessage.includes('speed') ||
+      lowerMessage.includes('loading') || lowerMessage.includes('cache') || lowerMessage.includes('lazy') ||
+      lowerMessage.includes('bundle') || lowerMessage.includes('compress')) {
+    return 'Performance'
+  }
+  
+  // Default fallback
   return 'General'
+}
+
+// Helper function for feature categorization
+const getCategoryFromFeature = (message) => {
+  if (message.includes('dashboard')) return 'Dashboard'
+  if (message.includes('admin')) return 'Admin Panel'
+  if (message.includes('auth') || message.includes('login')) return 'Authentication'
+  if (message.includes('learning') || message.includes('resource')) return 'Learning Platform'
+  if (message.includes('ui') || message.includes('component')) return 'UI Components'
+  if (message.includes('leaderboard') || message.includes('league')) return 'Gamification'
+  if (message.includes('search') || message.includes('filter')) return 'Search & Filtering'
+  if (message.includes('deploy') || message.includes('ci/cd')) return 'DevOps'
+  if (message.includes('api') || message.includes('backend')) return 'Backend API'
+  if (message.includes('doc') || message.includes('readme')) return 'Documentation'
+  return 'Features'
+}
+
+// Helper function for fix categorization
+const getCategoryFromFix = (message) => {
+  if (message.includes('deploy') || message.includes('docker') || message.includes('ci/cd')) return 'DevOps'
+  if (message.includes('prisma') || message.includes('schema') || message.includes('database')) return 'Database'
+  if (message.includes('auth') || message.includes('login') || message.includes('permission')) return 'Authentication'
+  if (message.includes('ui') || message.includes('component') || message.includes('modal')) return 'UI Components'
+  if (message.includes('api') || message.includes('backend') || message.includes('endpoint')) return 'Backend API'
+  if (message.includes('routing') || message.includes('navigation')) return 'Navigation'
+  if (message.includes('focus') || message.includes('textarea') || message.includes('keyboard')) return 'User Experience'
+  if (message.includes('styling') || message.includes('css') || message.includes('layout')) return 'Design & Styling'
+  if (message.includes('package') || message.includes('dependency') || message.includes('build')) return 'Configuration'
+  return 'Bug Fixes'
 }

@@ -60,6 +60,7 @@ graph TB
 ### User Guide
 - [Getting Started](./user-guide/getting-started.md) - New user onboarding guide
 - [Dashboard Overview](./user-guide/dashboard-overview.md) - Understanding the user dashboard
+- [Platform Updates](./user-guide/platform-updates.md) - Development timeline and contributor insights
 - [Resource Revision System](./user-guide/revision-system.md) - Mark and manage resources for review
 - [Learning Progress](./user-guide/learning-progress.md) - Progress tracking and completion
 - [Achievements & Badges](./user-guide/achievements.md) - Badge system and social features

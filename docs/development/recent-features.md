@@ -203,7 +203,98 @@ Various user interface and experience improvements for better usability and visu
 
 ---
 
-## 🔮 Future Enhancements
+## � Platform Updates Page
+
+### Feature Architecture
+```mermaid
+graph TB
+    JSON[JSON Data Files] --> Service[Updates Service]
+    Service --> Processing[Commit Processing]
+    Processing --> Timeline[Timeline Component]
+    Timeline --> UI[User Interface]
+    
+    subgraph "Data Sources"
+        Frontend[Frontend Commits]
+        Backend[Backend Commits]
+    end
+    
+    Frontend --> JSON
+    Backend --> JSON
+    
+    subgraph "Features"
+        Categories[Smart Categories]
+        Contributors[Contributors List]
+        Links[GitHub Links]
+        Filtering[Type Filtering]
+    end
+    
+    Processing --> Categories
+    Processing --> Contributors
+    UI --> Links
+    UI --> Filtering
+```
+
+### Overview
+A comprehensive platform updates page that displays real-time development activity from both frontend and backend repositories in an intuitive timeline format.
+
+### Features
+- **Dual Repository Support**: Displays commits from both openlearn-frontend and openlearn-backend
+- **Smart Categorization**: Automatically categorizes commits by type (feature, fix, docs, etc.)
+- **Repository Tagging**: Visual distinction between frontend (blue) and backend (green) commits
+- **Contributors Section**: Shows all unique contributors with GitHub profile links
+- **Chronological Timeline**: Latest commits appear first with detailed timestamps
+- **Interactive Elements**: Clickable commit hashes linking to GitHub commits
+- **Responsive Design**: Works seamlessly across all device sizes
+
+### Implementation Details
+- **JSON Data Architecture**: Separate JSON files for frontend and backend commits
+- **Service Layer**: Clean separation with updatesService.js for data processing
+- **Efficient Sorting**: Timestamp-based sorting for accurate chronological order
+- **GitHub Integration**: Direct links to commits and contributor profiles
+- **Performance Optimized**: Pagination with load-more functionality
+
+### Technical Specifications
+```javascript
+// Data Structure
+{
+  "hash": "317dc87",
+  "date": "2025-07-08", 
+  "time": "1751963314",
+  "author": "chahatkesh",
+  "message": "fix: remove unused ResourceIcon prop",
+  "repo": "frontend"
+}
+
+// Processed Output
+{
+  "type": "fix",
+  "category": "UI Components", 
+  "summary": "Remove unused ResourceIcon prop",
+  "commitHash": "317dc87",
+  "repo": "frontend",
+  "timestamp": 1751963314
+}
+```
+
+### Usage
+1. Navigate to `/updates` in the application
+2. View comprehensive timeline of all development activity
+3. Click commit hashes to view full changes on GitHub
+4. Explore contributor profiles and their contributions
+5. Use pagination to browse historical commits
+
+### Category System
+- **DevOps**: Deployment, CI/CD, Docker configurations
+- **Database**: Prisma, schema changes, migrations
+- **Authentication**: Login, permissions, security features
+- **UI Components**: React components, modals, layouts
+- **Backend API**: Endpoints, controllers, services
+- **Documentation**: README updates, guides, comments
+- **Code Quality**: Refactoring, optimization, cleanup
+
+---
+
+## �🔮 Future Enhancements
 
 ### Planned Features
 - **Advanced Search**: Semantic search capabilities with content indexing
