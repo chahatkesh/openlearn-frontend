@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Plus, 
   Edit, 
   Trash2, 
   GripVertical, 
-  Filter, 
   Play,
   FileText,
   ExternalLink,
   BookOpen,
-  Search,
   Eye,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  X,
+  RotateCcw
 } from 'lucide-react';
 
 const ResourceManagement = ({
@@ -43,7 +43,6 @@ const ResourceManagement = ({
   });
   const [errors, setErrors] = useState({});
   const [typeFilter, setTypeFilter] = useState('ALL');
-  const [searchTerm, setSearchTerm] = useState('');
   const [expandedSections, setExpandedSections] = useState({});
 
   // Resource types with icons and labels
@@ -54,6 +53,14 @@ const ResourceManagement = ({
     BLOG: { icon: BookOpen, label: 'Blog', color: 'text-purple-600', bg: 'bg-purple-100' }
   };
 
+  // Clear all filters
+  const clearAllFilters = useCallback(() => {
+    onSelectLeague('');
+    onSelectWeek('');
+    onSelectSection('');
+    setTypeFilter('ALL');
+  }, [onSelectLeague, onSelectWeek, onSelectSection]);
+
   // Initialize form data with selected section
   useEffect(() => {
     if (selectedSectionId && !formData.sectionId) {
@@ -63,6 +70,30 @@ const ResourceManagement = ({
       }));
     }
   }, [selectedSectionId, formData.sectionId]);
+
+  // Keyboard shortcuts for filters
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Only handle shortcuts when not in input fields
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') {
+        return;
+      }
+
+      if (e.metaKey || e.ctrlKey) {
+        switch (e.key) {
+          case 'r': // Cmd/Ctrl + R to clear filters
+            e.preventDefault();
+            clearAllFilters();
+            break;
+          default:
+            break;
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [clearAllFilters]);
 
   // Form validation
   const validateForm = () => {
@@ -155,15 +186,82 @@ const ResourceManagement = ({
     }));
   };
 
-  // Filter resources
+  // Get active filter count
+  const getActiveFilterCount = () => {
+    let count = 0;
+    if (selectedLeagueId) count++;
+    if (selectedWeekId) count++;
+    if (selectedSectionId) count++;
+    if (typeFilter !== 'ALL') count++;
+    return count;
+  };
+
+  // Get filter summary for display
+  const getFilterSummary = () => {
+    const filters = [];
+    if (selectedLeagueId) {
+      const league = leagues.find(l => l.id === selectedLeagueId);
+      filters.push({ type: 'league', label: league?.name || 'Unknown League', value: selectedLeagueId });
+    }
+    if (selectedWeekId) {
+      const week = weeks.find(w => w.id === selectedWeekId);
+      filters.push({ type: 'week', label: week?.name || 'Unknown Week', value: selectedWeekId });
+    }
+    if (selectedSectionId) {
+      const section = sections.find(s => s.id === selectedSectionId);
+      filters.push({ type: 'section', label: section?.name || 'Unknown Section', value: selectedSectionId });
+    }
+    if (typeFilter !== 'ALL') {
+      filters.push({ type: 'type', label: resourceTypes[typeFilter]?.label || typeFilter, value: typeFilter });
+    }
+    return filters;
+  };
+
+  // Remove specific filter
+  const removeFilter = (filterType) => {
+    switch (filterType) {
+      case 'league':
+        onSelectLeague('');
+        break;
+      case 'week':
+        onSelectWeek('');
+        break;
+      case 'section':
+        onSelectSection('');
+        break;
+      case 'type':
+        setTypeFilter('ALL');
+        break;
+      default:
+        break;
+    }
+  };
+
+  // Filter resources (with real-time filtering based on league hierarchy)
   const filteredResources = resources.filter(resource => {
-    if (typeFilter !== 'ALL' && resource.type !== typeFilter) return false;
-    if (searchTerm && !resource.title.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+    // Get the section to check league and week hierarchy
+    const section = sections.find(s => s.id === resource.sectionId);
+    if (!section) return false;
+    
+    const week = weeks.find(w => w.id === section.weekId);
+    if (!week) return false;
+    
+    // Filter by league (if selected, only show resources in that league)
+    if (selectedLeagueId && week.leagueId !== selectedLeagueId) return false;
+    
+    // Filter by week (if selected, only show resources in that week)
+    if (selectedWeekId && section.weekId !== selectedWeekId) return false;
+    
+    // Filter by section (if selected, only show resources in that section)
     if (selectedSectionId && resource.sectionId !== selectedSectionId) return false;
+    
+    // Filter by type
+    if (typeFilter !== 'ALL' && resource.type !== typeFilter) return false;
+    
     return true;
   });
 
-  // Group resources by section
+  // Group resources by section (sorted by order within sections)
   const resourcesBySection = filteredResources.reduce((acc, resource) => {
     const sectionId = resource.sectionId;
     if (!acc[sectionId]) {
@@ -172,6 +270,11 @@ const ResourceManagement = ({
     acc[sectionId].push(resource);
     return acc;
   }, {});
+
+  // Sort resources within each section by order
+  Object.keys(resourcesBySection).forEach(sectionId => {
+    resourcesBySection[sectionId].sort((a, b) => a.order - b.order);
+  });
 
   // Get resource type icon
   const getResourceTypeIcon = (type) => {
@@ -207,98 +310,133 @@ const ResourceManagement = ({
         </button>
       </div>
 
-      {/* Filters */}
-      <div className="bg-gray-50 p-4 rounded-lg">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Filter by League
-            </label>
-            <select
-              value={selectedLeagueId}
-              onChange={(e) => onSelectLeague(e.target.value)}
-              className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-black focus:border-black"
-            >
-              <option value="">All Leagues</option>
-              {leagues.map((league) => (
-                <option key={league.id} value={league.id}>
-                  {league.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Filter by Week
-            </label>
-            <select
-              value={selectedWeekId}
-              onChange={(e) => onSelectWeek(e.target.value)}
-              className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-black focus:border-black"
-              disabled={!selectedLeagueId}
-            >
-              <option value="">All Weeks</option>
-              {weeks
-                .filter(week => !selectedLeagueId || week.leagueId === selectedLeagueId)
-                .map((week) => (
-                  <option key={week.id} value={week.id}>
-                    {week.name}
+      {/* Simple Compact Filters */}
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+        {/* Filter Controls */}
+        <div className="p-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                League
+              </label>
+              <select
+                value={selectedLeagueId}
+                onChange={(e) => onSelectLeague(e.target.value)}
+                className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              >
+                <option value="">All Leagues</option>
+                {leagues.map((league) => (
+                  <option key={league.id} value={league.id}>
+                    {league.name}
                   </option>
                 ))}
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Filter by Section
-            </label>
-            <select
-              value={selectedSectionId}
-              onChange={(e) => onSelectSection(e.target.value)}
-              className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-black focus:border-black"
-              disabled={!selectedWeekId}
-            >
-              <option value="">All Sections</option>
-              {sections
-                .filter(section => !selectedWeekId || section.weekId === selectedWeekId)
-                .map((section) => (
-                  <option key={section.id} value={section.id}>
-                    {section.name}
-                  </option>
-                ))}
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Filter by Type
-            </label>
-            <select
-              value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
-              className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-black focus:border-black"
-            >
-              <option value="ALL">All Types</option>
-              {Object.entries(resourceTypes).map(([type, info]) => (
-                <option key={type} value={type}>
-                  {info.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-        
-        {/* Search */}
-        <div className="mt-4">
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-4 w-4 text-gray-400" />
+              </select>
             </div>
-            <input
-              type="text"
-              placeholder="Search resources..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-black focus:border-black"
-            />
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Week
+              </label>
+              <select
+                value={selectedWeekId}
+                onChange={(e) => onSelectWeek(e.target.value)}
+                className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors disabled:bg-gray-50 disabled:text-gray-500"
+                disabled={!selectedLeagueId}
+              >
+                <option value="">All Weeks</option>
+                {weeks
+                  .filter(week => !selectedLeagueId || week.leagueId === selectedLeagueId)
+                  .map((week) => (
+                    <option key={week.id} value={week.id}>
+                      {week.name}
+                    </option>
+                  ))}
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Section
+              </label>
+              <select
+                value={selectedSectionId}
+                onChange={(e) => onSelectSection(e.target.value)}
+                className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors disabled:bg-gray-50 disabled:text-gray-500"
+                disabled={!selectedWeekId}
+              >
+                <option value="">All Sections</option>
+                {sections
+                  .filter(section => !selectedWeekId || section.weekId === selectedWeekId)
+                  .map((section) => (
+                    <option key={section.id} value={section.id}>
+                      {section.name}
+                    </option>
+                  ))}
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Resource Type
+              </label>
+              <select
+                value={typeFilter}
+                onChange={(e) => setTypeFilter(e.target.value)}
+                className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              >
+                <option value="ALL">All Types</option>
+                {Object.entries(resourceTypes).map(([type, info]) => (
+                  <option key={type} value={type}>
+                    {info.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Quick Actions */}
+          {getActiveFilterCount() > 0 && (
+            <div className="mt-4 flex items-center justify-between">
+              <div className="flex items-center space-x-2 flex-wrap gap-2">
+                <span className="text-xs font-medium text-gray-500">Active filters:</span>
+                {getFilterSummary().map((filter, index) => (
+                  <span
+                    key={index}
+                    className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                  >
+                    {filter.label}
+                    <button
+                      onClick={() => removeFilter(filter.type)}
+                      className="ml-1.5 inline-flex items-center justify-center w-3 h-3 rounded-full hover:bg-blue-200 transition-colors"
+                    >
+                      <X className="h-2 w-2" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+              <button
+                onClick={clearAllFilters}
+                title="Clear all filters (⌘R)"
+                className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+              >
+                <RotateCcw className="h-3 w-3 mr-1" />
+                Clear All
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Results Summary */}
+        <div className="px-4 py-3 bg-gray-50 rounded-b-lg border-t border-gray-200">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-600">
+              <span className="font-medium">{filteredResources.length}</span> resource{filteredResources.length !== 1 ? 's' : ''} found
+              {getActiveFilterCount() > 0 && (
+                <span className="text-xs text-gray-500 ml-2">
+                  (filtered from {resources.length} total)
+                </span>
+              )}
+            </span>
           </div>
         </div>
       </div>
@@ -476,12 +614,15 @@ const ResourceManagement = ({
                       }, {})
                     ).map(([type, count]) => {
                       const typeInfo = resourceTypes[type];
+                      const IconComponent = typeInfo.icon;
                       return (
                         <span
                           key={type}
-                          className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${typeInfo.bg} ${typeInfo.color}`}
+                          className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${typeInfo.bg} ${typeInfo.color}`}
+                          title={`${count} ${typeInfo.label}${count !== 1 ? 's' : ''}`}
                         >
-                          {count} {typeInfo.label}
+                          <IconComponent className="h-3 w-3 mr-1" />
+                          {count}
                         </span>
                       );
                     })}
@@ -491,9 +632,7 @@ const ResourceManagement = ({
                 {isExpanded && (
                   <div className="border-t border-gray-200">
                     <div className="divide-y divide-gray-200">
-                      {sectionResources
-                        .sort((a, b) => a.order - b.order)
-                        .map((resource) => (
+                      {sectionResources.map((resource) => (
                           <div key={resource.id} className="p-4 hover:bg-gray-50">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center space-x-3 flex-1">
