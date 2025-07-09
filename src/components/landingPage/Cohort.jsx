@@ -1,6 +1,6 @@
 import React from "react";
 import { Lock, ArrowRight, Award, Users, Zap, TrendingUp } from "lucide-react";
-import { motion } from "framer-motion";
+import { MotionDiv, MotionSection, MotionH2, MotionP } from '../common/MotionWrapper';
 
 const LeagueCard = ({ 
   title, 
@@ -14,7 +14,7 @@ const LeagueCard = ({
   gradientTo = "#764ba2"
 }) => {
   return (
-    <motion.div 
+    <MotionDiv 
       className={`group relative rounded-2xl p-8 h-full ${
         isLocked 
           ? 'bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 shadow-md' 
@@ -61,7 +61,7 @@ const LeagueCard = ({
       )}
 
       {/* League Icon & Title */}
-      <motion.div 
+      <MotionDiv 
         className="flex items-center mb-6"
         initial={{ opacity: 0, x: -20 }}
         whileInView={{ opacity: 1, x: 0 }}
@@ -73,10 +73,10 @@ const LeagueCard = ({
         }`}>
           {title} League
         </h3>
-      </motion.div>
+      </MotionDiv>
 
       {/* League Description */}
-      <motion.p 
+      <MotionP 
         className={`mb-6 leading-relaxed ${
           isLocked ? 'text-gray-500' : 'text-gray-600'
         }`}
@@ -86,11 +86,11 @@ const LeagueCard = ({
         transition={{ duration: 0.5, delay: 0.3 }}
       >
         {description}
-      </motion.p>
+      </MotionP>
 
       {/* Prerequisites */}
       {prerequisite && (
-        <motion.div 
+        <MotionDiv 
           className={`mb-6 p-4 rounded-lg border-l-4 transition-all duration-300 ${
             isLocked 
               ? 'bg-gray-50 border-gray-300' 
@@ -114,11 +114,11 @@ const LeagueCard = ({
               </span>
             </span>
           </p>
-        </motion.div>
+        </MotionDiv>
       )}
 
       {/* Certification & Club Info */}
-      <motion.div 
+      <MotionDiv 
         className="space-y-3 mb-6"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -129,40 +129,40 @@ const LeagueCard = ({
           staggerChildren: 0.1
         }}
       >
-        <motion.div 
+        <MotionDiv 
           className="flex items-center text-sm group/cert"
           whileHover={{ x: 5 }}
           transition={{ duration: 0.2 }}
         >
-          <motion.div 
+          <MotionDiv 
             className="p-2 rounded-lg mr-3 transition-all duration-300"
             style={{ backgroundColor: `${accentColor}20` }}
             whileHover={{ scale: 1.1, rotate: 5 }}
           >
             <Award size={16} style={{ color: accentColor }} />
-          </motion.div>
+          </MotionDiv>
           <span className={`font-medium ${isLocked ? 'text-gray-500' : 'text-gray-700'}`}>
             {certification}
           </span>
-        </motion.div>
-        <motion.div 
+        </MotionDiv>
+        <MotionDiv 
           className="flex items-center text-sm group/club"
           whileHover={{ x: 5 }}
           transition={{ duration: 0.2 }}
         >
-          <motion.div 
+          <MotionDiv 
             className="p-2 rounded-lg mr-3 transition-all duration-300"
             style={{ backgroundColor: `${accentColor}20` }}
             whileHover={{ scale: 1.1, rotate: 5 }}
           >
             <Users size={16} style={{ color: accentColor }} />
-          </motion.div>
+          </MotionDiv>
           <span className={isLocked ? 'text-gray-500' : 'text-gray-600'}>
             Powered by: <span className="font-medium">{poweredBy}</span>
           </span>
-        </motion.div>
-      </motion.div>      
-    </motion.div>
+        </MotionDiv>
+      </MotionDiv>      
+    </MotionDiv>
   );
 };
 
@@ -191,7 +191,7 @@ const Cohort = () => {
   };
 
   return (
-    <motion.section 
+    <MotionSection 
       id="cohort" 
       className="py-20 pb-24 bg-gradient-to-br from-slate-50 via-white to-blue-50 relative overflow-hidden"
       initial="hidden"
@@ -201,32 +201,32 @@ const Cohort = () => {
     >
       <div className="container mx-auto px-6 relative z-10">
         {/* Header Section */}
-        <motion.div 
+        <MotionDiv 
           className="text-center mb-20 max-w-4xl mx-auto"
           variants={itemVariants}
         >
-          <motion.h2 
+          <MotionH2 
             className="text-5xl font-bold mb-6 bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 bg-clip-text text-transparent"
             variants={itemVariants}
           >
             Cohort 1.0 – Leagues
-          </motion.h2>
+          </MotionH2>
           
-          <motion.p 
+          <MotionP 
             className="text-xl text-gray-600 mb-8 leading-relaxed"
             variants={itemVariants}
           >
             Gamify your learning journey by exploring our skill-focused leagues in this cohort.
-          </motion.p>
-        </motion.div>
+          </MotionP>
+        </MotionDiv>
 
         {/* Leagues Display with Enhanced Connection */}
-        <motion.div 
+        <MotionDiv 
           className="relative max-w-6xl mx-auto"
           variants={itemVariants}
         >
           {/* Enhanced Connection Flow */}
-          <motion.div 
+          <MotionDiv 
             className="hidden lg:block absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-12"
             initial={{ opacity: 0, scale: 0 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -236,17 +236,17 @@ const Cohort = () => {
             <div className="flex items-center">
               {/* Progress Line */}
               <div className="w-32 h-1 bg-gradient-to-r from-green-400 via-yellow-400 to-gray-300 rounded-full relative overflow-hidden">
-                <motion.div 
+                <MotionDiv 
                   className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-50"
                   animate={{ x: ["-100%", "100%"] }}
                   transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                 />
               </div>
             </div>
-          </motion.div>
+          </MotionDiv>
 
           {/* Leagues Grid */}
-          <motion.div 
+          <MotionDiv 
             className="grid lg:grid-cols-2 gap-12 lg:gap-20"
             variants={{
               hidden: {},
@@ -258,7 +258,7 @@ const Cohort = () => {
             }}
           >
             {/* ML League */}
-            <motion.div
+            <MotionDiv
               variants={{
                 hidden: { opacity: 0, x: -50 },
                 visible: { opacity: 1, x: 0 }
@@ -274,10 +274,10 @@ const Cohort = () => {
                 gradientFrom="#3B82F6"
                 gradientTo="#1D4ED8"
               />
-            </motion.div>
+            </MotionDiv>
 
             {/* Finance League */}
-            <motion.div
+            <MotionDiv
               variants={{
                 hidden: { opacity: 0, x: 50 },
                 visible: { opacity: 1, x: 0 }
@@ -294,34 +294,34 @@ const Cohort = () => {
                 gradientFrom="#059669"
                 gradientTo="#047857"
               />
-            </motion.div>
-          </motion.div>
+            </MotionDiv>
+          </MotionDiv>
 
           {/* Enhanced Specialisation Tags */}
-          <motion.div 
+          <MotionDiv 
             className="hidden lg:block absolute -bottom-8 right-8 transform"
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.8 }}
           >
-            <motion.div 
+            <MotionDiv 
               className="bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 px-6 py-3 rounded-2xl text-sm font-bold inline-flex items-center shadow-lg"
               animate={{ scale: [1, 1.05, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
             >
               <Award size={18} className="mr-2" />
               <span>Specialisation Unlocks Here</span>
-              <motion.div 
+              <MotionDiv 
                 className="ml-2 w-2 h-2 bg-white rounded-full"
                 animate={{ scale: [1, 1.5, 1], opacity: [1, 0.5, 1] }}
                 transition={{ duration: 1, repeat: Infinity }}
               />
-            </motion.div>
-          </motion.div>
+            </MotionDiv>
+          </MotionDiv>
           
           {/* Mobile Specialisation Tag */}
-          <motion.div 
+          <MotionDiv 
             className="lg:hidden text-center mt-8"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -332,10 +332,10 @@ const Cohort = () => {
               <Award size={18} className="mr-2" />
               <span>Specialisation Unlocks Here</span>
             </div>
-          </motion.div>
-        </motion.div>
+          </MotionDiv>
+        </MotionDiv>
       </div>
-    </motion.section>
+    </MotionSection>
   );
 };
 

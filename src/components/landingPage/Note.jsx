@@ -10,7 +10,8 @@ import {
   SiPrisma, 
   SiDocker 
 } from 'react-icons/si';
-import { motion } from 'framer-motion';
+import { MotionDiv, MotionA, MotionSection, MotionP } from '../common/MotionWrapper';
+
 
 const Note = () => {
   // Animation variants
@@ -71,7 +72,7 @@ const Note = () => {
   ];
 
   return (
-    <motion.section 
+    <MotionSection 
       className="py-16 border-t border-gray-200"
       variants={sectionVariant}
       initial="hidden"
@@ -81,20 +82,20 @@ const Note = () => {
       <div className="container mx-auto px-4 max-w-4xl">
         
         {/* Made with love - Centered and minimal */}
-        <motion.div className="text-center mb-12" variants={itemVariant}>
-          <motion.p className="text-gray-600 mb-8" variants={itemVariant}>
+        <MotionDiv className="text-center mb-12" variants={itemVariant}>
+          <MotionP className="text-gray-600 mb-8" variants={itemVariant}>
             Made with <span className="text-red-500">❤️</span> by OpenLearn Tech Team
-          </motion.p>
+          </MotionP>
           
           {/* Technology Stack - Minimal horizontal list */}
-          <motion.div 
+          <MotionDiv 
             className="flex flex-wrap justify-center gap-6 mb-8"
             variants={itemVariant}
           >
             {techStack.map((tech, index) => {
               const IconComponent = tech.icon;
               return (
-                <motion.div 
+                <MotionDiv 
                   key={index}
                   className="flex items-center gap-2 text-sm text-gray-600 hover:text-black transition-colors duration-200"
                   title={tech.name}
@@ -104,18 +105,18 @@ const Note = () => {
                 >
                   <IconComponent className="text-lg" />
                   <span>{tech.name}</span>
-                </motion.div>
+                </MotionDiv>
               );
             })}
-          </motion.div>
+          </MotionDiv>
 
           {/* Developers - Simple horizontal layout */}
-          <motion.div 
+          <MotionDiv 
             className="flex justify-center gap-8 mb-8"
             variants={itemVariant}
           >
             {developers.map((dev, index) => (
-              <motion.div 
+              <MotionDiv 
                 key={index} 
                 className="text-center"
                 variants={techVariant}
@@ -123,7 +124,7 @@ const Note = () => {
               >
                 <p className="text-sm font-medium text-gray-800 mb-2">{dev.name}</p>
                 <div className="flex justify-center gap-3">
-                  <motion.a 
+                  <MotionA 
                     href={dev.linkedin} 
                     target="_blank" 
                     rel="noopener noreferrer" 
@@ -133,8 +134,8 @@ const Note = () => {
                     whileTap={{ scale: 0.9 }}
                   >
                     <Linkedin size={18} />
-                  </motion.a>
-                  <motion.a 
+                  </MotionA>
+                  <MotionA 
                     href={dev.github} 
                     target="_blank" 
                     rel="noopener noreferrer"
@@ -144,18 +145,18 @@ const Note = () => {
                     whileTap={{ scale: 0.9 }}
                   >
                     <Github size={18} />
-                  </motion.a>
+                  </MotionA>
                 </div>
-              </motion.div>
+              </MotionDiv>
             ))}
-          </motion.div>
+          </MotionDiv>
 
           {/* Action buttons - Minimal and balanced */}
-          <motion.div 
+          <MotionDiv 
             className="flex justify-center gap-4"
             variants={itemVariant}
           >
-            <motion.a 
+            <MotionA 
               href={`${import.meta.env.VITE_API_BASE_URL}/status-page`}
               target="_blank"
               rel="noopener noreferrer"
@@ -166,9 +167,9 @@ const Note = () => {
               <Server size={16} />
               <span>Server Status</span>
               <ExternalLink size={14} />
-            </motion.a>
+            </MotionA>
             
-            <motion.a 
+            <MotionA 
               href="https://github.com/openlearnnitj/" 
               target="_blank" 
               rel="noopener noreferrer" 
@@ -179,11 +180,11 @@ const Note = () => {
               <Code size={16} />
               <span>Open Source</span>
               <ExternalLink size={14} />
-            </motion.a>
-          </motion.div>
-        </motion.div>
+            </MotionA>
+          </MotionDiv>
+        </MotionDiv>
       </div>
-    </motion.section>
+    </MotionSection>
   );
 };
 

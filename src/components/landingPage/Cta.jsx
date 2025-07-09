@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowRight, MessageSquare } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { MotionDiv, MotionSection, MotionH2, MotionA, MotionP } from '../common/MotionWrapper';
 
 const Cta = () => {
   // URL for the WhatsApp community - replace with actual URL
@@ -30,7 +30,7 @@ const Cta = () => {
   };
 
   return (
-    <motion.section 
+    <MotionSection 
       id="join-cohort" 
       className="py-20 relative overflow-hidden"
       initial="hidden"
@@ -60,7 +60,7 @@ const Cta = () => {
       <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-yellow-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
       
       <div className="container mx-auto px-4 relative z-10">
-        <motion.div 
+        <MotionDiv 
           className="max-w-6xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden"
           variants={itemVariants}
         >
@@ -68,27 +68,27 @@ const Cta = () => {
           
             {/* Left content area with text and buttons */}
             <div className="w-full md:w-7/12 p-8 md:p-12 lg:p-16 flex flex-col justify-center">
-              <motion.h2 
+              <MotionH2 
                 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-gray-900 leading-tight"
                 variants={itemVariants}
               >
                 Ready to Learn, Compete, and Grow?
-              </motion.h2>
+              </MotionH2>
               
-              <motion.p 
+              <MotionP 
                 className="text-lg md:text-xl text-gray-700 mb-8 max-w-lg"
                 variants={itemVariants}
               >
                 Become a Pioneer in Cohort 1.0. Join the leagues, earn certifications, 
                 and build your domain expertise with NITJ's smartest community.
-              </motion.p>
+              </MotionP>
               
-              <motion.div 
+              <MotionDiv 
                 className="flex flex-col sm:flex-row gap-4 mb-8"
                 variants={itemVariants}
               >
                 {/* Primary CTA Button */}
-                <motion.a 
+                <MotionA 
                   href="/signin"
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }} 
@@ -96,10 +96,10 @@ const Cta = () => {
                 >
                   Join Cohort 1.0
                   <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform duration-300" size={20} />
-                </motion.a>
+                </MotionA>
                 
                 {/* Secondary CTA Button */}
-                <motion.a 
+                <MotionA 
                   href={whatsappUrl} 
                   target="_blank" 
                   rel="noopener noreferrer" 
@@ -109,8 +109,8 @@ const Cta = () => {
                 >
                   <MessageSquare className="mr-2" size={20} />
                   Join Community
-                </motion.a>
-              </motion.div>
+                </MotionA>
+              </MotionDiv>
               
               <p className="text-sm text-gray-500 italic">
                 Stay updated, connected, and inspired.
@@ -149,9 +149,9 @@ const Cta = () => {
             </div>
           
           </div>
-        </motion.div>
+        </MotionDiv>
       </div>
-    </motion.section>
+    </MotionSection>
   );
 };
 

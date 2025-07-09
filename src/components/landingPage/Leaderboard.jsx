@@ -3,7 +3,7 @@ import { Trophy, Medal, Star, Lock, TrendingUp, Users, Sparkles } from 'lucide-r
 import { useAuth } from '../../hooks/useAuth';
 import DataService from '../../utils/dataService';
 import { getUserAvatarUrl } from '../../utils/avatarService.jsx';
-import { motion } from 'framer-motion';
+import { MotionDiv, MotionA, MotionSection, MotionH2, MotionTr, MotionP } from '../common/MotionWrapper';
 
 const Leaderboard = () => {
   const { isAuthenticated } = useAuth();
@@ -109,7 +109,7 @@ const Leaderboard = () => {
 
   if (!isAuthenticated()) {
     return (
-      <motion.section 
+      <MotionSection 
         className="py-16 bg-gradient-to-br from-gray-50 to-gray-100" 
         style={{ backgroundColor: '#F9FAFB' }}
         initial={{ opacity: 0 }}
@@ -119,22 +119,22 @@ const Leaderboard = () => {
       >
         <div className="container max-w-4xl mx-auto px-4">
           <div className="text-center">
-            <motion.div 
+            <MotionDiv 
               className="bg-white rounded-2xl shadow-lg p-12 border border-gray-200"
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <motion.div
+              <MotionDiv
                 initial={{ scale: 0 }}
                 whileInView={{ scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.4, type: "spring" }}
               >
                 <Lock className="w-16 h-16 mx-auto mb-6 text-gray-400" />
-              </motion.div>
-              <motion.h2 
+              </MotionDiv>
+              <MotionH2 
                 className="text-3xl font-bold text-gray-900 mb-4"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -142,8 +142,8 @@ const Leaderboard = () => {
                 transition={{ duration: 0.5, delay: 0.6 }}
               >
                 Leaderboard Access Restricted
-              </motion.h2>
-              <motion.p 
+              </MotionH2>
+              <MotionP 
                 className="text-lg text-gray-600 mb-8"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -151,40 +151,40 @@ const Leaderboard = () => {
                 transition={{ duration: 0.5, delay: 0.8 }}
               >
                 Sign in to view the community leaderboard and see top performers based on tasks completed.
-              </motion.p>
-              <motion.div 
+              </MotionP>
+              <MotionDiv 
                 className="flex flex-col sm:flex-row gap-4 justify-center"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 1 }}
               >
-                <motion.a
+                <MotionA
                   href="/signin"
                   className="px-8 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors duration-200"
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
                 >
                   Sign In
-                </motion.a>
-                <motion.a
+                </MotionA>
+                <MotionA
                   href="/signup"
                   className="px-8 py-3 border-2 border-black text-black rounded-lg font-medium hover:bg-black hover:text-white transition-all duration-200"
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
                 >
                   Create Account
-                </motion.a>
-              </motion.div>
-            </motion.div>
+                </MotionA>
+              </MotionDiv>
+            </MotionDiv>
           </div>
         </div>
-      </motion.section>
+      </MotionSection>
     );
   }
 
   return (
-    <motion.section 
+    <MotionSection 
       className="py-16 bg-gradient-to-br from-yellow-50 to-orange-50" 
       style={{ backgroundColor: '#FFFBEB' }}
       initial={{ opacity: 0 }}
@@ -194,14 +194,14 @@ const Leaderboard = () => {
     >
       <div className="container max-w-6xl mx-auto px-4">
         {/* Header Section */}
-        <motion.div 
+        <MotionDiv 
           className="text-center mb-20 max-w-4xl mx-auto"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <motion.h2 
+          <MotionH2 
             className="text-5xl font-bold mb-6 bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 bg-clip-text text-transparent"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -209,8 +209,8 @@ const Leaderboard = () => {
             transition={{ duration: 0.6, delay: 0.4 }}
           >
              Top Performers
-          </motion.h2>
-          <motion.p 
+          </MotionH2>
+          <MotionP 
             className="text-xl text-gray-600 mb-8 leading-relaxed"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -218,24 +218,24 @@ const Leaderboard = () => {
             transition={{ duration: 0.6, delay: 0.6 }}
           >
           Celebrating our most dedicated learners - ranked by tasks completed.
-          </motion.p>
-        </motion.div>
+          </MotionP>
+        </MotionDiv>
 
         {loading ? (
-          <motion.div 
+          <MotionDiv 
             className="flex justify-center items-center py-16"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
           >
-            <motion.div 
+            <MotionDiv 
               className="rounded-full h-12 w-12 border-b-2 border-black"
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
             />
-          </motion.div>
+          </MotionDiv>
         ) : error ? (
-          <motion.div 
+          <MotionDiv 
             className="text-center py-16"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -248,32 +248,32 @@ const Leaderboard = () => {
               </h3>
               <p className="text-red-600">{error}</p>
             </div>
-          </motion.div>
+          </MotionDiv>
         ) : leaderboardData.length === 0 ? (
-          <motion.div 
+          <MotionDiv 
             className="text-center py-16"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <motion.div
+            <MotionDiv
               initial={{ scale: 0 }}
               whileInView={{ scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.2, type: "spring" }}
             >
               <Users className="w-16 h-16 mx-auto mb-6 text-gray-400" />
-            </motion.div>
+            </MotionDiv>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
               No Data Available
             </h3>
             <p className="text-gray-600">
               Leaderboard will populate as students complete tasks.
             </p>
-          </motion.div>
+          </MotionDiv>
         ) : (
-          <motion.div 
+          <MotionDiv 
             className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -323,7 +323,7 @@ const Leaderboard = () => {
                     const isTopThree = rank <= 3;
                     
                     return (
-                      <motion.tr 
+                      <MotionTr 
                         key={student.id}
                         className={`transition-colors duration-200 ${
                           isTopThree ? 'bg-gradient-to-r from-yellow-50 to-orange-50' : ''
@@ -444,7 +444,7 @@ const Leaderboard = () => {
                             <span className="text-sm text-gray-400">No recent activity</span>
                           )}
                         </td>
-                      </motion.tr>
+                      </MotionTr>
                     );
                   })}
                 </tbody>
@@ -458,10 +458,10 @@ const Leaderboard = () => {
                 <span>Rankings update in real-time</span>
               </div>
             </div>
-          </motion.div>
+          </MotionDiv>
         )}
       </div>
-    </motion.section>
+    </MotionSection>
   );
 };
 

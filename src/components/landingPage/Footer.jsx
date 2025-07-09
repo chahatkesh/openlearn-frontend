@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Linkedin, Instagram, MapPin } from 'lucide-react';
 import { RiTwitterXFill } from 'react-icons/ri';
-import { motion } from 'framer-motion';
+import { MotionDiv, MotionFooter, MotionA } from '../common/MotionWrapper';
 
 const Footer = () => {
   // Animation variants
@@ -35,7 +35,7 @@ const Footer = () => {
     }
   };
   return (
-    <motion.footer 
+    <MotionFooter 
       className="bg-black text-white py-14 relative overflow-hidden"
       variants={containerVariant}
       initial="hidden"
@@ -56,7 +56,7 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 relative">
         <div className="flex flex-col md:flex-row justify-between mb-10">
           {/* Logo Section - Enhanced */}
-          <motion.div className="mb-8 md:mb-0 md:w-5/12" variants={itemVariant}>
+          <MotionDiv className="mb-8 md:mb-0 md:w-5/12" variants={itemVariant}>
             <div className="flex items-center mb-4">
               <div className="mr-3">
                 <img 
@@ -89,57 +89,57 @@ const Footer = () => {
                 <span>NIT Jalandhar, Punjab, India</span>
               </div>
             </div>
-          </motion.div>
+          </MotionDiv>
 
           {/* Middle column for spacing on larger screens */}
           <div className="hidden md:block md:w-1/12"></div>
 
           {/* Community & Social */}
-          <motion.div className="md:w-6/12" variants={itemVariant}>
+          <MotionDiv className="md:w-6/12" variants={itemVariant}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
               {/* Community Column */}
-              <motion.div variants={itemVariant}>
+              <MotionDiv variants={itemVariant}>
                 <h3 className="text-lg font-semibold mb-6 text-white relative inline-block">
                   Community
                   <span className="absolute left-0 bottom-0 w-1/2 h-0.5 bg-[#FFDE59]"></span>
                 </h3>
                 <ul className="space-y-3">
                   <li>
-                    <motion.a 
+                    <MotionA 
                       href="#join-cohort" 
                       className="text-gray-400 hover:text-[#FFDE59] transition-colors text-sm"
                       whileHover={{ x: 2 }}
                     >
                       Join Cohort 1.0
-                    </motion.a>
+                    </MotionA>
                   </li>
                   <li>
-                    <motion.a 
+                    <MotionA 
                       href="#cohort" 
                       className="text-gray-400 hover:text-[#FFDE59] transition-colors text-sm"
                       whileHover={{ x: 2 }}
                     >
                       Explore Leagues
-                    </motion.a>
+                    </MotionA>
                   </li>
                   <li>
-                    <motion.div whileHover={{ x: 2 }}>
+                    <MotionDiv whileHover={{ x: 2 }}>
                       <Link to="/updates" className="text-gray-400 hover:text-[#FFDE59] transition-colors text-sm">
                         Platform Updates
                       </Link>
-                    </motion.div>
+                    </MotionDiv>
                   </li>
                 </ul>
-              </motion.div>
+              </MotionDiv>
               
               {/* Connect Column */}
-              <motion.div variants={itemVariant}>
+              <MotionDiv variants={itemVariant}>
                 <h3 className="text-lg font-semibold mb-6 text-white relative inline-block">
                   Connect
                   <span className="absolute left-0 bottom-0 w-1/2 h-0.5 bg-[#FFDE59]"></span>
                 </h3>
                 <div className="flex flex-wrap gap-3 mb-6">
-                  <motion.a 
+                  <MotionA 
                     href="https://www.linkedin.com/company/openlearn-nitj" 
                     target="_blank" 
                     rel="noopener noreferrer"
@@ -150,8 +150,8 @@ const Footer = () => {
                     whileTap={{ scale: 0.95 }}
                   >
                     <Linkedin size={16} />
-                  </motion.a>
-                  <motion.a 
+                  </MotionA>
+                  <MotionA 
                     href="https://x.com/OpenLearn_NITJ" 
                     target="_blank" 
                     rel="noopener noreferrer"
@@ -162,8 +162,8 @@ const Footer = () => {
                     whileTap={{ scale: 0.95 }}
                   >
                     <RiTwitterXFill size={16} />
-                  </motion.a>
-                  <motion.a 
+                  </MotionA>
+                  <MotionA 
                     href="https://www.instagram.com/openlearn.org.in" 
                     target="_blank" 
                     rel="noopener noreferrer"
@@ -174,15 +174,15 @@ const Footer = () => {
                     whileTap={{ scale: 0.95 }}
                   >
                     <Instagram size={16} />
-                  </motion.a>
+                  </MotionA>
                 </div>                
-              </motion.div>
+              </MotionDiv>
             </div>
-          </motion.div>
+          </MotionDiv>
         </div>
 
         {/* Copyright */}
-        <motion.div 
+        <MotionDiv 
           className="pt-6 border-t border-gray-800"
           variants={itemVariant}
         >
@@ -191,26 +191,26 @@ const Footer = () => {
               © {new Date().getFullYear()} OpenLearn | All rights reserved.
             </p>
             <div className="flex space-x-6">
-              <motion.div whileHover={{ y: -1 }}>
+              <MotionDiv whileHover={{ y: -1 }}>
                 <Link to="/privacy" className="text-xs text-gray-500 hover:text-[#FFDE59] transition-colors">
                   Privacy Policy
                 </Link>
-              </motion.div>
-              <motion.div whileHover={{ y: -1 }}>
+              </MotionDiv>
+              <MotionDiv whileHover={{ y: -1 }}>
                 <Link to="/terms" className="text-xs text-gray-500 hover:text-[#FFDE59] transition-colors">
                   Terms of Service
                 </Link>
-              </motion.div>
-              <motion.div whileHover={{ y: -1 }}>
+              </MotionDiv>
+              <MotionDiv whileHover={{ y: -1 }}>
                 <Link to="/updates" className="text-xs text-gray-500 hover:text-[#FFDE59] transition-colors">
                   Updates
                 </Link>
-              </motion.div>
+              </MotionDiv>
             </div>
           </div>
-        </motion.div>
+        </MotionDiv>
       </div>
-    </motion.footer>
+    </MotionFooter>
   );
 };
 

@@ -1,7 +1,7 @@
 import { ArrowRight, LayoutDashboard } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
-import { motion } from "framer-motion";
+import { MotionDiv, MotionSection, MotionButton, MotionH1, MotionH2, MotionLi, MotionUl, MotionSpan, MotionP } from '../common/MotionWrapper';
 
 const Hero = () => {
   const { isAuthenticated } = useAuth();
@@ -82,14 +82,14 @@ const Hero = () => {
   };
 
   return (
-    <motion.section 
-      className="relative min-h-[100vh] flex flex-col justify-center hero-pattern" 
-      style={{backgroundColor: '#FFDE59'}}
+    <MotionSection
+      className="relative min-h-[100vh] flex flex-col justify-center hero-pattern"
+      style={{ backgroundColor: '#FFDE59' }}
       initial="hidden"
       animate="visible"
       variants={containerVariants}
     >
-      <motion.div 
+      <MotionDiv
         className="absolute top-0 right-0 flex items-center py-4 px-6"
         variants={itemVariants}
       >
@@ -123,56 +123,56 @@ const Hero = () => {
             </Link>
           </>
         )}
-      </motion.div>
+      </MotionDiv>
       <div className="container max-w-[80vw] mx-auto px-4 py-16 pt-32 md:pt-20">
         <div className="flex flex-col lg:flex-row items-center">
-          <motion.div 
+          <MotionDiv 
             className="lg:w-1/2 lg:pr-12"
             variants={containerVariants}
           >
             <div>
-              <motion.div 
+              <MotionDiv 
                 className="flex flex-wrap gap-3 mb-4"
                 variants={itemVariants}
               >
-                <motion.span 
+                <MotionSpan 
                   className="bg-black text-white px-4 py-1 rounded-full text-sm font-medium"
                   variants={badgeVariants}
                   whileHover={{ scale: 1.05 }}
                 >
                   Starting June 15th, 2025
-                </motion.span>
-                <motion.span 
+                </MotionSpan>
+                <MotionSpan 
                   className="bg-gradient-to-r from-orange-600 to-amber-600 text-white px-4 py-1 rounded-full text-sm font-medium animate-pulse"
                   variants={badgeVariants}
                   whileHover={{ scale: 1.05 }}
                 >
                   Upcoming: Biggest AI+Finance Hackathon - September 2025
-                </motion.span>
-              </motion.div>
-              <motion.h1 
+                </MotionSpan>
+              </MotionDiv>
+              <MotionH1 
                 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight" 
                 style={{color: '#000000'}}
                 variants={itemVariants}
               >
                 1st MLxFinance Cohort
-              </motion.h1>
-              <motion.p 
-                className="text-lg md:text-xl mb-8 max-w-lg" 
-                style={{color: '#374151'}}
+              </MotionH1>
+              <MotionP
+                className="text-lg md:text-xl mb-8 max-w-lg"
+                style={{ color: '#374151' }}
                 variants={itemVariants}
               >
                 Join the OpenLearn Community's inaugural cohort where Machine
                 Learning meets Finance. Gain valuable skills and connect with
                 fellow enthusiasts in this immersive learning experience.
-              </motion.p>
-              <motion.div 
+              </MotionP>
+              <MotionDiv
                 className="flex flex-col sm:flex-row gap-4"
                 variants={itemVariants}
               >
-                <motion.button
+                <MotionButton
                   className="px-6 py-3 text-lg text-white transition-all duration-200 rounded-md font-medium cursor-pointer"
-                  style={{backgroundColor: '#000000'}}
+                  style={{ backgroundColor: '#000000' }}
                   onMouseEnter={(e) => e.target.style.backgroundColor = '#1F2937'}
                   onMouseLeave={(e) => e.target.style.backgroundColor = '#000000'}
                   onClick={() =>
@@ -186,10 +186,10 @@ const Hero = () => {
                 >
                   Join Cohort 1.0{" "}
                   <ArrowRight size={18} className="ml-2 animate-pulse inline" />
-                </motion.button>
-                <motion.button
+                </MotionButton>
+                <MotionButton
                   className="px-6 py-3 text-lg border-2 transition-all duration-200 rounded-md font-medium cursor-pointer"
-                  style={{borderColor: '#000000', color: '#000000'}}
+                  style={{ borderColor: '#000000', color: '#000000' }}
                   onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(0, 0, 0, 0.05)'}
                   onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
                   onClick={() =>
@@ -202,22 +202,22 @@ const Hero = () => {
                   whileTap="tap"
                 >
                   Learn More
-                </motion.button>
-              </motion.div>
+                </MotionButton>
+              </MotionDiv>
             </div>
-          </motion.div>
-          <motion.div 
+          </MotionDiv>
+          <MotionDiv 
             className="lg:w-1/2 mt-12 lg:mt-0 flex justify-center lg:justify-end"
             variants={cardVariants}
           >
             <div className="relative">
-              <motion.div 
+              <MotionDiv 
                 className="absolute -top-4 -left-4 w-full h-full border-2 border-black rounded-lg"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, delay: 0.6 }}
               />
-              <motion.div 
+              <MotionDiv 
                 className="bg-white p-6 rounded-lg shadow-lg border border-gray-200 relative"
                 whileHover={{ 
                   y: -5,
@@ -225,7 +225,7 @@ const Hero = () => {
                 }}
                 transition={{ duration: 0.3 }}
               >
-                <motion.h2 
+                <MotionH2 
                   className="font-bold text-xl mb-4 flex items-center"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -248,8 +248,8 @@ const Hero = () => {
                     </svg>
                   </span>
                   Program Highlights
-                </motion.h2>
-                <motion.ul 
+                </MotionH2>
+                <MotionUl 
                   className="space-y-4"
                   initial="hidden"
                   animate="visible"
@@ -270,7 +270,7 @@ const Hero = () => {
                     "Certificate upon successful completion",
                     "1:1 mentorship sessions",
                   ].map((item, index) => (
-                    <motion.li 
+                    <MotionLi 
                       key={index} 
                       className="flex items-start group"
                       variants={{
@@ -285,7 +285,7 @@ const Hero = () => {
                         }
                       }}
                     >
-                      <motion.div 
+                      <MotionDiv 
                         className="p-1 rounded-full mr-3 mt-1 transition-all duration-300"
                         style={{backgroundColor: '#FFDE59'}}
                         whileHover={{ scale: 1.1, rotate: 5 }}
@@ -304,22 +304,22 @@ const Hero = () => {
                             strokeLinejoin="round"
                           />
                         </svg>
-                      </motion.div>
-                      <motion.span 
+                      </MotionDiv>
+                      <MotionSpan 
                         className="group-hover:translate-x-1 transition-transform duration-200"
                         whileHover={{ x: 4 }}
                       >
                         {item}
-                      </motion.span>
-                    </motion.li>
+                      </MotionSpan>
+                    </MotionLi>
                   ))}
-                </motion.ul>
-              </motion.div>
+                </MotionUl>
+              </MotionDiv>
             </div>
-          </motion.div>
+          </MotionDiv>
         </div>
       </div>
-    </motion.section>
+    </MotionSection>
   );
 };
 

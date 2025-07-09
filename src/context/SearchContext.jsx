@@ -1,17 +1,7 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { useState } from 'react';
+import { SearchContext } from '../hooks/useSearch';
 
-// Create Search Context
-const SearchContext = createContext();
-
-export const useSearch = () => {
-  const context = useContext(SearchContext);
-  if (!context) {
-    throw new Error('useSearch must be used within a SearchProvider');
-  }
-  return context;
-};
-
-export const SearchProvider = ({ children }) => {
+const SearchProvider = ({ children }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearchActive, setIsSearchActive] = useState(false);
 
@@ -39,4 +29,5 @@ export const SearchProvider = ({ children }) => {
   );
 };
 
-export default SearchContext;
+export { SearchProvider };
+export default SearchProvider;

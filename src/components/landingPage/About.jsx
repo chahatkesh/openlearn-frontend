@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { ExternalLink, Info, Users, Award, BookOpen } from 'lucide-react';
-import { motion } from 'framer-motion';
+import {Info} from 'lucide-react';
+import { MotionDiv, MotionSection, MotionH2, MotionP } from '../common/MotionWrapper';
 
 // CSS animation keyframes
 const animationKeyframes = `
@@ -63,7 +63,7 @@ const SupporterCard = ({ name, logo, supportType, description = "#" }) => {
   const [isHovered, setIsHovered] = useState(false);
   
   return (
-    <motion.div 
+    <MotionDiv 
       className="bg-white rounded-xl overflow-hidden hover:shadow-sm transition-all duration-500 group"
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -150,7 +150,7 @@ const SupporterCard = ({ name, logo, supportType, description = "#" }) => {
           {description}
         </p>
       </div>
-    </motion.div>
+    </MotionDiv>
   );
 };
 
@@ -195,7 +195,7 @@ const About = () => {
   ];
   
   return (
-    <motion.section 
+    <MotionSection 
       id="about" 
       className="py-24 relative overflow-hidden bg-white"
       initial={{ opacity: 0 }}
@@ -229,14 +229,14 @@ const About = () => {
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Part 1: About OpenLearn - Enhanced with animations */}
-        <motion.div 
+        <MotionDiv 
           className="text-center mb-20 max-w-4xl mx-auto"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <motion.h2 
+          <MotionH2 
             className="text-5xl font-bold mb-6 bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 bg-clip-text text-transparent"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -244,9 +244,9 @@ const About = () => {
             transition={{ duration: 0.6, delay: 0.4 }}
           >
             About OpenLearn
-          </motion.h2>
+          </MotionH2>
           
-          <motion.p 
+          <MotionP 
             className="text-xl text-gray-600 mb-8 leading-relaxed"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -254,8 +254,8 @@ const About = () => {
             transition={{ duration: 0.6, delay: 0.6 }}
           >
           OpenLearn is a student-led, cohort-based learning community at NIT Jalandhar.
-          </motion.p>
-        </motion.div>
+          </MotionP>
+        </MotionDiv>
 
         {/* Part 2: Recognised & Supported By - with enhanced card hover effects */}
         <div className="mb-16 relative">
@@ -300,7 +300,7 @@ const About = () => {
       <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-[#FFDE59] rounded-full opacity-5 blur-3xl"></div>
       <div className="absolute top-1/4 -right-32 w-80 h-80 bg-[#FFDE59] rounded-full opacity-5 blur-3xl"></div>
       <div className="absolute bottom-1/4 left-1/3 w-40 h-40 bg-[#FFDE59] rounded-full opacity-5 blur-2xl"></div>
-    </motion.section>
+    </MotionSection>
   );
 };
 
