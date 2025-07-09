@@ -55,11 +55,11 @@ jobs:
             dependency-tree.txt
           retention-days: 7
           
-  # Optional: SonarCloud integration (requires setup)
+  # SonarCloud integration (disabled by default)
   sonarcloud:
     name: SonarCloud Analysis
     runs-on: ubuntu-latest
-    if: false # Set to true when SonarCloud is configured
+    if: false # Set to true when SonarCloud is configured and SONAR_TOKEN secret is added
     
     steps:
       - name: Checkout code
