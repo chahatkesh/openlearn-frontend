@@ -54,21 +54,3 @@ jobs:
             depcheck-report.json
             dependency-tree.txt
           retention-days: 7
-          
-  # SonarCloud integration (disabled by default)
-  sonarcloud:
-    name: SonarCloud Analysis
-    runs-on: ubuntu-latest
-    if: true
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
