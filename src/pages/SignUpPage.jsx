@@ -108,6 +108,9 @@ const SignUpPage = () => {
           <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
             Password
           </label>
+          <p className="text-xs text-gray-500 mb-2">
+            Must be at least 8 characters long
+          </p>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Lock size={18} className="text-gray-400" />
@@ -122,7 +125,7 @@ const SignUpPage = () => {
               onChange={(e) => setPassword(e.target.value)}
               className="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none"
               placeholder="••••••••"
-              minLength="6"
+              minLength="8"
             />
             <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
               <button
@@ -138,7 +141,7 @@ const SignUpPage = () => {
               </button>
             </div>
           </div>
-          <p className="text-xs text-gray-500 mt-1">Must be at least 6 characters</p>
+          <p className="text-xs text-gray-500 mt-1">Must be at least 8 characters</p>
         </div>
 
         <div className="mt-1">
