@@ -6,6 +6,11 @@ on:
   pull_request:
     types: [opened, ready_for_review, labeled]
 
+permissions:
+  issues: write
+  pull-requests: write
+  contents: read
+
 jobs:
   welcome:
     name: Welcome New Contributors

@@ -1,32 +1,45 @@
 # Labeler configuration for automatic PR labeling
 
 # Frontend changes
-"frontend":
-  - src/**
-  - public/**
+frontend:
+  - changed-files:
+    - any-glob-to-any-file: 'src/**'
+  - changed-files:
+    - any-glob-to-any-file: 'public/**'
 
 # Documentation
-"documentation":
-  - "**/*.md"
-  - docs/**
+documentation:
+  - changed-files:
+    - any-glob-to-any-file: '**/*.md'
+  - changed-files:
+    - any-glob-to-any-file: 'docs/**'
 
 # CI/CD
 "ci/cd":
-  - .github/workflows/**
-  - .github/**
+  - changed-files:
+    - any-glob-to-any-file: '.github/workflows/**'
+  - changed-files:
+    - any-glob-to-any-file: '.github/**'
 
 # Dependencies
-"dependencies":
-  - package.json
-  - package-lock.json
+dependencies:
+  - changed-files:
+    - any-glob-to-any-file: 'package.json'
+  - changed-files:
+    - any-glob-to-any-file: 'package-lock.json'
 
 # Configuration
-"config":
-  - "*.config.js"
-  - "*.json"
-  - vercel.json
+config:
+  - changed-files:
+    - any-glob-to-any-file: '*.config.js'
+  - changed-files:
+    - any-glob-to-any-file: '*.json'
+  - changed-files:
+    - any-glob-to-any-file: 'vercel.json'
 
 # Styling
-"styling":
-  - "**/*.css"
-  - "**/*.scss"
+styling:
+  - changed-files:
+    - any-glob-to-any-file: '**/*.css'
+  - changed-files:
+    - any-glob-to-any-file: '**/*.scss'
