@@ -34,6 +34,14 @@ const Footer = () => {
       transition: { duration: 0.3 }
     }
   };
+
+  // Scroll to top function
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
   return (
     <MotionFooter 
       className="bg-black text-white py-14 relative overflow-hidden"
@@ -59,15 +67,21 @@ const Footer = () => {
           <MotionDiv className="mb-8 md:mb-0 md:w-5/12" variants={itemVariant}>
             <div className="flex items-center mb-4">
               <div className="mr-3">
-                <img 
-                  src="/logo.jpg" 
-                  alt="OpenLearn Logo" 
-                  className="h-12 w-auto"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIGZpbGw9IiNGRkRFNTkiIC8+PHRleHQgeD0iMTAiIHk9IjI0IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSJibGFjayI+T0w8L3RleHQ+PC9zdmc+";
-                  }}
-                />
+                <button 
+                  onClick={scrollToTop}
+                  className="block hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-[#FFDE59] focus:ring-opacity-50 rounded"
+                  aria-label="Scroll to top"
+                >
+                  <img 
+                    src="/logo.jpg" 
+                    alt="OpenLearn Logo" 
+                    className="h-12 w-auto cursor-pointer"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIGZpbGw9IiNGRkRFNTkiIC8+PHRleHQgeD0iMTAiIHk9IjI0IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSJibGFjayI+T0w8L3RleHQ+PC9zdmc+";
+                    }}
+                  />
+                </button>
               </div>
               <div>
                 <Link to="/" className="text-white font-bold text-2xl hover:text-[#FFDE59] transition-colors">
