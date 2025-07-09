@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Discussions
+    url: https://github.com/chahatkesh/openlearn-frontend/discussions
+    about: Use GitHub Discussions for questions and community chat

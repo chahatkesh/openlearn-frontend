@@ -1,0 +1,32 @@
+# Labeler configuration for automatic PR labeling
+
+# Frontend changes
+"frontend":
+  - src/**
+  - public/**
+
+# Documentation
+"documentation":
+  - "**/*.md"
+  - docs/**
+
+# CI/CD
+"ci/cd":
+  - .github/workflows/**
+  - .github/**
+
+# Dependencies
+"dependencies":
+  - package.json
+  - package-lock.json
+
+# Configuration
+"config":
+  - "*.config.js"
+  - "*.json"
+  - vercel.json
+
+# Styling
+"styling":
+  - "**/*.css"
+  - "**/*.scss"

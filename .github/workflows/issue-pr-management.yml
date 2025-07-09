@@ -1,0 +1,135 @@
+name: Issue and PR Management
+
+on:
+  issues:
+    types: [opened, labeled]
+  pull_request:
+    types: [opened, ready_for_review, labeled]
+
+jobs:
+  welcome:
+    name: Welcome New Contributors
+    runs-on: ubuntu-latest
+    if: github.event.action == 'opened'
+    
+    steps:
+      - name: Welcome new issue
+        if: github.event_name == 'issues'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `👋 Thanks for opening this issue! 
+              
+              A team member will review it soon. Please make sure you've provided:
+              - [ ] Clear description of the issue
+              - [ ] Steps to reproduce (if applicable)
+              - [ ] Expected vs actual behavior
+              - [ ] Screenshots or logs (if helpful)
+              
+              For questions about the project, check out our [documentation](./docs/).`
+            })
+            
+      - name: Welcome new PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `🎉 Thanks for your contribution!
+              
+              Your PR will be reviewed by a maintainer. Please ensure:
+              - [ ] Code follows our style guidelines
+              - [ ] Tests pass (if applicable)
+              - [ ] Documentation is updated (if needed)
+              - [ ] Changes are described in the PR description
+              
+              The CI/CD pipeline will run automatically to verify your changes.`
+            })
+
+  auto-label:
+    name: Auto Label Issues and PRs
+    runs-on: ubuntu-latest
+    if: github.event.action == 'opened'
+    
+    steps:
+      - name: Label by file changes
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            });
+            
+            const labels = [];
+            
+            // Check for specific file patterns
+            for (const file of files) {
+              if (file.filename.includes('README') || file.filename.includes('docs/')) {
+                labels.push('documentation');
+              }
+              if (file.filename.includes('.github/workflows/')) {
+                labels.push('ci/cd');
+              }
+              if (file.filename.includes('package.json')) {
+                labels.push('dependencies');
+              }
+              if (file.filename.startsWith('src/components/')) {
+                labels.push('frontend');
+              }
+              if (file.filename.includes('test') || file.filename.includes('spec')) {
+                labels.push('testing');
+              }
+            }
+            
+            if (labels.length > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: [...new Set(labels)] // Remove duplicates
+              });
+            }
+
+  size-label:
+    name: Add Size Label to PR
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'opened'
+    
+    steps:
+      - name: Add size label
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            });
+            
+            const additions = pr.additions;
+            const deletions = pr.deletions;
+            const total = additions + deletions;
+            
+            let sizeLabel;
+            if (total < 10) sizeLabel = 'size/XS';
+            else if (total < 30) sizeLabel = 'size/S';
+            else if (total < 100) sizeLabel = 'size/M';
+            else if (total < 500) sizeLabel = 'size/L';
+            else sizeLabel = 'size/XL';
+            
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: [sizeLabel]
+            });

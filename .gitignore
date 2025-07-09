@@ -23,3 +23,15 @@ dist-ssr
 *.sln
 *.sw?
 .env
+
+# CI/CD and analysis reports
+eslint-report.json
+depcheck-report.json
+dependency-tree.txt
+coverage/
+.nyc_output/
+lighthouse-report.html
+.lighthouseci/
+
+# Vercel
+.vercel
