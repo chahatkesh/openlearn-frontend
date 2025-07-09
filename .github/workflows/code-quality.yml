@@ -59,7 +59,7 @@ jobs:
   sonarcloud:
     name: SonarCloud Analysis
     runs-on: ubuntu-latest
-    if: false # Set to true when SonarCloud is configured and SONAR_TOKEN secret is added
+    if: true
     
     steps:
       - name: Checkout code
