@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Linkedin, Instagram, MapPin } from 'lucide-react';
-import { RiTwitterXFill } from 'react-icons/ri';
+import { RiTwitterXFill, RiMailFill } from 'react-icons/ri';
 import { MotionDiv, MotionFooter, MotionA } from '../common/MotionWrapper';
 
 const Footer = () => {
@@ -102,6 +102,10 @@ const Footer = () => {
                 <MapPin size={14} className="mr-2 text-[#FFDE59]" />
                 <span>NIT Jalandhar, Punjab, India</span>
               </div>
+              <div className="flex items-center text-sm text-gray-400">
+                <span className="mr-2 font-semibold text-[#FFDE59]">Email:</span>
+                <a href="mailto:info@openlearn.org.in" className="text-[#FFDE59]">info@openlearn.org.in</a>
+              </div>
             </div>
           </MotionDiv>
 
@@ -169,7 +173,7 @@ const Footer = () => {
                     href="https://x.com/OpenLearn_NITJ" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="w-9 h-9 rounded-full bg-gray-800 flex items-center justify-center hover:bg-black transition-colors"
+                    className="w-9 h-9 rounded-full bg-gray-800 flex items-center justify-center hover:bg-gray-600 transition-colors"
                     aria-label="X (formerly Twitter)"
                     variants={socialVariant}
                     whileHover={{ scale: 1.1, y: -2 }}
@@ -188,6 +192,16 @@ const Footer = () => {
                     whileTap={{ scale: 0.95 }}
                   >
                     <Instagram size={16} />
+                  </MotionA>
+                  <MotionA 
+                    href="mailto:info@openlearn.org.in" 
+                    className="w-9 h-9 rounded-full bg-gray-800 flex items-center justify-center hover:bg-[#ffde59] transition-colors"
+                    aria-label="Email"
+                    variants={socialVariant}
+                    whileHover={{ scale: 1.1, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <RiMailFill size={16} />
                   </MotionA>
                 </div>                
               </MotionDiv>
