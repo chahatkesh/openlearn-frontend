@@ -277,7 +277,7 @@ const BadgesModal = ({ isOpen, onClose, user, userBadges }) => {
   );
 };
 
-const UserProfileSection = ({ user, dashboardData = null }) => {
+const UserProfileSection = ({ user, dashboardData = null, isMobile = false }) => {
   const { refreshUser } = useAuth();
   const [userStats, setUserStats] = useState({
     badgesCount: 0,
@@ -424,16 +424,16 @@ const UserProfileSection = ({ user, dashboardData = null }) => {
   return (
     <div className="bg-transparent">
       {/* Main Content */}
-      <div className="p-6 space-y-6">
+      <div className={`${isMobile ? 'p-4 space-y-4' : 'p-6 space-y-6'}`}>
         
         {/* Profile Header */}
         <div className="relative text-center">
           {/* Avatar with enhanced design */}
-          <div className="relative mx-auto w-20 h-20 mb-4">
+          <div className={`relative mx-auto ${isMobile ? 'w-16 h-16 mb-3' : 'w-20 h-20 mb-4'}`}>
             <div className={`w-full h-full rounded-full bg-gradient-to-r ${roleInfo.gradient} p-0.5 shadow-lg`}>
               <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden">
                 <img
-                  src={getUserAvatarUrl(user, 'avataaars', 80)}
+                  src={getUserAvatarUrl(user, 'avataaars', isMobile ? 64 : 80)}
                   alt={`${user?.name || 'User'} avatar`}
                   className="w-full h-full object-cover"
                   onError={(e) => {
@@ -454,20 +454,20 @@ const UserProfileSection = ({ user, dashboardData = null }) => {
                 />
                 {/* Fallback icon display */}
                 <div className={`absolute inset-0 flex items-center justify-center ${roleInfo.textColor}`} style={{ display: 'none' }}>
-                  <User size={28} />
+                  <User size={isMobile ? 24 : 28} />
                 </div>
               </div>
             </div>
             {/* Status Indicator */}
-            <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white shadow-sm">
+            <div className={`absolute -bottom-1 -right-1 ${isMobile ? 'w-4 h-4' : 'w-5 h-5'} bg-green-500 rounded-full border-2 border-white shadow-sm`}>
               <div className="w-full h-full rounded-full bg-green-500 animate-pulse"></div>
             </div>
           </div>
 
           {/* User Name & Email */}
           <div className="space-y-1">
-            <h2 className="text-xl font-bold text-gray-900">{user?.name}</h2>
-            <p className="text-sm text-gray-600">{user?.email}</p>
+            <h2 className={`${isMobile ? 'text-lg' : 'text-xl'} font-bold text-gray-900`}>{user?.name}</h2>
+            <p className={`${isMobile ? 'text-xs' : 'text-sm'} text-gray-600`}>{user?.email}</p>
           </div>
 
           {/* Role Badge */}
@@ -480,40 +480,40 @@ const UserProfileSection = ({ user, dashboardData = null }) => {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className={`grid grid-cols-2 ${isMobile ? 'gap-2' : 'gap-3'}`}>
           <button 
             onClick={() => setIsBadgesModalOpen(true)}
-            className="bg-white/40 backdrop-blur-sm rounded-xl p-4 border border-white/20 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-[1.02] cursor-pointer"
+            className={`bg-white/40 backdrop-blur-sm rounded-xl ${isMobile ? 'p-3' : 'p-4'} border border-white/20 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-[1.02] cursor-pointer`}
           >
             <div className="text-center">
               <Trophy size={16} className="mx-auto mb-1 text-amber-500" />
-              <div className="text-lg font-bold text-gray-900">
+              <div className={`${isMobile ? 'text-base' : 'text-lg'} font-bold text-gray-900`}>
                 {loading ? '...' : userStats.badgesCount}
               </div>
-              <div className="text-xs text-gray-600">Badges</div>
+              <div className={`${isMobile ? 'text-xs' : 'text-xs'} text-gray-600`}>Badges</div>
             </div>
           </button>
-          <div className="bg-white/40 backdrop-blur-sm rounded-xl p-4 border border-white/20 shadow-sm hover:shadow-md transition-all duration-200">
+          <div className={`bg-white/40 backdrop-blur-sm rounded-xl ${isMobile ? 'p-3' : 'p-4'} border border-white/20 shadow-sm hover:shadow-md transition-all duration-200`}>
             <div className="text-center">
               <BarChart3 size={16} className="mx-auto mb-1 text-blue-500" />
-              <div className="text-lg font-bold text-gray-900">
+              <div className={`${isMobile ? 'text-base' : 'text-lg'} font-bold text-gray-900`}>
                 {loading ? '...' : userStats.leaguesCount}
               </div>
-              <div className="text-xs text-gray-600">Leagues</div>
+              <div className={`${isMobile ? 'text-xs' : 'text-xs'} text-gray-600`}>Leagues</div>
             </div>
           </div>
         </div>
 
         {/* Account Status */}
-        <div className="bg-white/30 backdrop-blur-sm rounded-xl p-4 border border-white/20 shadow-sm space-y-3">
+        <div className={`bg-white/30 backdrop-blur-sm rounded-xl ${isMobile ? 'p-3' : 'p-4'} border border-white/20 shadow-sm space-y-3`}>
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-700">Account Status</span>
+            <span className={`${isMobile ? 'text-xs' : 'text-sm'} font-medium text-gray-700`}>Account Status</span>
           </div>
           
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-600">Status</span>
-              <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
+              <span className={`${isMobile ? 'text-xs' : 'text-xs'} text-gray-600`}>Status</span>
+              <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full ${isMobile ? 'text-xs' : 'text-xs'} font-medium ${
                 user?.status === 'ACTIVE' 
                   ? 'bg-green-100 text-green-700 border border-green-200' 
                   : user?.status === 'PENDING'
@@ -529,8 +529,8 @@ const UserProfileSection = ({ user, dashboardData = null }) => {
             </div>
             
             <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-600">Member since</span>
-              <span className="text-xs text-gray-900 font-medium">
+              <span className={`${isMobile ? 'text-xs' : 'text-xs'} text-gray-600`}>Member since</span>
+              <span className={`${isMobile ? 'text-xs' : 'text-xs'} text-gray-900 font-medium`}>
                 {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { 
                   month: 'short', 
                   year: 'numeric' 
@@ -540,37 +540,37 @@ const UserProfileSection = ({ user, dashboardData = null }) => {
           </div>
         </div>
 
-        {/* Social Connections */}
-        <div className="bg-white/30 backdrop-blur-sm rounded-xl p-4 border border-white/20 shadow-sm space-y-3">
+        {/* Social Connections - Condensed for mobile */}
+        <div className={`bg-white/30 backdrop-blur-sm rounded-xl ${isMobile ? 'p-3' : 'p-4'} border border-white/20 shadow-sm space-y-3`}>
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-medium text-gray-700">Social Connections</h3>
+            <h3 className={`${isMobile ? 'text-xs' : 'text-sm'} font-medium text-gray-700`}>Social Connections</h3>
             <button
               onClick={() => setIsSocialEditModalOpen(true)}
               className="p-1.5 hover:bg-white/50 rounded-lg transition-colors group"
               title="Edit social connections"
             >
-              <Edit3 size={14} className="text-gray-500 group-hover:text-gray-700" />
+              <Edit3 size={isMobile ? 12 : 14} className="text-gray-500 group-hover:text-gray-700" />
             </button>
           </div>
           
-          <div className="space-y-2">
+          <div className={`${isMobile ? 'space-y-1' : 'space-y-2'}`}>
             {/* Twitter */}
             {user?.twitterHandle ? (
               <a 
                 href={`https://twitter.com/${user.twitterHandle}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between group p-2.5 rounded-lg bg-white/40 hover:bg-blue-50/80 border border-white/30 hover:border-blue-200 transition-all duration-200 hover:scale-[1.02]"
+                className={`flex items-center justify-between group ${isMobile ? 'p-2' : 'p-2.5'} rounded-lg bg-white/40 hover:bg-blue-50/80 border border-white/30 hover:border-blue-200 transition-all duration-200 hover:scale-[1.02]`}
               >
                 <div className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                    <FaXTwitter size={14} className="text-blue-600" />
+                  <div className={`${isMobile ? 'w-6 h-6' : 'w-7 h-7'} rounded-lg bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors`}>
+                    <FaXTwitter size={isMobile ? 12 : 14} className="text-blue-600" />
                   </div>
-                  <span className="text-sm text-gray-700 group-hover:text-blue-700 font-medium">{user.twitterHandle}</span>
+                  <span className={`${isMobile ? 'text-xs' : 'text-sm'} text-gray-700 group-hover:text-blue-700 font-medium truncate`}>{user.twitterHandle}</span>
                 </div>
-                <ExternalLink size={12} className="text-gray-400 group-hover:text-blue-600" />
+                <ExternalLink size={12} className="text-gray-400 group-hover:text-blue-600 flex-shrink-0" />
               </a>
-            ) : (
+            ) : !isMobile && (
               <div className="flex items-center justify-between p-2.5 rounded-lg bg-gray-50/50 border border-gray-100">
                 <div className="flex items-center gap-2.5">
                   <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center">
@@ -588,17 +588,17 @@ const UserProfileSection = ({ user, dashboardData = null }) => {
                 href={user.linkedinUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between group p-2.5 rounded-lg bg-white/40 hover:bg-blue-50/80 border border-white/30 hover:border-blue-200 transition-all duration-200 hover:scale-[1.02]"
+                className={`flex items-center justify-between group ${isMobile ? 'p-2' : 'p-2.5'} rounded-lg bg-white/40 hover:bg-blue-50/80 border border-white/30 hover:border-blue-200 transition-all duration-200 hover:scale-[1.02]`}
               >
                 <div className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                    <Linkedin size={14} className="text-blue-600" />
+                  <div className={`${isMobile ? 'w-6 h-6' : 'w-7 h-7'} rounded-lg bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors`}>
+                    <Linkedin size={isMobile ? 12 : 14} className="text-blue-600" />
                   </div>
-                  <span className="text-sm text-gray-700 group-hover:text-blue-700 font-medium">LinkedIn</span>
+                  <span className={`${isMobile ? 'text-xs' : 'text-sm'} text-gray-700 group-hover:text-blue-700 font-medium`}>LinkedIn</span>
                 </div>
-                <ExternalLink size={12} className="text-gray-400 group-hover:text-blue-600" />
+                <ExternalLink size={12} className="text-gray-400 group-hover:text-blue-600 flex-shrink-0" />
               </a>
-            ) : (
+            ) : !isMobile && (
               <div className="flex items-center justify-between p-2.5 rounded-lg bg-gray-50/50 border border-gray-100">
                 <div className="flex items-center gap-2.5">
                   <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center">
@@ -616,17 +616,17 @@ const UserProfileSection = ({ user, dashboardData = null }) => {
                 href={`https://github.com/${user.githubUsername}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between group p-2.5 rounded-lg bg-white/40 hover:bg-gray-50/80 border border-white/30 hover:border-gray-200 transition-all duration-200 hover:scale-[1.02]"
+                className={`flex items-center justify-between group ${isMobile ? 'p-2' : 'p-2.5'} rounded-lg bg-white/40 hover:bg-gray-50/80 border border-white/30 hover:border-gray-200 transition-all duration-200 hover:scale-[1.02]`}
               >
                 <div className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-gray-200 transition-colors">
-                    <Github size={14} className="text-gray-700" />
+                  <div className={`${isMobile ? 'w-6 h-6' : 'w-7 h-7'} rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-gray-200 transition-colors`}>
+                    <Github size={isMobile ? 12 : 14} className="text-gray-700" />
                   </div>
-                  <span className="text-sm text-gray-700 group-hover:text-gray-800 font-medium">@{user.githubUsername}</span>
+                  <span className={`${isMobile ? 'text-xs' : 'text-sm'} text-gray-700 group-hover:text-gray-800 font-medium truncate`}>@{user.githubUsername}</span>
                 </div>
-                <ExternalLink size={12} className="text-gray-400 group-hover:text-gray-600" />
+                <ExternalLink size={12} className="text-gray-400 group-hover:text-gray-600 flex-shrink-0" />
               </a>
-            ) : (
+            ) : !isMobile && (
               <div className="flex items-center justify-between p-2.5 rounded-lg bg-gray-50/50 border border-gray-100">
                 <div className="flex items-center gap-2.5">
                   <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center">
@@ -638,23 +638,23 @@ const UserProfileSection = ({ user, dashboardData = null }) => {
               </div>
             )}
 
-            {/* Kaggle */}
+            {/* Kaggle - Show only if connected or on desktop */}
             {user?.kaggleUsername ? (
               <a 
                 href={`https://kaggle.com/${user.kaggleUsername}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between group p-2.5 rounded-lg bg-white/40 hover:bg-cyan-50/80 border border-white/30 hover:border-cyan-200 transition-all duration-200 hover:scale-[1.02]"
+                className={`flex items-center justify-between group ${isMobile ? 'p-2' : 'p-2.5'} rounded-lg bg-white/40 hover:bg-cyan-50/80 border border-white/30 hover:border-cyan-200 transition-all duration-200 hover:scale-[1.02]`}
               >
                 <div className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-cyan-100 flex items-center justify-center group-hover:bg-cyan-200 transition-colors">
-                    <BarChart3 size={14} className="text-cyan-600" />
+                  <div className={`${isMobile ? 'w-6 h-6' : 'w-7 h-7'} rounded-lg bg-cyan-100 flex items-center justify-center group-hover:bg-cyan-200 transition-colors`}>
+                    <BarChart3 size={isMobile ? 12 : 14} className="text-cyan-600" />
                   </div>
-                  <span className="text-sm text-gray-700 group-hover:text-cyan-700 font-medium">{user.kaggleUsername}</span>
+                  <span className={`${isMobile ? 'text-xs' : 'text-sm'} text-gray-700 group-hover:text-cyan-700 font-medium truncate`}>{user.kaggleUsername}</span>
                 </div>
-                <ExternalLink size={12} className="text-gray-400 group-hover:text-cyan-600" />
+                <ExternalLink size={12} className="text-gray-400 group-hover:text-cyan-600 flex-shrink-0" />
               </a>
-            ) : (
+            ) : !isMobile && (
               <div className="flex items-center justify-between p-2.5 rounded-lg bg-gray-50/50 border border-gray-100">
                 <div className="flex items-center gap-2.5">
                   <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center">
@@ -668,18 +668,17 @@ const UserProfileSection = ({ user, dashboardData = null }) => {
           </div>
         </div>
 
-        {/* Badges Section - Clickable to open modal */}
-        <div className="bg-white/30 backdrop-blur-sm rounded-xl p-4 border border-white/20 shadow-sm space-y-3 cursor-pointer" onClick={() => setIsBadgesModalOpen(true)}>
+        {/* Badges Section - Clickable to open modal - Condensed for mobile */}
+        <div className={`bg-white/30 backdrop-blur-sm rounded-xl ${isMobile ? 'p-3' : 'p-4'} border border-white/20 shadow-sm space-y-3 cursor-pointer`} onClick={() => setIsBadgesModalOpen(true)}>
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-700">My Badges</span>
-            <span className="text-xs font-semibold text-gray-500">{loading ? '...' : userStats.badgesCount}</span>
+            <span className={`${isMobile ? 'text-xs' : 'text-sm'} font-medium text-gray-700`}>My Badges</span>
+            <span className={`${isMobile ? 'text-xs' : 'text-xs'} font-semibold text-gray-500`}>{loading ? '...' : userStats.badgesCount}</span>
           </div>
           
-          <div className="flex flex-wrap gap-2">
+          <div className={`flex flex-wrap ${isMobile ? 'gap-1.5' : 'gap-2'}`}>
             {/* Display up to 4 badges in a compact view */}
             {userStats.badgesCount > 0 ? (
               <>
-                {/* Show role badges first */}
                 {(() => {
                   const roleBadges = [];
                   const userRole = user?.role;
@@ -702,7 +701,7 @@ const UserProfileSection = ({ user, dashboardData = null }) => {
                   }
                   
                   let displayedBadges = 0;
-                  const maxDisplay = 4;
+                  const maxDisplay = isMobile ? 3 : 4;
                   
                   return (
                     <>
@@ -711,8 +710,8 @@ const UserProfileSection = ({ user, dashboardData = null }) => {
                         const IconComponent = roleBadge.icon;
                         displayedBadges++;
                         return (
-                          <div key={roleBadge.id} className="w-8 h-8 rounded-full bg-white border-2 border-white shadow-sm flex items-center justify-center">
-                            <IconComponent size={16} className={roleBadge.color} />
+                          <div key={roleBadge.id} className={`${isMobile ? 'w-6 h-6' : 'w-8 h-8'} rounded-full bg-white border-2 border-white shadow-sm flex items-center justify-center`}>
+                            <IconComponent size={isMobile ? 12 : 16} className={roleBadge.color} />
                           </div>
                         );
                       })}
@@ -721,7 +720,7 @@ const UserProfileSection = ({ user, dashboardData = null }) => {
                       {userBadges.slice(0, maxDisplay - displayedBadges).map((badge, index) => {
                         displayedBadges++;
                         return (
-                          <div key={`achievement-${index}`} className="w-8 h-8 rounded-full overflow-hidden border-2 border-white shadow-sm">
+                          <div key={`achievement-${index}`} className={`${isMobile ? 'w-6 h-6' : 'w-8 h-8'} rounded-full overflow-hidden border-2 border-white shadow-sm`}>
                             {badge.badge?.imageUrl ? (
                               <img 
                                 src={badge.badge.imageUrl} 
@@ -730,7 +729,7 @@ const UserProfileSection = ({ user, dashboardData = null }) => {
                               />
                             ) : (
                               <div className="w-full h-full bg-amber-100 flex items-center justify-center">
-                                <Trophy size={16} className="text-amber-600" />
+                                <Trophy size={isMobile ? 12 : 16} className="text-amber-600" />
                               </div>
                             )}
                           </div>
@@ -739,8 +738,8 @@ const UserProfileSection = ({ user, dashboardData = null }) => {
                       
                       {/* Show +N if there are more badges */}
                       {userStats.badgesCount > maxDisplay && (
-                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 border-2 border-white shadow-sm">
-                          <span className="text-xs font-semibold text-gray-500">
+                        <div className={`flex items-center justify-center ${isMobile ? 'w-6 h-6' : 'w-8 h-8'} rounded-full bg-gray-100 border-2 border-white shadow-sm`}>
+                          <span className={`${isMobile ? 'text-xs' : 'text-xs'} font-semibold text-gray-500`}>
                             +{userStats.badgesCount - maxDisplay}
                           </span>
                         </div>
@@ -750,13 +749,13 @@ const UserProfileSection = ({ user, dashboardData = null }) => {
                 })()}
               </>
             ) : (
-              <span className="text-xs text-gray-500">No badges earned yet</span>
+              <span className={`${isMobile ? 'text-xs' : 'text-xs'} text-gray-500`}>No badges earned yet</span>
             )}
           </div>
         </div>
 
         {/* Bottom spacer for smooth scrolling */}
-        <div className="h-4"></div>
+        <div className={`${isMobile ? 'h-2' : 'h-4'}`}></div>
       </div>
 
       {/* Badges Modal */}

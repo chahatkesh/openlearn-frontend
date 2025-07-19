@@ -101,18 +101,18 @@ const ProgressCard = ({ enrollment, onClick }) => {
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-3 gap-4 text-center mb-4">
-        <div>
-          <div className="text-lg font-bold text-green-600">{completedSections}</div>
+      {/* Stats Grid - Responsive layout */}
+      <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center mb-4">
+        <div className="p-2 rounded-lg bg-green-50">
+          <div className="text-base sm:text-lg font-bold text-green-600">{completedSections}</div>
           <div className="text-xs text-gray-500">Completed</div>
         </div>
-        <div>
-          <div className="text-lg font-bold text-blue-600">{totalSections - completedSections}</div>
+        <div className="p-2 rounded-lg bg-blue-50">
+          <div className="text-base sm:text-lg font-bold text-blue-600">{totalSections - completedSections}</div>
           <div className="text-xs text-gray-500">Remaining</div>
         </div>
-        <div>
-          <div className="text-lg font-bold text-gray-900">{totalSections}</div>
+        <div className="p-2 rounded-lg bg-gray-50">
+          <div className="text-base sm:text-lg font-bold text-gray-900">{totalSections}</div>
           <div className="text-xs text-gray-500">Total</div>
         </div>
       </div>

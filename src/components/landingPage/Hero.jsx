@@ -136,18 +136,11 @@ const Hero = () => {
                 variants={itemVariants}
               >
                 <MotionSpan 
-                  className="bg-black text-white px-4 py-1 rounded-full text-sm font-medium"
+                  className="bg-gradient-to-r from-orange-600 to-amber-600 text-white px-4 py-1 rounded-full transition-all duration-300 ease-in-out text-sm font-medium animate-pulse"
                   variants={badgeVariants}
                   whileHover={{ scale: 1.05 }}
                 >
-                  Starting June 15th, 2025
-                </MotionSpan>
-                <MotionSpan 
-                  className="bg-gradient-to-r from-orange-600 to-amber-600 text-white px-4 py-1 rounded-full text-sm font-medium animate-pulse"
-                  variants={badgeVariants}
-                  whileHover={{ scale: 1.05 }}
-                >
-                  Upcoming: Biggest AI+Finance Hackathon - September 2025
+                  Upcoming: India's Largest AI+Finance Hackathon - Oct 2025
                 </MotionSpan>
               </MotionDiv>
               <MotionH1 
