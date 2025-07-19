@@ -285,7 +285,7 @@ const LearningProgressSection = ({ user }) => {
     );
   }  return (
     <div className="bg-transparent">
-      <div className="p-6 space-y-6">
+      <div className="p-2 md:p-6 space-y-6">
         
         {/* Header Section */}
         <div className="relative">
@@ -338,8 +338,8 @@ const LearningProgressSection = ({ user }) => {
 
         {/* Learning Progress Section - Only show if user has enrollments */}
         {dashboardData?.enrollments?.length > 0 && (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="p-6">
+          <div className="bg-white rounded-xl md:rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="p-4 md:p-6">
               <div className="flex items-center mb-6">
                 <div>
                   <h2 className="text-xl font-bold text-gray-900">Learning Progress</h2>
@@ -451,7 +451,7 @@ const LearningProgressSection = ({ user }) => {
 
         {/* Active Leagues Section */}
         {dashboardData?.enrollments?.length > 0 && (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-xl md:rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
             <div className="p-6">
               <div className="flex items-center mb-6">
                 <div>
@@ -523,7 +523,7 @@ const LearningProgressSection = ({ user }) => {
                     >
                       {/* League Header */}
                       <div className="p-5 border-b border-gray-100">
-                        <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-start justify-between mb-0 md:mb-3">
                           <div className="flex-1">
                             <div className="flex items-center mb-2">
                               <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
@@ -531,13 +531,13 @@ const LearningProgressSection = ({ user }) => {
                                 {enrollment.league.name}
                               </h3>
                             </div>
-                            <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
+                            <p className="hidden md:block text-gray-600 text-sm leading-relaxed line-clamp-2">
                               {enrollment.league.description}
                             </p>
                           </div>
                           
                           {/* Circular Progress Badge */}
-                          <div className="ml-4 flex-shrink-0">
+                          <div className="ml-4 hidden md:block flex-shrink-0">
                             <div className="relative w-14 h-14">
                               <svg className="w-14 h-14 transform -rotate-90" viewBox="0 0 36 36">
                                 <path
@@ -648,7 +648,7 @@ const LearningProgressSection = ({ user }) => {
         )}
 
         {/* Available Learning Paths */}
-        <div id="available-leagues" className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div id="available-leagues" className="bg-white rounded-xl md:rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="p-6">
             {cohorts.length > 0 ? (
               <div className="space-y-6">
@@ -657,12 +657,12 @@ const LearningProgressSection = ({ user }) => {
                     <div className="flex items-start mb-6">
                       <div>
                         <h4 className="text-xl font-bold text-gray-900">{cohort.name || 'Learning Cohort'}</h4>
-                        <p className="text-sm text-gray-600">{cohort.description || 'Explore available learning leagues'}</p>
+                        <p className="hidden md:block text-sm text-gray-600">{cohort.description || 'Explore available learning leagues'}</p>
                       </div>
                     </div>
                     
                     {/* Leagues Grid */}
-                    <div className="ml-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="ml-0 md:ml-5 grid grid-cols-1 md:grid-cols-2 gap-4">
                       {filterLeagues(leagues.filter(league => league && league.id && league.name)).length > 0 ? (
                         filterLeagues(leagues.filter(league => league && league.id && league.name)).map((league) => {
                           const isEnrolled = dashboardData?.enrollments?.some(
@@ -710,10 +710,10 @@ const LearningProgressSection = ({ user }) => {
                                     <h5 className="font-semibold text-gray-900 mb-2 group-hover:text-black transition-colors">
                                       {leagueName}
                                     </h5>
-                                    <p className="text-sm text-gray-600 mb-3 leading-relaxed line-clamp-2">
+                                    <p className="hidden md:block text-xs text-gray-600 mb-3 leading-relaxed line-clamp-2">
                                       {leagueDescription}
                                     </p>
-                                    <div className="flex items-center space-x-2 text-xs text-gray-500">
+                                    <div className="flex-col md:block items-center space-x-2 text-sm text-gray-500">
                                       <span className="flex items-center">
                                         <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-1"></div>
                                         {`${weeksCount} ${weeksCount === 1 ? 'week' : 'weeks'}`}
