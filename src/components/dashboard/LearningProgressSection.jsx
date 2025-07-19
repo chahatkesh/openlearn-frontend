@@ -832,8 +832,7 @@ const LearningProgressSection = ({ user }) => {
               </div>
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium">All resources loaded! 🎉</p>
-              <p className="text-xs text-green-100">Your dashboard is now fully updated</p>
+              <p className="text-sm font-medium">Dashboard data fetched! 🎉</p>
             </div>
             <button
               onClick={() => setShowResourcesCompleteToast(false)}
