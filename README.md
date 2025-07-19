@@ -455,21 +455,6 @@ graph LR
 - **Events & Webinars**: Live learning events and recorded sessions
 - **Certification System**: Formal completion certificates and credentials
 
-### Technical Roadmap
-```mermaid
-gantt
-    title Development Roadmap 2025
-    dateFormat  YYYY-MM-DD
-    section Phase 1
-    Mobile App Development    :2025-07-01, 90d
-    Video Streaming          :2025-08-01, 60d
-    section Phase 2
-    Advanced Analytics       :2025-09-01, 45d
-    Discussion Forums        :2025-09-15, 60d
-    section Phase 3
-    Internationalization     :2025-11-01, 90d
-    API Integrations        :2025-11-15, 75d
-```
 
 ## License
 
@@ -498,8 +483,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **[Development Guide](./docs/development/)** - Setup and contribution guidelines
 
 ### Contact Information
-![Email](https://img.shields.io/badge/Email-support%40openlearn.dev-blue?style=flat-square&logo=gmail)
-![GitHub](https://img.shields.io/badge/GitHub-OpenLearn-black?style=flat-square&logo=github)
+![Email](https://img.shields.io/badge/Email-info%40openlearn.org.in-blue?style=flat-square&logo=gmail)
+![GitHub](https://img.shields.io/badge/GitHub-openlearnnitj-black?style=flat-square&logo=github)
 
 ---
 

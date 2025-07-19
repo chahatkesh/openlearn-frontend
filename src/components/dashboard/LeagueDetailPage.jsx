@@ -22,6 +22,98 @@ import SocialService from '../../utils/socialService';
 import FaviconService from '../../utils/faviconService'; // @see docs/development/favicon-service.md
 import AssignmentManagement from './AssignmentManagement';
 import PageHead from '../common/PageHead';
+import { 
+  LeagueDetailSkeleton,
+  ProgressiveLoadingSkeleton 
+} from '../common/SkeletonLoader';
+import ProgressIndicator, { 
+  SectionLoadingIndicator 
+} from '../common/ProgressIndicator';
+
+// Resource Icon Component with Favicon
+const ResourceIcon = ({ resource, showDomain = false, favicons = {}, loadingFavicons = new Set(), setFavicons = () => {} }) => {
+  const faviconData = favicons[resource.id];
+  const isLoading = loadingFavicons.has(resource.id);
+
+  // Helper function for resource type icons
+  const getResourceTypeIcon = (type) => {
+    switch (type?.toUpperCase()) {
+      case 'VIDEO':
+        return <Play size={16} className="text-red-600" />;
+      case 'ARTICLE':
+        return <FileText size={16} className="text-blue-600" />;
+      case 'EXTERNAL_LINK':
+        return <ExternalLink size={16} className="text-green-600" />;
+      case 'BLOG':
+        return <BookOpen size={16} className="text-purple-600" />;
+      default:
+        return <FileText size={16} className="text-gray-600" />;
+    }
+  };
+
+  // Helper function for resource type names
+  const getResourceTypeName = (type) => {
+    switch (type?.toUpperCase()) {
+      case 'VIDEO':
+        return 'Video';
+      case 'ARTICLE':
+        return 'Article';
+      case 'EXTERNAL_LINK':
+        return 'Link';
+      case 'BLOG':
+        return 'Blog';
+      default:
+        return 'File';
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center space-x-1">
+        <div className="w-4 h-4 bg-gray-200 rounded-sm animate-pulse"></div>
+        {showDomain && (
+          <div className="w-12 h-3 bg-gray-200 rounded animate-pulse"></div>
+        )}
+      </div>
+    );
+  }
+
+  if (faviconData?.type === 'favicon') {
+    return (
+      <div className="flex items-center space-x-1">
+        <img 
+          src={faviconData.url} 
+          alt={`${faviconData.domain} favicon`}
+          className="w-4 h-4 rounded-sm object-cover"
+          onError={() => {
+            // Fallback to type icon on error
+            setFavicons(prev => ({
+              ...prev,
+              [resource.id]: { type: 'fallback', url: null }
+            }));
+          }}
+        />
+        {showDomain && faviconData.domain && (
+          <span className="text-xs text-gray-500 truncate max-w-20">
+            {faviconData.domain}
+          </span>
+        )}
+      </div>
+    );
+  }
+
+  // Fallback to type-based icons
+  return (
+    <div className="flex items-center space-x-1">
+      {getResourceTypeIcon(resource.type)}
+      {showDomain && (
+        <span className="text-xs text-gray-500">
+          {getResourceTypeName(resource.type)}
+        </span>
+      )}
+    </div>
+  );
+};
 
 // Separate NoteModal component to prevent re-creation on every render
 const NoteModal = React.memo(({ 
@@ -34,7 +126,10 @@ const NoteModal = React.memo(({
   saveNote, 
   openResourceWithType, 
   getResourceTypeName,
-  textareaRef
+  textareaRef,
+  favicons,
+  loadingFavicons,
+  setFavicons
 }) => {
   if (!showNoteModal || !selectedResource) return null;
 
@@ -76,7 +171,12 @@ const NoteModal = React.memo(({
           <div className="mb-4">
             <h4 className="text-sm font-medium text-gray-700 mb-2">Resource:</h4>
             <div className="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg">
-              <ResourceIcon resource={selectedResource} />
+              <ResourceIcon 
+                resource={selectedResource} 
+                favicons={favicons}
+                loadingFavicons={loadingFavicons}
+                setFavicons={setFavicons}
+              />
               <div className="flex-1">
                 <p className="text-sm font-medium text-gray-900">{selectedResource.title}</p>
                 <p className="text-xs text-gray-500">{getResourceTypeName(selectedResource.type)}</p>
@@ -167,6 +267,9 @@ const LeagueDetailPage = ({ league, onBack }) => {
   // OPTIMIZATION 9: Progressive loading states
   const [resourcesLoading, setResourcesLoading] = useState(false);
   
+  // ENHANCEMENT: Enhanced loading states for better UX
+  const [sectionsLoadingProgress, setSectionsLoadingProgress] = useState({});
+  
   // Ref for textarea to maintain focus
   const textareaRef = useRef(null);
 
@@ -179,6 +282,17 @@ const LeagueDetailPage = ({ league, onBack }) => {
       }, 100);
     }
   }, [showNoteModal]);
+
+  // Local ResourceIcon component with access to component state
+  const LocalResourceIcon = ({ resource, showDomain = false }) => (
+    <ResourceIcon 
+      resource={resource} 
+      showDomain={showDomain}
+      favicons={favicons}
+      loadingFavicons={loadingFavicons}
+      setFavicons={setFavicons}
+    />
+  );
 
     // Fetch favicon for a resource
   const fetchResourceFavicon = async (resourceId, resourceUrl, resourceType) => {
@@ -252,58 +366,6 @@ const LeagueDetailPage = ({ league, onBack }) => {
   }, [leagueProgress, sectionResources]);
 
   // Resource Icon Component with Favicon
-  const ResourceIcon = ({ resource, showDomain = false }) => {
-    const faviconData = favicons[resource.id];
-    const isLoading = loadingFavicons.has(resource.id);
-
-    if (isLoading) {
-      return (
-        <div className="flex items-center space-x-1">
-          <div className="w-4 h-4 bg-gray-200 rounded-sm animate-pulse"></div>
-          {showDomain && (
-            <div className="w-12 h-3 bg-gray-200 rounded animate-pulse"></div>
-          )}
-        </div>
-      );
-    }
-
-    if (faviconData?.type === 'favicon') {
-      return (
-        <div className="flex items-center space-x-1">
-          <img 
-            src={faviconData.url} 
-            alt={`${faviconData.domain} favicon`}
-            className="w-4 h-4 rounded-sm object-cover"
-            onError={() => {
-              // Fallback to type icon on error
-              setFavicons(prev => ({
-                ...prev,
-                [resource.id]: { type: 'fallback', url: null }
-              }));
-            }}
-          />
-          {showDomain && faviconData.domain && (
-            <span className="text-xs text-gray-500 truncate max-w-20">
-              {faviconData.domain}
-            </span>
-          )}
-        </div>
-      );
-    }
-
-    // Fallback to type-based icons
-    return (
-      <div className="flex items-center space-x-1">
-        {getResourceTypeIcon(resource.type)}
-        {showDomain && (
-          <span className="text-xs text-gray-500">
-            {getResourceTypeName(resource.type)}
-          </span>
-        )}
-      </div>
-    );
-  };
-
   // Assignment-related state - no longer needed as handled by AssignmentManagement component
 
   const fetchLeagueProgress = useCallback(async () => {
@@ -382,7 +444,13 @@ const LeagueDetailPage = ({ league, onBack }) => {
 
   const fetchSectionResources = async (sectionId) => {
     try {
+      // Track section loading progress
+      setSectionsLoadingProgress(prev => ({ ...prev, [sectionId]: 0 }));
+      
       const resourcesData = await ResourceProgressService.getSectionResourcesProgress(sectionId);
+      
+      // Update progress
+      setSectionsLoadingProgress(prev => ({ ...prev, [sectionId]: 50 }));
       
       // OPTIMIZATION 3: Batch state updates for better performance
       setSectionResources(prev => ({
@@ -400,8 +468,27 @@ const LeagueDetailPage = ({ league, onBack }) => {
         });
         setResourceProgress(prev => ({ ...prev, ...progress }));
       }
+      
+      // Complete progress tracking
+      setSectionsLoadingProgress(prev => ({ ...prev, [sectionId]: 100 }));
+      
+      // Clean up progress after a delay
+      setTimeout(() => {
+        setSectionsLoadingProgress(prev => {
+          const newState = { ...prev };
+          delete newState[sectionId];
+          return newState;
+        });
+      }, 1000);
+      
     } catch (err) {
       console.error('Error fetching section resources:', err);
+      // Clean up progress on error
+      setSectionsLoadingProgress(prev => {
+        const newState = { ...prev };
+        delete newState[sectionId];
+        return newState;
+      });
     }
   };
 
@@ -623,21 +710,6 @@ const LeagueDetailPage = ({ league, onBack }) => {
     SocialService.shareOnTwitter(message);
   };
 
-  const getResourceTypeIcon = (type) => {
-    switch (type?.toUpperCase()) {
-      case 'VIDEO':
-        return <Play size={16} className="text-red-600" />;
-      case 'ARTICLE':
-        return <FileText size={16} className="text-blue-600" />;
-      case 'EXTERNAL_LINK':
-        return <ExternalLink size={16} className="text-green-600" />;
-      case 'BLOG':
-        return <BookOpen size={16} className="text-purple-600" />;
-      default:
-        return <FileText size={16} className="text-gray-600" />;
-    }
-  };
-
   const getResourceTypeColor = (type) => {
     switch (type?.toUpperCase()) {
       case 'VIDEO':
@@ -692,31 +764,7 @@ const LeagueDetailPage = ({ league, onBack }) => {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="animate-pulse space-y-4">
-            <div className="h-4 bg-gray-200 rounded w-32"></div>
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <div className="h-6 bg-gray-200 rounded w-1/2 mb-2"></div>
-              <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
-              <div className="h-2 bg-gray-200 rounded w-full"></div>
-            </div>
-            <div className="space-y-4">
-              {[1, 2, 3].map(i => (
-                <div key={i} className="bg-white rounded-lg border border-gray-200 p-4">
-                  <div className="h-5 bg-gray-200 rounded w-1/3 mb-3"></div>
-                  <div className="space-y-2">
-                    <div className="h-4 bg-gray-200 rounded w-full"></div>
-                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <LeagueDetailSkeleton />;
   }
 
   if (error) {
@@ -977,7 +1025,7 @@ const LeagueDetailPage = ({ league, onBack }) => {
                                           className={`flex items-center space-x-2 px-2 py-1 rounded-full border text-xs font-medium ${getResourceTypeColor(resource.type)}`}
                                           title={favicons[resource.id]?.domain ? `Source: ${favicons[resource.id].domain}` : `Resource type: ${getResourceTypeName(resource.type)}`}
                                         >
-                                          <ResourceIcon resource={resource} />
+                                          <LocalResourceIcon resource={resource} />
                                           <span>{getResourceTypeName(resource.type)}</span>
                                         </button>
                                       </div>
@@ -1037,33 +1085,11 @@ const LeagueDetailPage = ({ league, onBack }) => {
                                 </div>
                               </div>
                             ) : resourcesLoading ? (
-                              <div className="px-4 py-8 text-center text-gray-500">
-                                <div className="animate-pulse space-y-3">
-                                  {[1, 2, 3].map(i => (
-                                    <div key={i} className="grid grid-cols-16 gap-2 items-center">
-                                      <div className="col-span-1 flex justify-center">
-                                        <div className="w-5 h-5 bg-gray-200 rounded"></div>
-                                      </div>
-                                      <div className="col-span-7">
-                                        <div className="h-4 bg-gray-200 rounded"></div>
-                                      </div>
-                                      <div className="col-span-2">
-                                        <div className="h-6 bg-gray-200 rounded-full"></div>
-                                      </div>
-                                      <div className="col-span-3">
-                                        <div className="h-6 bg-gray-200 rounded-full"></div>
-                                      </div>
-                                      <div className="col-span-2">
-                                        <div className="w-6 h-6 bg-gray-200 rounded-full"></div>
-                                      </div>
-                                      <div className="col-span-1">
-                                        <div className="w-4 h-4 bg-gray-200 rounded"></div>
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-                                <p className="text-sm mt-4">Loading resources...</p>
-                              </div>
+                              <SectionLoadingIndicator 
+                                sectionName={section.name}
+                                isLoading={true}
+                                progress={sectionsLoadingProgress[section.id] || 0}
+                              />
                             ) : (
                               <div className="px-4 py-8 text-center text-gray-500">
                                 <FileText size={24} className="mx-auto mb-2 text-gray-400" />
@@ -1137,7 +1163,17 @@ const LeagueDetailPage = ({ league, onBack }) => {
         openResourceWithType={openResourceWithType}
         getResourceTypeName={getResourceTypeName}
         textareaRef={textareaRef}
-        ResourceIcon={ResourceIcon}
+        favicons={favicons}
+        loadingFavicons={loadingFavicons}
+        setFavicons={setFavicons}
+      />
+
+      {/* Enhanced Background Progress Indicators */}
+      <ProgressIndicator 
+        isLoading={resourcesLoading}
+        message="Loading resources..."
+        position="bottom-right"
+        showMessage={true}
       />
     </div>
   );
