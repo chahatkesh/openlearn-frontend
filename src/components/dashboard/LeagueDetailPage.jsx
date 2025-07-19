@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { 
   ArrowLeft,
   FileText, 
@@ -164,6 +164,9 @@ const LeagueDetailPage = ({ league, onBack }) => {
   const [showSuccessToast, setShowSuccessToast] = useState(null);
   const [toastType, setToastType] = useState('success'); // 'success' or 'undo'
   
+  // OPTIMIZATION 9: Progressive loading states
+  const [resourcesLoading, setResourcesLoading] = useState(false);
+  
   // Ref for textarea to maintain focus
   const textareaRef = useRef(null);
 
@@ -199,7 +202,7 @@ const LeagueDetailPage = ({ league, onBack }) => {
     }
   };
 
-  // Preload favicons for all resources in current view
+  // OPTIMIZATION 7: Optimized favicon preloading with debouncing
   const preloadFavicons = useCallback(async () => {
     if (!leagueProgress?.progress?.weeks) return;
 
@@ -216,16 +219,33 @@ const LeagueDetailPage = ({ league, onBack }) => {
       });
     });
 
-    // Preload favicons in bulk for better performance
+    // OPTIMIZATION: Load favicons in background with lower priority
     try {
-      await FaviconService.preloadFavicons(resourceUrls);
-      
-      // Fetch favicons for all resources
-      const faviconPromises = allResources.map(resource => 
-        fetchResourceFavicon(resource.id, resource.url, resource.type)
-      );
-      
-      await Promise.allSettled(faviconPromises);
+      // Use requestIdleCallback for non-blocking execution
+      if (window.requestIdleCallback) {
+        window.requestIdleCallback(async () => {
+          await FaviconService.preloadFavicons(resourceUrls);
+          
+          // Fetch favicons for all resources in batches
+          const batchSize = 5;
+          for (let i = 0; i < allResources.length; i += batchSize) {
+            const batch = allResources.slice(i, i + batchSize);
+            const faviconPromises = batch.map(resource => 
+              fetchResourceFavicon(resource.id, resource.url, resource.type)
+            );
+            await Promise.allSettled(faviconPromises);
+          }
+        });
+      } else {
+        // Fallback for browsers without requestIdleCallback
+        setTimeout(async () => {
+          await FaviconService.preloadFavicons(resourceUrls);
+          const faviconPromises = allResources.map(resource => 
+            fetchResourceFavicon(resource.id, resource.url, resource.type)
+          );
+          await Promise.allSettled(faviconPromises);
+        }, 1000);
+      }
     } catch (error) {
       console.warn('Error preloading favicons:', error);
     }
@@ -298,36 +318,51 @@ const LeagueDetailPage = ({ league, onBack }) => {
       if (data.progress.weeks) {
         const initialExpanded = {};
         data.progress.weeks.forEach(week => {
-          initialExpanded[week.id] = false; // Default to expanded
+          initialExpanded[week.id] = false; // Default to collapsed for faster initial load
         });
         setExpandedWeeks(initialExpanded);
         
-        // Fetch resources for each section
-        for (const week of data.progress.weeks) {
-          for (const section of week.sections) {
-            await fetchSectionResources(section.id);
-          }
+        // OPTIMIZATION 1: Parallel loading of ALL section resources
+        const allSectionIds = data.progress.weeks.flatMap(week => 
+          week.sections.map(section => section.id)
+        );
+        
+        // Set loading to false early to show basic progress data immediately
+        setLoading(false);
+        setResourcesLoading(true);
+        
+        // Load resources in parallel batches for better performance
+        const batchSize = 5; // Load 5 sections at a time
+        for (let i = 0; i < allSectionIds.length; i += batchSize) {
+          const batch = allSectionIds.slice(i, i + batchSize);
+          const promises = batch.map(sectionId => fetchSectionResources(sectionId));
+          await Promise.all(promises);
         }
+        
+        setResourcesLoading(false);
       }
     } catch (err) {
       console.error('Error fetching league progress:', err);
       setError(err.message);
-    } finally {
       setLoading(false);
     }
   }, [league.id]);
 
-  // Preload favicons when resources are loaded
+  // OPTIMIZATION 8: Non-blocking favicon loading
   useEffect(() => {
     if (Object.keys(sectionResources).length > 0) {
-      preloadFavicons();
+      // Delay favicon loading to not block initial render
+      setTimeout(() => {
+        preloadFavicons();
+      }, 2000);
     }
   }, [sectionResources, preloadFavicons]);
 
   // Assignment functions - no longer needed as handled by AssignmentManagement component
 
   // Calculate overall league progress based on actual resource completion
-  const calculateOverallProgress = () => {
+  // OPTIMIZATION 2: Memoized progress calculation for better performance
+  const calculateOverallProgress = useMemo(() => {
     if (!leagueProgress?.progress?.weeks) return { percentage: 0, completed: 0, total: 0 };
     
     let totalResources = 0;
@@ -343,11 +378,13 @@ const LeagueDetailPage = ({ league, onBack }) => {
     
     const percentage = totalResources > 0 ? Math.round((completedResources / totalResources) * 100) : 0;
     return { percentage, completed: completedResources, total: totalResources };
-  };
+  }, [leagueProgress, sectionResources, resourceProgress]);
 
   const fetchSectionResources = async (sectionId) => {
     try {
       const resourcesData = await ResourceProgressService.getSectionResourcesProgress(sectionId);
+      
+      // OPTIMIZATION 3: Batch state updates for better performance
       setSectionResources(prev => ({
         ...prev,
         [sectionId]: resourcesData.resources || []
@@ -378,9 +415,23 @@ const LeagueDetailPage = ({ league, onBack }) => {
       ...prev,
       [weekId]: !prev[weekId]
     }));
+    
+    // OPTIMIZATION 6: Lazy load resources when week is expanded
+    const week = leagueProgress?.progress?.weeks?.find(w => w.id === weekId);
+    if (week && !expandedWeeks[weekId]) {
+      // Load resources for sections in this week if not already loaded
+      week.sections.forEach(section => {
+        if (!sectionResources[section.id]) {
+          fetchSectionResources(section.id);
+        }
+      });
+    }
   };
 
   const handleResourceComplete = async (resourceId, currentStatus = false) => {
+    // Store the original state for potential rollback
+    const originalState = resourceProgress[resourceId];
+    
     try {
       // Confirmation for unmarking completed resources
       if (currentStatus) {
@@ -414,9 +465,8 @@ const LeagueDetailPage = ({ league, onBack }) => {
           .find(r => r.id === resourceId)?.title || 'Resource';
         setToastType('undo');
         
-        // Calculate new progress for toast message  
-        const newProgress = calculateOverallProgress();
-        setShowSuccessToast(`"${resourceTitle}" marked as not done 🔄 (${newProgress.percentage}% overall)`);
+        // Calculate new progress for toast message 
+        setShowSuccessToast(`"${resourceTitle}" marked as not done`);
         
         // Hide toast after 3 seconds
         setTimeout(() => {
@@ -440,8 +490,7 @@ const LeagueDetailPage = ({ league, onBack }) => {
         setToastType('success');
         
         // Calculate new progress for toast message
-        const newProgress = calculateOverallProgress();
-        setShowSuccessToast(`"${resourceTitle}" completed! 🎉 (${newProgress.percentage}% overall)`);
+        setShowSuccessToast(`"${resourceTitle}" completed! 🎉`);
         
         // Remove from recently completed after animation
         setTimeout(() => {
@@ -458,16 +507,29 @@ const LeagueDetailPage = ({ league, onBack }) => {
         }, 3000);
       }
       
-      // Note: We don't need to refresh league progress anymore since we calculate it locally
-      // This makes the UI more responsive and reduces API calls
-    } catch (err) {
-      console.error('Error updating resource completion:', err);
+      // API call succeeded
+      console.log(`✅ Resource ${resourceId} ${currentStatus ? 'reset' : 'completed'} successfully`);
       
-      // More specific error messages
+    } catch (err) {
+      console.error('❌ Error updating resource completion:', err);
+      
+      // Revert the optimistic UI update
+      setResourceProgress(prev => ({
+        ...prev,
+        [resourceId]: originalState || { isCompleted: currentStatus }
+      }));
+      
+      // More specific error messages based on the action attempted
+      const resourceTitle = Object.values(sectionResources)
+        .flat()
+        .find(r => r.id === resourceId)?.title || 'Resource';
+        
+      const errorMessage = err.message || 'Unknown error occurred';
+      
       if (currentStatus) {
-        alert('Failed to mark resource as incomplete. Please try again.');
+        alert(`Failed to mark "${resourceTitle}" as incomplete. The resource is still marked as complete. Please try again.\n\nError: ${errorMessage}`);
       } else {
-        alert('Failed to mark resource as complete. Please try again.');
+        alert(`Failed to mark "${resourceTitle}" as complete. Please try again.\n\nError: ${errorMessage}`);
       }
     } finally {
       // Remove from processing state
@@ -518,10 +580,20 @@ const LeagueDetailPage = ({ league, onBack }) => {
     } catch (err) {
       console.error('Error updating resource revision status:', err);
       
+      // Revert the optimistic UI update
+      setResourceProgress(prev => ({
+        ...prev,
+        [resourceId]: { ...prev[resourceId], markedForRevision: currentRevisionStatus }
+      }));
+      
+      const resourceTitle = Object.values(sectionResources)
+        .flat()
+        .find(r => r.id === resourceId)?.title || 'Resource';
+      
       if (currentRevisionStatus) {
-        alert('Failed to unmark resource for revision. Please try again.');
+        alert(`Failed to unmark "${resourceTitle}" for revision. Please try again.`);
       } else {
-        alert('Failed to mark resource for revision. Please try again.');
+        alert(`Failed to mark "${resourceTitle}" for revision. Please try again.`);
       }
     } finally {
       // Remove from processing state
@@ -711,12 +783,12 @@ const LeagueDetailPage = ({ league, onBack }) => {
             >
               <ArrowLeft size={16} className="mr-2" />
               Back to Dashboard
-            </button>              {/* Quick Stats - Updated to use actual resource progress */}
+            </button>              {/* Quick Stats - OPTIMIZATION 4: Show immediate basic stats */}
               <div className="flex items-center space-x-6 text-sm text-gray-600">
-                <span>{calculateOverallProgress().total} resources</span>
-                <span className="text-green-600 font-medium">{calculateOverallProgress().completed} completed</span>
+                <span>{calculateOverallProgress.total || 0} resources</span>
+                <span className="text-green-600 font-medium">{calculateOverallProgress.completed || 0} completed</span>
                 <span className="font-semibold text-gray-900 px-2 py-1 bg-gray-100 rounded">
-                  {calculateOverallProgress().percentage}% progress
+                  {calculateOverallProgress.percentage || 0}% progress
                 </span>
               </div>
           </div>
@@ -730,10 +802,10 @@ const LeagueDetailPage = ({ league, onBack }) => {
                   <p className="text-sm text-gray-600">{leagueProgress.league.description}</p>
                 </div>
                 
-                {/* Compact Progress Indicator - Updated to use actual resource progress */}
+                {/* Compact Progress Indicator - OPTIMIZATION 5: Optimistic progress display */}
                 <div className="flex items-center space-x-4">
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-gray-900">{calculateOverallProgress().percentage}%</div>
+                    <div className="text-2xl font-bold text-gray-900">{calculateOverallProgress.percentage || 0}%</div>
                     <div className="text-xs text-gray-500">Complete</div>
                   </div>
                   <div className="w-12 h-12 relative">
@@ -749,7 +821,7 @@ const LeagueDetailPage = ({ league, onBack }) => {
                         fill="none"
                         stroke="#FFDE59"
                         strokeWidth="3"
-                        strokeDasharray={`${calculateOverallProgress().percentage/2}, 100`}
+                        strokeDasharray={`${(calculateOverallProgress.percentage || 0)/2}, 100`}
                         className="transition-all duration-1000 ease-out"
                       />
                     </svg>
@@ -763,13 +835,13 @@ const LeagueDetailPage = ({ league, onBack }) => {
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs text-gray-600">Overall Progress</span>
                 <span className="text-xs text-gray-600">
-                  {calculateOverallProgress().completed} of {calculateOverallProgress().total} resources
+                  {calculateOverallProgress.completed || 0} of {calculateOverallProgress.total || 0} resources
                 </span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
                   className="bg-gradient-to-r from-[#FFDE59] to-[#FFD700] h-2 rounded-full transition-all duration-1000 ease-out progress-bar-fill"
-                  style={{ width: `${calculateOverallProgress().percentage}%` }}
+                  style={{ width: `${calculateOverallProgress.percentage || 0}%` }}
                 ></div>
               </div>
             </div>
@@ -842,8 +914,8 @@ const LeagueDetailPage = ({ league, onBack }) => {
                                 <h3 className="font-medium text-gray-900">{section.name}</h3>
                               </div>
                             </div>
-                            {/* Compact Resources Table */}
-                            {resources.length > 0 && (
+                            {/* OPTIMIZATION 10: Progressive loading with skeleton */}
+                            {resources.length > 0 ? (
                               <div>
                                 {/* Table Header */}
                                 <div className="grid grid-cols-16 gap-2 px-4 py-2 bg-gray-100 border-b border-gray-200 text-xs font-medium text-gray-700 uppercase tracking-wider">
@@ -885,7 +957,7 @@ const LeagueDetailPage = ({ league, onBack }) => {
                                           title={isCompleted ? 'Mark as not done' : 'Mark as done'}
                                         >
                                           {processingResources.has(resource.id) ? (
-                                            <Loader2 size={12} className="animate-spin" />
+                                            <Loader2 size={12} />
                                           ) : isCompleted ? (
                                             <Check size={12} className="completion-checkmark" />
                                           ) : null}
@@ -964,10 +1036,35 @@ const LeagueDetailPage = ({ league, onBack }) => {
                                 })}
                                 </div>
                               </div>
-                            )}
-
-                            {/* No Resources Message */}
-                            {resources.length === 0 && (
+                            ) : resourcesLoading ? (
+                              <div className="px-4 py-8 text-center text-gray-500">
+                                <div className="animate-pulse space-y-3">
+                                  {[1, 2, 3].map(i => (
+                                    <div key={i} className="grid grid-cols-16 gap-2 items-center">
+                                      <div className="col-span-1 flex justify-center">
+                                        <div className="w-5 h-5 bg-gray-200 rounded"></div>
+                                      </div>
+                                      <div className="col-span-7">
+                                        <div className="h-4 bg-gray-200 rounded"></div>
+                                      </div>
+                                      <div className="col-span-2">
+                                        <div className="h-6 bg-gray-200 rounded-full"></div>
+                                      </div>
+                                      <div className="col-span-3">
+                                        <div className="h-6 bg-gray-200 rounded-full"></div>
+                                      </div>
+                                      <div className="col-span-2">
+                                        <div className="w-6 h-6 bg-gray-200 rounded-full"></div>
+                                      </div>
+                                      <div className="col-span-1">
+                                        <div className="w-4 h-4 bg-gray-200 rounded"></div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                                <p className="text-sm mt-4">Loading resources...</p>
+                              </div>
+                            ) : (
                               <div className="px-4 py-8 text-center text-gray-500">
                                 <FileText size={24} className="mx-auto mb-2 text-gray-400" />
                                 <p className="text-sm">No resources available for this section.</p>

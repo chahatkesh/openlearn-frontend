@@ -21,11 +21,24 @@ const getAuthHeaders = () => {
  * Handle API response and return data or throw error
  */
 const handleResponse = async (response) => {
-  const result = await response.json();
-  if (!result.success) {
-    throw new Error(result.error || 'API request failed');
+  try {
+    const result = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${result.error || response.statusText}`);
+    }
+    
+    if (!result.success) {
+      throw new Error(result.error || 'API request failed');
+    }
+    
+    return result.data;
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      throw new Error(`Invalid JSON response from server (HTTP ${response.status})`);
+    }
+    throw error;
   }
-  return result.data;
 };
 
 /**
