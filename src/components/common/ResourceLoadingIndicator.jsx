@@ -51,7 +51,7 @@ export const ResourceProgressBadge = ({ isCalculating, completedCount, totalCoun
       <div className="flex items-center space-x-1">
         <Loader2 className="w-3 h-3 animate-spin" />
         <span>
-          {totalCount > 0 ? `${completedCount}/${totalCount}` : 'Loading...'}
+          {totalCount > 0 ? `${completedCount+1}/${totalCount}` : 'Loading...'}
         </span>
       </div>
     </div>
