@@ -1,5 +1,5 @@
 import React from 'react';
-import { Github, Linkedin, Code, Server, ExternalLink } from 'lucide-react';
+import { Code, Server, ExternalLink } from 'lucide-react';
 import { 
   SiReact, 
   SiNodedotjs, 
@@ -8,8 +8,10 @@ import {
   SiTailwindcss, 
   SiPostgresql, 
   SiPrisma, 
-  SiDocker 
+  SiDocker,
+  SiRedis,
 } from 'react-icons/si';
+import { RiGithubLine, RiLinkedinLine, RiTwitterXFill } from 'react-icons/ri';
 import { MotionDiv, MotionA, MotionSection, MotionP } from '../common/MotionWrapper';
 
 
@@ -55,6 +57,7 @@ const Note = () => {
     { name: 'PostgreSQL', icon: SiPostgresql },
     { name: 'Prisma', icon: SiPrisma },
     { name: 'Docker', icon: SiDocker },
+    { name: 'Redis', icon: SiRedis },
   ];
 
   // Developer information
@@ -62,12 +65,14 @@ const Note = () => {
     {
       name: "Chahat Kesharwani",
       linkedin: "https://linkedin.com/in/chahatkesharwani",
-      github: "https://github.com/chahatkesh"
+      github: "https://github.com/chahatkesh",
+      twitter: "https://x.com/chahatkesh"
     },
     {
       name: "Rishi Ahuja",
       linkedin: "https://linkedin.com/in/rishi-ahuja-b1a224310",
-      github: "https://github.com/rishiahuja"
+      github: "https://github.com/rishiahuja",
+      twitter: "https://x.com/rishi2220"
     }
   ];
 
@@ -133,7 +138,7 @@ const Note = () => {
                     whileHover={{ scale: 1.2 }}
                     whileTap={{ scale: 0.9 }}
                   >
-                    <Linkedin size={18} />
+                    <RiLinkedinLine size={18} />
                   </MotionA>
                   <MotionA 
                     href={dev.github} 
@@ -144,7 +149,18 @@ const Note = () => {
                     whileHover={{ scale: 1.2 }}
                     whileTap={{ scale: 0.9 }}
                   >
-                    <Github size={18} />
+                    <RiGithubLine size={18} />
+                  </MotionA>
+                  <MotionA 
+                    href={dev.twitter} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-black transition-colors duration-200"
+                    aria-label={`${dev.name}'s Twitter`}
+                    whileHover={{ scale: 1.2 }}
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    <RiTwitterXFill size={18} />
                   </MotionA>
                 </div>
               </MotionDiv>

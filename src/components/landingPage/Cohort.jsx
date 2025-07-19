@@ -1,31 +1,42 @@
-import React from "react";
-import { Lock, ArrowRight, Award, Users, Zap, TrendingUp } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { ArrowRight, Award, Users, BookOpen, Calendar, CheckCircle, AlertCircle } from "lucide-react";
 import { MotionDiv, MotionSection, MotionH2, MotionP } from '../common/MotionWrapper';
 
-const LeagueCard = ({ 
-  title, 
-  description, 
-  poweredBy, 
-  certification, 
-  isLocked = false, 
-  prerequisite = null, 
-  accentColor = "#4F46E5",
-  gradientFrom = "#667eea",
-  gradientTo = "#764ba2"
-}) => {
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.openlearn.org.in';
+
+// Fetch cohorts structure from API
+const fetchCohortsStructure = async () => {
+  try {
+    const response = await fetch(`${BASE_URL}/api/public/cohorts-structure`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    if (!result.success) {
+      throw new Error(result.message || 'API request failed');
+    }
+
+    return result;
+  } catch (error) {
+    console.error('Error fetching cohorts structure:', error);
+    throw error;
+  }
+};
+
+const LeagueCard = ({ league }) => {
+  const weeks = league.weeks || [];
   return (
     <MotionDiv 
-      className={`group relative rounded-2xl p-8 h-full ${
-        isLocked 
-          ? 'bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 shadow-md' 
-          : 'bg-gradient-to-br from-white to-gray-50 border border-gray-200 shadow-lg hover:shadow-2xl'
-      }`}
-      style={{ 
-        opacity: isLocked ? 0.75 : 1,
-        backdropFilter: 'blur(10px)'
-      }}
+      className="group relative rounded-2xl p-8 h-full bg-gradient-to-br from-white to-gray-50 border border-gray-200 shadow-lg hover:shadow-2xl"
       initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: isLocked ? 0.75 : 1, y: 0 }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
       whileHover={{ 
@@ -34,31 +45,13 @@ const LeagueCard = ({
         transition: { duration: 0.3 }
       }}
     >
-      
-      {/* Animated background gradient overlay */}
-      {!isLocked && (
-        <div 
-          className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-10 transition-all duration-500"
-          style={{
-            background: `linear-gradient(135deg, ${gradientFrom}, ${gradientTo})`
-          }}
-        />
-      )}
-
       {/* League Status Badge */}
-      {isLocked ? (
-        <div className="absolute -top-4 right-4 bg-gradient-to-r from-gray-300 to-gray-400 text-gray-700 px-4 py-2 rounded-full text-xs font-semibold flex items-center shadow-md animate-pulse">
-          <Lock size={14} className="mr-2" />
-          Locked
+      <div className="absolute -top-4 right-4 bg-gradient-to-r from-green-400 to-emerald-500 text-white px-4 py-2 rounded-full text-xs font-semibold shadow-md">
+        <div className="flex items-center">
+          <div className="w-2 h-2 bg-white rounded-full mr-2 animate-pulse"></div>
+          Ongoing
         </div>
-      ) : (
-        <div className="absolute -top-4 right-4 bg-gradient-to-r from-green-400 to-emerald-500 text-white px-4 py-2 rounded-full text-xs font-semibold shadow-md">
-          <div className="flex items-center">
-            <div className="w-2 h-2 bg-white rounded-full mr-2 animate-pulse"></div>
-            Open
-          </div>
-        </div>
-      )}
+      </div>
 
       {/* League Icon & Title */}
       <MotionDiv 
@@ -68,125 +61,216 @@ const LeagueCard = ({
         viewport={{ once: true }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        <h3 className={`text-2xl font-bold transition-colors duration-300 ${
-          isLocked ? 'text-gray-500' : 'text-gray-800 group-hover:text-gray-900'
-        }`}>
-          {title} League
+        <h3 className="text-2xl font-bold transition-colors duration-300 text-gray-800 group-hover:text-gray-900">
+          {league.name}
         </h3>
       </MotionDiv>
 
       {/* League Description */}
       <MotionP 
-        className={`mb-6 leading-relaxed ${
-          isLocked ? 'text-gray-500' : 'text-gray-600'
-        }`}
+        className="mb-6 leading-relaxed text-gray-600"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5, delay: 0.3 }}
       >
-        {description}
+        {league.description}
       </MotionP>
 
-      {/* Prerequisites */}
-      {prerequisite && (
+      {/* Week Count Badge */}
+      <MotionDiv 
+        className="mb-6 inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200"
+        initial={{ opacity: 0, scale: 0.8 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+      >
+        <Calendar size={16} className="mr-2" />
+        {weeks.length} Week{weeks.length !== 1 ? 's' : ''}
+      </MotionDiv>
+
+      {/* Weeks List */}
+      {weeks.length > 0 && (
         <MotionDiv 
-          className={`mb-6 p-4 rounded-lg border-l-4 transition-all duration-300 ${
-            isLocked 
-              ? 'bg-gray-50 border-gray-300' 
-              : 'bg-amber-50 border-amber-400 hover:bg-amber-100'
-          }`}
-          initial={{ opacity: 0, x: -20 }}
-          whileInView={{ opacity: 1, x: 0 }}
+          className="space-y-3 mb-6"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.4 }}
+          transition={{ 
+            duration: 0.5, 
+            delay: 0.5,
+            staggerChildren: 0.1
+          }}
         >
-          <p className="text-sm flex items-center">
-            <span className="mr-2 text-amber-500 text-lg">⚠️</span>
-            <span>
-              <strong className={`${
-        isLocked 
-          ? 'text-gray-500' 
-          : 'text-amber-700'
-      }`}>Prerequisite:</strong>
-              <span className={isLocked ? 'text-gray-600' : 'text-amber-600'}>
-                {prerequisite}
-              </span>
-            </span>
-          </p>
+          <h4 className="text-sm font-semibold mb-3 text-gray-700">
+            Whats going on:
+          </h4>
+          <div className="space-y-2 max-h-48 overflow-y-auto">
+            {weeks
+              .sort((a, b) => a.order - b.order)
+              .map((week, index) => (
+                <MotionDiv 
+                  key={week.id}
+                  className="flex items-start text-sm group/week text-gray-600"
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.3, delay: 0.1 * index }}
+                  whileHover={{ x: 5 }}
+                >
+                  <div className="w-2 h-2 rounded-full mt-2 mr-3 flex-shrink-0 bg-blue-400" />
+                  <div className="flex-1">
+                    <span className="font-medium text-gray-700">
+                      {week.name}
+                    </span>
+                  </div>
+                </MotionDiv>
+              ))}
+          </div>
         </MotionDiv>
       )}
 
-      {/* Certification & Club Info */}
+      {/* League Stats */}
       <MotionDiv 
-        className="space-y-3 mb-6"
+        className="flex items-center justify-between pt-4 border-t border-gray-200"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        transition={{ 
-          duration: 0.5, 
-          delay: 0.5,
-          staggerChildren: 0.1
-        }}
+        transition={{ duration: 0.5, delay: 0.6 }}
       >
-        <MotionDiv 
-          className="flex items-center text-sm group/cert"
-          whileHover={{ x: 5 }}
-          transition={{ duration: 0.2 }}
-        >
-          <MotionDiv 
-            className="p-2 rounded-lg mr-3 transition-all duration-300"
-            style={{ backgroundColor: `${accentColor}20` }}
-            whileHover={{ scale: 1.1, rotate: 5 }}
-          >
-            <Award size={16} style={{ color: accentColor }} />
-          </MotionDiv>
-          <span className={`font-medium ${isLocked ? 'text-gray-500' : 'text-gray-700'}`}>
-            {certification}
-          </span>
-        </MotionDiv>
-        <MotionDiv 
-          className="flex items-center text-sm group/club"
-          whileHover={{ x: 5 }}
-          transition={{ duration: 0.2 }}
-        >
-          <MotionDiv 
-            className="p-2 rounded-lg mr-3 transition-all duration-300"
-            style={{ backgroundColor: `${accentColor}20` }}
-            whileHover={{ scale: 1.1, rotate: 5 }}
-          >
-            <Users size={16} style={{ color: accentColor }} />
-          </MotionDiv>
-          <span className={isLocked ? 'text-gray-500' : 'text-gray-600'}>
-            Powered by: <span className="font-medium">{poweredBy}</span>
-          </span>
-        </MotionDiv>
-      </MotionDiv>      
+        <div className="flex items-center text-sm">
+          <Users size={16} className="mr-2 text-gray-500" />
+          <span className="text-gray-600">Join League</span>
+        </div>
+        <div className="flex items-center text-sm">
+          <Award size={16} className="mr-2 text-blue-500" />
+          <span className="text-blue-600">Certificate</span>
+        </div>
+      </MotionDiv>
     </MotionDiv>
   );
 };
 
 const Cohort = () => {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        duration: 0.6,
-        staggerChildren: 0.2
-      }
-    }
-  };
+  const [cohortsData, setCohortsData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        ease: "easeOut"
+  useEffect(() => {
+    console.log('🔄 Cohort component mounted - starting data fetch...');
+    
+    const loadCohortsData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        console.log('📡 Fetching cohorts data from API...');
+        
+        const response = await fetchCohortsStructure();
+        console.log('✅ API Response received:', response);
+        
+        if (response && response.data && response.data.length > 0) {
+          console.log('📊 Setting cohorts data:', response.data[0]);
+          setCohortsData(response);
+        } else {
+          console.warn('⚠️ No cohort data found in response');
+          setError('No cohort data available');
+        }
+      } catch (err) {
+        console.error('❌ Failed to fetch cohorts data:', err);
+        setError(err.message || 'Failed to load cohort data');
+      } finally {
+        setLoading(false);
+        console.log('🏁 Loading complete');
       }
+    };
+
+    loadCohortsData();
+  }, []);
+
+  console.log('🎯 Render state - Loading:', loading, 'Error:', error, 'Data:', !!cohortsData);
+
+  // Loading state
+  if (loading) {
+    console.log('⏳ Rendering loading state...');
+    return (
+      <MotionSection 
+        id="cohort" 
+        className="py-20 pb-24 bg-gradient-to-br from-slate-50 via-white to-blue-50"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+      >
+        <div className="container mx-auto px-6 text-center">
+          <div className="flex items-center justify-center space-x-2">
+            <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            <span className="text-gray-600">Loading learning paths...</span>
+          </div>
+        </div>
+      </MotionSection>
+    );
+  }
+
+  // Error state
+  if (error) {
+    console.log('❌ Rendering error state:', error);
+    return (
+      <MotionSection 
+        id="cohort" 
+        className="py-20 pb-24 bg-gradient-to-br from-slate-50 via-white to-blue-50"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+      >
+        <div className="container mx-auto px-6 text-center">
+          <div className="flex items-center justify-center space-x-2 text-red-600">
+            <AlertCircle size={24} />
+            <span>Failed to load learning paths: {error}</span>
+          </div>
+          <div className="mt-4">
+            <button 
+              onClick={() => window.location.reload()} 
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </MotionSection>
+    );
+  }
+
+  // Get the first cohort
+  const cohort = cohortsData?.data?.[0];
+  console.log('🏆 Cohort data to render:', cohort);
+  
+  if (!cohort) {
+    console.log('📭 No cohort found - rendering empty state');
+    return (
+      <MotionSection 
+        id="cohort" 
+        className="py-20 pb-24 bg-gradient-to-br from-slate-50 via-white to-blue-50"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+      >
+        <div className="container mx-auto px-6 text-center">
+          <div className="text-gray-600">No active cohorts available at the moment.</div>
+        </div>
+      </MotionSection>
+    );
+  }
+
+  const leagues = cohort.leagues || [];
+  const totalWeeks = cohortsData?.meta?.totalWeeks || 0;
+  
+  console.log('🎮 Rendering cohort with', leagues.length, 'leagues and', totalWeeks, 'total weeks');
+
+  // Define colors for different leagues
+  const getLeagueColors = (leagueName) => {
+    const name = leagueName.toLowerCase();
+    if (name.includes('ml') || name.includes('machine learning')) {
+      return "#3B82F6"; // Blue
+    } else if (name.includes('finance')) {
+      return "#059669"; // Green
+    } else {
+      return "#7C3AED"; // Purple
     }
   };
 
@@ -197,141 +281,98 @@ const Cohort = () => {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.1 }}
-      variants={containerVariants}
+      variants={{
+        hidden: { opacity: 0 },
+        visible: {
+          opacity: 1,
+          transition: {
+            duration: 0.6,
+            staggerChildren: 0.2
+          }
+        }
+      }}
     >
+      {/* Background decorations */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full opacity-50 blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-green-100 to-blue-100 rounded-full opacity-50 blur-3xl"></div>
+      </div>
+
       <div className="container mx-auto px-6 relative z-10">
         {/* Header Section */}
         <MotionDiv 
           className="text-center mb-20 max-w-4xl mx-auto"
-          variants={itemVariants}
+          variants={{
+            hidden: { opacity: 1, y: 30 },
+            visible: {
+              opacity: 1,
+              y: 0,
+              transition: {
+                duration: 0.6,
+                ease: "easeOut"
+              }
+            }
+          }}
         >
           <MotionH2 
             className="text-5xl font-bold mb-6 bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 bg-clip-text text-transparent"
-            variants={itemVariants}
           >
-            Cohort 1.0 – Leagues
+            {cohort.name} – Learning Leagues
           </MotionH2>
           
           <MotionP 
             className="text-xl text-gray-600 mb-8 leading-relaxed"
-            variants={itemVariants}
           >
-            Gamify your learning journey by exploring our skill-focused leagues in this cohort.
+            {cohort.description}
           </MotionP>
+
+          {/* Stats */}
+          <MotionDiv className="flex items-center justify-center flex-wrap gap-4 text-sm">
+            <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full shadow-md">
+              <BookOpen size={16} className="text-blue-500" />
+              <span className="font-medium">{leagues.length} League{leagues.length !== 1 ? 's' : ''}</span>
+            </div>
+            <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full shadow-md">
+              <Calendar size={16} className="text-green-500" />
+              <span className="font-medium">{totalWeeks} Total Weeks</span>
+            </div>
+            <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full shadow-md">
+              <CheckCircle size={16} className="text-purple-500" />
+              <span className="font-medium">Certificates Available</span>
+            </div>
+          </MotionDiv>
         </MotionDiv>
 
-        {/* Leagues Display with Enhanced Connection */}
-        <MotionDiv 
-          className="relative max-w-6xl mx-auto"
-          variants={itemVariants}
-        >
-          {/* Enhanced Connection Flow */}
-          <MotionDiv 
-            className="hidden lg:block absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-12"
-            initial={{ opacity: 0, scale: 0 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-          >
-            <div className="flex items-center">
-              {/* Progress Line */}
-              <div className="w-32 h-1 bg-gradient-to-r from-green-400 via-yellow-400 to-gray-300 rounded-full relative overflow-hidden">
-                <MotionDiv 
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-50"
-                  animate={{ x: ["-100%", "100%"] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                />
-              </div>
-            </div>
-          </MotionDiv>
-
+        {/* Leagues Display */}
+        <MotionDiv className="relative max-w-7xl mx-auto">
           {/* Leagues Grid */}
           <MotionDiv 
-            className="grid lg:grid-cols-2 gap-12 lg:gap-20"
-            variants={{
-              hidden: {},
-              visible: {
-                transition: {
-                  staggerChildren: 0.3
-                }
-              }
-            }}
+            className={`grid gap-12 ${
+              leagues.length === 1 
+                ? 'max-w-2xl mx-auto' 
+                : leagues.length === 2 
+                ? 'lg:grid-cols-2 lg:gap-20' 
+                : 'lg:grid-cols-2 xl:grid-cols-3'
+            }`}
           >
-            {/* ML League */}
-            <MotionDiv
-              variants={{
-                hidden: { opacity: 0, x: -50 },
-                visible: { opacity: 1, x: 0 }
-              }}
-            >
-              <LeagueCard
-                title="ML"
-                description="A hands-on, community-driven journey through Machine Learning fundamentals and applications with real-world projects."
-                poweredBy="OpenLearn ML Team"
-                certification="ML League Certificate"
-                prerequisite="Basic Python knowledge required."
-                accentColor="#3B82F6"
-                gradientFrom="#3B82F6"
-                gradientTo="#1D4ED8"
-              />
-            </MotionDiv>
-
-            {/* Finance League */}
-            <MotionDiv
-              variants={{
-                hidden: { opacity: 0, x: 50 },
-                visible: { opacity: 1, x: 0 }
-              }}
-            >
-              <LeagueCard
-                title="Finance"
-                description="A comprehensive finance foundation built for students who want to understand money, markets, and modern financial systems."
-                poweredBy="FinNest – Finance Society of NITJ"
-                certification="Specialisation Certificate in ML + Finance"
-                prerequisite="Completion of ML League required."
-                isLocked={true}
-                accentColor="#777777"
-                gradientFrom="#059669"
-                gradientTo="#047857"
-              />
-            </MotionDiv>
-          </MotionDiv>
-
-          {/* Enhanced Specialisation Tags */}
-          <MotionDiv 
-            className="hidden lg:block absolute -bottom-8 right-8 transform"
-            initial={{ opacity: 0, scale: 0.8 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.8 }}
-          >
-            <MotionDiv 
-              className="bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 px-6 py-3 rounded-2xl text-sm font-bold inline-flex items-center shadow-lg"
-              animate={{ scale: [1, 1.05, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              <Award size={18} className="mr-2" />
-              <span>Specialisation Unlocks Here</span>
-              <MotionDiv 
-                className="ml-2 w-2 h-2 bg-white rounded-full"
-                animate={{ scale: [1, 1.5, 1], opacity: [1, 0.5, 1] }}
-                transition={{ duration: 1, repeat: Infinity }}
-              />
-            </MotionDiv>
-          </MotionDiv>
-          
-          {/* Mobile Specialisation Tag */}
-          <MotionDiv 
-            className="lg:hidden text-center mt-8"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.8 }}
-          >
-            <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 px-6 py-3 rounded-2xl text-sm font-bold inline-flex items-center shadow-lg">
-              <Award size={18} className="mr-2" />
-              <span>Specialisation Unlocks Here</span>
-            </div>
+            {leagues.map((league, index) => {
+              const accentColor = getLeagueColors(league.name);
+              
+              return (
+                <MotionDiv 
+                  key={league.id}
+                  initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: index * 0.2 }}
+                >
+                  <LeagueCard 
+                    league={league} 
+                    accentColor={accentColor}
+                  />
+                </MotionDiv>
+              );
+            })}
           </MotionDiv>
         </MotionDiv>
       </div>
