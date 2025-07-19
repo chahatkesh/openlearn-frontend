@@ -221,11 +221,6 @@ const LearningProgressSection = ({ user }) => {
             <div className="bg-white rounded-2xl border border-gray-100 p-4">
               <div className="text-center">
                 <h3 className="text-lg font-medium text-gray-900">{loadingMessage}</h3>
-                {!loading && totalLeaguesForCalculation > 0 && (
-                  <p className="text-sm text-gray-600 mt-1">
-                    Progress: {completedResourceCalculations.size}/{totalLeaguesForCalculation} leagues
-                  </p>
-                )}
               </div>
             </div>
 
@@ -253,11 +248,11 @@ const LearningProgressSection = ({ user }) => {
             <div className="bg-white rounded-2xl border border-gray-100 p-6">
               <div className="h-6 bg-gray-200 rounded w-1/3 mb-6 animate-pulse"></div>
               <div className="space-y-4">
-                {[1, 2, 3].map(i => (
+                {[1].map(i => (
                   <div key={i} className="border border-gray-100 rounded-xl p-6">
                     <div className="h-5 bg-gray-200 rounded w-1/4 mb-4 animate-pulse"></div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {[1, 2].map(j => (
+                      {[1, 2, 3].map(j => (
                         <div key={j} className="p-4 bg-gray-50 rounded-lg">
                           <div className="h-4 bg-gray-200 rounded w-3/4 mb-2 animate-pulse"></div>
                           <div className="h-3 bg-gray-200 rounded w-full mb-3 animate-pulse"></div>
