@@ -5,18 +5,11 @@ import WelcomeBanner from './WelcomeBanner';
 import AssignmentManagement from './AssignmentManagement';
 import OptimizedDashboardService from '../../utils/optimizedDashboardService';
 import ProgressService from '../../utils/progressService';
+import ResourceLoadingIndicator, { StatisticLoader, ResourceProgressBadge } from '../common/ResourceLoadingIndicator';
 
 // OPTIMIZATION 1: Memoized sub-components to prevent unnecessary re-renders
 const MemoizedWelcomeBanner = React.memo(WelcomeBanner);
 const MemoizedAssignmentManagement = React.memo(AssignmentManagement);
-
-// Small loading component for statistics
-const StatisticLoader = ({ color = 'gray' }) => (
-  <div className="flex items-center">
-    <div className={`w-3 h-3 animate-spin rounded-full border border-${color}-300 border-t-${color}-600`}></div>
-    <span className="ml-1 text-gray-400">...</span>
-  </div>
-);
 
 const LearningProgressSection = ({ user }) => {
   const navigate = useNavigate();
@@ -35,10 +28,12 @@ const LearningProgressSection = ({ user }) => {
   const [leagueStatistics, setLeagueStatistics] = useState({});
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearchActive, setIsSearchActive] = useState(false);
-  const [statisticsLoading, setStatisticsLoading] = useState(true);
-  const [resourcesCalculationComplete, setResourcesCalculationComplete] = useState(false);
-  const [completedResourceCalculations, setCompletedResourceCalculations] = useState(new Set());
-  const [totalLeaguesForCalculation, setTotalLeaguesForCalculation] = useState(0);
+  
+  // IMPROVEMENT: Separate resource calculation state from main loading state
+  const [resourceCalculationsInProgress, setResourceCalculationsInProgress] = useState(new Set());
+  const [resourceCalculationsCompleted, setResourceCalculationsCompleted] = useState(new Set());
+  const [totalResourceCalculations, setTotalResourceCalculations] = useState(0);
+  const [showResourcesCompleteToast, setShowResourcesCompleteToast] = useState(false);
 
   // OPTIMIZATION 3: Progressive data loading with immediate UI feedback
   const loadDashboardDataOptimized = useCallback(async () => {
@@ -56,9 +51,12 @@ const LearningProgressSection = ({ user }) => {
       
       // Set basic league statistics immediately for instant display
       if (data.basicLeagueStats) {
+        console.log('Setting basic league statistics:', data.basicLeagueStats);
         setLeagueStatistics(data.basicLeagueStats);
-        setStatisticsLoading(false);
       }
+      
+      // IMPROVEMENT: Main loading is complete - show dashboard immediately
+      setLoading(false);
       
       // Load resource progress in background for enrolled leagues
       if (data.dashboardData?.enrollments?.length > 0) {
@@ -72,57 +70,77 @@ const LearningProgressSection = ({ user }) => {
 
       // Calculate statistics immediately for display, then update in background
       if (data.leagues?.length > 0) {
-        setTotalLeaguesForCalculation(data.leagues.length);
-        console.log(`Starting resource calculations for ${data.leagues.length} leagues:`, data.leagues.map(l => l.id));
+        // IMPROVEMENT: Check which leagues already have complete resource calculations
+        const leaguesNeedingCalculation = data.leagues.filter(league => {
+          const cachedStats = data.basicLeagueStats[league.id];
+          // Only calculate if no cached stats or resource count is missing/zero
+          return !cachedStats || cachedStats.resourcesCount === 0;
+        });
         
-        // Create callback to update resource counts when background calculation completes
-        const handleResourceUpdate = (leagueId, resourceCount) => {
-          console.log(`Resource calculation completed for league ${leagueId}: ${resourceCount} resources`);
+        setTotalResourceCalculations(leaguesNeedingCalculation.length);
+        setResourceCalculationsInProgress(new Set(leaguesNeedingCalculation.map(l => l.id)));
+        
+        if (leaguesNeedingCalculation.length > 0) {
+          console.log(`Starting resource calculations for ${leaguesNeedingCalculation.length} leagues:`, leaguesNeedingCalculation.map(l => l.id));
           
-          setLeagueStatistics(prevStats => ({
-            ...prevStats,
-            [leagueId]: {
-              ...prevStats[leagueId],
-              resourcesCount: resourceCount
-            }
-          }));
-          
-          // Track completion of each league's resource calculation
-          setCompletedResourceCalculations(prevCompleted => {
-            const newCompleted = new Set([...prevCompleted, leagueId]);
-            console.log(`Completed resource calculations: ${newCompleted.size}/${data.leagues.length}`, [...newCompleted]);
+          // Create callback to update resource counts when background calculation completes
+          const handleResourceUpdate = (leagueId, resourceCount) => {
+            console.log(`Resource calculation completed for league ${leagueId}: ${resourceCount} resources`);
             
-            // Check if all resource calculations are complete
-            if (newCompleted.size === data.leagues.length) {
-              console.log('All resource calculations completed!');
-              setResourcesCalculationComplete(true);
-              setStatisticsLoading(false);
-            }
-            
-            return newCompleted;
-          });
-        };
-
-        // Calculate accurate statistics in background to update basic stats
-        OptimizedDashboardService.calculateAllLeagueStatistics(data.leagues, handleResourceUpdate)
-          .then(accurateStats => {
-            console.log('Initial statistics calculated:', accurateStats);
             setLeagueStatistics(prevStats => ({
               ...prevStats,
-              ...accurateStats
+              [leagueId]: {
+                ...prevStats[leagueId],
+                resourcesCount: resourceCount
+              }
             }));
             
-            // Note: We don't set statisticsLoading to false here anymore
-            // It will be set to false only when all resource calculations complete via the callback
-          });
+            // Track completion of each league's resource calculation
+            setResourceCalculationsCompleted(prevCompleted => {
+              const newCompleted = new Set([...prevCompleted, leagueId]);
+              console.log(`Completed resource calculations: ${newCompleted.size}/${leaguesNeedingCalculation.length}`, [...newCompleted]);
+              
+              // Check if all resource calculations are complete
+              if (newCompleted.size === leaguesNeedingCalculation.length) {
+                console.log('All resource calculations completed!');
+                setShowResourcesCompleteToast(true);
+                // Hide the toast after 4 seconds
+                setTimeout(() => {
+                  setShowResourcesCompleteToast(false);
+                }, 4000);
+              }
+              
+              return newCompleted;
+            });
+            
+            // Remove from in-progress set
+            setResourceCalculationsInProgress(prevInProgress => {
+              const newInProgress = new Set(prevInProgress);
+              newInProgress.delete(leagueId);
+              return newInProgress;
+            });
+          };
+
+          // Calculate accurate statistics in background to update basic stats
+          OptimizedDashboardService.calculateAllLeagueStatistics(leaguesNeedingCalculation, handleResourceUpdate)
+            .then(accurateStats => {
+              console.log('Initial statistics calculated:', accurateStats);
+              setLeagueStatistics(prevStats => ({
+                ...prevStats,
+                ...accurateStats
+              }));
+            });
+        } else {
+          console.log('All leagues already have complete resource calculations');
+          // All leagues already have complete data, no calculations needed
+          setTotalResourceCalculations(0);
+          setResourceCalculationsInProgress(new Set());
+        }
       } else {
         console.log('No leagues found, marking calculations as complete');
-        setStatisticsLoading(false);
-        setResourcesCalculationComplete(true);
+        setTotalResourceCalculations(0);
       }
 
-      // Only hide initial loading, but keep showing progress for resource calculations
-      setLoading(false);
     } catch (err) {
       console.error('Error loading dashboard data:', err);
       setError(`Failed to connect to the learning platform. Please try again later. (${err.message})`);
@@ -199,31 +217,14 @@ const LearningProgressSection = ({ user }) => {
     );
   }, [searchTerm, isSearchActive]);
 
-  const getLoadingMessage = () => {
-    if (loading) return 'Loading dashboard...';
-    if (!resourcesCalculationComplete && totalLeaguesForCalculation > 0) {
-      return `Loading Dashboard... (${completedResourceCalculations.size}/${totalLeaguesForCalculation})`;
-    }
-    return 'Almost ready!';
-  };
-
-  // Show loading until both basic loading and resource calculations are complete
-  const isFullyLoaded = !loading && resourcesCalculationComplete;
-
-  if (!isFullyLoaded) {
-    const loadingMessage = getLoadingMessage();
+  // IMPROVEMENT: Show loading skeleton only for basic dashboard loading, not resource calculations
+  // This allows users to see and interact with the dashboard immediately while resources load in background
+  if (loading) {
     
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="space-y-6">
-            {/* Minimal Loading Text */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-4">
-              <div className="text-center">
-                <h3 className="text-lg font-medium text-gray-900">{loadingMessage}</h3>
-              </div>
-            </div>
-
             {/* Header skeleton */}
             <div className="bg-white rounded-2xl border border-gray-100 p-6 space-y-4">
               <div className="h-8 bg-gray-200 rounded w-1/3 animate-pulse"></div>
@@ -317,6 +318,16 @@ const LearningProgressSection = ({ user }) => {
             </div>
           )}
         </div>
+        
+        {/* IMPROVEMENT: Global Resource Calculation Progress */}
+        {resourceCalculationsInProgress.size > 0 && (
+          <ResourceLoadingIndicator
+            isLoading={true}
+            completedCount={resourceCalculationsCompleted.size}
+            totalCount={totalResourceCalculations}
+            compact={false}
+          />
+        )}
 
         {/* Welcome Banner for New Users */}
         {(!dashboardData?.enrollments || dashboardData.enrollments.length === 0) && (
@@ -666,11 +677,9 @@ const LearningProgressSection = ({ user }) => {
                           const leagueName = league.name || 'Learning League';
                           const leagueDescription = league.description || 'A comprehensive learning journey designed to build your skills.';
 
-                          // Determine if we should show loading indicators
-                          // Show loading when statistics are being calculated AND we don't have dynamic stats yet
-                          const showWeeksLoading = statisticsLoading && !dynamicStats;
-                          const showSectionsLoading = statisticsLoading && !dynamicStats;
-                          const showResourcesLoading = statisticsLoading && !dynamicStats;
+                          // IMPROVEMENT: Check if this specific league's resources are still being calculated
+                          const isCalculatingResources = resourceCalculationsInProgress.has(league.id);
+                          const showResourcesLoading = isCalculatingResources;
 
                           return (
                             <div 
@@ -686,6 +695,15 @@ const LearningProgressSection = ({ user }) => {
                                 }
                               }}
                             >
+                              {/* IMPROVEMENT: Add resource calculation progress badge */}
+                              {isCalculatingResources && (
+                                <ResourceProgressBadge 
+                                  isCalculating={true}
+                                  completedCount={resourceCalculationsCompleted.size}
+                                  totalCount={totalResourceCalculations}
+                                />
+                              )}
+                              
                               <div className="p-5">
                                 <div className="flex items-start justify-between">
                                   <div className="flex-1">
@@ -698,19 +716,11 @@ const LearningProgressSection = ({ user }) => {
                                     <div className="flex items-center space-x-2 text-xs text-gray-500">
                                       <span className="flex items-center">
                                         <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-1"></div>
-                                        {showWeeksLoading ? (
-                                          <StatisticLoader color="blue" />
-                                        ) : (
-                                          `${weeksCount} ${weeksCount === 1 ? 'week' : 'weeks'}`
-                                        )}
+                                        {`${weeksCount} ${weeksCount === 1 ? 'week' : 'weeks'}`}
                                       </span>
                                       <span className="flex items-center">
                                         <div className="w-1.5 h-1.5 bg-green-400 rounded-full mr-1"></div>
-                                        {showSectionsLoading ? (
-                                          <StatisticLoader color="green" />
-                                        ) : (
-                                          `${sectionsCount} ${sectionsCount === 1 ? 'section' : 'sections'}`
-                                        )}
+                                        {`${sectionsCount} ${sectionsCount === 1 ? 'section' : 'sections'}`}
                                       </span>
                                       <span className="flex items-center">
                                         <div className="w-1.5 h-1.5 bg-purple-400 rounded-full mr-1"></div>
@@ -809,6 +819,33 @@ const LearningProgressSection = ({ user }) => {
         {/* Bottom spacer */}
         <div className="h-6"></div>
       </div>
+      
+      {/* IMPROVEMENT: Resource Calculations Complete Toast */}
+      {showResourcesCompleteToast && (
+        <div className="fixed top-4 right-4 z-50 animate-slide-in-right">
+          <div className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-3 max-w-sm">
+            <div className="flex-shrink-0">
+              <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
+                <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+              </div>
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-medium">All resources loaded! 🎉</p>
+              <p className="text-xs text-green-100">Your dashboard is now fully updated</p>
+            </div>
+            <button
+              onClick={() => setShowResourcesCompleteToast(false)}
+              className="flex-shrink-0 text-white/80 hover:text-white transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

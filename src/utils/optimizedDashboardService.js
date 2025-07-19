@@ -43,6 +43,7 @@ const setCachedData = (key, data) => {
 class OptimizedDashboardService {
   /**
    * Extract basic statistics from league objects for immediate display
+   * Also checks cached league stats for complete resource counts
    */
   static extractBasicLeagueStats(leagues) {
     const basicStats = {};
@@ -51,11 +52,20 @@ class OptimizedDashboardService {
     
     leagues.forEach(league => {
       if (league && league.id) {
-        basicStats[league.id] = {
-          weeksCount: league.weeksCount || league.weeks_count || league.totalWeeks || league._count?.weeks || 0,
-          sectionsCount: league.sectionsCount || league.sections_count || league.totalSections || league._count?.sections || 0,
-          resourcesCount: league.totalResources || league.resources_count || league._count?.resources || 0
-        };
+        // First check if we have cached complete stats for this league
+        const cachedStats = getCachedData(`league-stats-${league.id}`);
+        
+        if (cachedStats && cachedStats.resourcesCount > 0) {
+          // Use cached complete stats
+          basicStats[league.id] = cachedStats;
+        } else {
+          // Fall back to basic league data (may not have resource count)
+          basicStats[league.id] = {
+            weeksCount: league.weeksCount || league.weeks_count || league.totalWeeks || league._count?.weeks || 0,
+            sectionsCount: league.sectionsCount || league.sections_count || league.totalSections || league._count?.sections || 0,
+            resourcesCount: league.totalResources || league.resources_count || league._count?.resources || 0
+          };
+        }
       }
     });
     
@@ -166,6 +176,10 @@ class OptimizedDashboardService {
           
           if (cached) {
             statistics[league.id] = cached;
+            // If cached data has complete resource count, call the callback immediately
+            if (cached.resourcesCount > 0 && onResourcesUpdate) {
+              onResourcesUpdate(league.id, cached.resourcesCount);
+            }
             return;
           }
 
