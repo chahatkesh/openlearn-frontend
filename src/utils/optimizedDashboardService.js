@@ -220,20 +220,27 @@ class OptimizedDashboardService {
     );
 
     // Background resource counting (non-blocking)
-    this.countResourcesInBackground(sectionIds).then(count => {
-      // Update cache with complete data
-      const completeStats = {
-        weeksCount: totalWeeks,
-        sectionsCount: totalSections,
-        resourcesCount: count
-      };
-      setCachedData(`league-stats-${leagueId}`, completeStats);
-      
-      // Notify component of the resource count update
+    if (sectionIds.length > 0) {
+      this.countResourcesInBackground(sectionIds).then(count => {
+        // Update cache with complete data
+        const completeStats = {
+          weeksCount: totalWeeks,
+          sectionsCount: totalSections,
+          resourcesCount: count
+        };
+        setCachedData(`league-stats-${leagueId}`, completeStats);
+        
+        // Notify component of the resource count update
+        if (onResourcesUpdate) {
+          onResourcesUpdate(leagueId, count);
+        }
+      });
+    } else {
+      // No sections means no resources - immediately notify with 0 count
       if (onResourcesUpdate) {
-        onResourcesUpdate(leagueId, count);
+        onResourcesUpdate(leagueId, 0);
       }
-    });
+    }
 
     return {
       weeksCount: totalWeeks,

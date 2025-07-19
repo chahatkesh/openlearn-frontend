@@ -36,6 +36,9 @@ const LearningProgressSection = ({ user }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [statisticsLoading, setStatisticsLoading] = useState(true);
+  const [resourcesCalculationComplete, setResourcesCalculationComplete] = useState(false);
+  const [completedResourceCalculations, setCompletedResourceCalculations] = useState(new Set());
+  const [totalLeaguesForCalculation, setTotalLeaguesForCalculation] = useState(0);
 
   // OPTIMIZATION 3: Progressive data loading with immediate UI feedback
   const loadDashboardDataOptimized = useCallback(async () => {
@@ -69,8 +72,13 @@ const LearningProgressSection = ({ user }) => {
 
       // Calculate statistics immediately for display, then update in background
       if (data.leagues?.length > 0) {
+        setTotalLeaguesForCalculation(data.leagues.length);
+        console.log(`Starting resource calculations for ${data.leagues.length} leagues:`, data.leagues.map(l => l.id));
+        
         // Create callback to update resource counts when background calculation completes
         const handleResourceUpdate = (leagueId, resourceCount) => {
+          console.log(`Resource calculation completed for league ${leagueId}: ${resourceCount} resources`);
+          
           setLeagueStatistics(prevStats => ({
             ...prevStats,
             [leagueId]: {
@@ -78,21 +86,42 @@ const LearningProgressSection = ({ user }) => {
               resourcesCount: resourceCount
             }
           }));
+          
+          // Track completion of each league's resource calculation
+          setCompletedResourceCalculations(prevCompleted => {
+            const newCompleted = new Set([...prevCompleted, leagueId]);
+            console.log(`Completed resource calculations: ${newCompleted.size}/${data.leagues.length}`, [...newCompleted]);
+            
+            // Check if all resource calculations are complete
+            if (newCompleted.size === data.leagues.length) {
+              console.log('All resource calculations completed!');
+              setResourcesCalculationComplete(true);
+              setStatisticsLoading(false);
+            }
+            
+            return newCompleted;
+          });
         };
 
         // Calculate accurate statistics in background to update basic stats
         OptimizedDashboardService.calculateAllLeagueStatistics(data.leagues, handleResourceUpdate)
           .then(accurateStats => {
+            console.log('Initial statistics calculated:', accurateStats);
             setLeagueStatistics(prevStats => ({
               ...prevStats,
               ...accurateStats
             }));
-            setStatisticsLoading(false);
+            
+            // Note: We don't set statisticsLoading to false here anymore
+            // It will be set to false only when all resource calculations complete via the callback
           });
       } else {
+        console.log('No leagues found, marking calculations as complete');
         setStatisticsLoading(false);
+        setResourcesCalculationComplete(true);
       }
 
+      // Only hide initial loading, but keep showing progress for resource calculations
       setLoading(false);
     } catch (err) {
       console.error('Error loading dashboard data:', err);
@@ -170,11 +199,54 @@ const LearningProgressSection = ({ user }) => {
     );
   }, [searchTerm, isSearchActive]);
 
-  if (loading) {
+  // Calculate progress percentage for resource calculations
+  const calculateResourceProgress = () => {
+    if (totalLeaguesForCalculation === 0) return 100;
+    return Math.round((completedResourceCalculations.size / totalLeaguesForCalculation) * 100);
+  };
+
+  const getLoadingMessage = () => {
+    if (loading) return 'Loading dashboard...';
+    if (!resourcesCalculationComplete && totalLeaguesForCalculation > 0) {
+      return `Calculating resources... (${completedResourceCalculations.size}/${totalLeaguesForCalculation})`;
+    }
+    return 'Almost ready!';
+  };
+
+  // Show loading until both basic loading and resource calculations are complete
+  const isFullyLoaded = !loading && resourcesCalculationComplete;
+
+  if (!isFullyLoaded) {
+    const progress = calculateResourceProgress();
+    const loadingMessage = getLoadingMessage();
+    
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="animate-pulse space-y-6">
+            {/* Loading Progress Indicator */}
+            <div className="bg-white rounded-2xl border border-gray-100 p-6">
+              <div className="text-center space-y-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-[#FFDE59] to-[#FFD700] rounded-2xl flex items-center justify-center mx-auto">
+                  <div className="w-8 h-8 border-2 border-gray-800 border-t-transparent rounded-full animate-spin"></div>
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold text-gray-900">{loadingMessage}</h3>
+                  {!loading && totalLeaguesForCalculation > 0 && (
+                    <div className="w-full bg-gray-200 rounded-full h-2 max-w-md mx-auto">
+                      <div 
+                        className="bg-gradient-to-r from-[#FFDE59] to-[#FFD700] h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${progress}%` }}
+                      ></div>
+                    </div>
+                  )}
+                  <p className="text-sm text-gray-600">
+                    {loading ? 'Setting up your learning environment...' : 'Finalizing statistics and progress data...'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
             {/* Header skeleton */}
             <div className="bg-white rounded-2xl border border-gray-100 p-6 space-y-4">
               <div className="h-8 bg-gray-200 rounded w-1/3"></div>
