@@ -4,6 +4,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { LogOut, Settings, ChevronDown, Search, Home, X } from 'lucide-react';
 import UserProfileSection from './UserProfileSection';
 import ProgressService from '../../utils/progressService';
+import OptimizedDashboardService from '../../utils/optimizedDashboardService';
 import { getUserAvatarUrl } from '../../utils/avatarService.jsx';
 import { SearchProvider } from '../../context/SearchContext.jsx';
 
@@ -81,12 +82,16 @@ const DashboardLayout = () => {
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
-  // Fetch dashboard data at the top level
+  // OPTIMIZATION: Fetch dashboard data at the top level with background prefetching
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
+        // First load essential data quickly
         const data = await ProgressService.getUserDashboard();
         setDashboardData(data);
+        
+        // Then prefetch additional data in background for faster subsequent loads
+        OptimizedDashboardService.prefetchUserData();
       } catch (err) {
         console.error('Error fetching dashboard data:', err);
       }

@@ -3,16 +3,29 @@ import { useNavigate } from 'react-router-dom';
 import { TrendingUp, BookOpen, Users, Star, ChevronRight, Play, CheckSquare, AlertCircle, Trophy, Clock, Target, Search } from 'lucide-react';
 import WelcomeBanner from './WelcomeBanner';
 import AssignmentManagement from './AssignmentManagement';
+import OptimizedDashboardService from '../../utils/optimizedDashboardService';
 import ProgressService from '../../utils/progressService';
-import ResourceProgressService from '../../utils/resourceProgressService';
-import DataService from '../../utils/dataService';
+
+// OPTIMIZATION 1: Memoized sub-components to prevent unnecessary re-renders
+const MemoizedWelcomeBanner = React.memo(WelcomeBanner);
+const MemoizedAssignmentManagement = React.memo(AssignmentManagement);
+
+// Small loading component for statistics
+const StatisticLoader = ({ color = 'gray' }) => (
+  <div className="flex items-center">
+    <div className={`w-3 h-3 animate-spin rounded-full border border-${color}-300 border-t-${color}-600`}></div>
+    <span className="ml-1 text-gray-400">...</span>
+  </div>
+);
 
 const LearningProgressSection = ({ user }) => {
   const navigate = useNavigate();
+  
+  // OPTIMIZATION 2: Simplified state management
   const [dashboardData, setDashboardData] = useState(null);
   const [cohorts, setCohorts] = useState([]);
   const [leagues, setLeagues] = useState([]);
-  const [selectedView, setSelectedView] = useState('dashboard'); // dashboard, assignments
+  const [selectedView, setSelectedView] = useState('dashboard');
   const [selectedAssignmentLeague, setSelectedAssignmentLeague] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -22,12 +35,81 @@ const LearningProgressSection = ({ user }) => {
   const [leagueStatistics, setLeagueStatistics] = useState({});
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearchActive, setIsSearchActive] = useState(false);
+  const [statisticsLoading, setStatisticsLoading] = useState(true);
 
-  useEffect(() => {
-    fetchDashboardData();
-    fetchCohorts();
-    fetchLeagues();
+  // OPTIMIZATION 3: Progressive data loading with immediate UI feedback
+  const loadDashboardDataOptimized = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Use optimized service for progressive loading
+      const data = await OptimizedDashboardService.loadInitialDashboardData();
+      
+      // Set essential data immediately for fast UI update
+      setDashboardData(data.dashboardData);
+      setCohorts(data.cohorts);
+      setLeagues(data.leagues);
+      
+      // Set basic league statistics immediately for instant display
+      if (data.basicLeagueStats) {
+        setLeagueStatistics(data.basicLeagueStats);
+        setStatisticsLoading(false);
+      }
+      
+      // Load resource progress in background for enrolled leagues
+      if (data.dashboardData?.enrollments?.length > 0) {
+        OptimizedDashboardService.loadResourceProgressOptimized(data.dashboardData)
+          .then(resourceData => {
+            setAllResourceProgress(resourceData.allResourceProgress);
+            setAllSectionResources(resourceData.allSectionResources);
+            setSectionToLeagueMap(resourceData.sectionToLeagueMap);
+          });
+      }
+
+      // Calculate statistics immediately for display, then update in background
+      if (data.leagues?.length > 0) {
+        // Create callback to update resource counts when background calculation completes
+        const handleResourceUpdate = (leagueId, resourceCount) => {
+          setLeagueStatistics(prevStats => ({
+            ...prevStats,
+            [leagueId]: {
+              ...prevStats[leagueId],
+              resourcesCount: resourceCount
+            }
+          }));
+        };
+
+        // Calculate accurate statistics in background to update basic stats
+        OptimizedDashboardService.calculateAllLeagueStatistics(data.leagues, handleResourceUpdate)
+          .then(accurateStats => {
+            setLeagueStatistics(prevStats => ({
+              ...prevStats,
+              ...accurateStats
+            }));
+            setStatisticsLoading(false);
+          });
+      } else {
+        setStatisticsLoading(false);
+      }
+
+      setLoading(false);
+    } catch (err) {
+      console.error('Error loading dashboard data:', err);
+      setError(`Failed to connect to the learning platform. Please try again later. (${err.message})`);
+      
+      // Set fallback data to prevent crashes
+      setDashboardData({ enrollments: [], badges: [] });
+      setCohorts([]);
+      setLeagues([]);
+      setLoading(false);
+    }
   }, []);
+
+  // OPTIMIZATION 4: Load data on mount with optimized approach
+  useEffect(() => {
+    loadDashboardDataOptimized();
+  }, [loadDashboardDataOptimized]);
 
   // Listen for search events from the header
   useEffect(() => {
@@ -41,172 +123,11 @@ const LearningProgressSection = ({ user }) => {
     return () => window.removeEventListener('dashboardSearch', handleSearchEvent);
   }, []);
 
-  // Function to calculate real league statistics
-  const calculateLeagueStatistics = useCallback(async (leagueId) => {
-    try {
-      const leagueData = await ProgressService.getLeagueProgress(leagueId);
-      
-      if (leagueData?.progress?.weeks) {
-        let totalWeeks = leagueData.progress.weeks.length;
-        let totalSections = 0;
-        let totalResources = 0;
-        
-        // Count sections and resources from the actual league structure
-        for (const week of leagueData.progress.weeks) {
-          if (week.sections) {
-            totalSections += week.sections.length;
-            
-            // Fetch resources for each section to get accurate count
-            for (const section of week.sections) {
-              try {
-                const sectionData = await ResourceProgressService.getSectionResourcesProgress(section.id);
-                if (sectionData?.resources) {
-                  totalResources += sectionData.resources.length;
-                }
-              } catch (err) {
-                console.warn(`Failed to fetch resources for section ${section.id}:`, err);
-              }
-            }
-          }
-        }
-        
-        const stats = {
-          weeksCount: totalWeeks,
-          sectionsCount: totalSections,
-          resourcesCount: totalResources
-        };
-        
-        return stats;
-      }
-    } catch (err) {
-      console.warn(`Failed to calculate statistics for league ${leagueId}:`, err);
-    }
-    
-    return {
-      weeksCount: 0,
-      sectionsCount: 0,
-      resourcesCount: 0
-    };
-  }, []);
-
-  // Fetch statistics for all leagues
-  useEffect(() => {
-    const fetchAllLeagueStatistics = async () => {
-      if (leagues.length > 0) {
-        const statistics = {};
-        
-        for (const league of leagues) {
-          const stats = await calculateLeagueStatistics(league.id);
-          statistics[league.id] = stats;
-        }
-        
-        setLeagueStatistics(statistics);
-      }
-    };
-    
-    fetchAllLeagueStatistics();
-  }, [leagues, calculateLeagueStatistics]);
-
-    const fetchAllResourceProgress = useCallback(async () => {
-    if (!dashboardData?.enrollments) return;
-    
-    try {
-      // Fetch league progress for each enrollment to get section data
-      const allProgress = {};
-      const allSections = {};
-      const sectionLeagueMap = {};
-      
-      for (const enrollment of dashboardData.enrollments) {
-        try {
-          const leagueData = await ProgressService.getLeagueProgress(enrollment.league.id);
-          
-          if (leagueData?.progress?.weeks) {
-            // Fetch resource progress for each section
-            for (const week of leagueData.progress.weeks) {
-              for (const section of week.sections) {
-                try {
-                  const sectionData = await ResourceProgressService.getSectionResourcesProgress(section.id);
-                  
-                  if (sectionData?.resources) {
-                    // Store section resources for section completion calculation
-                    allSections[section.id] = sectionData.resources;
-                    
-                    // Map section to league
-                    sectionLeagueMap[section.id] = enrollment.league.id;
-                    
-                    // Store individual resource progress
-                    sectionData.resources.forEach(resource => {
-                      if (resource.progress) {
-                        allProgress[resource.id] = resource.progress;
-                      }
-                    });
-                  }
-                } catch (sectionErr) {
-                  console.warn(`Failed to fetch resources for section ${section.id}:`, sectionErr);
-                }
-              }
-            }
-          }
-        } catch (leagueErr) {
-          console.warn(`Failed to fetch league data for ${enrollment.league.id}:`, leagueErr);
-        }
-      }
-      
-      setAllResourceProgress(allProgress);
-      setAllSectionResources(allSections);
-      setSectionToLeagueMap(sectionLeagueMap);
-    } catch (err) {
-      console.warn('Failed to fetch resource progress:', err);
-    }
-  }, [dashboardData]);
-
-  useEffect(() => {
-    if (dashboardData?.enrollments?.length > 0) {
-      fetchAllResourceProgress();
-    }
-  }, [dashboardData, fetchAllResourceProgress]);
-
-  const fetchDashboardData = async () => {
-    try {
-      const data = await ProgressService.getUserDashboard();
-      setDashboardData(data);
-    } catch (err) {
-      console.error('Error fetching dashboard data:', err);
-      setError(`Failed to connect to the learning platform. Please try again later. (${err.message})`);
-      
-      // Set empty data structure to prevent crashes
-      setDashboardData({
-        enrollments: [],
-        badges: []
-      });
-    }
-  };
-
-  const fetchCohorts = async () => {
-    try {
-      const data = await DataService.getCohorts();
-      setCohorts(data.cohorts || []);
-    } catch (err) {
-      console.error('Error fetching cohorts:', err);
-    }
-  };
-
-  const fetchLeagues = async () => {
-    try {
-      const data = await DataService.getLeagues();
-      setLeagues(data.leagues || []);
-    } catch (err) {
-      console.error('Error fetching leagues:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleEnrollment = async (cohortId, leagueId) => {
     try {
       await ProgressService.enrollUser(cohortId, leagueId);
       alert('Enrollment successful! Welcome to your learning journey!');
-      await fetchDashboardData(); // Refresh dashboard data
+      await loadDashboardDataOptimized(); // Refresh dashboard data
     } catch (err) {
       console.error('Enrollment error:', err);
       alert(`Enrollment failed: ${err.message}. Please try again.`);
@@ -230,7 +151,7 @@ const LearningProgressSection = ({ user }) => {
     }
   };
 
-  // Filter functions for search
+  // OPTIMIZATION 5: Memoized filter functions for better performance
   const filterEnrollments = useCallback((enrollments) => {
     if (!isSearchActive || !searchTerm) return enrollments;
     
@@ -266,23 +187,10 @@ const LearningProgressSection = ({ user }) => {
   // If viewing assignments
   if (selectedView === 'assignments' && selectedAssignmentLeague) {
     return (
-      <div className="space-y-6">
-        {/* Navigation */}
-        <div className="flex items-center justify-between">
-          <button
-            onClick={handleBackToMain}
-            className="flex items-center text-blue-600 hover:text-blue-700 transition-colors"
-          >
-            <ChevronRight className="mr-1 rotate-180" size={20} />
-            Back to Dashboard
-          </button>
-        </div>
-
-        <AssignmentManagement 
-          leagueId={selectedAssignmentLeague.id}
-          leagueName={selectedAssignmentLeague.name}
-        />
-      </div>
+      <MemoizedAssignmentManagement 
+        league={selectedAssignmentLeague}
+        onBack={handleBackToMain}
+      />
     );
   }  return (
     <div className="bg-transparent">
@@ -323,7 +231,7 @@ const LearningProgressSection = ({ user }) => {
         {/* Welcome Banner for New Users */}
         {(!dashboardData?.enrollments || dashboardData.enrollments.length === 0) && (
           <div className="bg-gradient-to-r from-yellow-50 to-amber-50 rounded-2xl border border-yellow-100 shadow-sm overflow-hidden">
-            <WelcomeBanner user={user} onExploreClick={scrollToLeagues} />
+            <MemoizedWelcomeBanner user={user} onExploreClick={scrollToLeagues} />
           </div>
         )}
 
@@ -668,6 +576,12 @@ const LearningProgressSection = ({ user }) => {
                           const leagueName = league.name || 'Learning League';
                           const leagueDescription = league.description || 'A comprehensive learning journey designed to build your skills.';
 
+                          // Determine if we should show loading indicators
+                          // Show loading when statistics are being calculated AND we don't have dynamic stats yet
+                          const showWeeksLoading = statisticsLoading && !dynamicStats;
+                          const showSectionsLoading = statisticsLoading && !dynamicStats;
+                          const showResourcesLoading = statisticsLoading && !dynamicStats;
+
                           return (
                             <div 
                               key={league.id}
@@ -694,15 +608,27 @@ const LearningProgressSection = ({ user }) => {
                                     <div className="flex items-center space-x-2 text-xs text-gray-500">
                                       <span className="flex items-center">
                                         <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-1"></div>
-                                        {dynamicStats ? weeksCount : '...'} {weeksCount === 1 ? 'week' : 'weeks'}
+                                        {showWeeksLoading ? (
+                                          <StatisticLoader color="blue" />
+                                        ) : (
+                                          `${weeksCount} ${weeksCount === 1 ? 'week' : 'weeks'}`
+                                        )}
                                       </span>
                                       <span className="flex items-center">
                                         <div className="w-1.5 h-1.5 bg-green-400 rounded-full mr-1"></div>
-                                        {dynamicStats ? sectionsCount : '...'} {sectionsCount === 1 ? 'section' : 'sections'}
+                                        {showSectionsLoading ? (
+                                          <StatisticLoader color="green" />
+                                        ) : (
+                                          `${sectionsCount} ${sectionsCount === 1 ? 'section' : 'sections'}`
+                                        )}
                                       </span>
                                       <span className="flex items-center">
                                         <div className="w-1.5 h-1.5 bg-purple-400 rounded-full mr-1"></div>
-                                        {dynamicStats ? resourcesCount : '...'} {resourcesCount === 1 ? 'resource' : 'resources'}
+                                        {showResourcesLoading ? (
+                                          <StatisticLoader color="purple" />
+                                        ) : (
+                                          `${resourcesCount} ${resourcesCount === 1 ? 'resource' : 'resources'}`
+                                        )}
                                       </span>
                                     </div>
                                   </div>
