@@ -11,7 +11,6 @@ import {
   SiDocker,
   SiRedis,
 } from 'react-icons/si';
-import { RiGithubLine, RiLinkedinLine, RiTwitterXFill } from 'react-icons/ri';
 import { MotionDiv, MotionA, MotionSection, MotionP } from '../common/MotionWrapper';
 
 
@@ -60,22 +59,6 @@ const Note = () => {
     { name: 'Redis', icon: SiRedis },
   ];
 
-  // Developer information
-  const developers = [
-    {
-      name: "Chahat Kesharwani",
-      linkedin: "https://linkedin.com/in/chahatkesharwani",
-      github: "https://github.com/chahatkesh",
-      twitter: "https://x.com/chahatkesh"
-    },
-    {
-      name: "Rishi Ahuja",
-      linkedin: "https://linkedin.com/in/rishi-ahuja-b1a224310",
-      github: "https://github.com/rishiahuja",
-      twitter: "https://x.com/rishi2220"
-    }
-  ];
-
   return (
     <MotionSection 
       className="py-16 border-t border-gray-200"
@@ -115,58 +98,6 @@ const Note = () => {
             })}
           </MotionDiv>
 
-          {/* Developers - Simple horizontal layout */}
-          <MotionDiv 
-            className="flex justify-center gap-8 mb-8"
-            variants={itemVariant}
-          >
-            {developers.map((dev, index) => (
-              <MotionDiv 
-                key={index} 
-                className="text-center"
-                variants={techVariant}
-                whileHover={{ y: -2 }}
-              >
-                <p className="text-sm font-medium text-gray-800 mb-2">{dev.name}</p>
-                <div className="flex justify-center gap-3">
-                  <MotionA 
-                    href={dev.linkedin} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="text-gray-400 hover:text-[#0077B5] transition-colors duration-200"
-                    aria-label={`${dev.name}'s LinkedIn`}
-                    whileHover={{ scale: 1.2 }}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    <RiLinkedinLine size={18} />
-                  </MotionA>
-                  <MotionA 
-                    href={dev.github} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-black transition-colors duration-200"
-                    aria-label={`${dev.name}'s GitHub`}
-                    whileHover={{ scale: 1.2 }}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    <RiGithubLine size={18} />
-                  </MotionA>
-                  <MotionA 
-                    href={dev.twitter} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-black transition-colors duration-200"
-                    aria-label={`${dev.name}'s Twitter`}
-                    whileHover={{ scale: 1.2 }}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    <RiTwitterXFill size={18} />
-                  </MotionA>
-                </div>
-              </MotionDiv>
-            ))}
-          </MotionDiv>
-
           {/* Action buttons - Minimal and balanced */}
           <MotionDiv 
             className="flex justify-center gap-4"
@@ -184,7 +115,6 @@ const Note = () => {
               <span>Server Status</span>
               <ExternalLink size={14} />
             </MotionA>
-            
             <MotionA 
               href="https://github.com/openlearnnitj/" 
               target="_blank" 

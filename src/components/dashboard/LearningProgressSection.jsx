@@ -531,9 +531,12 @@ const LearningProgressSection = ({ user }) => {
                                 {enrollment.league.name}
                               </h3>
                             </div>
-                            <p className="hidden md:block text-gray-600 text-sm leading-relaxed line-clamp-2">
-                              {enrollment.league.description}
-                            </p>
+                            <p className="hidden md:block text-gray-600 text-sm leading-relaxed">
+                              {enrollment.league.description.length > 100
+                              ? enrollment.league.description.slice(0, 100) + '...'
+                              : enrollment.league.description}
+                              </p>
+
                           </div>
                           
                           {/* Circular Progress Badge */}

@@ -31,7 +31,7 @@ const fetchCohortsStructure = async () => {
   }
 };
 
-const LeagueCard = ({ league, accentColor }) => {
+const LeagueCard = ({ league }) => {
   const weeks = league.weeks || [];
   
   return (
@@ -64,12 +64,6 @@ const LeagueCard = ({ league, accentColor }) => {
         transition={{ duration: 0.5, delay: 0.2 }}
       >
         <div className="flex items-center mb-3">
-          <div 
-            className="w-12 h-12 rounded-xl flex items-center justify-center mr-4"
-            style={{ backgroundColor: `${accentColor}15` }}
-          >
-            <BookOpen size={24} style={{ color: accentColor }} />
-          </div>
           <div>
             <h3 className="text-xl md:text-2xl font-bold text-gray-900 group-hover:text-gray-800 transition-colors duration-300">
               {league.name}
@@ -295,21 +289,6 @@ const Cohort = () => {
   }
 
   const leagues = cohort.leagues || [];
-  const totalWeeks = cohortsData?.meta?.totalWeeks || 0;
-  
-  console.log('🎮 Rendering cohort with', leagues.length, 'leagues and', totalWeeks, 'total weeks');
-
-  // Define colors for different leagues
-  const getLeagueColors = (leagueName) => {
-    const name = leagueName.toLowerCase();
-    if (name.includes('ml') || name.includes('machine learning')) {
-      return "#3B82F6"; // Blue
-    } else if (name.includes('finance')) {
-      return "#059669"; // Green
-    } else {
-      return "#7C3AED"; // Purple
-    }
-  };
 
   return (
     <MotionSection 
@@ -402,9 +381,7 @@ const Cohort = () => {
                 : 'lg:grid-cols-2 xl:grid-cols-3'
             }`}
           >
-            {leagues.map((league, index) => {
-              const accentColor = getLeagueColors(league.name);
-              
+            {leagues.map((league, index) => {              
               return (
                 <MotionDiv 
                   key={league.id}
@@ -414,8 +391,7 @@ const Cohort = () => {
                   transition={{ duration: 0.6, delay: index * 0.2 }}
                 >
                   <LeagueCard 
-                    league={league} 
-                    accentColor={accentColor}
+                    league={league}
                   />
                 </MotionDiv>
               );
