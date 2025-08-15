@@ -84,7 +84,7 @@ const TwitterEmbed = ({ tweetId }) => {
 };
 
 const TwitterTestimonials = () => {
-  const [visibleCount, setVisibleCount] = useState(9);
+  const [visibleCount, setVisibleCount] = useState(6);
   
   // Sort tweets to show featured ones first
   const sortedTweets = [...tweetUrls].sort((a, b) => {
@@ -155,12 +155,12 @@ const TwitterTestimonials = () => {
           </div>
 
           {/* Button Controls */}
-          {(hasMoreTweets || visibleCount > 9) && (
+          {(hasMoreTweets || visibleCount > 6) && (
             <div className="text-center mt-8">
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 {hasMoreTweets && (
                   <button
-                    onClick={() => setVisibleCount(prev => prev + 5)}
+                    onClick={() => setVisibleCount(prev => prev + 6)}
                     className="inline-flex items-center px-6 py-3 bg-[#FFDE59] text-black font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-[#FFDE59]/90"
                   >
                     Read More
@@ -170,9 +170,9 @@ const TwitterTestimonials = () => {
                   </button>
                 )}
                 
-                {visibleCount > 9 && (
+                {visibleCount > 6 && (
                   <button
-                    onClick={() => setVisibleCount(9)}
+                    onClick={() => setVisibleCount(6)}
                     className="inline-flex items-center px-6 py-3 bg-gray-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-gray-600"
                   >
                     Show Less
