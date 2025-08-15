@@ -1,8 +1,8 @@
 import React from 'react'
 import Hero from '../components/landingPage/Hero'
 import Cohort from '../components/landingPage/Cohort'
-import Leaderboard from '../components/landingPage/Leaderboard'
 import Team from '../components/landingPage/Team'
+import TwitterTestimonials from '../components/landingPage/TwitterTestimonials'
 import About from '../components/landingPage/About'
 import Cta from '../components/landingPage/Cta'
 import Note from '../components/landingPage/Note'
@@ -21,8 +21,8 @@ const LandingPage = () => {
       
       <Hero />
       <Cohort />
-      <Leaderboard />
       <Team />
+      <TwitterTestimonials />
       <About />
       <Cta />
       <Note />
