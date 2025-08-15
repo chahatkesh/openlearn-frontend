@@ -25,7 +25,6 @@ const processCommitsToUpdates = (commits) => {
       id: index + 1,
       date: dateString,
       time: timeString,
-      type: parseCommitType(commit.message),
       summary: parseCommitSummary(commit.message),
       category: parseCommitCategory(commit.message),
       commitHash: commit.hash,
@@ -64,17 +63,6 @@ export const getAllUpdatesComplete = async () => {
 export const getRecentUpdatesOptimized = async (recentCount = 200) => {
   const commits = await getRealTimeCommits(true, false, recentCount); // fetchAll = false, with limit
   return processCommitsToUpdates(commits);
-}
-
-/**
- * Get updates by type
- * @param {string} type - The type of update (feature, improvement, security, docs, etc.)
- * @param {boolean} searchAll - Whether to search all commits or just recent ones
- * @returns {Promise<Array>} Filtered array of updates
- */
-export const getUpdatesByType = async (type, searchAll = false) => {
-  const updates = searchAll ? await getAllUpdatesComplete() : await getAllUpdates(false, 500);
-  return updates.filter(update => update.type === type)
 }
 
 /**
@@ -132,243 +120,6 @@ export const getUniqueContributors = async (searchAll = true) => {
 }
 
 /**
- * Helper function to parse commit type from commit message
- * @param {string} message - Git commit message
- * @returns {string} Parsed type
- */
-const parseCommitType = (message) => {
-  const lowerMessage = message.toLowerCase().trim()
-  
-  // Handle conventional commit prefixes with colon
-  if (lowerMessage.includes(':')) {
-    const prefix = lowerMessage.split(':')[0].trim()
-    
-    // Primary conventional commit types
-    if (prefix === 'feat' || prefix === 'feature') return 'feature'
-    if (prefix === 'fix' || prefix === 'bugfix') return 'fix'
-    if (prefix === 'docs' || prefix === 'doc' || prefix === 'documentation') return 'docs'
-    if (prefix === 'style' || prefix === 'ui' || prefix === 'design') return 'style'
-    if (prefix === 'refactor' || prefix === 'cleanup') return 'refactor'
-    if (prefix === 'test' || prefix === 'testing') return 'test'
-    if (prefix === 'chore' || prefix === 'maintenance') return 'chore'
-    if (prefix === 'perf' || prefix === 'performance') return 'performance'
-    if (prefix === 'ci' || prefix === 'build') return 'ci'
-    if (prefix === 'revert') return 'revert'
-    
-    // Extended conventional commit types
-    if (prefix === 'security' || prefix === 'sec') return 'security'
-    if (prefix === 'config' || prefix === 'conf') return 'config'
-    if (prefix === 'deploy' || prefix === 'deployment') return 'deploy'
-    if (prefix === 'hotfix' || prefix === 'patch') return 'hotfix'
-    if (prefix === 'breaking' || prefix === 'break') return 'breaking'
-    if (prefix === 'deps' || prefix === 'dependency') return 'deps'
-    if (prefix === 'wip' || prefix === 'work in progress') return 'wip'
-    if (prefix === 'init' || prefix === 'initial') return 'init'
-    if (prefix === 'release' || prefix === 'version') return 'release'
-    if (prefix === 'merge') return 'merge'
-    if (prefix === 'crit' || prefix === 'critical') return 'critical'
-  }
-  
-  // Handle messages without conventional prefixes
-  // Check for action words at the beginning
-  const words = lowerMessage.split(' ')
-  const firstWord = words[0]
-  const firstTwoWords = words.slice(0, 2).join(' ')
-  
-  // Action-based type detection
-  if (firstWord === 'add' || firstWord === 'added' || firstWord === 'adding') {
-    return 'feature'
-  }
-  if (firstWord === 'implement' || firstWord === 'implemented' || firstWord === 'implementing') {
-    return 'feature'
-  }
-  if (firstWord === 'create' || firstWord === 'created' || firstWord === 'creating') {
-    return 'feature'
-  }
-  if (firstWord === 'build' || firstWord === 'built' || firstWord === 'building') {
-    return 'feature'
-  }
-  if (firstWord === 'introduce' || firstWord === 'introduced' || firstWord === 'introducing') {
-    return 'feature'
-  }
-  
-  // Fix-related actions
-  if (firstWord === 'fix' || firstWord === 'fixed' || firstWord === 'fixing') {
-    return 'fix'
-  }
-  if (firstWord === 'resolve' || firstWord === 'resolved' || firstWord === 'resolving') {
-    return 'fix'
-  }
-  if (firstWord === 'correct' || firstWord === 'corrected' || firstWord === 'correcting') {
-    return 'fix'
-  }
-  if (firstWord === 'repair' || firstWord === 'repaired' || firstWord === 'repairing') {
-    return 'fix'
-  }
-  if (firstWord === 'patch' || firstWord === 'patched' || firstWord === 'patching') {
-    return 'fix'
-  }
-  
-  // Improvement-related actions
-  if (firstWord === 'improve' || firstWord === 'improved' || firstWord === 'improving') {
-    return 'improvement'
-  }
-  if (firstWord === 'enhance' || firstWord === 'enhanced' || firstWord === 'enhancing') {
-    return 'improvement'
-  }
-  if (firstWord === 'optimize' || firstWord === 'optimized' || firstWord === 'optimizing') {
-    return 'performance'
-  }
-  if (firstWord === 'upgrade' || firstWord === 'upgraded' || firstWord === 'upgrading') {
-    return 'improvement'
-  }
-  if (firstWord === 'refine' || firstWord === 'refined' || firstWord === 'refining') {
-    return 'improvement'
-  }
-  
-  // Refactor-related actions
-  if (firstWord === 'refactor' || firstWord === 'refactored' || firstWord === 'refactoring') {
-    return 'refactor'
-  }
-  if (firstWord === 'restructure' || firstWord === 'restructured' || firstWord === 'restructuring') {
-    return 'refactor'
-  }
-  if (firstWord === 'reorganize' || firstWord === 'reorganized' || firstWord === 'reorganizing') {
-    return 'refactor'
-  }
-  if (firstWord === 'cleanup' || firstWord === 'clean') {
-    return 'refactor'
-  }
-  if (firstWord === 'simplify' || firstWord === 'simplified' || firstWord === 'simplifying') {
-    return 'refactor'
-  }
-  
-  // Removal-related actions
-  if (firstWord === 'remove' || firstWord === 'removed' || firstWord === 'removing') {
-    return 'refactor'
-  }
-  if (firstWord === 'delete' || firstWord === 'deleted' || firstWord === 'deleting') {
-    return 'refactor'
-  }
-  if (firstWord === 'drop' || firstWord === 'dropped' || firstWord === 'dropping') {
-    return 'refactor'
-  }
-  
-  // Update-related actions
-  if (firstWord === 'update' || firstWord === 'updated' || firstWord === 'updating') {
-    return 'update'
-  }
-  if (firstWord === 'modify' || firstWord === 'modified' || firstWord === 'modifying') {
-    return 'update'
-  }
-  if (firstWord === 'change' || firstWord === 'changed' || firstWord === 'changing') {
-    return 'update'
-  }
-  if (firstWord === 'adjust' || firstWord === 'adjusted' || firstWord === 'adjusting') {
-    return 'update'
-  }
-  if (firstWord === 'revise' || firstWord === 'revised' || firstWord === 'revising') {
-    return 'update'
-  }
-  
-  // Merge-related
-  if (firstWord === 'merge' || firstWord === 'merged' || firstWord === 'merging') {
-    return 'merge'
-  }
-  if (firstTwoWords === 'merge pull' || firstTwoWords === 'merge branch') {
-    return 'merge'
-  }
-  
-  // Documentation-related
-  if (firstWord === 'document' || firstWord === 'documented' || firstWord === 'documenting') {
-    return 'docs'
-  }
-  if (firstWord === 'readme' || lowerMessage.includes('readme')) {
-    return 'docs'
-  }
-  
-  // Configuration-related
-  if (firstWord === 'configure' || firstWord === 'configured' || firstWord === 'configuring') {
-    return 'config'
-  }
-  if (firstWord === 'setup' || firstWord === 'set' || firstWord === 'install') {
-    return 'config'
-  }
-  
-  // Initial/Bootstrap
-  if (firstWord === 'initial' || firstWord === 'initialize' || firstWord === 'init') {
-    return 'init'
-  }
-  if (firstWord === 'bootstrap' || firstWord === 'scaffolding') {
-    return 'init'
-  }
-  
-  // Content-based detection (fallback)
-  if (lowerMessage.includes('security') || lowerMessage.includes('vulnerability') || 
-      lowerMessage.includes('permission') || lowerMessage.includes('auth')) {
-    return 'security'
-  }
-  
-  if (lowerMessage.includes('test') || lowerMessage.includes('testing') || 
-      lowerMessage.includes('spec') || lowerMessage.includes('unit test')) {
-    return 'test'
-  }
-  
-  if (lowerMessage.includes('style') || lowerMessage.includes('css') || 
-      lowerMessage.includes('styling') || lowerMessage.includes('design') ||
-      lowerMessage.includes('ui') || lowerMessage.includes('layout')) {
-    return 'style'
-  }
-  
-  if (lowerMessage.includes('performance') || lowerMessage.includes('optimize') || 
-      lowerMessage.includes('speed') || lowerMessage.includes('efficiency')) {
-    return 'performance'
-  }
-  
-  if (lowerMessage.includes('deploy') || lowerMessage.includes('deployment') || 
-      lowerMessage.includes('ci/cd') || lowerMessage.includes('build') ||
-      lowerMessage.includes('pipeline') || lowerMessage.includes('workflow')) {
-    return 'ci'
-  }
-  
-  if (lowerMessage.includes('dependency') || lowerMessage.includes('package') || 
-      lowerMessage.includes('deps') || lowerMessage.includes('npm') ||
-      lowerMessage.includes('yarn') || lowerMessage.includes('upgrade')) {
-    return 'deps'
-  }
-  
-  if (lowerMessage.includes('breaking') || lowerMessage.includes('break') || 
-      lowerMessage.includes('major') || lowerMessage.includes('incompatible')) {
-    return 'breaking'
-  }
-  
-  if (lowerMessage.includes('hotfix') || lowerMessage.includes('critical') || 
-      lowerMessage.includes('urgent') || lowerMessage.includes('emergency')) {
-    return 'hotfix'
-  }
-  
-  if (lowerMessage.includes('wip') || lowerMessage.includes('work in progress') || 
-      lowerMessage.includes('partial') || lowerMessage.includes('incomplete')) {
-    return 'wip'
-  }
-  
-  if (lowerMessage.includes('revert') || lowerMessage.includes('rollback') || 
-      lowerMessage.includes('undo')) {
-    return 'revert'
-  }
-  
-  // Check for improvement indicators
-  if (lowerMessage.includes('enhance') || lowerMessage.includes('improve') || 
-      lowerMessage.includes('better') || lowerMessage.includes('upgrade') ||
-      lowerMessage.includes('modernize') || lowerMessage.includes('revamp')) {
-    return 'improvement'
-  }
-  
-  // Default fallback
-  return 'update'
-}
-
-/**
  * Helper function to parse commit summary from commit message
  * @param {string} message - Git commit message
  * @returns {string} Cleaned summary
@@ -412,7 +163,7 @@ const parseCommitCategory = (message) => {
     return 'Documentation'
   }
   if (lowerMessage.startsWith('test:')) {
-    return 'Testing'
+    return 'Quality Assurance'
   }
   if (lowerMessage.startsWith('crit:')) {
     return 'Critical'
@@ -569,7 +320,7 @@ const parseCommitCategory = (message) => {
       lowerMessage.includes('bundle') || lowerMessage.includes('compress')) {
     return 'Performance'
   }
-  
+
   // Default fallback
   return 'General'
 }
