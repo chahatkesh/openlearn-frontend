@@ -30,21 +30,6 @@ const Hero = () => {
     }
   };
 
-  const badgeVariants = {
-    hidden: { 
-      opacity: 0, 
-      scale: 0.8 
-    },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: {
-        duration: 0.5,
-        ease: "easeOut"
-      }
-    }
-  };
-
   const cardVariants = {
     hidden: { 
       opacity: 0, 
@@ -93,18 +78,6 @@ const Hero = () => {
             variants={containerVariants}
           >
             <div>
-              <MotionDiv 
-                className="flex flex-wrap gap-3 mb-4"
-                variants={itemVariants}
-              >
-                <MotionSpan 
-                  className="bg-gradient-to-r from-orange-600 to-amber-600 text-white px-4 py-1 rounded-full transition-all duration-300 ease-in-out text-sm font-medium animate-pulse"
-                  variants={badgeVariants}
-                  whileHover={{ scale: 1.05 }}
-                >
-                  Upcoming: India's Largest AI+Finance Hackathon - Oct 2025
-                </MotionSpan>
-              </MotionDiv>
               <MotionH1 
                 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight" 
                 style={{color: '#000000'}}

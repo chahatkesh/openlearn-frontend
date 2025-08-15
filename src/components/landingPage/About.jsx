@@ -65,7 +65,7 @@ const SupporterCard = ({ name, logo, supportType, description = "#" }) => {
   
   return (
     <MotionDiv 
-      className="bg-white rounded-xl overflow-hidden hover:shadow-sm transition-all duration-500 group"
+      className="bg-white rounded-xl overflow-hidden transition-all duration-500 group"
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -232,7 +232,7 @@ const About = () => {
         
         {/* Footer note with more coming soon - enhanced with effects */}
         <div className="text-center mt-16 mb-4">
-          <div className="inline-flex items-center justify-center px-6 py-3 bg-[#FFDE59]/10 border border-[#FFDE59]/20 text-gray-700 rounded-full shadow-sm hover:shadow-md transition-all">
+          <div className="inline-flex items-center justify-center px-6 py-3 bg-[#FFDE59]/10 border border-[#FFDE59]/20 text-gray-700 rounded-full transition-all">
             <Info size={16} className="mr-2 text-gray-700" />
             <span className="font-medium">More institutional collaborations coming soon...</span>
           </div>
