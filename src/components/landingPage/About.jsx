@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {Info} from 'lucide-react';
 import { MotionDiv, MotionSection, MotionH2, MotionP } from '../common/MotionWrapper';
+import supporterData from '../../data/supporterData';
 
 // CSS animation keyframes
 const animationKeyframes = `
@@ -160,39 +161,9 @@ const About = () => {
     const cleanup = addAnimationStyles();
     return cleanup;
   }, []);
-  // Data for institutional supporters with enhanced attributes
-  const supporters = [
-    {
-      name: "Centre for AI",
-      logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqIEpBlk-IM1LD3dV6BAWlLBiWeCREqvJrhA&s",
-      supportType: "Recognition",
-      description: "Recognised for innovation in AI-led community learning and skill development pathways.",
-    },
-    {
-      name: "PD Cell",
-      logo: "https://nitj.ac.in/files/1692175963374-dept%20img.jpg",
-      supportType: "Tech Support",
-      description: "Backing product-based learning journeys with tech mentorship and resources for practical skills.",
-    },
-    {
-      name: "IOTA Club",
-      logo: "https://github.com/user-attachments/assets/5afe8e80-29b8-47a1-8109-efe445dc5471",
-      supportType: "Community",
-      description: "Supporting ideation and team-based growth through events, hackathons and industry partnerships.",
-    },
-    {
-      name: "gaNIT",
-      logo: "https://d1hbpr09pwz0sk.cloudfront.net/logo_url/ganit-nit-jalandhar-c08f64ec",
-      supportType: "Mathematics",
-      description: "Supporting ideation and team-based growth through events, hackathons and industry partnerships.",
-    },
-    {
-      name: "FinNest",
-      logo: "https://nitj.ac.in/files/1726944127629-DSC00831.JPG",
-      supportType: "Finance",
-      description: "Supporting ideation and team-based growth through events, hackathons and industry partnerships.",
-    }
-  ];
+  
+  // Get supporters data from external file
+  const { supporters } = supporterData;
   
   return (
     <MotionSection 
@@ -228,36 +199,8 @@ const About = () => {
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-        {/* Part 1: About OpenLearn - Enhanced with animations */}
-        <MotionDiv 
-          className="text-center mb-20 max-w-4xl mx-auto"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          <MotionH2 
-            className="text-5xl font-bold mb-6 bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 bg-clip-text text-transparent"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            About OpenLearn
-          </MotionH2>
-          
-          <MotionP 
-            className="text-xl text-gray-600 mb-8 leading-relaxed"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-          >
-          OpenLearn is a student-led, cohort-based learning community at NIT Jalandhar.
-          </MotionP>
-        </MotionDiv>
 
-        {/* Part 2: Recognised & Supported By - with enhanced card hover effects */}
+        {/* Recognised & Supported By - with enhanced card hover effects */}
         <div className="mb-16 relative">
           {/* Yellow spotlights */}
           <div className="absolute -top-20 -left-20 w-64 h-64 bg-[#FFDE59] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>

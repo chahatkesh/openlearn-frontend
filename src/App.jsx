@@ -1,6 +1,7 @@
 import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import LandingPage from './pages/LandingPage'
+import AboutPage from './pages/AboutPage'
 import CohortsPage from './pages/CohortsPage'
 import CommunityPage from './pages/CommunityPage'
 import GalleryPage from './pages/GalleryPage'
@@ -38,6 +39,7 @@ const App = () => {
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
+        <Route path="/about" element={<AboutPage />} />
         <Route path="/cohorts" element={<CohortsPage />} />
         <Route path="/community" element={<CommunityPage />} />
         <Route path="/gallery" element={<GalleryPage />} />

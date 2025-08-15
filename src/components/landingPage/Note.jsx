@@ -3,6 +3,7 @@ import { Code, Server, ExternalLink } from 'lucide-react';
 import { 
   SiReact, 
   SiNodedotjs, 
+  SiJavascript,
   SiTypescript, 
   SiExpress, 
   SiTailwindcss, 
@@ -11,6 +12,7 @@ import {
   SiDocker,
   SiRedis,
 } from 'react-icons/si';
+import { FaAws } from "react-icons/fa";
 import { MotionDiv, MotionA, MotionSection, MotionP } from '../common/MotionWrapper';
 
 
@@ -49,14 +51,16 @@ const Note = () => {
   // Technology stack information
   const techStack = [
     { name: 'React.js', icon: SiReact },
-    { name: 'Node.js', icon: SiNodedotjs },
+    { name: 'JavaScript', icon: SiJavascript },
     { name: 'TypeScript', icon: SiTypescript },
+    { name: 'Node.js', icon: SiNodedotjs },
     { name: 'Express', icon: SiExpress },
     { name: 'Tailwind CSS', icon: SiTailwindcss },
     { name: 'PostgreSQL', icon: SiPostgresql },
     { name: 'Prisma', icon: SiPrisma },
     { name: 'Docker', icon: SiDocker },
     { name: 'Redis', icon: SiRedis },
+    { name: 'AWS', icon: FaAws }
   ];
 
   return (
