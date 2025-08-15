@@ -9,7 +9,7 @@ import teamData from '../../data/teamData';
 const TeamMemberCard = ({ name, description, linkedin, twitter, instagram }) => {
   return (
     <MotionDiv 
-      className="group relative bg-white rounded-3xl overflow-hidden shadow-sm transition-all duration-500 ease-out border border-gray-100/50"
+      className="group relative h-full bg-white rounded-3xl overflow-hidden shadow-sm transition-all duration-500 ease-out border border-gray-100/50"
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}

@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Linkedin, Instagram, MapPin } from 'lucide-react';
 import { RiTwitterXFill, RiMailFill } from 'react-icons/ri';
-import { MotionDiv, MotionFooter, MotionA } from '../common/MotionWrapper';
+import { MotionDiv, MotionFooter, MotionA } from './MotionWrapper';
 
 const Footer = () => {
   // Animation variants
@@ -42,6 +42,7 @@ const Footer = () => {
       behavior: 'smooth'
     });
   };
+  
   return (
     <MotionFooter 
       className="bg-black text-white py-14 relative overflow-hidden"
@@ -88,20 +89,18 @@ const Footer = () => {
                   OpenLearn
                 </Link>
                 <p className="text-gray-400 text-sm">
-                  Gamified Learning for NITJ Innovators
+                  Learn Together, Build Together
                 </p>
               </div>
             </div>
             <p className="text-gray-300 text-sm max-w-md mb-6">
-              OpenLearn is a student-led cohort-based learning platform at NIT Jalandhar that transforms educational experiences through gamification and collaborative competition.
+              OpenLearn is a student-run community created by students, for students. 
+              It's a space where we learn together, share knowledge, and grow as a community - but we don't stop at learning. 
+              Our ultimate aim is to build real products from what we learn.
             </p>
             
             {/* Contact Details */}
             <div className="space-y-2">
-              <div className="flex items-center text-sm text-gray-400">
-                <MapPin size={14} className="mr-2 text-[#FFDE59]" />
-                <span>NIT Jalandhar, Punjab, India</span>
-              </div>
               <div className="flex items-center text-sm text-gray-400">
                 <span className="mr-2 font-semibold text-[#FFDE59]">Email:</span>
                 <a href="mailto:info@openlearn.org.in" className="text-[#FFDE59]">info@openlearn.org.in</a>
@@ -118,27 +117,30 @@ const Footer = () => {
               {/* Community Column */}
               <MotionDiv variants={itemVariant}>
                 <h3 className="text-lg font-semibold mb-6 text-white relative inline-block">
-                  Community
+                  Quick Links
                   <span className="absolute left-0 bottom-0 w-1/2 h-0.5 bg-[#FFDE59]"></span>
                 </h3>
                 <ul className="space-y-3">
                   <li>
-                    <MotionA 
-                      href="#join-cohort" 
-                      className="text-gray-400 hover:text-[#FFDE59] transition-colors text-sm"
-                      whileHover={{ x: 2 }}
-                    >
-                      Join Cohort 1.0
-                    </MotionA>
+                    <MotionDiv whileHover={{ x: 2 }}>
+                      <Link to="/cohorts" className="text-gray-400 hover:text-[#FFDE59] transition-colors text-sm">
+                        Cohorts
+                      </Link>
+                    </MotionDiv>
                   </li>
                   <li>
-                    <MotionA 
-                      href="#cohort" 
-                      className="text-gray-400 hover:text-[#FFDE59] transition-colors text-sm"
-                      whileHover={{ x: 2 }}
-                    >
-                      Explore Leagues
-                    </MotionA>
+                    <MotionDiv whileHover={{ x: 2 }}>
+                      <Link to="/community" className="text-gray-400 hover:text-[#FFDE59] transition-colors text-sm">
+                        Community
+                      </Link>
+                    </MotionDiv>
+                  </li>
+                  <li>
+                    <MotionDiv whileHover={{ x: 2 }}>
+                      <Link to="/gallery" className="text-gray-400 hover:text-[#FFDE59] transition-colors text-sm">
+                        Gallery
+                      </Link>
+                    </MotionDiv>
                   </li>
                   <li>
                     <MotionDiv whileHover={{ x: 2 }}>
