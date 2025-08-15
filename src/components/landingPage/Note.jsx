@@ -116,16 +116,14 @@ const Note = () => {
               <ExternalLink size={14} />
             </MotionA>
             <MotionA 
-              href="https://github.com/openlearnnitj/" 
-              target="_blank" 
-              rel="noopener noreferrer" 
+              href="/updates"
+              target='_blank'
               className="inline-flex items-center gap-2 px-4 py-2 text-sm bg-black text-white rounded-lg hover:bg-gray-800 transition-all duration-200"
               whileHover={{ scale: 1.02, y: -1 }}
               whileTap={{ scale: 0.98 }}
             >
               <Code size={16} />
-              <span>Open Source</span>
-              <ExternalLink size={14} />
+              <span>Platform Updates</span>
             </MotionA>
           </MotionDiv>
         </MotionDiv>
