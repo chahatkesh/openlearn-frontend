@@ -592,11 +592,7 @@ const LeagueDetailPage = ({ league, onBack }) => {
         setTimeout(() => {
           setShowSuccessToast(null);
         }, 3000);
-      }
-      
-      // API call succeeded
-      console.log(`✅ Resource ${resourceId} ${currentStatus ? 'reset' : 'completed'} successfully`);
-      
+      }      
     } catch (err) {
       console.error('❌ Error updating resource completion:', err);
       

@@ -8,6 +8,8 @@ import EventsPage from './pages/EventsPage'
 import EventDetailPage from './pages/EventDetailPage'
 import SignInPage from './pages/SignInPage'
 import SignUpPage from './pages/SignUpPage'
+import MigrationPage from './pages/MigrationPage'
+import EmailVerificationPage from './pages/EmailVerificationPage'
 import DashboardPage from './pages/DashboardPage'
 import DashboardLayout from './components/dashboard/DashboardLayout'
 import DashboardMainPage from './pages/DashboardMainPage'
@@ -19,6 +21,7 @@ import TermsOfServicePage from './pages/TermsOfServicePage'
 import UpdatesPage from './pages/UpdatesPage'
 import { AuthProvider } from './context/AuthContext'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
+import MigrationRoute from './components/auth/MigrationRoute'
 import ScrollToTop from './components/common/ScrollToTop'
 
 // Admin components
@@ -53,8 +56,14 @@ const App = () => {
         <Route path="/terms" element={<TermsOfServicePage />} />
         <Route path="/updates" element={<UpdatesPage />} />
 
-        {/* Protected Routes */}
+        {/* Migration and Email Verification Routes */}
         <Route element={<ProtectedRoute />}>
+          <Route path="/migration" element={<MigrationPage />} />
+          <Route path="/email-verification" element={<EmailVerificationPage />} />
+        </Route>
+
+        {/* Protected Routes with Migration Check */}
+        <Route element={<MigrationRoute />}>
           {/* Dashboard routes with layout */}
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<DashboardMainPage />} />
@@ -65,23 +74,25 @@ const App = () => {
           <Route path="/logout" element={<LogoutPage />} />
         </Route>
         
-        {/* Routes with specific role requirements */}
-        <Route element={<ProtectedRoute requiredRoles={['ADMIN', 'GRAND_PATHFINDER', 'CHIEF_PATHFINDER']} />}>
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<AdminDefaultRedirect />} />
-            <Route element={<ProtectedRoute requiredRoles={['GRAND_PATHFINDER']} />}>
-              <Route path="users" element={<AdminUsersPage />} />
-              <Route path="specializations" element={<AdminSpecializationsPage />} />
+        {/* Routes with specific role requirements - also wrapped with MigrationRoute */}
+        <Route element={<MigrationRoute />}>
+          <Route element={<ProtectedRoute requiredRoles={['ADMIN', 'GRAND_PATHFINDER', 'CHIEF_PATHFINDER']} />}>
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDefaultRedirect />} />
+              <Route element={<ProtectedRoute requiredRoles={['GRAND_PATHFINDER']} />}>
+                <Route path="users" element={<AdminUsersPage />} />
+                <Route path="specializations" element={<AdminSpecializationsPage />} />
+              </Route>
+              <Route path="cohorts" element={<AdminCohortsPage />} />
+              <Route path="leagues" element={<AdminLeaguesPage />} />
+              <Route path="weeks" element={<AdminWeeksPage />} />
+              <Route path="sections" element={<AdminSectionsPage />} />
+              <Route path="resources" element={<AdminResourcesPage />} />
+              <Route path="assignments" element={<AdminAssignmentsPage />} />
             </Route>
-            <Route path="cohorts" element={<AdminCohortsPage />} />
-            <Route path="leagues" element={<AdminLeaguesPage />} />
-            <Route path="weeks" element={<AdminWeeksPage />} />
-            <Route path="sections" element={<AdminSectionsPage />} />
-            <Route path="resources" element={<AdminResourcesPage />} />
-            <Route path="assignments" element={<AdminAssignmentsPage />} />
+            {/* Legacy redirect for old admin page */}
+            <Route path="/admin-old" element={<AdminPage />} />
           </Route>
-          {/* Legacy redirect for old admin page */}
-          <Route path="/admin-old" element={<AdminPage />} />
         </Route>
 
         {/* Fallback route - redirect to home */}

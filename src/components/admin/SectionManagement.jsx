@@ -99,34 +99,27 @@ const SectionManagement = ({
       e.preventDefault();
       e.stopPropagation();
       
-      console.log('Form submitted with data:', formData);
-      
       const validationResult = validateForm();
       if (!validationResult) {
-        console.log('Form validation failed');
         return;
       }
       
-      console.log('Form validation passed, submitting...');
-      console.log('Available functions:', { onCreateSection: typeof onCreateSection, onUpdateSection: typeof onUpdateSection });
       setIsSubmitting(true);
-      setSubmitError(null);      try {
+      setSubmitError(null);
+      try {
         if (editingSection) {
-          console.log('Updating section:', editingSection.id, formData);
           if (typeof onUpdateSection !== 'function') {
             throw new Error('Update function not available');
           }
           await onUpdateSection(editingSection.id, formData);
           showToast('Learning day updated successfully!', 'success');
         } else {
-          console.log('Creating new section:', formData);
           if (typeof onCreateSection !== 'function') {
             throw new Error('Create function not available');
           }
           await onCreateSection(formData);
           showToast('Learning day created successfully!', 'success');
         }
-        console.log('Operation completed successfully');
         // Only reset form and close modal on success
         setFormData({
           name: '',

@@ -14,14 +14,10 @@ const LeagueCard = ({ league, isActive }) => {
 
   return (
     <MotionDiv
-      className={`relative overflow-hidden rounded-2xl cursor-pointer transition-all duration-700 ease-out bg-white ${
+      className={`relative overflow-hidden rounded-2xl cursor-pointer border transition-all duration-700 ease-out bg-white ${
         isActive ? 'scale-100 opacity-100' : 'scale-95 opacity-60'
       }`}
-      style={{ 
-        boxShadow: isActive 
-          ? '0 25px 50px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05)' 
-          : '0 10px 25px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.03)'
-      }}
+      style={{ borderColor: `${league.color}` }}
       onClick={handleLeagueClick}
       whileHover={{ 
         scale: isActive ? 1.02 : 0.97,
@@ -30,7 +26,7 @@ const LeagueCard = ({ league, isActive }) => {
       whileTap={{ scale: 0.98 }}
     >
       {/* Horizontal Layout */}
-      <div className="flex h-64">
+      <div className="flex min-h-72">
         {/* Left Side - Banner/Image */}
         <div className="relative w-2/5 overflow-hidden">
           <img
@@ -75,29 +71,8 @@ const LeagueCard = ({ league, isActive }) => {
 
           {/* Topics */}
           <div className="space-y-4">
-            <div className="flex flex-wrap gap-2">
-              {league.topics.slice(0, 3).map((topic, index) => (
-                <span
-                  key={index}
-                  className="px-3 py-1.5 text-sm rounded-lg text-gray-700 font-medium border transition-colors duration-200"
-                  style={{ 
-                    backgroundColor: `${league.color}08`,
-                    borderColor: `${league.color}20`,
-                    color: league.color
-                  }}
-                >
-                  {topic}
-                </span>
-              ))}
-              {league.topics.length > 3 && (
-                <span className="text-sm text-gray-400 px-3 py-1.5 font-medium">
-                  +{league.topics.length - 3} more
-                </span>
-              )}
-            </div>
-
             {/* CTA */}
-            <div className="flex items-center justify-between pt-2">
+            <div className="flex items-center justify-between">
               <div 
                 className="inline-flex items-center gap-2 text-base font-semibold transition-all duration-300 hover:gap-3"
                 style={{ color: league.color }}
@@ -105,12 +80,6 @@ const LeagueCard = ({ league, isActive }) => {
                 <span>Explore League</span>
                 <ArrowRight size={16} className="transition-transform duration-300" />
               </div>
-              
-              {/* Subtle indicator */}
-              <div 
-                className="w-2 h-2 rounded-full"
-                style={{ backgroundColor: league.color }}
-              />
             </div>
           </div>
         </div>

@@ -12,6 +12,11 @@ const DashboardMainPage = () => {
     return <PendingApprovalPage user={user} />;
   }
 
+  // Show pending approval page if user is not approved
+  if (user?.status === 'PENDING') {
+    return <PendingApprovalPage user={user} />;
+  }
+
   return (
     <>
       <PageHead 

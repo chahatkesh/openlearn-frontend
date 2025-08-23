@@ -169,20 +169,13 @@ const Cohort = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    console.log('🔄 Cohort component mounted - starting data fetch...');
-    
+  useEffect(() => {    
     const loadCohortsData = async () => {
       try {
         setLoading(true);
-        setError(null);
-        console.log('📡 Fetching cohorts data from API...');
-        
-        const response = await fetchCohortsStructure();
-        console.log('✅ API Response received:', response);
-        
+        setError(null);        
+        const response = await fetchCohortsStructure();        
         if (response && response.data && response.data.length > 0) {
-          console.log('📊 Setting cohorts data:', response.data[0]);
           setCohortsData(response);
         } else {
           console.warn('⚠️ No cohort data found in response');
@@ -193,18 +186,13 @@ const Cohort = () => {
         setError(err.message || 'Failed to load cohort data');
       } finally {
         setLoading(false);
-        console.log('🏁 Loading complete');
       }
     };
 
     loadCohortsData();
   }, []);
-
-  console.log('🎯 Render state - Loading:', loading, 'Error:', error, 'Data:', !!cohortsData);
-
   // Loading state
   if (loading) {
-    console.log('⏳ Rendering loading state...');
     return (
       <MotionSection 
         id="cohort" 
@@ -227,7 +215,6 @@ const Cohort = () => {
 
   // Error state
   if (error) {
-    console.log('❌ Rendering error state:', error);
     return (
       <MotionSection 
         id="cohort" 
@@ -260,10 +247,7 @@ const Cohort = () => {
 
   // Get the first cohort
   const cohort = cohortsData?.data?.[0];
-  console.log('🏆 Cohort data to render:', cohort);
-  
   if (!cohort) {
-    console.log('📭 No cohort found - rendering empty state');
     return (
       <MotionSection 
         id="cohort" 

@@ -44,9 +44,7 @@ export const fetchRepoCommits = async (owner, repo, maxCommits = 0) => {
   const allCommits = [];
   let page = 1;
   const perPage = 100; // GitHub's maximum per page
-  
-  console.log(`Fetching commits from ${owner}/${repo}${maxCommits > 0 ? ` (max: ${maxCommits})` : ' (all)'}...`);
-  
+    
   while (true) {
     const url = `${GITHUB_API_BASE}/repos/${owner}/${repo}/commits?per_page=${perPage}&page=${page}`;
     const response = await fetch(url, {
@@ -63,9 +61,7 @@ export const fetchRepoCommits = async (owner, repo, maxCommits = 0) => {
     if (commits.length === 0) {
       break;
     }
-    
-    console.log(`Fetched page ${page}: ${commits.length} commits (total so far: ${allCommits.length + commits.length})`);
-    
+        
     // Transform GitHub API response to match your current format
     const transformedCommits = commits.map(commit => ({
       hash: commit.sha.substring(0, 7), // Short hash
@@ -80,20 +76,16 @@ export const fetchRepoCommits = async (owner, repo, maxCommits = 0) => {
     
     // If we have a limit and we've reached it, stop
     if (maxCommits > 0 && allCommits.length >= maxCommits) {
-      console.log(`Reached max commits limit (${maxCommits}), stopping at ${allCommits.length} commits`);
       return allCommits.slice(0, maxCommits);
     }
     
     // If we got less than the full page, we've reached the end
     if (commits.length < perPage) {
-      console.log(`Reached end of commits (page ${page} returned ${commits.length} < ${perPage})`);
       break;
     }
     
     page++;
   }
-  
-  console.log(`Finished fetching ${allCommits.length} commits from ${owner}/${repo}`);
   return allCommits;
 };
 

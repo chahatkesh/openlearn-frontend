@@ -42,8 +42,7 @@ const LearningProgressSection = ({ user }) => {
       setError(null);
 
       // Use optimized service for progressive loading
-      const data = await OptimizedDashboardService.loadInitialDashboardData();
-      
+      const data = await OptimizedDashboardService.loadInitialDashboardData();      
       // Set essential data immediately for fast UI update
       setDashboardData(data.dashboardData);
       setCohorts(data.cohorts);
@@ -51,7 +50,6 @@ const LearningProgressSection = ({ user }) => {
       
       // Set basic league statistics immediately for instant display
       if (data.basicLeagueStats) {
-        console.log('Setting basic league statistics:', data.basicLeagueStats);
         setLeagueStatistics(data.basicLeagueStats);
       }
       
@@ -81,12 +79,8 @@ const LearningProgressSection = ({ user }) => {
         setResourceCalculationsInProgress(new Set(leaguesNeedingCalculation.map(l => l.id)));
         
         if (leaguesNeedingCalculation.length > 0) {
-          console.log(`Starting resource calculations for ${leaguesNeedingCalculation.length} leagues:`, leaguesNeedingCalculation.map(l => l.id));
-          
           // Create callback to update resource counts when background calculation completes
           const handleResourceUpdate = (leagueId, resourceCount) => {
-            console.log(`Resource calculation completed for league ${leagueId}: ${resourceCount} resources`);
-            
             setLeagueStatistics(prevStats => ({
               ...prevStats,
               [leagueId]: {
@@ -98,11 +92,9 @@ const LearningProgressSection = ({ user }) => {
             // Track completion of each league's resource calculation
             setResourceCalculationsCompleted(prevCompleted => {
               const newCompleted = new Set([...prevCompleted, leagueId]);
-              console.log(`Completed resource calculations: ${newCompleted.size}/${leaguesNeedingCalculation.length}`, [...newCompleted]);
               
               // Check if all resource calculations are complete
               if (newCompleted.size === leaguesNeedingCalculation.length) {
-                console.log('All resource calculations completed!');
                 setShowResourcesCompleteToast(true);
                 // Hide the toast after 4 seconds
                 setTimeout(() => {
@@ -124,25 +116,22 @@ const LearningProgressSection = ({ user }) => {
           // Calculate accurate statistics in background to update basic stats
           OptimizedDashboardService.calculateAllLeagueStatistics(leaguesNeedingCalculation, handleResourceUpdate)
             .then(accurateStats => {
-              console.log('Initial statistics calculated:', accurateStats);
               setLeagueStatistics(prevStats => ({
                 ...prevStats,
                 ...accurateStats
               }));
             });
         } else {
-          console.log('All leagues already have complete resource calculations');
           // All leagues already have complete data, no calculations needed
           setTotalResourceCalculations(0);
           setResourceCalculationsInProgress(new Set());
         }
       } else {
-        console.log('No leagues found, marking calculations as complete');
         setTotalResourceCalculations(0);
       }
 
     } catch (err) {
-      console.error('Error loading dashboard data:', err);
+      console.error('❌ Error loading dashboard data:', err);
       setError(`Failed to connect to the learning platform. Please try again later. (${err.message})`);
       
       // Set fallback data to prevent crashes
@@ -283,7 +272,9 @@ const LearningProgressSection = ({ user }) => {
         onBack={handleBackToMain}
       />
     );
-  }  return (
+  }
+  
+  return (
     <div className="bg-transparent">
       <div className="p-2 md:p-6 space-y-6">
         

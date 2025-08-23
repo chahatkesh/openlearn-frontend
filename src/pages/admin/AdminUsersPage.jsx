@@ -12,9 +12,7 @@ const AdminUsersPage = () => {
     setError(null);
     
     try {
-      console.log('Fetching users data with strategic approach...');
       const usersData = await AdminService.getAllUsersStrategic();
-      console.log('Received users data:', usersData);
       setAllUsers(usersData.users || []);
       
       // Show a info message if only pending users were loaded

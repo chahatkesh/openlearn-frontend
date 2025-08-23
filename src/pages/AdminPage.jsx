@@ -44,9 +44,7 @@ const AdminPage = () => {
         case 'users': {
           // Only fetch users data for GRAND_PATHFINDER
           if (user?.role === 'GRAND_PATHFINDER') {
-            console.log('Fetching users data with strategic approach...');
             const usersData = await AdminService.getAllUsersStrategic();
-            console.log('Received users data:', usersData);
             setAllUsers(usersData.users || []);
             
             // Show a warning if only pending users were loaded

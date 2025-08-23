@@ -182,9 +182,7 @@ class AdminService {
    * @param {number} limit - Items per page (default: 1000 to get all users)
    * @returns {Promise} Users data
    */
-  static async getAllUsersSimple(limit = 1000) {
-    console.log('Fetching users with limit:', limit);
-    
+  static async getAllUsersSimple(limit = 1000) {    
     try {
       // Try the main users endpoint first
       const response = await fetch(`${API_BASE_URL}/admin/users?limit=${limit}`, {
@@ -195,7 +193,6 @@ class AdminService {
         console.warn(`/admin/users endpoint failed with status: ${response.status}`);
         
         // If that fails, try pending users endpoint as fallback
-        console.log('Trying pending users endpoint as fallback...');
         const pendingResponse = await fetch(`${API_BASE_URL}/admin/pending-users?limit=${limit}`, {
           headers: getAuthHeaders()
         });
@@ -205,7 +202,6 @@ class AdminService {
         }
         
         const pendingResult = await handleResponse(pendingResponse);
-        console.log('Pending users response:', pendingResult);
         
         // Add a note that these are only pending users
         return {
@@ -215,7 +211,6 @@ class AdminService {
       }
       
       const result = await handleResponse(response);
-      console.log('All users response:', result);
       return result;
       
     } catch (error) {
@@ -229,18 +224,15 @@ class AdminService {
    * @returns {Promise} Users data
    */
   static async getAllUsersStrategic() {
-    console.log('Starting strategic user fetch...');
     
     // Strategy 1: Try high limit on main endpoint
     try {
-      console.log('Strategy 1: Trying /admin/users with high limit...');
       const response = await fetch(`${API_BASE_URL}/admin/users?limit=1000`, {
         headers: getAuthHeaders()
       });
       
       if (response.ok) {
         const result = await handleResponse(response);
-        console.log('Strategy 1 success:', result);
         return result;
       } else {
         console.log('Strategy 1 failed with status:', response.status);
@@ -251,7 +243,6 @@ class AdminService {
     
     // Strategy 2: Try pagination to get all pages
     try {
-      console.log('Strategy 2: Trying paginated fetch...');
       let allUsers = [];
       let page = 1;
       let hasMore = true;
@@ -262,7 +253,6 @@ class AdminService {
         });
         
         if (!response.ok) {
-          console.log('Strategy 2 failed on page', page, 'with status:', response.status);
           break;
         }
         
@@ -271,7 +261,6 @@ class AdminService {
           allUsers = allUsers.concat(pageData.users);
           hasMore = pageData.pagination && page < pageData.pagination.totalPages;
           page++;
-          console.log(`Strategy 2: Loaded page ${page-1}, total users so far: ${allUsers.length}`);
         } else {
           hasMore = false;
         }
@@ -284,7 +273,6 @@ class AdminService {
       }
       
       if (allUsers.length > 0) {
-        console.log('Strategy 2 success: Total users loaded:', allUsers.length);
         return {
           users: allUsers,
           pagination: {
@@ -301,14 +289,12 @@ class AdminService {
     
     // Strategy 3: Try pending users as fallback
     try {
-      console.log('Strategy 3: Trying pending users endpoint...');
       const response = await fetch(`${API_BASE_URL}/admin/pending-users?limit=1000`, {
         headers: getAuthHeaders()
       });
       
       if (response.ok) {
         const result = await handleResponse(response);
-        console.log('Strategy 3 success (pending users only):', result);
         return {
           ...result,
           note: 'Only pending users loaded - main users endpoint not available'

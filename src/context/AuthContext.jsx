@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AuthContext } from './AuthContextProvider';
+import MigrationService from '../utils/migrationService';
+import EmailVerificationService from '../utils/emailVerificationService';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const API_BASE_URL = `${BASE_URL}/api/auth`;
@@ -236,6 +238,76 @@ export const AuthProvider = ({ children }) => {
     return requiredRoles.includes(user.role);
   };
 
+  // Check migration status
+  const checkMigrationStatus = async () => {
+    try {
+      const result = await MigrationService.checkMigrationStatus();
+      return result || { requiresMigration: false, isV2User: true };
+    } catch (error) {
+      console.error('Error checking migration status:', error);
+      return { requiresMigration: false, isV2User: true };
+    }
+  };
+
+  // Check email verification status
+  const checkEmailVerificationStatus = async () => {
+    try {
+      const result = await EmailVerificationService.checkVerificationStatus();
+      return result || { emailVerified: true };
+    } catch (error) {
+      console.error('Error checking email verification status:', error);
+      return { emailVerified: true };
+    }
+  };
+
+  // Get user flow status (migration + verification)
+  const getUserFlowStatus = async () => {
+    try {      
+      const [migrationStatus, verificationStatus] = await Promise.all([
+        checkMigrationStatus(),
+        checkEmailVerificationStatus()
+      ]);
+      // Safely extract properties with fallbacks
+      const migrationData = migrationStatus || {};
+      const verificationData = verificationStatus || {};
+
+      const result = {
+        requiresMigration: migrationData.needsMigration || migrationData.requiresMigration || false,
+        emailVerified: verificationData.emailVerified || false,
+        isV2User: migrationData.isV2User || (migrationData.migratedToV2 === true) || false
+      };
+      return result;
+    } catch (error) {
+      console.error('❌ Error getting user flow status:', error);
+      return {
+        requiresMigration: false,
+        emailVerified: true,
+        isV2User: true
+      };
+    }
+  };
+
+  // Get user flow status for email verification testing (bypasses migration)
+  const getEmailVerificationFlowStatus = async () => {
+    try {
+      const verificationStatus = await checkEmailVerificationStatus();
+      const verificationData = verificationStatus || {};
+
+      return {
+        requiresMigration: false, // Bypass migration for testing
+        emailVerified: verificationData.emailVerified || false,
+        isV2User: true // Assume V2 user for testing
+      };
+    } catch (error) {
+      console.error('Error getting email verification flow status:', error);
+      return {
+        requiresMigration: false,
+        emailVerified: true,
+        isV2User: true
+      };
+    }
+  };
+
   const contextValue = {
     user,
     loading,
@@ -246,7 +318,11 @@ export const AuthProvider = ({ children }) => {
     refreshToken,
     refreshUser,
     isAuthenticated,
-    hasRole
+    hasRole,
+    checkMigrationStatus,
+    checkEmailVerificationStatus,
+    getUserFlowStatus,
+    getEmailVerificationFlowStatus
   };
 
   return (
