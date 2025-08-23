@@ -4,7 +4,8 @@ import LandingPage from './pages/LandingPage'
 import AboutPage from './pages/AboutPage'
 import CohortsPage from './pages/CohortsPage'
 import CommunityPage from './pages/CommunityPage'
-import GalleryPage from './pages/GalleryPage'
+import EventsPage from './pages/EventsPage'
+import EventDetailPage from './pages/EventDetailPage'
 import SignInPage from './pages/SignInPage'
 import SignUpPage from './pages/SignUpPage'
 import DashboardPage from './pages/DashboardPage'
@@ -42,7 +43,10 @@ const App = () => {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/cohorts" element={<CohortsPage />} />
         <Route path="/community" element={<CommunityPage />} />
-        <Route path="/gallery" element={<GalleryPage />} />
+        <Route path="/events" element={<EventsPage />} />
+        <Route path="/events/:eventId" element={<EventDetailPage />} />
+        {/* Backward compatibility - redirect old gallery route */}
+        <Route path="/gallery" element={<Navigate to="/events" replace />} />
         <Route path="/signin" element={<SignInPage />} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/privacy" element={<PrivacyPolicyPage />} />

@@ -41,7 +41,7 @@ const Navbar = () => {
     { name: 'About', href: '/about' },
     { name: 'Cohorts', href: '/cohorts' },
     { name: 'Community', href: '/community' },
-    { name: 'Gallery', href: '/gallery' },
+    { name: 'Events', href: '/events' },
   ];
 
   const isActivePath = (path) => {

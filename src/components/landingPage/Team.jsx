@@ -1,9 +1,10 @@
 import React from 'react';
 import { FaLinkedinIn, FaXTwitter, FaInstagram } from 'react-icons/fa6';
-import { Users } from 'lucide-react';
+import { Users, ArrowRight } from 'lucide-react';
 import { MotionDiv, MotionSection } from '../common/MotionWrapper';
 import SectionHeader from '../common/SectionHeader';
 import teamData from '../../data/teamData';
+import { useNavigate } from 'react-router-dom';
 
 // Apple-Style Team Member Card
 const TeamMemberCard = ({ name, description, linkedin, twitter, instagram }) => {
@@ -124,7 +125,89 @@ const TeamMemberCard = ({ name, description, linkedin, twitter, instagram }) => 
   );
 };
 
+// Community Card Component
+const CommunityCard = ({ onClick }) => {
+  return (
+    <MotionDiv 
+      className="group relative h-full bg-gradient-to-br from-[#FFDE59] to-[#FFD93D] rounded-3xl overflow-hidden shadow-sm transition-all duration-500 ease-out border border-[#FFDE59]/50 flex flex-col cursor-pointer"
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
+      whileHover={{ 
+        y: -8,
+        scale: 1.02,
+        transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }
+      }}
+      onClick={onClick}
+    >
+      {/* Icon Section */}
+      <MotionDiv 
+        className="relative aspect-square overflow-hidden bg-gradient-to-br from-[#FFDE59] to-[#FFD93D] flex items-center justify-center"
+        initial={{ opacity: 0, scale: 1.1 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8, delay: 0.2 }}
+      >
+        <Users 
+          size={80} 
+          className="text-black/80 transition-transform duration-700 group-hover:scale-110"
+        />
+        
+        {/* Subtle pattern overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+      </MotionDiv>
+
+      {/* Content Section */}
+      <MotionDiv 
+        className="p-6 flex flex-col flex-grow bg-white"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, delay: 0.3 }}
+      >
+        {/* Title */}
+        <div className="mb-4">
+          <h3 className="text-xl font-semibold text-gray-900 mb-2 tracking-tight">
+            Find Your Pathfinders
+          </h3>
+        </div>
+
+        {/* Description */}
+        <MotionDiv
+          className="flex-grow"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+        >
+          <div className="text-gray-600 leading-relaxed text-sm mb-4">
+            To find all your pathfinders of every league, <strong>Click</strong> and discover your learning community!
+          </div>
+        </MotionDiv>
+
+        {/* Call to Action */}
+        <div className="flex items-center justify-center pt-3 border-t border-gray-100 mt-auto">
+          <div className="flex items-center gap-2 text-[#B8860B] font-medium text-sm group-hover:text-[#8B6914] transition-colors duration-300">
+            <span>Join Community</span>
+            <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
+          </div>
+        </div>
+      </MotionDiv>
+
+      {/* Subtle border highlight on hover */}
+      <div className="absolute inset-0 rounded-3xl ring-1 ring-[#FFDE59]/50 group-hover:ring-[#FFDE59]/80 transition-all duration-500"></div>
+    </MotionDiv>
+  );
+};
+
 const Team = () => {
+  const navigate = useNavigate();
+
+  const handleCommunityClick = () => {
+    navigate('/community');
+  };
+
   return (
     <MotionSection 
       className="py-20 lg:py-32 bg-gradient-to-b from-white to-gray-50/50"
@@ -157,6 +240,20 @@ const Team = () => {
               <TeamMemberCard {...member} />
             </MotionDiv>
           ))}
+          
+          {/* Community Card */}
+          <MotionDiv
+            initial={{ opacity: 0, y: 60 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ 
+              duration: 0.8, 
+              delay: teamData.team.length * 0.15, 
+              ease: [0.25, 0.46, 0.45, 0.94] 
+            }}
+          >
+            <CommunityCard onClick={handleCommunityClick} />
+          </MotionDiv>
         </div>
       </div>
     </MotionSection>

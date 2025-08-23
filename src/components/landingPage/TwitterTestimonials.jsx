@@ -113,7 +113,7 @@ const TwitterTestimonials = () => {
         <div className="container mx-auto px-4">
           <div className="text-center">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              What Our Happy Users Say
+              What Our Pioneers Say
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-8">
               Join thousands of learners who are already transforming their education with OpenLearn.
@@ -135,7 +135,7 @@ const TwitterTestimonials = () => {
     <section className="py-20 lg:py-32 bg-black text-white">
       <div className="container mx-auto px-4">
         <SectionHeader 
-          title="What Our Happy Users Say"
+          title="What Our Pioneers Say"
           description="Real stories from real learners who found their path with us"
           titleClassName="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-8 tracking-tight"
           descriptionClassName="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed font-light"

@@ -1,6 +1,7 @@
 import React from 'react'
 import Hero from '../components/landingPage/Hero'
-import Cohort from '../components/landingPage/Cohort'
+import LeaguesCarousel from '../components/landingPage/LeaguesCarousel'
+import FeaturedEvents from '../components/landingPage/FeaturedEvents'
 import Team from '../components/landingPage/Team'
 import TwitterTestimonials from '../components/landingPage/TwitterTestimonials'
 import About from '../components/landingPage/About'
@@ -21,7 +22,8 @@ const LandingPage = () => {
       />
       <Navbar />
       <Hero />
-      <Cohort />
+      <LeaguesCarousel />
+      <FeaturedEvents />
       <Team />
       <TwitterTestimonials />
       <About />
