@@ -172,45 +172,6 @@ const LeaguesPage = () => {
           <p className="text-gray-600">Discover and join learning leagues to advance your skills</p>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <div className="flex items-center">
-              <div className="p-3 bg-blue-100 rounded-lg">
-                <Trophy className="h-6 w-6 text-blue-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm text-gray-600">Total Leagues</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalLeagues}</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <div className="flex items-center">
-              <div className="p-3 bg-green-100 rounded-lg">
-                <CheckCircle className="h-6 w-6 text-green-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm text-gray-600">Enrolled</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.enrolledCount}</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <div className="flex items-center">
-              <div className="p-3 bg-amber-100 rounded-lg">
-                <Target className="h-6 w-6 text-amber-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm text-gray-600">Available</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.availableCount}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Error Message */}
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-8">
@@ -226,12 +187,6 @@ const LeaguesPage = () => {
 
         {/* Leagues Grid */}
         {filteredLeagues.length > 0 ? (
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            <div className="p-6 border-b border-gray-100">
-              <h2 className="text-xl font-bold text-gray-900">Available Leagues</h2>
-              <p className="text-gray-600 mt-1">Choose from our comprehensive learning paths</p>
-            </div>
-            
             <div className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredLeagues.map((league) => {
@@ -344,7 +299,6 @@ const LeaguesPage = () => {
                 })}
               </div>
             </div>
-          </div>
         ) : (
           <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
             <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
