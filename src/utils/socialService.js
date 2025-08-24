@@ -466,13 +466,22 @@ Learning never stops! 💪
       kaggleUsername: socialHandles.kaggleUsername || null
     };
 
+    console.log('📤 Updating social handles with payload:', payload);
+
     const response = await fetch(`${BASE_URL}/api/auth/profile`, {
       method: 'PUT',
       headers: getAuthHeaders(),
       body: JSON.stringify(payload)
     });
     
-    return handleResponse(response);
+    const result = await response.json();
+    console.log('📥 Social handles update response:', result);
+    
+    if (!result.success) {
+      throw new Error(result.error || 'Failed to update social handles');
+    }
+    
+    return result.data;
   }
 }
 

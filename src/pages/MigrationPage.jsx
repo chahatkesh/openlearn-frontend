@@ -18,6 +18,7 @@ import { FaDiscord, FaLinkedin, FaGithub, FaTwitter } from 'react-icons/fa';
 import { useAuth } from '../hooks/useAuth';
 import MigrationService from '../utils/migrationService';
 import EmailVerificationService from '../utils/emailVerificationService';
+import SocialService from '../utils/socialService';
 import PageHead from '../components/common/PageHead';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { MotionDiv, MotionSection } from '../components/common/MotionWrapper';
@@ -81,21 +82,65 @@ const MigrationPage = () => {
     }
   };
 
+  // Validate social handles
+  const validateSocialHandles = (socialData) => {
+    const errors = {};
+
+    // Twitter handle validation
+    if (!socialData.twitterHandle || !socialData.twitterHandle.trim()) {
+      errors.twitterHandle = 'Twitter handle is required';
+    } else if (!socialData.twitterHandle.startsWith('@')) {
+      errors.twitterHandle = 'Twitter handle must start with @';
+    }
+
+    // LinkedIn URL validation
+    if (!socialData.linkedinUrl || !socialData.linkedinUrl.trim()) {
+      errors.linkedinUrl = 'LinkedIn profile is required';
+    } else {
+      try {
+        const url = new URL(socialData.linkedinUrl);
+        if (!url.hostname.includes('linkedin.com')) {
+          errors.linkedinUrl = 'Please enter a valid LinkedIn profile URL';
+        }
+      } catch {
+        errors.linkedinUrl = 'Please enter a valid LinkedIn profile URL';
+      }
+    }
+
+    // GitHub username validation
+    if (!socialData.githubUsername || !socialData.githubUsername.trim()) {
+      errors.githubUsername = 'GitHub username is required';
+    } else {
+      const githubRegex = /^[a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,38}$/;
+      if (!githubRegex.test(socialData.githubUsername.trim())) {
+        errors.githubUsername = 'Please enter a valid GitHub username';
+      }
+    }
+
+    return {
+      isValid: Object.keys(errors).length === 0,
+      errors
+    };
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setErrors({});
 
     try {
-      // Prepare migration data
+      // Prepare migration data (excluding social handles)
       const migrationData = {
-        ...formData,
         institute: formData.institute === 'Other' ? customInstitute : formData.institute,
         department: formData.department === 'Other' ? customDepartment : formData.department,
-        graduationYear: parseInt(formData.graduationYear)
+        graduationYear: parseInt(formData.graduationYear),
+        phoneNumber: formData.phoneNumber,
+        studentId: formData.studentId,
+        discordUsername: formData.discordUsername,
+        portfolioUrl: formData.portfolioUrl
       };
 
-      // Validate data
+      // Validate migration data
       const validation = MigrationService.validateMigrationData(migrationData);
       
       if (!validation.isValid) {
@@ -103,8 +148,45 @@ const MigrationPage = () => {
         setLoading(false);
         return;
       }
+
+      // Validate social handles separately
+      const socialValidation = validateSocialHandles({
+        twitterHandle: formData.twitterHandle,
+        linkedinUrl: formData.linkedinUrl,
+        githubUsername: formData.githubUsername
+      });
+
+      if (!socialValidation.isValid) {
+        setErrors(prev => ({ ...prev, ...socialValidation.errors }));
+        setLoading(false);
+        return;
+      }
+
+      // Perform the actual migration
+      console.log('🔄 Starting migration with data:', migrationData);
+      await MigrationService.migrateToV2(migrationData);
+      console.log('✅ Migration completed successfully');
+
+      // Update social handles separately if they exist
+      const socialHandles = {
+        twitterHandle: formData.twitterHandle,
+        linkedinUrl: formData.linkedinUrl,
+        githubUsername: formData.githubUsername
+      };
+
+      // Only update social handles if at least one is provided
+      if (socialHandles.twitterHandle || socialHandles.linkedinUrl || socialHandles.githubUsername) {
+        console.log('🔄 Updating social handles:', socialHandles);
+        try {
+          await SocialService.updateSocialHandles(socialHandles);
+          console.log('✅ Social handles updated successfully');
+        } catch (socialError) {
+          console.warn('⚠️ Failed to update social handles, but migration succeeded:', socialError);
+          // Don't fail the entire migration if social update fails
+        }
+      }
       
-      // Refresh user data
+      // Refresh user data after migration and social update
       await refreshUser();
       
       // Wait a moment for the backend to update
@@ -112,12 +194,15 @@ const MigrationPage = () => {
       
       // Check email verification status to determine next step
       try {
-        const verificationStatus = await EmailVerificationService.checkVerificationStatus();        
+        const verificationStatus = await EmailVerificationService.checkVerificationStatus();
+        console.log('📧 Email verification status:', verificationStatus);
+        
         if (verificationStatus.emailVerified) {
+          console.log('✅ Email already verified, redirecting to dashboard');
           await refreshUser();
           navigate('/dashboard');
         } else {
-          // Old User Flow: Email needs verification
+          console.log('📧 Email needs verification, redirecting to email verification');
           navigate('/email-verification');
         }
       } catch (error) {
@@ -377,7 +462,7 @@ const MigrationPage = () => {
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                       <FaDiscord size={16} className="inline mr-2 text-indigo-600" />
-                      Discord Username
+                      Discord Username <span className="text-gray-500 text-sm">(Optional)</span>
                     </label>
                     <input
                       type="text"
@@ -412,10 +497,10 @@ const MigrationPage = () => {
                   <div className="bg-gray-50 rounded-lg p-6">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                       <Users size={20} className="mr-2" />
-                      Social Handles (Optional)
+                      Social Handles
                     </h3>
                     <p className="text-sm text-gray-600 mb-4">
-                      Connect your social profiles to showcase your work and connect with the community.
+                      Connect your social profiles to showcase your work and connect with the community. <span className="font-medium text-gray-800">All fields marked with * are required.</span>
                     </p>
                     
                     <div className="space-y-4">
@@ -423,45 +508,63 @@ const MigrationPage = () => {
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           <FaTwitter size={16} className="inline mr-2 text-blue-500" />
-                          Twitter Handle
+                          Twitter Handle <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="text"
                           placeholder="@your_handle"
                           value={formData.twitterHandle}
                           onChange={(e) => handleInputChange('twitterHandle', e.target.value)}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none"
+                          required
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none ${
+                            errors.twitterHandle ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                          }`}
                         />
+                        {errors.twitterHandle && (
+                          <p className="text-red-600 text-sm mt-1">{errors.twitterHandle}</p>
+                        )}
                       </div>
 
                       {/* LinkedIn */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           <FaLinkedin size={16} className="inline mr-2 text-blue-700" />
-                          LinkedIn Profile
+                          LinkedIn Profile <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="url"
                           placeholder="https://linkedin.com/in/yourprofile"
                           value={formData.linkedinUrl}
                           onChange={(e) => handleInputChange('linkedinUrl', e.target.value)}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none"
+                          required
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none ${
+                            errors.linkedinUrl ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                          }`}
                         />
+                        {errors.linkedinUrl && (
+                          <p className="text-red-600 text-sm mt-1">{errors.linkedinUrl}</p>
+                        )}
                       </div>
 
                       {/* GitHub */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           <FaGithub size={16} className="inline mr-2 text-gray-900" />
-                          GitHub Username
+                          GitHub Username <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="text"
                           placeholder="your_github_username"
                           value={formData.githubUsername}
                           onChange={(e) => handleInputChange('githubUsername', e.target.value)}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none"
+                          required
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none ${
+                            errors.githubUsername ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                          }`}
                         />
+                        {errors.githubUsername && (
+                          <p className="text-red-600 text-sm mt-1">{errors.githubUsername}</p>
+                        )}
                       </div>
                     </div>
                   </div>

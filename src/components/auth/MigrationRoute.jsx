@@ -33,6 +33,7 @@ const MigrationRoute = () => {
           status = await getUserFlowStatus();
         }
         
+        console.log('🔍 User flow status:', status);
         setFlowStatus(status);
       } catch (error) {
         console.error('❌ Error checking user flow:', error);

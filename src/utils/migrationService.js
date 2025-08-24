@@ -70,6 +70,8 @@ class MigrationService {
         throw new Error('No access token found');
       }
 
+      console.log('📤 Sending migration data to API:', migrationData);
+
       const response = await fetch(`${API_BASE_URL}/migration/migrate-to-v2`, {
         method: 'POST',
         headers: {
@@ -80,8 +82,10 @@ class MigrationService {
       });
 
       const result = await response.json();
+      console.log('📥 Migration API response:', result);
 
       if (!response.ok) {
+        console.error('❌ Migration API error:', result);
         throw new Error(result.error || 'Migration failed');
       }
       return result.data;
@@ -109,7 +113,8 @@ class MigrationService {
     // Check required fields
     requiredFields.forEach(field => {
       if (!data[field] || (typeof data[field] === 'string' && data[field].trim() === '')) {
-        errors[field] = `${field.charAt(0).toUpperCase() + field.slice(1)} is required`;
+        const fieldName = field.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+        errors[field] = `${fieldName} is required`;
       }
     });
 

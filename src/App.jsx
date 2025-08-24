@@ -13,6 +13,8 @@ import EmailVerificationPage from './pages/EmailVerificationPage'
 import DashboardPage from './pages/DashboardPage'
 import DashboardLayout from './components/dashboard/DashboardLayout'
 import DashboardMainPage from './pages/DashboardMainPage'
+import LeaderboardPage from './pages/LeaderboardPage'
+import ProfilePage from './pages/ProfilePage'
 import LeagueDetailPageRoute from './pages/LeagueDetailPageRoute'
 import LogoutPage from './pages/LogoutPage'
 import AdminPage from './pages/AdminPage'
@@ -67,6 +69,8 @@ const App = () => {
           {/* Dashboard routes with layout */}
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<DashboardMainPage />} />
+            <Route path="leaderboard" element={<LeaderboardPage />} />
+            <Route path="profile" element={<ProfilePage />} />
             <Route path="league/:id" element={<LeagueDetailPageRoute />} />
           </Route>
           {/* Legacy dashboard route for backward compatibility */}
