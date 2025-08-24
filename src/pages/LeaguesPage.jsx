@@ -127,21 +127,11 @@ const LeaguesPage = () => {
     navigate(`/dashboard/league/${league.id}`);
   };
 
-  // Get enrollment stats
-  const getEnrollmentStats = () => {
-    const totalLeagues = leagues.length;
-    const enrolledCount = dashboardData?.enrollments?.length || 0;
-    const availableCount = totalLeagues - enrolledCount;
-    
-    return { totalLeagues, enrolledCount, availableCount };
-  };
-
-  const stats = getEnrollmentStats();
   const filteredLeagues = filterLeagues();
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen">
         <PageHead 
           title="Leagues - OpenLearn"
           description="Browse and enroll in available learning leagues at OpenLearn"
@@ -158,7 +148,7 @@ const LeaguesPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <PageHead 
         title="Leagues - OpenLearn"
         description="Browse and enroll in available learning leagues. Find the perfect learning path for your skill development journey."
