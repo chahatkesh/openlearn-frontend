@@ -210,7 +210,7 @@ const Team = () => {
 
   return (
     <MotionSection 
-      className="py-20 lg:py-32 bg-gradient-to-b from-white to-gray-50/50"
+      className="py-20 lg:py-32 bg-gradient-to-b from-gray-100 via-gray-200 to-black"
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}

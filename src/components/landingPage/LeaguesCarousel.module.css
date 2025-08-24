@@ -1,0 +1,138 @@
+/* LeaguesCarousel Custom Styles */
+
+/* League details styling */
+.league-details {
+  border-top: 1px solid #f3f4f6;
+  padding-top: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.league-info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.league-info-item .label {
+  font-weight: 500;
+  min-width: 3rem;
+}
+
+.league-info-item .value {
+  font-weight: 600;
+}
+
+.starting-date {
+  position: relative;
+}
+
+.starting-date::before {
+  content: "📅";
+  margin-right: 0.25rem;
+}
+
+.facilitated-by {
+  position: relative;
+}
+
+.facilitated-by::before {
+  content: "👥";
+  margin-right: 0.25rem;
+}
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Touch-friendly carousel container */
+.carousel-container {
+  touch-action: pan-x;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Smooth scrolling for better mobile experience */
+.smooth-scroll {
+  scroll-behavior: smooth;
+}
+
+/* Enhanced mobile card styling */
+@media (max-width: 767px) {
+  .mobile-card {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+  }
+  
+  .mobile-card:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  }
+}
+
+/* Tablet optimizations */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .tablet-spacing {
+    padding: 1.5rem;
+  }
+  
+  .tablet-text {
+    font-size: 1.125rem;
+  }
+}
+
+/* Loading animation improvements */
+.loading-spinner {
+  border-top-color: #FFDE59;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Better focus states for accessibility */
+.carousel-button:focus {
+  outline: 2px solid #FFDE59;
+  outline-offset: 2px;
+}
+
+.dot-indicator:focus {
+  outline: 2px solid #FFDE59;
+  outline-offset: 2px;
+}
+
+/* Improved hover states */
+.league-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.league-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Mobile swipe hint animation */
+.swipe-hint {
+  animation: swipeHint 2s ease-in-out infinite;
+}
+
+@keyframes swipeHint {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+/* Responsive grid for multi-card display on larger screens */
+@media (min-width: 1280px) {
+  .xl-multi-cards .carousel-slide {
+    width: calc(50% - 1rem);
+  }
+  
+  .xl-multi-cards .carousel-container {
+    justify-content: center;
+    gap: 2rem;
+  }
+}

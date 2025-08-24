@@ -10,6 +10,8 @@ const leaguesData = {
       description: 'Master financial literacy, investment strategies, and economic principles through hands-on learning.',
       cover: '/leagues/finance-cover.jpg',
       color: '#10B981', // Green
+      startingDate: '30 August 2025',
+      facilitatedBy: 'Fnnest NITJ'
     },
     {
       id: 'quantum',
@@ -18,6 +20,8 @@ const leaguesData = {
       description: 'Dive into quantum computing, quantum algorithms, and the future of computational science.',
       cover: '/leagues/quantum-cover.jpg',
       color: '#8B5CF6', // Purple
+      startingDate: '5 September 2025',
+      facilitatedBy: 'QMania'
     },
     {
       id: 'ml',
@@ -26,6 +30,8 @@ const leaguesData = {
       description: 'Explore machine learning algorithms, deep learning, and AI applications in real-world projects.',
       cover: '/leagues/ml-cover.jpg',
       color: '#3B82F6', // Blue
+      startingDate: '2 September 2025',
+      facilitatedBy: 'OpenLearn'
     },
     {
       id: 'soft-skills',
@@ -34,6 +40,8 @@ const leaguesData = {
       description: 'Develop communication, leadership, and interpersonal skills essential for professional success.',
       cover: '/leagues/soft-skills-cover.jpg',
       color: '#F59E0B', // Amber
+      startingDate: '28 August 2025',
+      facilitatedBy: 'Zeal Society'
     },
     {
       id: 'competitive-programming',
@@ -42,6 +50,8 @@ const leaguesData = {
       description: 'Sharpen your algorithmic thinking and problem-solving skills through competitive coding challenges.',
       cover: '/leagues/cp-cover.jpg',
       color: '#EF4444', // Red
+      startingDate: '1 September 2025',
+      facilitatedBy: 'Coding Club'
     },
     {
       id: 'iot',
@@ -50,6 +60,8 @@ const leaguesData = {
       description: 'Build connected devices and smart systems using IoT technologies and embedded programming.',
       cover: '/leagues/iot-cover.jpg',
       color: '#06B6D4', // Cyan
+      startingDate: '7 September 2025',
+      facilitatedBy: 'Electronics Society'
     }
   ]
 };

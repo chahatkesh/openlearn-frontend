@@ -30,9 +30,6 @@ const WelcomeBanner = ({ user, onExploreClick }) => {
           {/* Compact Feature Pills */}
           <div className="flex flex-wrap gap-3 mb-4">
             <div className="flex items-center gap-2 bg-white/30 backdrop-blur-sm rounded-full px-4 py-2 border border-white/40">
-              <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
-                <BookOpen className="text-white" size={12} />
-              </div>
               <span className="text-sm font-medium text-gray-800">Learn at Your Pace</span>
             </div>
             
