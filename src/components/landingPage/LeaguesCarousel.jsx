@@ -10,7 +10,7 @@ const LeagueCard = ({ league, isActive, isMobile }) => {
   const navigate = useNavigate();
 
   const handleLeagueClick = () => {
-    navigate('/dashboard');
+    navigate('/cohorts');
   };
 
   return (
@@ -105,7 +105,6 @@ const LeagueCard = ({ league, isActive, isMobile }) => {
 };
 
 const LeaguesCarousel = () => {
-  const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [leagues, setLeagues] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -321,26 +320,6 @@ const LeaguesCarousel = () => {
             </p>
           </div>
         )}
-
-        {/* CTA Button */}
-        <MotionDiv
-          className="text-center mt-8 md:mt-12"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-        >
-          <button
-            onClick={() => navigate('/cohorts')}
-            className={`inline-flex items-center gap-2 text-black ${
-              isMobile ? 'px-6 py-3 text-sm' : 'px-8 py-4'
-            } rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl border-2 border-black hover:border-[#FFDE59] group`}
-            style={{ backgroundColor: '#FFDE59' }}
-          >
-            View All Leagues
-            <ArrowRight size={isMobile ? 16 : 18} className="group-hover:translate-x-1 transition-transform duration-200" />
-          </button>
-        </MotionDiv>
       </div>
     </MotionSection>
   );
