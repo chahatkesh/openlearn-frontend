@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TrendingUp, BookOpen, Users, Star, ChevronRight, Play, CheckSquare, AlertCircle, Trophy, Clock, Target, Search } from 'lucide-react';
+import { ChevronRight, Play, CheckSquare, AlertCircle, Trophy, Clock, Target, Search } from 'lucide-react';
 import WelcomeBanner from './WelcomeBanner';
 import AssignmentManagement from './AssignmentManagement';
 import OptimizedDashboardService from '../../utils/optimizedDashboardService';
@@ -16,7 +16,6 @@ const LearningProgressSection = ({ user }) => {
   
   // OPTIMIZATION 2: Simplified state management
   const [dashboardData, setDashboardData] = useState(null);
-  const [cohorts, setCohorts] = useState([]);
   const [leagues, setLeagues] = useState([]);
   const [selectedView, setSelectedView] = useState('dashboard');
   const [selectedAssignmentLeague, setSelectedAssignmentLeague] = useState(null);
@@ -45,7 +44,6 @@ const LearningProgressSection = ({ user }) => {
       const data = await OptimizedDashboardService.loadInitialDashboardData();      
       // Set essential data immediately for fast UI update
       setDashboardData(data.dashboardData);
-      setCohorts(data.cohorts);
       setLeagues(data.leagues);
       
       // Set basic league statistics immediately for instant display
@@ -136,7 +134,6 @@ const LearningProgressSection = ({ user }) => {
       
       // Set fallback data to prevent crashes
       setDashboardData({ enrollments: [], badges: [] });
-      setCohorts([]);
       setLeagues([]);
       setLoading(false);
     }
@@ -159,17 +156,6 @@ const LearningProgressSection = ({ user }) => {
     return () => window.removeEventListener('dashboardSearch', handleSearchEvent);
   }, []);
 
-  const handleEnrollment = async (cohortId, leagueId) => {
-    try {
-      await ProgressService.enrollUser(cohortId, leagueId);
-      alert('Enrollment successful! Welcome to your learning journey!');
-      await loadDashboardDataOptimized(); // Refresh dashboard data
-    } catch (err) {
-      console.error('Enrollment error:', err);
-      alert(`Enrollment failed: ${err.message}. Please try again.`);
-    }
-  };
-
   const handleLeagueClick = (league) => {
     navigate(`/dashboard/league/${league.id}`);
   };
@@ -181,10 +167,7 @@ const LearningProgressSection = ({ user }) => {
   };
 
   const scrollToLeagues = () => {
-    const leaguesSection = document.getElementById('available-leagues');
-    if (leaguesSection) {
-      leaguesSection.scrollIntoView({ behavior: 'smooth' });
-    }
+    navigate('/dashboard/leagues');
   };
 
   // OPTIMIZATION 5: Memoized filter functions for better performance
@@ -194,15 +177,6 @@ const LearningProgressSection = ({ user }) => {
     return enrollments.filter(enrollment => 
       enrollment.league.name.toLowerCase().includes(searchTerm) ||
       enrollment.league.description?.toLowerCase().includes(searchTerm)
-    );
-  }, [searchTerm, isSearchActive]);
-
-  const filterLeagues = useCallback((leagues) => {
-    if (!isSearchActive || !searchTerm) return leagues;
-    
-    return leagues.filter(league => 
-      league.name.toLowerCase().includes(searchTerm) ||
-      league.description?.toLowerCase().includes(searchTerm)
     );
   }, [searchTerm, isSearchActive]);
 
@@ -641,156 +615,21 @@ const LearningProgressSection = ({ user }) => {
           </div>
         )}
 
-        {/* Available Learning Paths */}
+        {/* Explore All Leagues */}
         <div id="available-leagues" className="bg-white rounded-xl md:rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="p-6">
-            {cohorts.length > 0 ? (
-              <div className="space-y-6">
-                {cohorts.map((cohort) => (
-                  <div key={cohort.id} className="relative">
-                    <div className="flex items-start mb-6">
-                      <div>
-                        <h4 className="text-xl font-bold text-gray-900">{cohort.name || 'Learning Cohort'}</h4>
-                        <p className="hidden md:block text-sm text-gray-600">{cohort.description || 'Explore available learning leagues'}</p>
-                      </div>
-                    </div>
-                    
-                    {/* Leagues Grid */}
-                    <div className="ml-0 md:ml-5 grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {filterLeagues(leagues.filter(league => league && league.id && league.name)).length > 0 ? (
-                        filterLeagues(leagues.filter(league => league && league.id && league.name)).map((league) => {
-                          const isEnrolled = dashboardData?.enrollments?.some(
-                            enrollment => enrollment.league.id === league.id
-                          );
-
-                          // Better data validation for league stats with dynamic calculation
-                          const dynamicStats = leagueStatistics[league.id];
-                          const weeksCount = dynamicStats?.weeksCount || league.weeksCount || league.weeks_count || league.totalWeeks || league._count?.weeks || 0;
-                          const sectionsCount = dynamicStats?.sectionsCount || league.sectionsCount || league.sections_count || league.totalSections || league._count?.sections || 0;
-                          const resourcesCount = dynamicStats?.resourcesCount || league.totalResources || league.resources_count || league._count?.resources || 0;
-                          const leagueName = league.name || 'Learning League';
-                          const leagueDescription = league.description || 'A comprehensive learning journey designed to build your skills.';
-
-                          // IMPROVEMENT: Check if this specific league's resources are still being calculated
-                          const isCalculatingResources = resourceCalculationsInProgress.has(league.id);
-                          const showResourcesLoading = isCalculatingResources;
-
-                          return (
-                            <div 
-                              key={league.id}
-                              className={`group relative bg-gradient-to-br from-gray-50 to-white rounded-xl border transition-all duration-300 ${
-                                isEnrolled 
-                                  ? 'border-green-200 hover:border-green-300 cursor-pointer hover:shadow-sm' 
-                                  : 'border-gray-100 hover:border-gray-200 hover:shadow-md'
-                              }`}
-                              onClick={() => {
-                                if (isEnrolled) {
-                                  handleLeagueClick(league);
-                                }
-                              }}
-                            >
-                              {/* IMPROVEMENT: Add resource calculation progress badge */}
-                              {isCalculatingResources && (
-                                <ResourceProgressBadge 
-                                  isCalculating={true}
-                                  completedCount={resourceCalculationsCompleted.size}
-                                  totalCount={totalResourceCalculations}
-                                />
-                              )}
-                              
-                              <div className="p-5">
-                                <div className="flex items-start justify-between">
-                                  <div className="flex-1">
-                                    <h5 className="font-semibold text-gray-900 mb-2 group-hover:text-black transition-colors">
-                                      {leagueName}
-                                    </h5>
-                                    <p className="hidden md:block text-xs text-gray-600 mb-3 leading-relaxed line-clamp-2">
-                                      {leagueDescription}
-                                    </p>
-                                    <div className="flex-col md:block items-center space-x-2 text-sm text-gray-500">
-                                      <span className="flex items-center">
-                                        <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-1"></div>
-                                        {`${weeksCount} ${weeksCount === 1 ? 'week' : 'weeks'}`}
-                                      </span>
-                                      <span className="flex items-center">
-                                        <div className="w-1.5 h-1.5 bg-green-400 rounded-full mr-1"></div>
-                                        {`${sectionsCount} ${sectionsCount === 1 ? 'section' : 'sections'}`}
-                                      </span>
-                                      <span className="flex items-center">
-                                        <div className="w-1.5 h-1.5 bg-purple-400 rounded-full mr-1"></div>
-                                        {showResourcesLoading ? (
-                                          <StatisticLoader color="purple" />
-                                        ) : (
-                                          `${resourcesCount} ${resourcesCount === 1 ? 'resource' : 'resources'}`
-                                        )}
-                                      </span>
-                                    </div>
-                                  </div>
-                                  
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      if (!isEnrolled) {
-                                        handleEnrollment(cohort.id, league.id);
-                                      }
-                                    }}
-                                    disabled={isEnrolled}
-                                    className={`ml-3 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
-                                      isEnrolled
-                                        ? 'bg-green-100 text-green-700 cursor-not-allowed border border-green-200 '
-                                        : 'bg-gradient-to-r from-black to-gray-800 text-white hover:from-gray-800 cursor-pointer hover:to-black hover:shadow-lg'
-                                    }`}
-                                  >
-                                    {isEnrolled ? 'Enrolled' : 'Enroll'}
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })
-                      ) : (
-                        <div className="col-span-full text-center py-8">
-                          <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                            {isSearchActive && searchTerm ? (
-                              <Search size={20} className="text-gray-400" />
-                            ) : (
-                              <BookOpen size={20} className="text-gray-400" />
-                            )}
-                          </div>
-                          {isSearchActive && searchTerm ? (
-                            <>
-                              <h3 className="font-medium text-gray-900 mb-2">No Available Leagues Found</h3>
-                              <p className="text-sm text-gray-600 mb-4">
-                                No available leagues match your search for "<span className="font-medium">{searchTerm}</span>"
-                              </p>
-                              <button
-                                onClick={() => {
-                                  // Clear search by dispatching event
-                                  window.dispatchEvent(new CustomEvent('clearSearch'));
-                                }}
-                                className="text-sm text-blue-600 hover:text-blue-700 font-medium"
-                              >
-                                Clear search to see all leagues
-                              </button>
-                            </>
-                          ) : (
-                            <p className="text-sm text-gray-600">No leagues available in this cohort yet</p>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <BookOpen size={24} className="text-gray-400" />
-                </div>
-                <h3 className="font-medium text-gray-900 mb-1">No Learning Paths Available</h3>
-                <p className="text-sm text-gray-600">Learning cohorts will appear here when they become available. Check back soon!</p>
-              </div>
-            )}
+          <div className="p-8 text-center">
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Explore Learning Leagues</h3>
+            <p className="text-gray-600 mb-6">
+              Discover all available learning leagues and find the perfect path for your skill development journey.
+            </p>
+            <button
+              onClick={scrollToLeagues}
+              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-gray-900 to-gray-800 text-white rounded-lg hover:from-gray-800 hover:to-gray-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl"
+            >
+              <Trophy className="h-5 w-5 mr-2" />
+              Browse All Leagues
+              <ChevronRight className="h-4 w-4 ml-2" />
+            </button>
           </div>
         </div>
 
