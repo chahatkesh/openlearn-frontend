@@ -9,6 +9,8 @@ import EventsPage from './pages/EventsPage'
 import EventDetailPage from './pages/EventDetailPage'
 import SignInPage from './pages/SignInPage'
 import SignUpPage from './pages/SignUpPage'
+import ForgotPasswordPage from './pages/ForgotPasswordPage'
+import ResetPasswordPage from './pages/ResetPasswordPage'
 import MigrationPage from './pages/MigrationPage'
 import EmailVerificationPage from './pages/EmailVerificationPage'
 import DashboardPage from './pages/DashboardPage'
@@ -58,6 +60,8 @@ const App = () => {
         <Route path="/gallery" element={<Navigate to="/events" replace />} />
         <Route path="/signin" element={<SignInPage />} />
         <Route path="/signup" element={<SignUpPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/privacy" element={<PrivacyPolicyPage />} />
         <Route path="/terms" element={<TermsOfServicePage />} />
         <Route path="/updates" element={<UpdatesPage />} />

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AuthContext } from './AuthContextProvider';
 import MigrationService from '../utils/migrationService';
 import EmailVerificationService from '../utils/emailVerificationService';
+import PasswordResetService from '../utils/passwordResetService';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const API_BASE_URL = `${BASE_URL}/api/auth`;
@@ -308,6 +309,55 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Password reset functions
+  const sendPasswordResetOTP = async (email) => {
+    try {
+      return await PasswordResetService.sendOTP(email);
+    } catch (error) {
+      console.error('Error sending password reset OTP:', error);
+      return {
+        success: false,
+        error: 'Network error. Please try again.'
+      };
+    }
+  };
+
+  const verifyPasswordResetOTP = async (email, otp) => {
+    try {
+      return await PasswordResetService.verifyOTP(email, otp);
+    } catch (error) {
+      console.error('Error verifying password reset OTP:', error);
+      return {
+        success: false,
+        error: 'Network error. Please try again.'
+      };
+    }
+  };
+
+  const resetPassword = async (email, otp, newPassword) => {
+    try {
+      return await PasswordResetService.resetPassword(email, otp, newPassword);
+    } catch (error) {
+      console.error('Error resetting password:', error);
+      return {
+        success: false,
+        error: 'Network error. Please try again.'
+      };
+    }
+  };
+
+  const checkPasswordResetStatus = async (email) => {
+    try {
+      return await PasswordResetService.checkStatus(email);
+    } catch (error) {
+      console.error('Error checking password reset status:', error);
+      return {
+        success: false,
+        error: 'Network error. Please try again.'
+      };
+    }
+  };
+
   const contextValue = {
     user,
     loading,
@@ -322,7 +372,11 @@ export const AuthProvider = ({ children }) => {
     checkMigrationStatus,
     checkEmailVerificationStatus,
     getUserFlowStatus,
-    getEmailVerificationFlowStatus
+    getEmailVerificationFlowStatus,
+    sendPasswordResetOTP,
+    verifyPasswordResetOTP,
+    resetPassword,
+    checkPasswordResetStatus
   };
 
   return (
