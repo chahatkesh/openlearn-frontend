@@ -116,11 +116,7 @@ const Hero = () => {
                   style={{ borderColor: '#000000', color: '#000000' }}
                   onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(0, 0, 0, 0.05)'}
                   onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
-                  onClick={() =>
-                    document
-                      .getElementById("cohort")
-                      ?.scrollIntoView({ behavior: "smooth" })
-                  }
+                  onClick={() => navigate('/about')}
                   variants={buttonVariants}
                   whileHover="hover"
                   whileTap="tap"
