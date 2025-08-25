@@ -184,9 +184,9 @@ const ProfilePage = () => {
                 <img 
                   src={getUserAvatarUrl(user)}
                   alt={user.name}
-                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl sm:rounded-2xl object-cover border-2 sm:border-4 border-white/80 backdrop-blur-sm shadow-lg"
+                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-2 sm:border-4 border-white/80 backdrop-blur-sm shadow-lg"
                 />
-                <div className="absolute -bottom-1 -right-1 sm:-bottom-2 sm:-right-2 w-6 h-6 sm:w-8 sm:h-8 bg-white/95 rounded-lg sm:rounded-xl flex items-center justify-center backdrop-blur-sm shadow-md">
+                <div className="absolute -bottom-1 -right-1 sm:-bottom-1 sm:-right-1 w-6 h-6 sm:w-8 sm:h-8 bg-white/95 rounded-lg sm:rounded-xl flex items-center justify-center backdrop-blur-sm shadow-md">
                   <Shield className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-600" />
                 </div>
               </div>
