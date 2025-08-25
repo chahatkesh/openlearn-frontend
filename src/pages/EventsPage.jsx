@@ -40,7 +40,7 @@ const EventsHero = () => {
 const EventCard = ({ event }) => {
   const navigate = useNavigate();
 
-  // Filter images to only show existing ones
+  // Filter images to only show existing ones - start with all images, then filter
   const { images: filteredImages } = useFilteredImages(event.images);
 
   const formatDate = (dateString) => {
@@ -145,12 +145,14 @@ const EventCard = ({ event }) => {
             </div>
           </div>
 
-          {/* Images Count - Only show if there are actual images */}
-          {filteredImages.length > 0 && (
+          {/* Images Count - Show initial count, update when filtered */}
+          {(filteredImages.length > 0 || event.images.length > 0) && (
             <div className="mt-4 pt-4 border-t border-gray-100">
               <div className="flex items-center gap-2 text-xs text-gray-500">
                 <Camera size={12} className="text-[#FFDE59]" />
-                <span>{filteredImages.length} {filteredImages.length === 1 ? 'photo' : 'photos'}</span>
+                <span>
+                  {filteredImages.length || event.images.length} {(filteredImages.length || event.images.length) === 1 ? 'photo' : 'photos'}
+                </span>
               </div>
             </div>
           )}

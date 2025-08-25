@@ -59,8 +59,8 @@ export const getEventThumbnail = (event, extension = 'png') => {
  * @returns {Object} { images: Array, loading: boolean }
  */
 export const useFilteredImages = (allImages) => {
-  const [images, setImages] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [images, setImages] = useState(allImages || []); // Start with all images
+  const [loading, setLoading] = useState(false); // Don't block UI initially
 
   useEffect(() => {
     const loadImages = async () => {
@@ -70,7 +70,10 @@ export const useFilteredImages = (allImages) => {
         return;
       }
 
+      // Show images immediately, then filter
+      setImages(allImages);
       setLoading(true);
+      
       const existingImages = [];
 
       for (const image of allImages) {
@@ -84,6 +87,7 @@ export const useFilteredImages = (allImages) => {
         }
       }
 
+      // Update with filtered images
       setImages(existingImages);
       setLoading(false);
     };

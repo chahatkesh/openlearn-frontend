@@ -88,9 +88,6 @@ const Footer = () => {
                 <Link to="/" className="text-white font-bold text-2xl hover:text-[#FFDE59] transition-colors">
                   OpenLearn
                 </Link>
-                <p className="text-gray-400 text-sm">
-                  Learn Together, Build Together
-                </p>
               </div>
             </div>
             <p className="text-gray-300 text-sm max-w-md mb-6">

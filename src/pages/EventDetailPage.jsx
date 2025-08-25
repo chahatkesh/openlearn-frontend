@@ -98,24 +98,66 @@ const ImageGallery = ({ images, onImageClick }) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {images.map((image, index) => (
-        <MotionDiv
-          key={image.id}
-          className="group cursor-pointer"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.1 }}
-          transition={{ duration: 0.6, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
-          onClick={() => onImageClick(image, index)}
-        >
-          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-gray-100 shadow-sm hover:shadow-xl transition-all duration-500 border border-gray-100 hover:border-[#FFDE59]/30">
-            <img
-              src={image.url}
-              alt={image.alt}
-              className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
-              onError={(e) => {
-                e.target.src = `https://via.placeholder.com/400x300/f3f4f6/6b7280?text=${encodeURIComponent(image.alt || 'Event Photo')}`;
-              }}
-            />
+        <ImageCard 
+          key={image.id} 
+          image={image} 
+          index={index} 
+          onClick={() => onImageClick(image, index)} 
+        />
+      ))}
+    </div>
+  );
+};
+
+// Individual Image Card Component with error handling
+const ImageCard = ({ image, index, onClick }) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+    setImageError(false);
+  };
+
+  const handleImageError = () => {
+    setImageError(true);
+    setImageLoaded(false);
+  };
+
+  // Don't render if image failed to load
+  if (imageError) {
+    return null;
+  }
+
+  return (
+    <MotionDiv
+      className="group cursor-pointer"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.1 }}
+      transition={{ duration: 0.6, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
+      onClick={onClick}
+    >
+      <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-gray-100 shadow-sm hover:shadow-xl transition-all duration-500 border border-gray-100 hover:border-[#FFDE59]/30">
+        {/* Loading skeleton */}
+        {!imageLoaded && (
+          <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center">
+            <Camera size={24} className="text-gray-400" />
+          </div>
+        )}
+        
+        <img
+          src={image.url}
+          alt={image.alt}
+          className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-105 ${
+            imageLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
+          onLoad={handleImageLoad}
+          onError={handleImageError}
+        />
+        
+        {imageLoaded && (
+          <>
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-400" />
             
             {/* Hover overlay */}
@@ -124,10 +166,10 @@ const ImageGallery = ({ images, onImageClick }) => {
                 <Camera size={18} className="text-black" />
               </div>
             </div>
-          </div>
-        </MotionDiv>
-      ))}
-    </div>
+          </>
+        )}
+      </div>
+    </MotionDiv>
   );
 };
 
@@ -166,7 +208,7 @@ const EventDetailPage = () => {
   }, [eventId]);
 
   // Filter images to only show existing ones
-  const { images: filteredImages, loading: imagesLoading } = useFilteredImages(event?.images || []);
+  const { images: filteredImages } = useFilteredImages(event?.images || []);
 
   // Redirect to events page if event not found
   useEffect(() => {
@@ -344,7 +386,7 @@ const EventDetailPage = () => {
       </MotionSection>
 
       {/* Image Gallery Section */}
-      {filteredImages.length > 0 && !imagesLoading && (
+      {(filteredImages.length > 0 || event?.images?.length > 0) && (
         <div className="py-20 bg-white">
           <div className="max-w-7xl mx-auto px-6">
             <MotionDiv
