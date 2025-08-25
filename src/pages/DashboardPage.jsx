@@ -7,7 +7,7 @@ import UserProfileSection from '../components/dashboard/UserProfileSection';
 import LearningProgressSection from '../components/dashboard/LearningProgressSection';
 import ProgressService from '../utils/progressService';
 import PageHead from '../components/common/PageHead';
-import { getUserAvatarUrl } from '../utils/avatarService.jsx';
+import { getUserAvatarUrl } from '../utils/boringAvatarsUtils';
 
 const DashboardPage = () => {
   const { user } = useAuth();

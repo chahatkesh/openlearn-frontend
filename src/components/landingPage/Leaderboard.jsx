@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Trophy, Medal, Star, Lock, TrendingUp, Users, Sparkles } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import DataService from '../../utils/dataService';
-import { getUserAvatarUrl } from '../../utils/avatarService.jsx';
+import { getUserAvatarUrl } from '../../utils/boringAvatarsUtils';
 import { MotionDiv, MotionA, MotionSection, MotionH2, MotionTr, MotionP } from '../common/MotionWrapper';
 
 const Leaderboard = () => {

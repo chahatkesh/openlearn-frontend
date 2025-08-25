@@ -22,7 +22,7 @@ import { FaXTwitter } from 'react-icons/fa6';
 import ProgressService from '../../utils/progressService';
 import BadgeService from '../../utils/badgeService';
 import SocialService from '../../utils/socialService';
-import { getUserAvatarUrl } from '../../utils/avatarService.jsx';
+import { getUserAvatarUrl } from '../../utils/boringAvatarsUtils';
 import { useAuth } from '../../hooks/useAuth';
 import ModalPortal from '../common/ModalPortal';
 

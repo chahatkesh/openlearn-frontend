@@ -3,7 +3,7 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { LogOut, Users, Archive, BookOpen, Award, Layers, Calendar, FileText, Database, Activity, ClipboardList, ChevronDown, Settings, Home, Search } from 'lucide-react';
 import PageHead from '../common/PageHead';
-import { getUserAvatarUrl } from '../../utils/avatarService.jsx';
+import { getUserAvatarUrl } from '../../utils/boringAvatarsUtils';
 
 const AdminLayout = () => {
   const { user } = useAuth();

@@ -19,7 +19,7 @@ import {
   Loader2
 } from 'lucide-react';
 import { FaXTwitter } from 'react-icons/fa6';
-import { getUserAvatarUrl } from '../../utils/avatarService.jsx';
+import { getUserAvatarUrl } from '../../utils/boringAvatarsUtils';
 
 const UserManagement = ({ 
   users, 

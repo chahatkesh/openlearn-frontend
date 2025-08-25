@@ -11,7 +11,7 @@ import {
   Trophy,
   ArrowLeft
 } from 'lucide-react';
-import { getUserAvatarUrl } from '../../utils/avatarService.jsx';
+import { getUserAvatarUrl } from '../../utils/boringAvatarsUtils';
 import PageHead from '../common/PageHead';
 
 const DashboardLayout = () => {

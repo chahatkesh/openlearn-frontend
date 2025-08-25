@@ -22,6 +22,7 @@ import AdminPage from './pages/AdminPage'
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 import TermsOfServicePage from './pages/TermsOfServicePage'
 import UpdatesPage from './pages/UpdatesPage'
+import AvatarDemoPage from './pages/AvatarDemoPage'
 import { AuthProvider } from './context/AuthContext'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
 import MigrationRoute from './components/auth/MigrationRoute'
@@ -58,6 +59,7 @@ const App = () => {
         <Route path="/privacy" element={<PrivacyPolicyPage />} />
         <Route path="/terms" element={<TermsOfServicePage />} />
         <Route path="/updates" element={<UpdatesPage />} />
+        <Route path="/avatar-demo" element={<AvatarDemoPage />} />
 
         {/* Migration and Email Verification Routes */}
         <Route element={<ProtectedRoute />}>
