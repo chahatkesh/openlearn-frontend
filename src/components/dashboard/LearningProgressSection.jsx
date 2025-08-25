@@ -65,9 +65,31 @@ const LearningProgressSection = ({ user }) => {
       }
 
       // Calculate statistics immediately for display, then update in background
-      if (data.leagues?.length > 0) {
-        // IMPROVEMENT: Check which leagues already have complete resource calculations
-        const leaguesNeedingCalculation = data.leagues.filter(league => {
+      // FIXED: Only calculate stats for leagues the user is enrolled in
+      if (data.leagues?.length > 0 && data.dashboardData?.enrollments?.length > 0) {
+        // Get list of enrolled league IDs
+        const enrolledLeagueIds = getEnrolledLeagueIds(data.dashboardData.enrollments);
+        
+        // Update basic league stats to only include enrolled leagues
+        const enrolledBasicStats = {};
+        for (const [leagueId, stats] of Object.entries(data.basicLeagueStats)) {
+          if (enrolledLeagueIds.has(leagueId)) {
+            enrolledBasicStats[leagueId] = stats;
+          }
+        }
+        setLeagueStatistics(enrolledBasicStats);
+        
+        // Only process leagues the user is actually enrolled in
+        const enrolledLeagues = data.leagues.filter(league => enrolledLeagueIds.has(league.id));
+        
+        // Log for debugging (can be removed in production)
+        console.log(`📊 Dashboard: User enrolled in ${enrolledLeagues.length} of ${data.leagues.length} leagues`, {
+          enrolled: enrolledLeagues.map(l => l.name),
+          total: data.leagues.map(l => l.name)
+        });
+        
+        // IMPROVEMENT: Check which enrolled leagues already have complete resource calculations
+        const leaguesNeedingCalculation = enrolledLeagues.filter(league => {
           const cachedStats = data.basicLeagueStats[league.id];
           // Only calculate if no cached stats or resource count is missing/zero
           return !cachedStats || cachedStats.resourcesCount === 0;
@@ -120,11 +142,12 @@ const LearningProgressSection = ({ user }) => {
               }));
             });
         } else {
-          // All leagues already have complete data, no calculations needed
+          // All enrolled leagues already have complete data, no calculations needed
           setTotalResourceCalculations(0);
           setResourceCalculationsInProgress(new Set());
         }
       } else {
+        // No leagues or no enrollments - no calculations needed
         setTotalResourceCalculations(0);
       }
 
@@ -179,6 +202,12 @@ const LearningProgressSection = ({ user }) => {
       enrollment.league.description?.toLowerCase().includes(searchTerm)
     );
   }, [searchTerm, isSearchActive]);
+
+  // HELPER: Get enrolled league IDs to avoid unnecessary API calls
+  const getEnrolledLeagueIds = useCallback((enrollments) => {
+    if (!enrollments?.length) return new Set();
+    return new Set(enrollments.map(enrollment => enrollment.league?.id).filter(Boolean));
+  }, []);
 
   // IMPROVEMENT: Show loading skeleton only for basic dashboard loading, not resource calculations
   // This allows users to see and interact with the dashboard immediately while resources load in background

@@ -44,13 +44,20 @@ class OptimizedDashboardService {
   /**
    * Extract basic statistics from league objects for immediate display
    * Also checks cached league stats for complete resource counts
+   * @param {Array} leagues - Array of league objects
+   * @param {Set} enrolledLeagueIds - Optional set of enrolled league IDs to limit processing
    */
-  static extractBasicLeagueStats(leagues) {
+  static extractBasicLeagueStats(leagues, enrolledLeagueIds = null) {
     const basicStats = {};
     
     if (!leagues?.length) return basicStats;
     
-    leagues.forEach(league => {
+    // Filter leagues to only enrolled ones if enrolledLeagueIds is provided
+    const leaguesToProcess = enrolledLeagueIds 
+      ? leagues.filter(league => enrolledLeagueIds.has(league.id))
+      : leagues;
+    
+    leaguesToProcess.forEach(league => {
       if (league && league.id) {
         // First check if we have cached complete stats for this league
         const cachedStats = getCachedData(`league-stats-${league.id}`);
@@ -129,12 +136,18 @@ class OptimizedDashboardService {
       await Promise.allSettled(promises);
 
       const finalLeagues = results.leagues || [];
+      const finalDashboardData = results.dashboardData || { enrollments: [], badges: [] };
+      
+      // Extract enrolled league IDs to optimize basic stats calculation
+      const enrolledLeagueIds = finalDashboardData.enrollments?.length > 0 
+        ? new Set(finalDashboardData.enrollments.map(enrollment => enrollment.league?.id).filter(Boolean))
+        : null;
       
       return {
-        dashboardData: results.dashboardData || { enrollments: [], badges: [] },
+        dashboardData: finalDashboardData,
         cohorts: results.cohorts || [],
         leagues: finalLeagues,
-        basicLeagueStats: this.extractBasicLeagueStats(finalLeagues),
+        basicLeagueStats: this.extractBasicLeagueStats(finalLeagues, enrolledLeagueIds),
         fromCache: {
           dashboard: !!cachedDashboard,
           cohorts: !!cachedCohorts,
@@ -146,11 +159,18 @@ class OptimizedDashboardService {
       
       // Return cached data if available, even if some requests failed
       const cachedLeagues = getCachedData('leagues') || [];
+      const cachedDashboardData = getCachedData('dashboard') || { enrollments: [], badges: [] };
+      
+      // Extract enrolled league IDs even for cached data
+      const enrolledLeagueIds = cachedDashboardData.enrollments?.length > 0 
+        ? new Set(cachedDashboardData.enrollments.map(enrollment => enrollment.league?.id).filter(Boolean))
+        : null;
+      
       return {
-        dashboardData: getCachedData('dashboard') || { enrollments: [], badges: [] },
+        dashboardData: cachedDashboardData,
         cohorts: getCachedData('cohorts') || [],
         leagues: cachedLeagues,
-        basicLeagueStats: this.extractBasicLeagueStats(cachedLeagues),
+        basicLeagueStats: this.extractBasicLeagueStats(cachedLeagues, enrolledLeagueIds),
         error: error.message
       };
     }
