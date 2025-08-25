@@ -28,6 +28,12 @@ const FeaturedEvent = ({ event }) => {
         return 'text-orange-700 bg-orange-50 border-orange-200';
       case 'showcase':
         return 'text-red-700 bg-red-50 border-red-200';
+      case 'accelerate program':
+        return 'text-yellow-700 bg-yellow-50 border-yellow-200';
+      case 'cohort 1.0':
+        return 'text-emerald-700 bg-emerald-50 border-emerald-200';
+      case 'cohort 1.5':
+        return 'text-teal-700 bg-teal-50 border-teal-200';
       default:
         return 'text-gray-700 bg-gray-50 border-gray-200';
     }

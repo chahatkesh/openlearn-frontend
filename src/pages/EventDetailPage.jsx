@@ -6,6 +6,7 @@ import Footer from '../components/common/Footer';
 import PageHead from '../components/common/PageHead';
 import { MotionDiv, MotionSection } from '../components/common/MotionWrapper';
 import eventsData from '../data/eventsData';
+import { useFilteredImages } from '../utils/eventImageService';
 
 // Image Modal Component
 const ImageModal = ({ image, isOpen, onClose, onNext, onPrev, currentIndex, totalImages }) => {
@@ -87,11 +88,6 @@ const ImageModal = ({ image, isOpen, onClose, onNext, onPrev, currentIndex, tota
             e.target.src = `https://via.placeholder.com/800x600/f3f4f6/6b7280?text=${encodeURIComponent(image.alt || 'Event Image')}`;
           }}
         />
-        {image.caption && (
-          <div className="mt-6 text-center">
-            <p className="text-white/90 text-lg font-light leading-relaxed">{image.caption}</p>
-          </div>
-        )}
       </MotionDiv>
     </MotionDiv>
   );
@@ -129,10 +125,6 @@ const ImageGallery = ({ images, onImageClick }) => {
               </div>
             </div>
           </div>
-          
-          {image.caption && (
-            <p className="mt-3 text-sm text-gray-600 font-light leading-relaxed">{image.caption}</p>
-          )}
         </MotionDiv>
       ))}
     </div>
@@ -172,6 +164,9 @@ const EventDetailPage = () => {
       return null;
     }
   }, [eventId]);
+
+  // Filter images to only show existing ones
+  const { images: filteredImages, loading: imagesLoading } = useFilteredImages(event?.images || []);
 
   // Redirect to events page if event not found
   useEffect(() => {
@@ -228,6 +223,12 @@ const EventDetailPage = () => {
         return 'text-orange-700 bg-orange-50 border-orange-200';
       case 'showcase':
         return 'text-red-700 bg-red-50 border-red-200';
+      case 'accelerate program':
+        return 'text-yellow-700 bg-yellow-50 border-yellow-200';
+      case 'cohort 1.0':
+        return 'text-emerald-700 bg-emerald-50 border-emerald-200';
+      case 'cohort 1.5':
+        return 'text-teal-700 bg-teal-50 border-teal-200';
       default:
         return 'text-gray-700 bg-gray-50 border-gray-200';
     }
@@ -245,18 +246,18 @@ const EventDetailPage = () => {
   };
 
   const handleNext = () => {
-    if (event.images.length > 0) {
-      const nextIndex = (currentIndex + 1) % event.images.length;
+    if (filteredImages.length > 0) {
+      const nextIndex = (currentIndex + 1) % filteredImages.length;
       setCurrentIndex(nextIndex);
-      setSelectedImage(event.images[nextIndex]);
+      setSelectedImage(filteredImages[nextIndex]);
     }
   };
 
   const handlePrev = () => {
-    if (event.images.length > 0) {
-      const prevIndex = currentIndex === 0 ? event.images.length - 1 : currentIndex - 1;
+    if (filteredImages.length > 0) {
+      const prevIndex = currentIndex === 0 ? filteredImages.length - 1 : currentIndex - 1;
       setCurrentIndex(prevIndex);
-      setSelectedImage(event.images[prevIndex]);
+      setSelectedImage(filteredImages[prevIndex]);
     }
   };
 
@@ -322,10 +323,10 @@ const EventDetailPage = () => {
                 <MapPin size={20} className="text-black" />
                 <span className="text-lg font-medium">{event.location}</span>
               </div>
-              {event.images.length > 0 && (
+              {filteredImages.length > 0 && (
                 <div className="flex items-center gap-2">
                   <Camera size={20} className="text-black" />
-                  <span className="text-lg font-medium">{event.images.length} photos</span>
+                  <span className="text-lg font-medium">{filteredImages.length} photos</span>
                 </div>
               )}
             </div>
@@ -343,7 +344,7 @@ const EventDetailPage = () => {
       </MotionSection>
 
       {/* Image Gallery Section */}
-      {event.images.length > 0 && (
+      {filteredImages.length > 0 && !imagesLoading && (
         <div className="py-20 bg-white">
           <div className="max-w-7xl mx-auto px-6">
             <MotionDiv
@@ -361,7 +362,7 @@ const EventDetailPage = () => {
               </p>
             </MotionDiv>
 
-            <ImageGallery images={event.images} onImageClick={handleImageClick} />
+            <ImageGallery images={filteredImages} onImageClick={handleImageClick} />
           </div>
         </div>
       )}
@@ -374,7 +375,7 @@ const EventDetailPage = () => {
         onNext={handleNext}
         onPrev={handlePrev}
         currentIndex={currentIndex}
-        totalImages={event.images.length}
+        totalImages={filteredImages.length}
       />
 
       <Footer />

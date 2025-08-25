@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Calendar, MapPin, Camera, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/common/Navbar';
@@ -6,6 +6,7 @@ import Footer from '../components/common/Footer';
 import PageHead from '../components/common/PageHead';
 import { MotionDiv, MotionSection } from '../components/common/MotionWrapper';
 import eventsData from '../data/eventsData';
+import { useFilteredImages } from '../utils/eventImageService';
 
 // Modern Hero section
 const EventsHero = () => {
@@ -35,12 +36,16 @@ const EventsHero = () => {
   );
 };
 
-// Modern Event Card Component
+// Event Card Component
 const EventCard = ({ event }) => {
   const navigate = useNavigate();
-  
+
+  // Filter images to only show existing ones
+  const { images: filteredImages } = useFilteredImages(event.images);
+
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
@@ -59,6 +64,12 @@ const EventCard = ({ event }) => {
         return 'text-orange-700 bg-orange-50 border-orange-200';
       case 'showcase':
         return 'text-red-700 bg-red-50 border-red-200';
+      case 'accelerate program':
+        return 'text-yellow-700 bg-yellow-50 border-yellow-200';
+      case 'cohort 1.0':
+        return 'text-emerald-700 bg-emerald-50 border-emerald-200';
+      case 'cohort 1.5':
+        return 'text-teal-700 bg-teal-50 border-teal-200';
       default:
         return 'text-gray-700 bg-gray-50 border-gray-200';
     }
@@ -134,12 +145,12 @@ const EventCard = ({ event }) => {
             </div>
           </div>
 
-          {/* Images Count */}
-          {event.images.length > 0 && (
+          {/* Images Count - Only show if there are actual images */}
+          {filteredImages.length > 0 && (
             <div className="mt-4 pt-4 border-t border-gray-100">
               <div className="flex items-center gap-2 text-xs text-gray-500">
                 <Camera size={12} className="text-[#FFDE59]" />
-                <span>{event.images.length} {event.images.length === 1 ? 'photo' : 'photos'}</span>
+                <span>{filteredImages.length} {filteredImages.length === 1 ? 'photo' : 'photos'}</span>
               </div>
             </div>
           )}
@@ -148,8 +159,6 @@ const EventCard = ({ event }) => {
     </MotionDiv>
   );
 };
-
-
 
 
 
