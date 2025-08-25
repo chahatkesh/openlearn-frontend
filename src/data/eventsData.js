@@ -71,6 +71,15 @@ const eventsData = {
       description: 'Conducted the first ever cohort orientation in online meetup, explained students about the fundamentals of Machine Learning, Finance and more. Made them aware about the process of learning.',
       featured: true,
       location: 'Online'
+    }),
+    createEvent({
+      id: 'orientation-1',
+      title: 'OpenLearn Orientation',
+      category: 'Workshop',
+      date: '2025-6-7',
+      description: 'Conducted the first meet up with students to communicate the vision of OpenLearn initiative, upcoming cohorts, the cycle of OpenLearn.',
+      featured: true,
+      location: 'Online'
     })
   ]
 };

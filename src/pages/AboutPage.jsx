@@ -2,6 +2,7 @@ import React from 'react';
 import Navbar from '../components/common/Navbar';
 import Footer from '../components/common/Footer';
 import PageHead from '../components/common/PageHead';
+import HeroSection from '../components/common/HeroSection';
 import { ArrowRight, Users, BookOpen, Zap, Target, Globe, Mail, Instagram } from 'lucide-react';
 
 const AboutPage = () => {
@@ -87,7 +88,7 @@ const AboutPage = () => {
     {
       role: "Core Leads",
       count: "4 members",
-      responsibility: "Manage OpenLearn operations, onboarding, and league management"
+      responsibility: "Manage OpenLearn operations, onboarding, and marketing"
     },
     {
       role: "Chief Pathfinder",
@@ -117,74 +118,95 @@ const AboutPage = () => {
       <Navbar />
       
       <div className="min-h-screen pt-16 bg-white">
-        {/* Hero Section */}
-        <section className="relative overflow-hidden hero-pattern" style={{ backgroundColor: '#FFDE59' }}>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
-            <div className="text-center space-y-8">
-              <div className="space-y-4">
-                <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight" style={{ color: '#000000' }}>
-                  OpenLearn
-                </h1>
-                <p className="text-2xl sm:text-3xl lg:text-4xl font-medium" style={{ color: '#374151' }}>
-                  Democratizing Learning, Transforming Future
-                </p>
-              </div>
-              
-              <div className="max-w-3xl mx-auto">
-                <p className="text-lg sm:text-xl leading-relaxed" style={{ color: '#374151' }}>
-                  A student-run community, created <em>by students, for students</em>. 
-                  More than just a study group - it's a self-sustaining ecosystem designed to foster 
-                  <strong style={{ color: '#000000' }}> learning, research, building, and development</strong>.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
+        <HeroSection 
+          title="OpenLearn"
+          subtitle="Democratizing Learning, Transforming Future"
+          description="A student-run community, created <em>by students, for students</em>. More than just a study group - it's a self-sustaining ecosystem designed to foster <strong style='color: #000000'> learning, research, building, and development</strong>."
+        />
 
         {/* Vision & Mission */}
-        <section className="py-16 lg:py-24 bg-white">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl sm:text-4xl font-bold mb-2 text-black">
+        <section className="py-20 lg:py-32 bg-white">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* Section Header */}
+            <div className="text-center mb-20">
+              <h2 className="text-4xl sm:text-5xl font-semibold mb-4 text-black tracking-tight">
                 Vision & Mission
               </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                Our north star and the principles that guide everything we do
+              </p>
             </div>
             
-            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
-              <div>
-                <h3 className="text-xl font-semibold mb-4 text-black">Our Vision</h3>
-                <p className="text-gray-700 mb-4 leading-relaxed">
-                  To establish a <strong className="text-black">pipeline for research, learning, building, and development</strong>, bringing forth:
-                </p>
-                <ul className="space-y-2 text-gray-700">
-                  {['World-changing products', 'World-shaping individuals', 'A sustainable community'].map((item, index) => (
-                    <li key={index} className="flex items-center">
-                      <span className="w-1 h-1 bg-black rounded-full mr-3"></span>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
+            {/* Vision & Mission Cards */}
+            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 max-w-5xl mx-auto">
+              {/* Vision Card */}
+              <div className="group">
+                <div className="bg-gradient-to-br from-gray-50 to-white rounded-3xl p-8 border border-gray-100 h-full transition-all duration-300 hover:shadow-xl hover:shadow-black/10 hover:-translate-y-1">
+                  <div className="mb-6">
+                    <h3 className="text-2xl font-medium text-black mb-4">Our Vision</h3>
+                  </div>
+                  
+                  <div className="space-y-6">
+                    <p className="text-gray-600 leading-relaxed text-lg">
+                      To establish a <span className="font-medium text-black">pipeline for research, learning, building, and development</span>, bringing forth:
+                    </p>
+                    
+                    <div className="space-y-4">
+                      {['World-changing products', 'World-shaping individuals', 'A sustainable community'].map((item, index) => (
+                        <div key={index} className="flex items-center group/item">
+                          <div className="w-2 h-2 bg-gradient-to-r from-[#FFDE59] to-[#FFD700] rounded-full mr-4 group-hover/item:scale-125 transition-transform duration-200"></div>
+                          <span className="text-gray-700 group-hover/item:text-black transition-colors duration-200">{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
               
-              <div>
-                <h3 className="text-xl font-semibold mb-4 text-black">Our Mission</h3>
-                <p className="text-gray-700 mb-4 leading-relaxed">
-                  To foster a <strong className="text-black">cultural shift</strong> where learners:
-                </p>
-                <ul className="space-y-2 text-gray-700 mb-4">
-                  {[
-                    'Build freely without barriers',
-                    'Connect seamlessly with peers and mentors', 
-                    'Grow unhindered by external challenges'
-                  ].map((item, index) => (
-                    <li key={index} className="flex items-center">
-                      <span className="w-1 h-1 bg-black rounded-full mr-3"></span>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                <p className="text-black font-medium">
-                  The ultimate goal is to empower learners and contribute to a stronger Nation.
+              {/* Mission Card */}
+              <div className="group">
+                <div className="bg-gradient-to-br from-gray-50 to-white rounded-3xl p-8 border border-gray-100 h-full transition-all duration-300 hover:shadow-xl hover:shadow-black/10 hover:-translate-y-1">
+                  <div className="mb-6">
+                    <h3 className="text-2xl font-medium text-black mb-4">Our Mission</h3>
+                  </div>
+                  
+                  <div className="space-y-6">
+                    <p className="text-gray-600 leading-relaxed text-lg">
+                      To foster a <span className="font-medium text-black">cultural shift</span> where learners:
+                    </p>
+                    
+                    <div className="space-y-4">
+                      {[
+                        'Build freely without barriers',
+                        'Connect seamlessly with peers and mentors', 
+                        'Grow unhindered by external challenges'
+                      ].map((item, index) => (
+                        <div key={index} className="flex items-center group/item">
+                          <div className="w-2 h-2 bg-gradient-to-r from-[#FFDE59] to-[#FFD700] rounded-full mr-4 group-hover/item:scale-125 transition-transform duration-200"></div>
+                          <span className="text-gray-700 group-hover/item:text-black transition-colors duration-200">{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    <div className="pt-4 border-t border-gray-200">
+                      <p className="text-black font-medium text-lg">
+                        The ultimate goal is to empower learners and contribute to a stronger Nation.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Impact Statement */}
+            <div className="mt-20 text-center">
+              <div className="bg-black rounded-3xl p-12 text-white max-w-4xl mx-auto">
+                <h3 className="text-2xl font-medium mb-4">
+                  Building Tomorrow's Innovators
+                </h3>
+                <p className="text-xl text-gray-300 leading-relaxed max-w-2xl mx-auto">
+                  Every learner in our community becomes part of a movement that's reshaping education, 
+                  fostering innovation, and creating lasting impact on the world.
                 </p>
               </div>
             </div>
@@ -192,47 +214,77 @@ const AboutPage = () => {
         </section>
 
         {/* How It Works */}
-        <section className="py-16 lg:py-24 bg-gray-50">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl sm:text-4xl font-bold mb-2 text-black">
+        <section className="py-20 lg:py-32 bg-gray-50">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* Section Header */}
+            <div className="text-center mb-20">
+              <h2 className="text-4xl sm:text-5xl font-semibold mb-4 text-black tracking-tight">
                 How It Works
               </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                A structured journey from learning to building, designed to nurture innovation and excellence
+              </p>
             </div>
 
-            {/* Cohorts */}
-            <div className="mb-16">
-              <h3 className="text-xl font-semibold mb-8 text-center text-black">Cohorts</h3>
-              <div className="grid md:grid-cols-2 gap-8">
+            {/* Cohorts Section */}
+            <div className="mb-24">
+              <div className="text-center mb-16">
+                <h3 className="text-2xl font-medium mb-4 text-black">
+                  Cohorts
+                </h3>
+                <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                  Two distinct pathways to join our learning ecosystem
+                </p>
+              </div>
+              
+              <div className="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
                 {cohortTypes.map((cohort, index) => (
                   <div 
                     key={index}
-                    className={`p-6 border rounded-lg ${
+                    className={`group relative overflow-hidden rounded-3xl transition-all duration-300 hover:shadow-xl hover:shadow-black/10 ${
                       cohort.featured 
-                        ? 'bg-[#FFDE59] border-[#FFDE59]' 
-                        : 'bg-white border-gray-200'
+                        ? 'bg-gradient-to-br from-[#FFDE59] to-[#FFD700] border border-[#FFDE59]' 
+                        : 'bg-white border border-gray-100'
                     }`}
                   >
-                    <h4 className="text-lg font-semibold mb-2 text-black">
-                      {cohort.title}
-                    </h4>
-                    <p className="text-gray-600 mb-4">{cohort.period}</p>
+                    {cohort.featured && (
+                      <div className="absolute top-6 right-6">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-black text-white">
+                          Featured
+                        </span>
+                      </div>
+                    )}
                     
-                    <div className="space-y-3 text-sm">
-                      <div>
-                        <span className="font-medium text-gray-700">Structure: </span>
-                        <span className="text-gray-600">{cohort.structure}</span>
+                    <div className="p-8">
+                      <div className="mb-6">
+                        <h4 className="text-2xl font-medium mb-2 text-black">
+                          {cohort.title}
+                        </h4>
+                        <p className="text-gray-600 text-lg">{cohort.period}</p>
                       </div>
-                      <div>
-                        <span className="font-medium text-gray-700">Intake: </span>
-                        <span className="text-gray-600">{cohort.intake}</span>
-                      </div>
-                      <div>
-                        <span className="font-medium text-gray-700">Domains: </span>
-                        <span className="text-gray-600">{cohort.domains}</span>
-                      </div>
-                      <div className="pt-2 border-t border-gray-200">
-                        <span className="font-medium text-black">{cohort.advantage}</span>
+                      
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 gap-4">
+                          <div className="bg-white/50 rounded-2xl p-4">
+                            <span className="text-sm font-medium text-gray-700 block mb-1">Structure</span>
+                            <span className="text-gray-900">{cohort.structure}</span>
+                          </div>
+                          <div className="bg-white/50 rounded-2xl p-4">
+                            <span className="text-sm font-medium text-gray-700 block mb-1">Intake</span>
+                            <span className="text-gray-900">{cohort.intake}</span>
+                          </div>
+                          <div className="bg-white/50 rounded-2xl p-4">
+                            <span className="text-sm font-medium text-gray-700 block mb-1">Domains</span>
+                            <span className="text-gray-900">{cohort.domains}</span>
+                          </div>
+                        </div>
+                        
+                        <div className="pt-4 border-t border-gray-200/50">
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-black rounded-full"></div>
+                            <span className="font-medium text-black">{cohort.advantage}</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -240,41 +292,54 @@ const AboutPage = () => {
               </div>
             </div>
 
-            {/* Accelerate Program */}
-            <div className="mb-16">
-              <h3 className="text-xl font-semibold mb-8 text-center text-black">Accelerate Program</h3>
-              <p className="text-center mb-8 text-gray-600 max-w-2xl mx-auto">
-                Where learners move from structured learning to <strong className="text-black">research and product development</strong>.
-              </p>
+            {/* Accelerate Program Section */}
+            <div className="mb-24">
+              <div className="text-center mb-16">
+                <h3 className="text-2xl font-medium mb-4 text-black">
+                  Accelerate Program
+                </h3>
+                <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                  Where learners transition from structured learning to <span className="font-medium text-black">research and product development</span>
+                </p>
+              </div>
               
-              <div className="grid md:grid-cols-2 gap-8">
+              <div className="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
                 {programs.map((program, index) => (
                   <div 
                     key={index} 
-                    className="bg-white p-6 border border-gray-200 rounded-lg"
+                    className="group bg-white rounded-3xl p-8 border border-gray-100 transition-all duration-300 hover:shadow-xl hover:shadow-black/10 hover:-translate-y-1"
                   >
-                    <h4 className="text-lg font-semibold mb-3 text-black">{program.title}</h4>
-                    <div className="flex gap-2 mb-4">
-                      <span className="px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded">
-                        {program.duration}
-                      </span>
-                      <span className="px-3 py-1 text-xs bg-black text-white rounded">
-                        {program.period}
-                      </span>
+                    <div className="mb-6">
+                      <h4 className="text-2xl font-medium mb-3 text-black">{program.title}</h4>
+                      <div className="flex gap-3">
+                        <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-gray-50 text-gray-700">
+                          {program.duration}
+                        </span>
+                        <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-black text-white">
+                          {program.period}
+                        </span>
+                      </div>
                     </div>
                     
-                    <div className="space-y-3 text-sm">
+                    <div className="space-y-4">
                       <div>
-                        <span className="font-medium text-gray-700">Focus: </span>
-                        <span className="text-gray-600">{program.focus}</span>
+                        <span className="text-sm font-medium text-gray-700 block mb-2">Focus</span>
+                        <p className="text-gray-900">{program.focus}</p>
                       </div>
                       <div>
-                        <span className="font-medium text-gray-700">Description: </span>
-                        <span className="text-gray-600">{program.description}</span>
+                        <span className="text-sm font-medium text-gray-700 block mb-2">Description</span>
+                        <p className="text-gray-600 leading-relaxed">{program.description}</p>
                       </div>
                       <div>
-                        <span className="font-medium text-gray-700">Advantages: </span>
-                        <span className="text-gray-600">{program.advantages.join(', ')}</span>
+                        <span className="text-sm font-medium text-gray-700 block mb-2">Key Benefits</span>
+                        <div className="space-y-2">
+                          {program.advantages.map((advantage, idx) => (
+                            <div key={idx} className="flex items-center gap-3">
+                              <div className="w-1.5 h-1.5 bg-black rounded-full"></div>
+                              <span className="text-gray-900">{advantage}</span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -282,32 +347,45 @@ const AboutPage = () => {
               </div>
             </div>
 
-            {/* OpenERA */}
-            <div className="mb-16">
-              <h3 className="text-xl font-semibold mb-8 text-center text-black">OpenERA</h3>
-              <p className="text-center mb-8 text-gray-600 max-w-2xl mx-auto">
-                A platform for <strong className="text-black">networking, showcasing, and product exposure</strong>.
-              </p>
+            {/* OpenERA Section */}
+            <div>
+              <div className="text-center mb-16">
+                <h3 className="text-2xl font-medium mb-4 text-black">
+                  OpenERA
+                </h3>
+                <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                  A premier platform for <span className="font-medium text-black">networking, showcasing, and product exposure</span>
+                </p>
+              </div>
               
-              <div className="grid md:grid-cols-2 gap-8">
+              <div className="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
                 {events.map((event, index) => (
                   <div 
                     key={index} 
-                    className="bg-white p-6 border border-gray-200 rounded-lg"
+                    className="group bg-white rounded-3xl p-8 border border-gray-100 transition-all duration-300 hover:shadow-xl hover:shadow-black/10 hover:-translate-y-1"
                   >
-                    <h4 className="text-lg font-semibold mb-3 text-black">{event.title}</h4>
-                    <div className="flex gap-2 mb-4">
-                      <span className="px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded">
-                        {event.period}
-                      </span>
-                      <span className="px-3 py-1 text-xs bg-black text-white rounded">
-                        {event.type}
-                      </span>
+                    <div className="mb-6">
+                      <h4 className="text-2xl font-medium mb-3 text-black">{event.title}</h4>
+                      <div className="flex gap-3">
+                        <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-gray-50 text-gray-700">
+                          {event.period}
+                        </span>
+                        <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-black text-white">
+                          {event.type}
+                        </span>
+                      </div>
                     </div>
                     
                     <div>
-                      <span className="font-medium text-gray-700 text-sm">Benefits: </span>
-                      <span className="text-gray-600 text-sm">{event.benefits.join(', ')}</span>
+                      <span className="text-sm font-medium text-gray-700 block mb-3">Key Benefits</span>
+                      <div className="space-y-2">
+                        {event.benefits.map((benefit, idx) => (
+                          <div key={idx} className="flex items-center gap-3">
+                            <div className="w-1.5 h-1.5 bg-black rounded-full"></div>
+                            <span className="text-gray-900">{benefit}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -317,48 +395,111 @@ const AboutPage = () => {
         </section>
 
         {/* Team Structure */}
-        <section className="py-16 lg:py-24 bg-white">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl sm:text-4xl font-bold mb-2 text-black">
+        <section className="py-20 lg:py-32 bg-white">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* Section Header */}
+            <div className="text-center mb-20">
+              <h2 className="text-4xl sm:text-5xl font-semibold mb-4 text-black tracking-tight">
                 Team Structure
               </h2>
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                A passionate group of innovators building the future of learning
+              </p>
             </div>
-            
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {teamRoles.map((role, index) => (
-                <div 
-                  key={index} 
-                  className="bg-white p-4 border border-gray-200 rounded-lg"
-                >
-                  <h4 className="text-lg font-semibold mb-1 text-black">{role.role}</h4>
-                  <p className="text-sm text-gray-500 mb-3">{role.count}</p>
-                  <p className="text-sm text-gray-600 leading-relaxed">
-                    {role.responsibility}
-                  </p>
-                </div>
-              ))}
+
+            {/* Organizational Structure */}
+            <div className="mb-24">
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                {teamRoles.map((role, index) => (
+                  <div 
+                    key={index} 
+                    className="group relative"
+                  >
+                    {/* Card */}
+                    <div className="bg-white border border-gray-100 rounded-2xl p-8 h-full transition-all duration-300 hover:shadow-lg hover:shadow-black/5 hover:-translate-y-1">
+                      {/* Role Title */}
+                      <div className="mb-6">
+                        <h4 className="text-xl font-medium text-black mb-2 leading-tight">
+                          {role.role}
+                        </h4>
+                        <div className="inline-flex items-center px-3 py-1 rounded-full bg-gray-50 text-sm font-medium text-gray-600">
+                          {role.count}
+                        </div>
+                      </div>
+                      
+                      {/* Responsibility */}
+                      <p className="text-gray-600 leading-relaxed text-base">
+                        {role.responsibility}
+                      </p>
+                      
+                      {/* Subtle accent line */}
+                      <div className="absolute bottom-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Join the Team CTA */}
+            <div className="mt-20 text-center">
+              <div className="bg-gray-50 rounded-3xl p-12 border border-gray-100">
+                <h3 className="text-2xl font-medium text-black mb-4">
+                  Want to join our team?
+                </h3>
+                <p className="text-gray-600 mb-8 text-lg max-w-lg mx-auto">
+                  We're always looking for passionate individuals who want to make a difference in education.
+                </p>
+                <button className="inline-flex items-center gap-2 bg-black text-white px-8 py-4 rounded-full font-medium hover:bg-gray-800 transition-colors">
+                  Get in touch
+                  <ArrowRight size={18} />
+                </button>
+              </div>
             </div>
           </div>
         </section>
 
         {/* Why Join Section */}
-        <section className="py-16 lg:py-24 bg-gray-50">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl sm:text-4xl font-bold mb-2 text-black">
+        <section className="py-20 lg:py-32 bg-white">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* Section Header */}
+            <div className="text-center mb-20">
+              <h2 className="text-4xl sm:text-5xl font-semibold mb-4 text-black tracking-tight">
                 Why Join OpenLearn?
               </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                Experience a new way of learning that's designed for the modern world
+              </p>
             </div>
             
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Features Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {features.map((feature, index) => (
-                <div key={index} className="text-center bg-white p-6 border border-gray-200 rounded-lg">
-                  <div className="w-12 h-12 mx-auto mb-4 bg-[#FFDE59] rounded-lg flex items-center justify-center text-black">
-                    {feature.icon}
+                <div 
+                  key={index} 
+                  className="group relative"
+                >
+                  {/* Feature Card */}
+                  <div className="text-center bg-white rounded-3xl p-8 border border-gray-100 h-full transition-all duration-300">
+                    {/* Icon Container */}
+                    <div className="relative mb-6">
+                      <div className="w-16 h-16 mx-auto bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl flex items-center justify-center text-black group-hover:from-[#FFDE59] group-hover:to-[#FFD700] transition-all duration-300">
+                        {feature.icon}
+                      </div>
+                      {/* Subtle glow effect */}
+                      <div className="absolute inset-0 w-16 h-16 mx-auto bg-gradient-to-br from-[#FFDE59]/20 to-[#FFD700]/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10 blur-xl"></div>
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="space-y-3">
+                      <h3 className="text-xl font-medium text-black group-hover:text-black transition-colors">
+                        {feature.title}
+                      </h3>
+                      <p className="text-gray-600 leading-relaxed">
+                        {feature.description}
+                      </p>
+                    </div>
                   </div>
-                  <h3 className="text-lg font-semibold mb-2 text-black">{feature.title}</h3>
-                  <p className="text-gray-600 text-sm">{feature.description}</p>
                 </div>
               ))}
             </div>

@@ -4,37 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/common/Navbar';
 import Footer from '../components/common/Footer';
 import PageHead from '../components/common/PageHead';
+import HeroSection from '../components/common/HeroSection';
 import { MotionDiv, MotionSection } from '../components/common/MotionWrapper';
 import eventsData from '../data/eventsData';
 import { useFilteredImages } from '../utils/eventImageService';
 
-// Modern Hero section
-const EventsHero = () => {
-  return (
-    <section className="relative overflow-hidden hero-pattern pt-16" style={{ backgroundColor: '#FFDE59' }}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
-        <div className="text-center space-y-8">
-          <div className="space-y-4">
-            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight" style={{ color: '#000000' }}>
-              Events
-            </h1>
-            <p className="text-2xl sm:text-3xl lg:text-4xl font-medium" style={{ color: '#374151' }}>
-              Our Learning Journey
-            </p>
-          </div>
-          
-          <div className="max-w-3xl mx-auto">
-            <p className="text-lg sm:text-xl leading-relaxed" style={{ color: '#374151' }}>
-              Explore our community's growth through <em>workshops, hackathons, and gatherings</em>. 
-              Each event represents a milestone in our journey of 
-              <strong style={{ color: '#000000' }}> collaborative learning and innovation</strong>.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
+// Event Card component
 
 // Event Card Component
 const EventCard = ({ event }) => {
@@ -179,7 +154,13 @@ const EventsPage = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <EventsHero />
+      <div className="pt-16">
+        <HeroSection 
+          title="Events"
+          subtitle="Our Learning Journey"
+          description="Explore our community's growth through <em>workshops, hackathons, and gatherings</em>. Each event represents a milestone in our journey of <strong style='color: #000000'> collaborative learning and innovation</strong>."
+        />
+      </div>
       
       {/* Events Grid */}
       <div className="min-h-screen bg-white">

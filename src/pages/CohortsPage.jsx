@@ -2,6 +2,7 @@ import React from 'react';
 import Navbar from '../components/common/Navbar';
 import Footer from '../components/common/Footer';
 import PageHead from '../components/common/PageHead';
+import HeroSection from '../components/common/HeroSection';
 
 const CohortsPage = () => {
   return (
@@ -15,29 +16,11 @@ const CohortsPage = () => {
       <Navbar />
       
       <div className="min-h-screen pt-16 bg-white">
-        {/* Hero Section */}
-        <section className="relative overflow-hidden hero-pattern" style={{ backgroundColor: '#FFDE59' }}>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
-            <div className="text-center space-y-8">
-              <div className="space-y-4">
-                <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight" style={{ color: '#000000' }}>
-                  Cohorts
-                </h1>
-                <p className="text-2xl sm:text-3xl lg:text-4xl font-medium" style={{ color: '#374151' }}>
-                  Structured Learning Journey
-                </p>
-              </div>
-              
-              <div className="max-w-3xl mx-auto">
-                <p className="text-lg sm:text-xl leading-relaxed" style={{ color: '#374151' }}>
-                  Join <em>cohort-based learning experiences</em> where students explore diverse fields together. 
-                  From Machine Learning to Space Science, build real projects and connect with 
-                  <strong style={{ color: '#000000' }}> motivated peers and industry experts</strong>.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
+        <HeroSection 
+          title="Cohorts"
+          subtitle="Structured Learning Journey"
+          description="Join <em>cohort-based learning experiences</em> where students explore diverse fields together. From Machine Learning to Space Science, build real projects and connect with <strong style='color: #000000'> motivated peers and industry experts</strong>."
+        />
 
         {/* Main Content */}
         <section className="py-20 lg:py-32 bg-gray-50">
