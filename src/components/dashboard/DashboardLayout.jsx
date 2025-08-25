@@ -83,8 +83,8 @@ const DashboardLayout = () => {
         onClick={onClick}
         className={`group relative flex items-center px-4 py-3 mx-2 rounded-xl transition-all duration-300 ease-out ${
           isActive
-            ? 'bg-gradient-to-r from-yellow-400/20 to-yellow-500/20 text-gray-900 shadow-lg shadow-yellow-500/10 border border-yellow-400/30 backdrop-blur-sm'
-            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50/80 hover:backdrop-blur-sm hover:shadow-md'
+            ? 'bg-gradient-to-r from-yellow-400/20 to-yellow-500/20 text-gray-900 border border-yellow-400/30 backdrop-blur-sm'
+            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50/80 hover:backdrop-blur-sm'
         }`}
       >
         {isActive && (
@@ -112,7 +112,7 @@ const DashboardLayout = () => {
       />
       
       {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-72 bg-white/95 backdrop-blur-xl border-r border-gray-200/50 shadow-xl transform transition-transform duration-300 ease-out flex flex-col ${
+      <div className={`fixed inset-y-0 left-0 z-50 w-72 bg-white/95 backdrop-blur-xl border-r border-gray-200/50 transform transition-transform duration-300 ease-out flex flex-col ${
         isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
       } lg:translate-x-0`}>
         {/* Logo Section */}
@@ -122,7 +122,7 @@ const DashboardLayout = () => {
               <img 
                 src="/favicon.png" 
                 alt="OpenLearn Logo" 
-                className="h-10 w-10 rounded-xl shadow-lg transition-all duration-200"
+                className="h-10 w-10 rounded-xl transition-all duration-200"
               />
             </div>
             <div>
@@ -165,7 +165,7 @@ const DashboardLayout = () => {
           {/* Home Link */}
           <Link
             to="/"
-            className="flex items-center px-4 py-3 mx-2 rounded-xl text-gray-600 hover:text-gray-900 hover:bg-gray-50/80 hover:backdrop-blur-sm hover:shadow-md transition-all duration-300"
+            className="flex items-center px-4 py-3 mx-2 rounded-xl text-gray-600 hover:text-gray-900 hover:bg-gray-50/80 hover:backdrop-blur-sm transition-all duration-300"
             onClick={() => setIsSidebarOpen(false)}
           >
             <ArrowLeft className="w-5 h-5 mr-3 text-gray-500" />
@@ -175,7 +175,7 @@ const DashboardLayout = () => {
           {/* Logout Button */}
           <button
             onClick={handleLogout}
-            className="flex items-center w-full px-4 py-3 mx-2 rounded-xl text-red-600 hover:text-red-700 hover:bg-red-50/80 hover:backdrop-blur-sm hover:shadow-md transition-all duration-300"
+            className="flex items-center w-full px-4 py-3 mx-2 rounded-xl text-red-600 hover:text-red-700 hover:bg-red-50/80 hover:backdrop-blur-sm transition-all duration-300"
           >
             <LogOut className="w-5 h-5 mr-3" />
             <span className="font-medium">Sign Out</span>
@@ -186,7 +186,7 @@ const DashboardLayout = () => {
       {/* Main Content */}
       <div className="lg:pl-72">
         {/* Top Navigation */}
-        <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
+        <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-gray-200/50">
           <div className="flex items-center justify-between px-6 py-4">
             {/* Left Side */}
             <div className="flex items-center space-x-4">
@@ -215,7 +215,7 @@ const DashboardLayout = () => {
               <img
                 src={getUserAvatarUrl(user)}
                 alt="Profile"
-                className="w-10 h-10 rounded-full border-2 border-yellow-400/50 shadow-sm"
+                className="w-10 h-10 rounded-full border-2 border-yellow-400/50"
               />
             </div>
           </div>
