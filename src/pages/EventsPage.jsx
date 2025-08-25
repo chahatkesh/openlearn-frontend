@@ -144,18 +144,6 @@ const EventCard = ({ event }) => {
               <span className="truncate max-w-[120px]">{event.location}</span>
             </div>
           </div>
-
-          {/* Images Count - Show initial count, update when filtered */}
-          {(filteredImages.length > 0 || event.images.length > 0) && (
-            <div className="mt-4 pt-4 border-t border-gray-100">
-              <div className="flex items-center gap-2 text-xs text-gray-500">
-                <Camera size={12} className="text-[#FFDE59]" />
-                <span>
-                  {filteredImages.length || event.images.length} {(filteredImages.length || event.images.length) === 1 ? 'photo' : 'photos'}
-                </span>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </MotionDiv>
