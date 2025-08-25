@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   Users, 
   UserCheck, 
@@ -21,6 +22,45 @@ import {
 import { FaXTwitter } from 'react-icons/fa6';
 import { getUserAvatarUrl } from '../../utils/boringAvatarsUtils';
 import LeagueSelectionModal from './LeagueSelectionModal';
+
+// Modal component that renders to document.body for proper centering
+const Modal = ({ isOpen, onClose, children }) => {
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleEscapeKey = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscapeKey);
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+
+    return () => {
+      document.removeEventListener('keydown', handleEscapeKey);
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
+  return createPortal(
+    <div 
+      className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-[10000]"
+      onClick={handleOverlayClick}
+    >
+      {children}
+    </div>,
+    document.body
+  );
+};
 
 const UserManagement = ({ 
   users, 
@@ -567,24 +607,28 @@ const UserManagement = ({
 
       {/* User Detail Modal */}
       {userDetailModal && (
-        <UserDetailModal 
-          user={userDetailModal} 
-          onClose={() => setUserDetailModal(null)}
-          onUpdateStatus={onUpdateStatus}
-          onApproveUser={onApproveUser}
-        />
+        <Modal isOpen={true} onClose={() => setUserDetailModal(null)}>
+          <UserDetailModal 
+            user={userDetailModal} 
+            onClose={() => setUserDetailModal(null)}
+            onUpdateStatus={onUpdateStatus}
+            onApproveUser={onApproveUser}
+          />
+        </Modal>
       )}
 
       {/* League Selection Modal */}
       {showLeagueModal && (
-        <LeagueSelectionModal
-          user={selectedUser}
-          targetRole={targetRole}
-          leagues={leagues}
-          loading={promotionLoading}
-          onConfirm={handleLeagueAssignment}
-          onCancel={() => setShowLeagueModal(false)}
-        />
+        <Modal isOpen={true} onClose={() => setShowLeagueModal(false)}>
+          <LeagueSelectionModal
+            user={selectedUser}
+            targetRole={targetRole}
+            leagues={leagues}
+            loading={promotionLoading}
+            onConfirm={handleLeagueAssignment}
+            onCancel={() => setShowLeagueModal(false)}
+          />
+        </Modal>
       )}
     </div>
   );
@@ -613,10 +657,9 @@ const UserDetailModal = ({ user, onClose, onUpdateStatus, onApproveUser }) => {
   const RoleIcon = roleInfo.icon;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-        {/* Modal Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+    <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+      {/* Modal Header */}
+      <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div className="flex items-center gap-4">
             <div className="h-16 w-16 rounded-full overflow-hidden border-2 border-gray-200 shadow-sm">
               <img
@@ -870,7 +913,6 @@ const UserDetailModal = ({ user, onClose, onUpdateStatus, onApproveUser }) => {
             </button>
           </div>
         </div>
-      </div>
     </div>
   );
 };

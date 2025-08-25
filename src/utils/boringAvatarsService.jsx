@@ -4,7 +4,7 @@
  * Based on the Boring Avatars concept by @boringdesigners
  */
 import React from 'react';
-import { hashCode, getColors, generateInitials } from './boringAvatarsUtils';
+import { hashCode, getColors } from './boringAvatarsUtils';
 
 /**
  * Generate Bauhaus-style avatar (geometric shapes)

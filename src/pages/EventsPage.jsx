@@ -7,16 +7,12 @@ import PageHead from '../components/common/PageHead';
 import HeroSection from '../components/common/HeroSection';
 import { MotionDiv, MotionSection } from '../components/common/MotionWrapper';
 import eventsData from '../data/eventsData';
-import { useFilteredImages } from '../utils/eventImageService';
 
 // Event Card component
 
 // Event Card Component
 const EventCard = ({ event }) => {
   const navigate = useNavigate();
-
-  // Filter images to only show existing ones - start with all images, then filter
-  const { images: filteredImages } = useFilteredImages(event.images);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);

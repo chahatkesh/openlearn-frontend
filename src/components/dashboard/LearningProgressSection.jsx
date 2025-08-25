@@ -160,7 +160,7 @@ const LearningProgressSection = ({ user }) => {
       setLeagues([]);
       setLoading(false);
     }
-  }, []);
+  }, [getEnrolledLeagueIds]);
 
   // OPTIMIZATION 4: Load data on mount with optimized approach
   useEffect(() => {
