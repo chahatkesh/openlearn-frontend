@@ -34,6 +34,12 @@ const LearningProgressSection = ({ user }) => {
   const [totalResourceCalculations, setTotalResourceCalculations] = useState(0);
   const [showResourcesCompleteToast, setShowResourcesCompleteToast] = useState(false);
 
+  // HELPER: Get enrolled league IDs to avoid unnecessary API calls
+  const getEnrolledLeagueIds = useCallback((enrollments) => {
+    if (!enrollments?.length) return new Set();
+    return new Set(enrollments.map(enrollment => enrollment.league?.id).filter(Boolean));
+  }, []);
+
   // OPTIMIZATION 3: Progressive data loading with immediate UI feedback
   const loadDashboardDataOptimized = useCallback(async () => {
     try {
@@ -202,12 +208,6 @@ const LearningProgressSection = ({ user }) => {
       enrollment.league.description?.toLowerCase().includes(searchTerm)
     );
   }, [searchTerm, isSearchActive]);
-
-  // HELPER: Get enrolled league IDs to avoid unnecessary API calls
-  const getEnrolledLeagueIds = useCallback((enrollments) => {
-    if (!enrollments?.length) return new Set();
-    return new Set(enrollments.map(enrollment => enrollment.league?.id).filter(Boolean));
-  }, []);
 
   // IMPROVEMENT: Show loading skeleton only for basic dashboard loading, not resource calculations
   // This allows users to see and interact with the dashboard immediately while resources load in background
