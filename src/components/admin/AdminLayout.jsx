@@ -26,12 +26,69 @@ const AdminLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
-  // Close dropdown when clicking outside
+  // Close sidebar when clicking outside (only on mobile)
   useEffect(() => {
-    const handleClickOutside = () => setIsSidebarOpen(false);
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
-  }, []);
+    const handleClickOutside = (event) => {
+      // Only handle click outside on mobile devices
+      if (window.innerWidth >= 1024) return; // lg breakpoint
+      
+      // Don't close if clicking on the menu button or inside the sidebar
+      const sidebar = document.querySelector('[data-sidebar]');
+      const menuButton = document.querySelector('[data-menu-button]');
+      
+      if (
+        sidebar && 
+        !sidebar.contains(event.target) && 
+        menuButton && 
+        !menuButton.contains(event.target)
+      ) {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    if (isSidebarOpen) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [isSidebarOpen]);
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (isSidebarOpen && window.innerWidth < 1024) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isSidebarOpen]);
+
+  // Handle escape key to close mobile menu
+  useEffect(() => {
+    const handleEscape = (event) => {
+      if (event.key === 'Escape' && isSidebarOpen) {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isSidebarOpen]);
+
+  // Close mobile menu when switching to desktop view
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024 && isSidebarOpen) {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isSidebarOpen]);
 
   // Define all available navigation items
   const allNavigationItems = [
@@ -132,9 +189,12 @@ const AdminLayout = () => {
       />
       
       {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-72 bg-white/95 backdrop-blur-xl border-r border-gray-200/50 transform transition-transform duration-300 ease-out flex flex-col ${
-        isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      } lg:translate-x-0`}>
+      <div 
+        data-sidebar
+        className={`fixed inset-y-0 left-0 z-50 w-72 bg-white/95 backdrop-blur-xl border-r border-gray-200/50 transform transition-transform duration-300 ease-out flex flex-col ${
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        } lg:translate-x-0`}
+      >
         {/* Logo Section */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200/50">
           <div className="flex items-center space-x-3">
@@ -156,7 +216,10 @@ const AdminLayout = () => {
             </div>
           </div>
           <button
-            onClick={() => setIsSidebarOpen(false)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsSidebarOpen(false);
+            }}
             className="lg:hidden p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
           >
             <X className="w-5 h-5" />
@@ -226,7 +289,11 @@ const AdminLayout = () => {
             {/* Left Side */}
             <div className="flex items-center space-x-4">
               <button
-                onClick={() => setIsSidebarOpen(true)}
+                data-menu-button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsSidebarOpen(true);
+                }}
                 className="lg:hidden p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
               >
                 <Menu className="w-6 h-6" />
@@ -269,7 +336,10 @@ const AdminLayout = () => {
       {isSidebarOpen && (
         <div 
           className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
-          onClick={() => setIsSidebarOpen(false)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsSidebarOpen(false);
+          }}
         />
       )}
 
