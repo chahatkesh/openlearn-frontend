@@ -129,7 +129,7 @@ const TeamMemberCard = ({ name, description, linkedin, twitter, instagram }) => 
 const CommunityCard = ({ onClick }) => {
   return (
     <MotionDiv 
-      className="group relative h-full bg-gradient-to-br from-[#FFDE59] to-[#FFD93D] rounded-3xl overflow-hidden shadow-sm transition-all duration-500 ease-out border border-[#FFDE59]/50 flex flex-col cursor-pointer"
+      className="group relative bg-gradient-to-br from-[#FFDE59] to-[#FFD93D] rounded-3xl overflow-hidden shadow-sm transition-all duration-500 ease-out border border-[#FFDE59]/50 cursor-pointer"
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
@@ -141,59 +141,35 @@ const CommunityCard = ({ onClick }) => {
       }}
       onClick={onClick}
     >
-      {/* Icon Section */}
-      <MotionDiv 
-        className="relative aspect-square overflow-hidden bg-gradient-to-br from-[#FFDE59] to-[#FFD93D] flex items-center justify-center"
-        initial={{ opacity: 0, scale: 1.1 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8, delay: 0.2 }}
-      >
-        <Users 
-          size={80} 
-          className="text-black/80 transition-transform duration-700 group-hover:scale-110"
-        />
-        
-        {/* Subtle pattern overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-      </MotionDiv>
-
-      {/* Content Section */}
-      <MotionDiv 
-        className="p-6 flex flex-col flex-grow bg-white"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6, delay: 0.3 }}
-      >
-        {/* Title */}
-        <div className="mb-4">
-          <h3 className="text-xl font-semibold text-gray-900 mb-2 tracking-tight">
+      {/* Simplified Layout */}
+      <div className="p-6 md:p-8 text-center">
+        {/* Content Section */}
+        <MotionDiv 
+          className="w-full"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+        >
+          {/* Title */}
+          <h3 className="text-xl md:text-2xl font-semibold text-black mb-2 tracking-tight">
             Find Your Pathfinders
           </h3>
-        </div>
 
-        {/* Description */}
-        <MotionDiv
-          className="flex-grow"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-        >
-          <div className="text-gray-600 leading-relaxed text-sm mb-4">
+          {/* Description */}
+          <p className="text-black/80 leading-relaxed text-sm md:text-base mb-4">
             To find all your pathfinders of every league, <strong>Click</strong> and discover your learning community!
+          </p>
+
+          {/* Call to Action */}
+          <div className="flex items-center justify-center">
+            <div className="flex items-center gap-2 text-[#B8860B] font-medium text-sm group-hover:text-[#8B6914] transition-colors duration-300">
+              <span>Join Community</span>
+              <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
+            </div>
           </div>
         </MotionDiv>
-
-        {/* Call to Action */}
-        <div className="flex items-center justify-center pt-3 border-t border-gray-100 mt-auto">
-          <div className="flex items-center gap-2 text-[#B8860B] font-medium text-sm group-hover:text-[#8B6914] transition-colors duration-300">
-            <span>Join Community</span>
-            <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
-          </div>
-        </div>
-      </MotionDiv>
+      </div>
 
       {/* Subtle border highlight on hover */}
       <div className="absolute inset-0 rounded-3xl ring-1 ring-[#FFDE59]/50 group-hover:ring-[#FFDE59]/80 transition-all duration-500"></div>
@@ -224,7 +200,7 @@ const Team = () => {
         />
 
         {/* Team Grid - 4-column layout */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 max-w-7xl mx-auto">
           {teamData.team.map((member, index) => (
             <MotionDiv
               key={member.name}
@@ -240,8 +216,10 @@ const Team = () => {
               <TeamMemberCard {...member} />
             </MotionDiv>
           ))}
+        </div>
           
-          {/* Community Card */}
+        {/* Community Card - Full Width */}
+        <div className="mt-8 lg:mt-12 max-w-7xl mx-auto">
           <MotionDiv
             initial={{ opacity: 0, y: 60 }}
             whileInView={{ opacity: 1, y: 0 }}

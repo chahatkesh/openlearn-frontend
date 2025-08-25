@@ -145,7 +145,6 @@ const EventDetailPage = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
 
   // Debug logging
   useEffect(() => {
@@ -174,42 +173,12 @@ const EventDetailPage = () => {
     }
   }, [eventId]);
 
-  // Handle loading state
+  // Redirect to events page if event not found
   useEffect(() => {
-    // Reduce loading time for better UX
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 50);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Redirect to events page if event not found after loading
-  useEffect(() => {
-    if (!isLoading && !event && eventId) {
+    if (!event && eventId) {
       navigate('/events', { replace: true });
     }
-  }, [isLoading, event, eventId, navigate]);
-
-  // Show loading spinner while checking for event
-  if (isLoading) {
-    return (
-      <>
-        <PageHead 
-          title="Loading Event..."
-          description="Loading event details"
-        />
-        <Navbar />
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-          <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
-            <p className="text-gray-600 text-lg">Loading event details...</p>
-          </div>
-        </div>
-        <Footer />
-      </>
-    );
-  }
+  }, [event, eventId, navigate]);
 
   // Show 404 if event not found
   if (!event) {

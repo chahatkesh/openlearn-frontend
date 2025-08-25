@@ -1,7 +1,9 @@
 import { ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { MotionDiv, MotionSection, MotionButton, MotionH1, MotionH2, MotionLi, MotionUl, MotionSpan, MotionP } from '../common/MotionWrapper';
 
 const Hero = () => {
+  const navigate = useNavigate();
 
   // Animation variants
   const containerVariants = {
@@ -83,16 +85,14 @@ const Hero = () => {
                 style={{color: '#000000'}}
                 variants={itemVariants}
               >
-                1st MLxFinance Cohort
+                OpenLearn Cohort
               </MotionH1>
               <MotionP
                 className="text-lg md:text-xl mb-8 max-w-lg"
                 style={{ color: '#374151' }}
                 variants={itemVariants}
               >
-                Join the OpenLearn Community's inaugural cohort where Machine
-                Learning meets Finance. Gain valuable skills and connect with
-                fellow enthusiasts in this immersive learning experience.
+                Join the OpenLearn Community’s inaugural cohort where students explore diverse fields together - from Machine Learning to Space Science, Mathematics, and more. Build real projects, gain skills, and connect with motivated peers in this collaborative learning experience.
               </MotionP>
               <MotionDiv
                 className="flex flex-col sm:flex-row gap-4"
@@ -103,16 +103,12 @@ const Hero = () => {
                   style={{ backgroundColor: '#000000' }}
                   onMouseEnter={(e) => e.target.style.backgroundColor = '#1F2937'}
                   onMouseLeave={(e) => e.target.style.backgroundColor = '#000000'}
-                  onClick={() =>
-                    document
-                      .getElementById("join-cohort")
-                      ?.scrollIntoView({ behavior: "smooth" })
-                  }
+                  onClick={() => navigate('/cohorts')}
                   variants={buttonVariants}
                   whileHover="hover"
                   whileTap="tap"
                 >
-                  Join Cohort 1.0{" "}
+                  Join Cohort 1.5{" "}
                   <ArrowRight size={18} className="ml-2 animate-pulse inline" />
                 </MotionButton>
                 <MotionButton
@@ -192,9 +188,9 @@ const Hero = () => {
                   }}
                 >
                   {[
-                    "Hands-on ML projects with financial data",
-                    "Expert-led sessions from industry leaders",
-                    "Networking opportunities with finance & tech professionals",
+                    "Hands-on projects across multiple domains",
+                    "Expert-led sessions from mentors & industry leaders",
+                    "Networking opportunities with students & professionals",
                     "Certificate upon successful completion",
                     "1:1 mentorship sessions",
                   ].map((item, index) => (

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Calendar, MapPin, Camera, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/common/Navbar';
@@ -10,34 +10,28 @@ import eventsData from '../data/eventsData';
 // Modern Hero section
 const EventsHero = () => {
   return (
-    <MotionSection 
-      className="relative pt-32 pb-16"
-      style={{ backgroundColor: '#FFDE59' }}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.8 }}
-    >
-      <div className="max-w-6xl mx-auto px-6">
-        <MotionDiv
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          className="text-center"
-        >
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-black mb-6 tracking-tight leading-none">
-            Events
-          </h1>
+    <section className="relative overflow-hidden hero-pattern pt-16" style={{ backgroundColor: '#FFDE59' }}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
+        <div className="text-center space-y-8">
+          <div className="space-y-4">
+            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight" style={{ color: '#000000' }}>
+              Events
+            </h1>
+            <p className="text-2xl sm:text-3xl lg:text-4xl font-medium" style={{ color: '#374151' }}>
+              Our Learning Journey
+            </p>
+          </div>
           
-          <p className="text-xl text-gray-800 max-w-2xl mx-auto font-medium leading-relaxed">
-            Explore our learning journey through workshops, hackathons, and community gatherings
-          </p>
-        </MotionDiv>
+          <div className="max-w-3xl mx-auto">
+            <p className="text-lg sm:text-xl leading-relaxed" style={{ color: '#374151' }}>
+              Explore our community's growth through <em>workshops, hackathons, and gatherings</em>. 
+              Each event represents a milestone in our journey of 
+              <strong style={{ color: '#000000' }}> collaborative learning and innovation</strong>.
+            </p>
+          </div>
+        </div>
       </div>
-      
-      {/* Decorative elements to match website style */}
-      <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-black/5 rounded-full blur-3xl"></div>
-      <div className="absolute -top-20 -right-20 w-60 h-60 bg-black/5 rounded-full blur-3xl"></div>
-    </MotionSection>
+    </section>
   );
 };
 
@@ -160,56 +154,20 @@ const EventCard = ({ event }) => {
 
 
 const EventsPage = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [events, setEvents] = useState([]);
-
-  // Load events data with error handling
-  useEffect(() => {
-    const loadEvents = () => {
-      try {
-        // Defensive check for eventsData structure
-        if (eventsData && typeof eventsData === 'object' && Array.isArray(eventsData.events)) {
-          setEvents(eventsData.events);
-        } else {
-          console.warn('Events data structure is invalid:', eventsData);
-          setEvents([]);
-        }
-      } catch (error) {
-        console.error('Error loading events:', error);
-        setEvents([]);
-      } finally {
-        setIsLoading(false);
+  // Initialize events directly from imported data
+  const events = React.useMemo(() => {
+    try {
+      if (eventsData && typeof eventsData === 'object' && Array.isArray(eventsData.events)) {
+        return eventsData.events;
+      } else {
+        console.warn('Events data structure is invalid:', eventsData);
+        return [];
       }
-    };
-
-    // Small delay to ensure proper data loading
-    const timer = setTimeout(loadEvents, 50);
-    return () => clearTimeout(timer);
+    } catch (error) {
+      console.error('Error loading events:', error);
+      return [];
+    }
   }, []);
-
-  // Show loading state
-  if (isLoading) {
-    return (
-      <>
-        <PageHead 
-          title="Events - Loading..."
-          description="Loading events from OpenLearn's journey"
-          keywords="events, workshops, hackathons, guest lectures, community gatherings, NIT Jalandhar, learning events"
-        />
-        
-        <Navbar />
-        
-        <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#FFDE59' }}>
-          <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-black mb-4"></div>
-            <p className="text-black text-lg font-medium">Loading events...</p>
-          </div>
-        </div>
-        
-        <Footer />
-      </>
-    );
-  }
 
   return (
     <>

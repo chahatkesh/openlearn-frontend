@@ -118,8 +118,12 @@ const DashboardLayout = () => {
         {/* Logo Section */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200/50">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-lg">O</span>
+            <div className="relative">
+              <img 
+                src="/favicon.png" 
+                alt="OpenLearn Logo" 
+                className="h-10 w-10 rounded-xl shadow-lg transition-all duration-200"
+              />
             </div>
             <div>
               <h1 className="text-xl font-bold text-gray-900">OpenLearn</h1>
