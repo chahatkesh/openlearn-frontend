@@ -95,7 +95,7 @@ const DashboardPage = () => {
             {/* Simplified Right Section */}
             <div className="flex items-center space-x-4">
               {/* Enhanced Admin Panel Link */}
-              {(user?.role === 'GRAND_PATHFINDER' || user?.role === 'CHIEF_PATHFINDER') && (
+              {(user?.role === 'GRAND_PATHFINDER' || user?.role === 'CHIEF_PATHFINDER' || user?.role === 'PATHFINDER') && (
                 <Link
                   to="/admin"
                   className="hidden sm:flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 bg-gray-100/60 hover:bg-[#FFDE59]/15 rounded-lg transition-all duration-300 hover:scale-105 border border-gray-200/50 hover:border-[#FFDE59]/40 group"
@@ -174,7 +174,7 @@ const DashboardPage = () => {
                         Home
                       </Link>
                       
-                      {(user?.role === 'GRAND_PATHFINDER' || user?.role === 'CHIEF_PATHFINDER') && (
+                      {(user?.role === 'GRAND_PATHFINDER' || user?.role === 'CHIEF_PATHFINDER' || user?.role === 'PATHFINDER') && (
                         <Link
                           to="/admin"
                           className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-[#FFDE59]/10 hover:text-gray-900 transition-all duration-200 group sm:hidden"

@@ -21,15 +21,46 @@ const AdminLayout = () => {
   const getCurrentTab = () => {
     const path = location.pathname;
     if (path === '/admin' || path === '/admin/') {
-      // Default to cohorts for non-GRAND_PATHFINDER users, users for GRAND_PATHFINDER
-      return user?.role === 'GRAND_PATHFINDER' ? 'users' : 'cohorts';
+      // Default tabs based on user role
+      switch (user?.role) {
+        case 'GRAND_PATHFINDER':
+          return 'users'; // Grand Pathfinder defaults to users
+        case 'CHIEF_PATHFINDER':
+          return 'leagues'; // Chief Pathfinder defaults to leagues
+        case 'PATHFINDER':
+          return 'weeks'; // Pathfinder defaults to weeks
+        default:
+          return 'users'; // Default for other admin roles
+      }
     }
     const tabMatch = path.match(/\/admin\/(.+)/);
     const requestedTab = tabMatch ? tabMatch[1] : 'users';
     
-    // If trying to access restricted tabs but not GRAND_PATHFINDER, redirect to cohorts
-    if ((requestedTab === 'users' || requestedTab === 'specializations') && user?.role !== 'GRAND_PATHFINDER') {
-      return 'cohorts';
+    // Check if user has permission to access the requested tab
+    const userRole = user?.role;
+    const hasAccess = (() => {
+      switch (userRole) {
+        case 'GRAND_PATHFINDER':
+          return true; // Can access all tabs
+        case 'CHIEF_PATHFINDER':
+          return ['leagues', 'weeks', 'sections', 'resources', 'assignments'].includes(requestedTab);
+        case 'PATHFINDER':
+          return ['weeks', 'sections', 'resources'].includes(requestedTab);
+        default:
+          return true; // Default for other admin roles
+      }
+    })();
+    
+    // If user doesn't have access, redirect to their default tab
+    if (!hasAccess) {
+      switch (userRole) {
+        case 'CHIEF_PATHFINDER':
+          return 'leagues';
+        case 'PATHFINDER':
+          return 'weeks';
+        default:
+          return 'users';
+      }
     }
     
     return requestedTab;
@@ -49,12 +80,27 @@ const AdminLayout = () => {
     { id: 'assignments', label: 'Assignments', icon: ClipboardList, path: '/admin/assignments' }
   ];
 
-  // Filter tabs based on user role - only GRAND_PATHFINDER can see Users and Specializations tabs
+  // Filter tabs based on user role with specific permissions per role
   const tabs = allTabs.filter(tab => {
-    if (tab.id === 'users' || tab.id === 'specializations') {
-      return user?.role === 'GRAND_PATHFINDER';
+    const userRole = user?.role;
+    
+    switch (userRole) {
+      case 'GRAND_PATHFINDER':
+        // Grand Pathfinder can see all routes
+        return true;
+        
+      case 'CHIEF_PATHFINDER':
+        // Chief Pathfinder can see: Leagues, Weeks, Days, Resources, Assignments
+        return ['leagues', 'weeks', 'sections', 'resources', 'assignments'].includes(tab.id);
+        
+      case 'PATHFINDER':
+        // Pathfinder can see: Weeks, Days, Resources
+        return ['weeks', 'sections', 'resources'].includes(tab.id);
+        
+      default:
+        // For backward compatibility, show all tabs for other admin roles (ADMIN)
+        return true;
     }
-    return true; // Show all other tabs for any admin role
   });
 
   return (

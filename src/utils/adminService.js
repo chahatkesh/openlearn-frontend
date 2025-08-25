@@ -921,21 +921,46 @@ class AdminService {
   // ==================== UTILITY METHODS ====================
 
   /**
-   * Check if user has admin privileges
+   * Check if user is admin
    * @param {Object} user - User object
    * @returns {boolean} Whether user is admin
    */
   static isAdmin(user) {
-    return user && ['GRAND_PATHFINDER', 'CHIEF_PATHFINDER'].includes(user.role);
-  }
-
-  /**
+    return user && ['GRAND_PATHFINDER', 'CHIEF_PATHFINDER', 'PATHFINDER'].includes(user.role);
+  }  /**
    * Check if user can manage content
    * @param {Object} user - User object
    * @returns {boolean} Whether user can manage content
    */
   static canManageContent(user) {
     return user && ['GRAND_PATHFINDER', 'CHIEF_PATHFINDER', 'PATHFINDER'].includes(user.role);
+  }
+
+  /**
+   * Check if user can manage leagues
+   * @param {Object} user - User object
+   * @returns {boolean} Whether user can manage leagues
+   */
+  static canManageLeagues(user) {
+    return user && ['GRAND_PATHFINDER', 'CHIEF_PATHFINDER'].includes(user.role);
+  }
+
+  /**
+   * Check if user can manage weeks, days, and resources
+   * @param {Object} user - User object
+   * @returns {boolean} Whether user can manage weeks, days, and resources
+   */
+  static canManageWeeksAndContent(user) {
+    return user && ['GRAND_PATHFINDER', 'CHIEF_PATHFINDER', 'PATHFINDER'].includes(user.role);
+  }
+
+  /**
+   * Check if user can manage assignments
+   * @param {Object} user - User object
+   * @returns {boolean} Whether user can manage assignments
+   */
+  static canManageAssignments(user) {
+    return user && ['GRAND_PATHFINDER', 'CHIEF_PATHFINDER'].includes(user.role);
   }
 
   /**
@@ -956,9 +981,9 @@ class AdminService {
     const roleInfo = {
       'PIONEER': { name: 'Pioneer', color: 'blue', description: 'Basic learner access' },
       'LUMINARY': { name: 'Luminary', color: 'green', description: 'Advanced learner access' },
-      'PATHFINDER': { name: 'Pathfinder', color: 'purple', description: 'Content contributor' },
-      'CHIEF_PATHFINDER': { name: 'Chief Pathfinder', color: 'orange', description: 'Admin access' },
-      'GRAND_PATHFINDER': { name: 'Grand Pathfinder', color: 'red', description: 'Full system access' }
+      'PATHFINDER': { name: 'Pathfinder', color: 'purple', description: 'Can manage weeks, days, and resources' },
+      'CHIEF_PATHFINDER': { name: 'Chief Pathfinder', color: 'orange', description: 'Can manage leagues, weeks, days, resources, and assignments' },
+      'GRAND_PATHFINDER': { name: 'Grand Pathfinder', color: 'red', description: 'Full system access to all admin features' }
     };
     
     return roleInfo[role] || { name: role, color: 'gray', description: 'Unknown role' };

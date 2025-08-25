@@ -86,19 +86,26 @@ const App = () => {
         
         {/* Routes with specific role requirements - also wrapped with MigrationRoute */}
         <Route element={<MigrationRoute />}>
-          <Route element={<ProtectedRoute requiredRoles={['ADMIN', 'GRAND_PATHFINDER', 'CHIEF_PATHFINDER']} />}>
+          <Route element={<ProtectedRoute requiredRoles={['ADMIN', 'GRAND_PATHFINDER', 'CHIEF_PATHFINDER', 'PATHFINDER']} />}>
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDefaultRedirect />} />
+              {/* Routes only for GRAND_PATHFINDER */}
               <Route element={<ProtectedRoute requiredRoles={['GRAND_PATHFINDER']} />}>
                 <Route path="users" element={<AdminUsersPage />} />
                 <Route path="specializations" element={<AdminSpecializationsPage />} />
+                <Route path="cohorts" element={<AdminCohortsPage />} />
               </Route>
-              <Route path="cohorts" element={<AdminCohortsPage />} />
-              <Route path="leagues" element={<AdminLeaguesPage />} />
-              <Route path="weeks" element={<AdminWeeksPage />} />
-              <Route path="sections" element={<AdminSectionsPage />} />
-              <Route path="resources" element={<AdminResourcesPage />} />
-              <Route path="assignments" element={<AdminAssignmentsPage />} />
+              {/* Routes for GRAND_PATHFINDER and CHIEF_PATHFINDER */}
+              <Route element={<ProtectedRoute requiredRoles={['GRAND_PATHFINDER', 'CHIEF_PATHFINDER']} />}>
+                <Route path="leagues" element={<AdminLeaguesPage />} />
+                <Route path="assignments" element={<AdminAssignmentsPage />} />
+              </Route>
+              {/* Routes for GRAND_PATHFINDER, CHIEF_PATHFINDER, and PATHFINDER */}
+              <Route element={<ProtectedRoute requiredRoles={['GRAND_PATHFINDER', 'CHIEF_PATHFINDER', 'PATHFINDER']} />}>
+                <Route path="weeks" element={<AdminWeeksPage />} />
+                <Route path="sections" element={<AdminSectionsPage />} />
+                <Route path="resources" element={<AdminResourcesPage />} />
+              </Route>
             </Route>
             {/* Legacy redirect for old admin page */}
             <Route path="/admin-old" element={<AdminPage />} />
