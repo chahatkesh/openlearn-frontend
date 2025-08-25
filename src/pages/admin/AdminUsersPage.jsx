@@ -4,6 +4,7 @@ import AdminService from '../../utils/adminService';
 
 const AdminUsersPage = () => {
   const [allUsers, setAllUsers] = useState([]);
+  const [leagues, setLeagues] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -12,8 +13,28 @@ const AdminUsersPage = () => {
     setError(null);
     
     try {
+      // Fetch users data
       const usersData = await AdminService.getAllUsersStrategic();
       setAllUsers(usersData.users || []);
+      
+      // Try to fetch leagues data, but don't fail if endpoint doesn't exist
+      try {
+        const leaguesData = await AdminService.getAllLeagues();
+        console.log('Leagues data received:', leaguesData); // Debug log
+        
+        // Extract leagues array from the response object
+        const leaguesArray = leaguesData?.leagues || leaguesData || [];
+        setLeagues(Array.isArray(leaguesArray) ? leaguesArray : []);
+      } catch (leagueError) {
+        console.warn('Failed to fetch leagues, using mock data:', leagueError);
+        // Use mock data for development
+        setLeagues([
+          { id: 1, name: 'Machine Learning', description: 'AI and ML projects' },
+          { id: 2, name: 'Web Development', description: 'Frontend and backend projects' },
+          { id: 3, name: 'Mobile Development', description: 'iOS and Android apps' },
+          { id: 4, name: 'Data Science', description: 'Data analysis and visualization' }
+        ]);
+      }
       
       // Show a info message if only pending users were loaded
       if (usersData.note) {
@@ -84,6 +105,18 @@ const AdminUsersPage = () => {
     }
   };
 
+  const handlePromoteWithLeagues = async (userId, role, leagueAssignments) => {
+    try {
+      await AdminService.promoteToPathfinderWithLeagues(userId, role, leagueAssignments);
+      // Refresh users data to get updated roles
+      await fetchUsers();
+    } catch (err) {
+      console.error('Error promoting user with leagues:', err);
+      setError(`Failed to promote user: ${err.message}`);
+      throw err; // Re-throw to handle in UI
+    }
+  };
+
   if (error) {
     return (
       <div className="bg-red-50 border-l-4 border-red-500 p-4">
@@ -115,6 +148,8 @@ const AdminUsersPage = () => {
       onApproveUser={handleApproveUser}
       onUpdateRole={handleUpdateRole}
       onUpdateStatus={handleUpdateStatus}
+      onPromoteWithLeagues={handlePromoteWithLeagues}
+      availableLeagues={leagues}
       loading={loading}
     />
   );

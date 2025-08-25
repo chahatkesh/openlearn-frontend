@@ -420,6 +420,110 @@ class AdminService {
     return handleResponse(response);
   }
 
+  // ==================== LEAGUE ASSIGNMENT MANAGEMENT ====================
+
+  /**
+   * Assign leagues to a pathfinder
+   * @param {string} pathfinderId - Pathfinder user ID
+   * @param {Array} leagueIds - Array of league IDs to assign
+   * @param {Object} permissions - Permission settings
+   * @returns {Promise} Assignment result
+   */
+  static async assignLeaguesToPathfinder(pathfinderId, leagueIds, permissions) {
+    const response = await fetch(`${API_BASE_URL}/admin/assign-leagues`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({
+        pathfinderId,
+        leagueIds,
+        permissions
+      })
+    });
+    return handleResponse(response);
+  }
+
+  /**
+   * Get pathfinder's league assignments
+   * @param {string} pathfinderId - Pathfinder user ID
+   * @returns {Promise} League assignments data
+   */
+  static async getPathfinderLeagues(pathfinderId) {
+    const response = await fetch(`${API_BASE_URL}/admin/pathfinder-leagues/${pathfinderId}`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+
+  /**
+   * Remove league assignment from pathfinder
+   * @param {string} pathfinderId - Pathfinder user ID
+   * @param {string} leagueId - League ID to remove
+   * @returns {Promise} Removal result
+   */
+  static async removePathfinderLeague(pathfinderId, leagueId) {
+    const response = await fetch(`${API_BASE_URL}/admin/pathfinder-leagues/${pathfinderId}/${leagueId}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+
+  /**
+   * Update pathfinder permissions for a specific league
+   * @param {string} pathfinderId - Pathfinder user ID
+   * @param {string} leagueId - League ID
+   * @param {Object} permissions - Updated permissions
+   * @returns {Promise} Update result
+   */
+  static async updatePathfinderPermissions(pathfinderId, leagueId, permissions) {
+    const response = await fetch(`${API_BASE_URL}/admin/pathfinder-leagues/${pathfinderId}/${leagueId}/permissions`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ permissions })
+    });
+    return handleResponse(response);
+  }
+
+  /**
+   * Get all pathfinder assignments overview
+   * @returns {Promise} All pathfinder assignments data
+   */
+  static async getAllPathfinderAssignments() {
+    const response = await fetch(`${API_BASE_URL}/admin/pathfinder-assignments`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+
+  /**
+   * Promote user to pathfinder with league assignments
+   * @param {string} userId - User ID to promote
+   * @param {string} newRole - New role (PATHFINDER or CHIEF_PATHFINDER)
+   * @param {Array} leagueAssignments - Array of league assignments with permissions
+   * @returns {Promise} Promotion and assignment result
+   */
+  static async promoteToPathfinderWithLeagues(userId, newRole, leagueAssignments = []) {
+    console.log('AdminService received:', { userId, newRole, leagueAssignments });
+    
+    // First update the role
+    await this.updateUserRole(userId, newRole);
+    
+    // Then assign leagues if provided
+    if (Array.isArray(leagueAssignments) && leagueAssignments.length > 0) {
+      const leagueIds = leagueAssignments.map(assignment => assignment.leagueId);
+      const permissions = leagueAssignments[0]?.permissions || {
+        canManageUsers: false,
+        canViewAnalytics: true,
+        canCreateContent: false
+      };
+      
+      console.log('Extracted league IDs:', leagueIds, 'permissions:', permissions);
+      return await this.assignLeaguesToPathfinder(userId, leagueIds, permissions);
+    }
+    
+    return { success: true, message: 'User promoted successfully' };
+  }
+
   // ==================== SPECIALIZATION MANAGEMENT ====================
 
   /**

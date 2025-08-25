@@ -20,12 +20,15 @@ import {
 } from 'lucide-react';
 import { FaXTwitter } from 'react-icons/fa6';
 import { getUserAvatarUrl } from '../../utils/boringAvatarsUtils';
+import LeagueSelectionModal from './LeagueSelectionModal';
 
 const UserManagement = ({ 
   users, 
   onApproveUser, 
   onUpdateRole, 
   onUpdateStatus,
+  onPromoteWithLeagues,
+  availableLeagues = [],
   loading
 }) => {
   const [selectedRole, setSelectedRole] = useState({});
@@ -35,6 +38,13 @@ const UserManagement = ({
   const [sortBy, setSortBy] = useState('createdAt');
   const [sortDirection, setSortDirection] = useState('desc');
   const [userDetailModal, setUserDetailModal] = useState(null);
+  
+  // League assignment modal state
+  const [showLeagueModal, setShowLeagueModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [targetRole, setTargetRole] = useState(null);
+  const [leagues] = useState(availableLeagues);
+  const [promotionLoading, setPromotionLoading] = useState(false);
   
   const handleRoleChange = (userId, role) => {
     setSelectedRole({
@@ -52,6 +62,27 @@ const UserManagement = ({
         ...selectedRole,
         [userId]: undefined
       });
+    }
+  };
+
+  const handlePromoteToPathfinder = (user, role) => {
+    setSelectedUser(user);
+    setTargetRole(role);
+    setShowLeagueModal(true);
+  };
+
+  const handleLeagueAssignment = async (userId, role, leagueAssignments) => {
+    try {
+      setPromotionLoading(true);
+      console.log('Promoting user:', userId, 'to role:', role, 'with leagues:', leagueAssignments);
+      await onPromoteWithLeagues?.(userId, role, leagueAssignments);
+      setShowLeagueModal(false);
+      setSelectedUser(null);
+      setTargetRole(null);
+    } catch (error) {
+      console.error('Error promoting user with leagues:', error);
+    } finally {
+      setPromotionLoading(false);
     }
   };
 
@@ -357,7 +388,18 @@ const UserManagement = ({
                             <select 
                               className="text-sm border border-gray-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer transition-colors bg-white"
                               value={selectedRole[user.id] || user.role}
-                              onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                              onChange={(e) => {
+                                const newRole = e.target.value;
+                                // Check if promoting to Pathfinder roles
+                                if ((newRole === 'PATHFINDER' || newRole === 'CHIEF_PATHFINDER') && 
+                                    user.role !== 'PATHFINDER' && user.role !== 'CHIEF_PATHFINDER') {
+                                  // Open league selection modal
+                                  handlePromoteToPathfinder(user, newRole);
+                                } else {
+                                  // Standard role change
+                                  handleRoleChange(user.id, newRole);
+                                }
+                              }}
                               disabled={user.status !== 'ACTIVE'}
                             >
                               <option value="PIONEER">Pioneer</option>
@@ -365,7 +407,8 @@ const UserManagement = ({
                               <option value="CHIEF_PATHFINDER">Chief Pathfinder</option>
                               <option value="LUMINARY">Luminary</option>
                             </select>
-                            {selectedRole[user.id] && selectedRole[user.id] !== user.role && (
+                            {selectedRole[user.id] && selectedRole[user.id] !== user.role && 
+                             selectedRole[user.id] !== 'PATHFINDER' && selectedRole[user.id] !== 'CHIEF_PATHFINDER' && (
                               <button 
                                 onClick={() => handleUpdateRole(user.id)}
                                 className="px-3 py-1.5 text-xs text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors cursor-pointer font-medium shadow-sm"
@@ -529,6 +572,18 @@ const UserManagement = ({
           onClose={() => setUserDetailModal(null)}
           onUpdateStatus={onUpdateStatus}
           onApproveUser={onApproveUser}
+        />
+      )}
+
+      {/* League Selection Modal */}
+      {showLeagueModal && (
+        <LeagueSelectionModal
+          user={selectedUser}
+          targetRole={targetRole}
+          leagues={leagues}
+          loading={promotionLoading}
+          onConfirm={handleLeagueAssignment}
+          onCancel={() => setShowLeagueModal(false)}
         />
       )}
     </div>
