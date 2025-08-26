@@ -140,24 +140,29 @@ const Navbar = () => {
               </div>
             </div>
 
-            {/* Medium screens navigation */}
-            <div className="hidden md:flex lg:hidden items-center space-x-1">
-              {navItems.slice(0, 4).map((item) => {
-                const isActive = isActivePath(item.href);
-                return (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                      isActive
-                        ? 'bg-[#FFDE59]/10 text-black border border-[#FFDE59]/30'
-                        : 'text-gray-600 hover:text-black hover:bg-gray-50'
-                    }`}
-                  >
-                    {item.name}
-                  </Link>
-                );
-              })}
+            {/* Medium screens navigation - Consistent Apple Style */}
+            <div className="hidden md:flex lg:hidden items-center">
+              <div className="flex items-center space-x-1 bg-gray-50/80 backdrop-blur-sm rounded-full p-1 border border-gray-200/50">
+                {navItems.map((item) => {
+                  const isActive = isActivePath(item.href);
+                  return (
+                    <Link
+                      key={item.name}
+                      to={item.href}
+                      className={`relative px-3 py-2 rounded-full text-xs font-medium transition-all duration-300 ease-out ${
+                        isActive
+                          ? 'bg-white text-black shadow-sm ring-1 ring-gray-200/50'
+                          : 'text-gray-700 hover:text-black hover:bg-white/50'
+                      }`}
+                    >
+                      <span className="relative z-10">{item.name}</span>
+                      {isActive && (
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#FFDE59]/10 to-[#FFD700]/10 rounded-full"></div>
+                      )}
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Auth Section - Enhanced Apple Style */}
@@ -168,8 +173,7 @@ const Navbar = () => {
                   className="group relative hidden sm:flex items-center space-x-2 px-4 py-2.5 rounded-full text-sm font-medium transition-all duration-300 bg-black hover:bg-gray-800 text-white overflow-hidden"
                 >
                   <LayoutDashboard className="h-4 w-4 relative z-10" />
-                  <span className="relative z-10 hidden lg:inline">Dashboard</span>
-                  <span className="relative z-10 lg:hidden">Panel</span>
+                  <span className="relative z-10">Dashboard</span>
                 </Link>
               ) : (
                 <div className="hidden sm:flex items-center space-x-2">
