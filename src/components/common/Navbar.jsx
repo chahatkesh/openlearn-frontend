@@ -193,11 +193,11 @@ const Navbar = () => {
               {/* Mobile menu button - Enhanced */}
               <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="relative md:hidden p-2.5 rounded-xl transition-all duration-300 text-gray-600 hover:text-black hover:bg-gray-100/80 focus:outline-none focus:ring-2 focus:ring-[#FFDE59]/50"
+                className="relative md:hidden p-3 rounded-xl transition-all duration-300 text-gray-600 hover:text-black hover:bg-gray-100/80 focus:outline-none focus:ring-2 focus:ring-[#FFDE59]/50"
                 aria-label="Toggle menu"
                 aria-expanded={isOpen}
               >
-                <div className="w-5 h-5 relative">
+                <div className="relative">
                   <span className={`absolute block w-5 h-0.5 bg-current transform transition-all duration-300 ${
                     isOpen ? 'rotate-45 translate-y-0' : '-translate-y-1.5'
                   }`}></span>
@@ -239,9 +239,6 @@ const Navbar = () => {
                   >
                     <div className="flex items-center justify-between">
                       <span>{item.name}</span>
-                      {isActive && (
-                        <div className="w-2 h-2 bg-gradient-to-r from-[#FFDE59] to-[#FFD700] rounded-full"></div>
-                      )}
                     </div>
                     {isActive && (
                       <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-[#FFDE59] to-[#FFD700] rounded-r-full"></div>
