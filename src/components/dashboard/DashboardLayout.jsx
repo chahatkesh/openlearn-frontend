@@ -51,8 +51,16 @@ const DashboardLayout = () => {
       if (item.exact && location.pathname === item.path) {
         return item.label;
       }
-      if (!item.exact && location.pathname.startsWith(item.path)) {
-        return item.label;
+      if (!item.exact) {
+        if (item.path === '/dashboard/leagues') {
+          // Special case for leagues: show "Leagues" for both /dashboard/leagues and /dashboard/league/:id
+          if (location.pathname.startsWith('/dashboard/leagues') || 
+              location.pathname.startsWith('/dashboard/league')) {
+            return item.label;
+          }
+        } else if (location.pathname.startsWith(item.path)) {
+          return item.label;
+        }
       }
     }
     return 'Dashboard';
@@ -74,9 +82,18 @@ const DashboardLayout = () => {
   };
 
   const NavItem = ({ item, onClick }) => {
-    const isActive = item.exact 
-      ? location.pathname === item.path 
-      : location.pathname.startsWith(item.path);
+    let isActive;
+    
+    if (item.exact) {
+      isActive = location.pathname === item.path;
+    } else if (item.path === '/dashboard/leagues') {
+      // Special case for leagues: activate for both /dashboard/leagues and /dashboard/league/:id
+      isActive = location.pathname.startsWith('/dashboard/leagues') || 
+                location.pathname.startsWith('/dashboard/league');
+    } else {
+      isActive = location.pathname.startsWith(item.path);
+    }
+    
     const Icon = item.icon;
 
     return (

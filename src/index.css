@@ -659,3 +659,44 @@ button {
 .animate-shimmer {
   animation: shimmer 2s ease-in-out infinite;
 }
+
+/* Apple-style skeletal loading animations */
+@keyframes shimmer-smooth {
+  0% {
+    transform: translateX(-100%) skewX(-12deg);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(200%) skewX(-12deg);
+    opacity: 0;
+  }
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes progress-fill {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: var(--target-width, 50%);
+  }
+}
+
+.animate-shimmer-smooth {
+  animation: shimmer-smooth 2.5s ease-in-out infinite;
+}
+
+.animate-progress-fill {
+  animation: progress-fill 1.5s ease-out forwards;
+}

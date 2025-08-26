@@ -13,7 +13,6 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
 import MigrationPage from './pages/MigrationPage'
 import EmailVerificationPage from './pages/EmailVerificationPage'
-import DashboardPage from './pages/DashboardPage'
 import DashboardLayout from './components/dashboard/DashboardLayout'
 import DashboardMainPage from './pages/DashboardMainPage'
 import LeaguesPage from './pages/LeaguesPage'
@@ -21,7 +20,6 @@ import LeaderboardPage from './pages/LeaderboardPage'
 import ProfilePage from './pages/ProfilePage'
 import LeagueDetailPageRoute from './pages/LeagueDetailPageRoute'
 import LogoutPage from './pages/LogoutPage'
-import AdminPage from './pages/AdminPage'
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 import TermsOfServicePage from './pages/TermsOfServicePage'
 import UpdatesPage from './pages/UpdatesPage'
@@ -83,8 +81,6 @@ const App = () => {
             <Route path="profile" element={<ProfilePage />} />
             <Route path="league/:id" element={<LeagueDetailPageRoute />} />
           </Route>
-          {/* Legacy dashboard route for backward compatibility */}
-          <Route path="/dashboard-old" element={<DashboardPage />} />
           <Route path="/logout" element={<LogoutPage />} />
         </Route>
         
@@ -111,8 +107,6 @@ const App = () => {
                 <Route path="resources" element={<AdminResourcesPage />} />
               </Route>
             </Route>
-            {/* Legacy redirect for old admin page */}
-            <Route path="/admin-old" element={<AdminPage />} />
           </Route>
         </Route>
 
