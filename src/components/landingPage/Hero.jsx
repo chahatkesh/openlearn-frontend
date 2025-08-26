@@ -92,7 +92,7 @@ const Hero = () => {
                 style={{ color: '#374151' }}
                 variants={itemVariants}
               >
-                Join the OpenLearn Community’s inaugural cohort where students explore diverse fields together - from Machine Learning to Space Science, Mathematics, and more. Build real projects, gain skills, and connect with motivated peers in this collaborative learning experience.
+                OpenLearn Cohort 1.5 - Explore new fields, build real projects, and grow with passionate peers in a collaborative journey.
               </MotionP>
               <MotionDiv
                 className="flex flex-col sm:flex-row gap-4"

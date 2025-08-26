@@ -32,7 +32,7 @@ const Cta = () => {
   return (
     <MotionSection 
       id="join-cohort" 
-      className="py-20 relative overflow-hidden"
+      className="py-12 sm:py-16 lg:py-20 xl:py-24 relative overflow-hidden"
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.3 }}
@@ -56,35 +56,35 @@ const Cta = () => {
       </div>
       
       {/* Floating shapes */}
-      <div className="absolute -top-10 -right-10 w-40 h-40 bg-yellow-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
-      <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-yellow-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+      <div className="absolute -top-10 -right-10 w-32 sm:w-40 lg:w-48 h-32 sm:h-40 lg:h-48 bg-yellow-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+      <div className="absolute -bottom-20 -left-20 w-48 sm:w-60 lg:w-72 h-48 sm:h-60 lg:h-72 bg-yellow-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
       
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <MotionDiv 
-          className="max-w-6xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden"
+          className="max-w-6xl mx-auto bg-white rounded-2xl sm:rounded-3xl lg:rounded-[2rem] shadow-2xl overflow-hidden"
           variants={itemVariants}
         >
-          <div className="flex flex-col md:flex-row">
+          <div className="flex flex-col lg:flex-row">
           
             {/* Left content area with text and buttons */}
-            <div className="w-full md:w-7/12 p-8 md:p-12 lg:p-16 flex flex-col justify-center">
+            <div className="w-full lg:w-7/12 p-6 sm:p-8 md:p-10 lg:p-12 xl:p-14 flex flex-col justify-center">
               <MotionH2 
-                className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-gray-900 leading-tight"
+                className="text-2xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-5xl font-bold mb-3 sm:mb-4 lg:mb-5 text-gray-900 leading-tight tracking-tight"
                 variants={itemVariants}
               >
                 Ready to Learn, Compete, and Grow?
               </MotionH2>
               
               <MotionP 
-                className="text-lg md:text-xl text-gray-700 mb-8 max-w-lg"
+                className="text-base sm:text-lg md:text-xl lg:text-xl xl:text-2xl text-gray-700 mb-6 sm:mb-8 lg:mb-8 max-w-lg lg:max-w-xl leading-relaxed font-light"
                 variants={itemVariants}
               >
-                Become a Pioneer in Cohort 1.0. Join the leagues, earn certifications, 
+                Become a Pioneer in Cohort 1.5. Join the leagues, earn certifications, 
                 and build your domain expertise with NITJ's smartest community.
               </MotionP>
               
               <MotionDiv 
-                className="flex flex-col sm:flex-row gap-4 mb-8"
+                className="flex flex-col sm:flex-row gap-3 sm:gap-4 lg:gap-5 mb-6 sm:mb-8"
                 variants={itemVariants}
               >
                 {/* Primary CTA Button */}
@@ -92,10 +92,10 @@ const Cta = () => {
                   href="/signin"
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }} 
-                  className="inline-flex items-center justify-center px-6 py-4 bg-black text-[#FFDE59] text-lg font-semibold rounded-full shadow-lg hover:shadow-yellow-400/20 hover:shadow-xl transition-all duration-300 group"
+                  className="inline-flex items-center justify-center px-6 sm:px-8 lg:px-8 py-3 sm:py-4 lg:py-4 bg-black text-[#FFDE59] text-base sm:text-lg lg:text-lg font-semibold rounded-full shadow-lg hover:shadow-yellow-400/20 hover:shadow-xl transition-all duration-300 group"
                 >
-                  Join Cohort 1.0
-                  <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform duration-300" size={20} />
+                  Join Cohort 1.5
+                  <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform duration-300" size={18} />
                 </MotionA>
                 
                 {/* Secondary CTA Button */}
@@ -103,47 +103,47 @@ const Cta = () => {
                   href={whatsappUrl} 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="inline-flex items-center justify-center px-6 py-4 bg-[#25D366] text-white text-lg font-semibold rounded-full shadow-lg hover:shadow-green-400/20 hover:shadow-xl transition-all duration-300 group"
+                  className="inline-flex items-center justify-center px-6 sm:px-8 lg:px-8 py-3 sm:py-4 lg:py-4 bg-[#25D366] text-white text-base sm:text-lg lg:text-lg font-semibold rounded-full shadow-lg hover:shadow-green-400/20 hover:shadow-xl transition-all duration-300 group"
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <MessageSquare className="mr-2" size={20} />
+                  <MessageSquare className="mr-2" size={18} />
                   Join Community
                 </MotionA>
               </MotionDiv>
               
-              <p className="text-sm text-gray-500 italic">
+              <p className="text-xs sm:text-sm lg:text-base text-gray-500 italic font-light">
                 Stay updated, connected, and inspired.
               </p>
             </div>
             
             {/* Right area with QR Code */}
-            <div className="w-full md:w-5/12 bg-gray-50 p-8 md:p-12 flex flex-col items-center justify-center border-t md:border-t-0 md:border-l border-gray-100">
-              <div className="mb-6 text-center">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Scan to Join</h3>
-                <p className="text-sm text-gray-500">Join our WhatsApp community instantly</p>
+            <div className="w-full lg:w-5/12 bg-gray-50 p-6 sm:p-8 md:p-10 lg:p-12 flex flex-col items-center justify-center border-t lg:border-t-0 lg:border-l border-gray-100">
+              <div className="mb-4 sm:mb-6 lg:mb-6 text-center">
+                <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900 mb-2 sm:mb-3 tracking-tight">Scan to Join</h3>
+                <p className="text-xs sm:text-sm lg:text-sm text-gray-500 font-light">Join our WhatsApp community instantly</p>
               </div>
               
               {/* QR Code with animation */}
-              <div className="p-3 bg-white rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 mb-6">
+              <div className="p-2 sm:p-3 lg:p-3 bg-white rounded-xl sm:rounded-2xl lg:rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 mb-4 sm:mb-6 lg:mb-6">
                 <img 
                   src="/whatsapp-qr.png"
                   alt="WhatsApp Community QR Code" 
-                  className="w-48 h-48 object-contain"
+                  className="w-32 h-32 sm:w-40 sm:h-40 md:w-44 md:h-44 lg:w-40 lg:h-40 xl:w-44 xl:h-44 object-contain"
                 />
               </div>
               
               {/* Fallback link */}
               <div className="text-center">
-                <p className="text-xs text-gray-500 mb-2">or click below</p>
+                <p className="text-xs sm:text-sm text-gray-500 mb-1 sm:mb-2 font-light">or click below</p>
                 <a 
                   href={whatsappUrl} 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="text-sm font-medium text-[#25D366] hover:underline flex items-center justify-center"
+                  className="text-xs sm:text-sm lg:text-sm font-medium text-[#25D366] hover:underline flex items-center justify-center transition-colors duration-200"
                 >
                   Direct Link to Join
-                  <ArrowRight className="ml-1" size={14} />
+                  <ArrowRight className="ml-1" size={12} />
                 </a>
               </div>
             </div>

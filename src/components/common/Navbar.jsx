@@ -167,7 +167,6 @@ const Navbar = () => {
                   to="/dashboard"
                   className="group relative hidden sm:flex items-center space-x-2 px-4 py-2.5 rounded-full text-sm font-medium transition-all duration-300 bg-black hover:bg-gray-800 text-white overflow-hidden"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#FFDE59]/20 to-[#FFD700]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <LayoutDashboard className="h-4 w-4 relative z-10" />
                   <span className="relative z-10 hidden lg:inline">Dashboard</span>
                   <span className="relative z-10 lg:hidden">Panel</span>
@@ -184,7 +183,6 @@ const Navbar = () => {
                     to="/signup"
                     className="group relative px-4 py-2.5 rounded-full text-sm font-medium bg-black hover:bg-gray-800 text-white transition-all duration-300 overflow-hidden"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#FFDE59]/20 to-[#FFD700]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <span className="relative z-10">Sign Up</span>
                   </Link>
                 </div>
