@@ -211,29 +211,34 @@ const HighlightCard = () => {
     >
       <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
         <MotionDiv 
-          className="group cursor-pointer relative overflow-hidden rounded-3xl bg-gradient-to-br from-gray-900 via-gray-800 to-black"
+          className="group cursor-pointer relative overflow-hidden rounded-xl sm:rounded-2xl lg:rounded-3xl sm:bg-gradient-to-br sm:from-gray-900 sm:via-gray-800 sm:to-black"
           onClick={handleHighlightClick}
           whileHover={{ scale: 1.02 }}
           transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
         >
-          {/* Background Image with Overlay */}
-          <div className="relative h-64 md:h-80 lg:h-96 overflow-hidden">
+          {/* Background Image with Overlay - Maintaining original aspect ratio */}
+          <div className="relative overflow-hidden">
             <img
               src="/leagues/highlight/accelerate.png"
               alt="Accelerate Program Highlight"
-              className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-105 opacity-60"
+              className="w-full h-auto transition-all duration-1000 group-hover:scale-105 opacity-100 sm:opacity-60"
+              style={{
+                display: 'block',
+                maxWidth: '100%',
+                height: 'auto',
+              }}
               onError={(e) => {
                 e.target.src = `https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1200&h=600&fit=crop&q=80`;
               }}
             />
             
-            {/* Sophisticated Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            {/* Sophisticated Gradient Overlay - Hidden on mobile */}
+            <div className="hidden sm:block absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
+            <div className="hidden sm:block absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
           </div>
 
-          {/* Content Overlay */}
-          <div className="absolute inset-0 flex items-center justify-center">
+          {/* Content Overlay - Hidden on mobile */}
+          <div className="hidden sm:flex absolute inset-0 items-center justify-center">
             <div className="text-center text-white max-w-4xl mx-auto px-6">
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 tracking-tight">
                 Ready to <span style={{ color: '#ffde59' }}>Accelerate</span>?
