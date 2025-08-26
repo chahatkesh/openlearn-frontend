@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, ArrowLeft, Clock, CheckCircle } from 'lucide-react';
-import AuthLayout from '../components/auth/AuthLayout';
-import AuthError from '../components/auth/AuthError';
-import LoadingSpinner from '../components/common/LoadingSpinner';
-import PageHead from '../components/common/PageHead';
-import PasswordResetService from '../utils/passwordResetService';
+import { AuthLayout, AuthError } from '../../components/features/authentication';
+import { LoadingSpinner } from '../../components/ui';
+import { PageHead } from '../../components/common';
+import PasswordResetService from '../../utils/passwordResetService';
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState('');

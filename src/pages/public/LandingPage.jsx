@@ -1,15 +1,16 @@
 import React from 'react'
-import Hero from '../components/landingPage/Hero'
-import LeaguesCarousel from '../components/landingPage/LeaguesCarousel'
-import FeaturedEvents from '../components/landingPage/FeaturedEvents'
-import Team from '../components/landingPage/Team'
-import TwitterTestimonials from '../components/landingPage/TwitterTestimonials'
-import About from '../components/landingPage/About'
-import Cta from '../components/landingPage/Cta'
-import Note from '../components/landingPage/Note'
-import Footer from '../components/common/Footer'
-import PageHead from '../components/common/PageHead'
-import Navbar from '../components/common/Navbar';
+import {
+  Hero,
+  LeaguesCarousel,
+  FeaturedEvents,
+  Team,
+  TwitterTestimonials,
+  About,
+  Cta,
+  Note
+} from '../../components/features/landing'
+import { Footer, Navbar } from '../../components/layout'
+import { PageHead } from '../../components/common'
 
 
 const LandingPage = () => {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import SpecializationManagement from '../../components/admin/SpecializationManagement';
+import SpecializationManagement from '../../components/features/admin/SpecializationManagement';
 import AdminService from '../../utils/adminService';
 import { useAuth } from '../../hooks/useAuth';
 

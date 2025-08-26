@@ -15,13 +15,13 @@ import {
   Loader2
 } from 'lucide-react';
 import { FaDiscord, FaLinkedin, FaGithub, FaTwitter } from 'react-icons/fa';
-import { useAuth } from '../hooks/useAuth';
-import MigrationService from '../utils/migrationService';
-import EmailVerificationService from '../utils/emailVerificationService';
-import SocialService from '../utils/socialService';
-import PageHead from '../components/common/PageHead';
-import LoadingSpinner from '../components/common/LoadingSpinner';
-import { MotionDiv, MotionSection } from '../components/common/MotionWrapper';
+import { useAuth } from '../../hooks/useAuth';
+import MigrationService from '../../utils/migrationService';
+import EmailVerificationService from '../../utils/emailVerificationService';
+import SocialService from '../../utils/socialService';
+import { PageHead } from "../../components/common";
+import { LoadingSpinner } from "../../components/ui";
+import { MotionDiv, MotionSection } from '../../components/common/MotionWrapper';
 
 const MigrationPage = () => {
   const navigate = useNavigate();

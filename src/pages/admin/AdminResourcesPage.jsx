@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import ResourceManagement from '../../components/admin/ResourceManagement';
+import ResourceManagement from '../../components/features/admin/ResourceManagement';
 import AdminService from '../../utils/adminService';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;

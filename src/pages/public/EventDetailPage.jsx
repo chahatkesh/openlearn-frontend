@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Calendar, MapPin, Camera, ArrowLeft, X, ChevronLeft, ChevronRight } from 'lucide-react';
-import Navbar from '../components/common/Navbar';
-import Footer from '../components/common/Footer';
-import PageHead from '../components/common/PageHead';
-import { MotionDiv, MotionSection } from '../components/common/MotionWrapper';
-import eventsData from '../data/eventsData';
-import { useFilteredImages } from '../utils/eventImageService';
+import { Navbar, Footer } from '../../components/layout';
+import { PageHead, MotionDiv, MotionSection } from '../../components/common';
+import eventsData from '../../data/eventsData';
+import { useFilteredImages } from '../../utils/eventImageService';
 
 // Image Modal Component
 const ImageModal = ({ image, isOpen, onClose, onNext, onPrev, currentIndex, totalImages }) => {

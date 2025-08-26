@@ -1,8 +1,7 @@
 import React from 'react';
-import { useAuth } from '../hooks/useAuth';
-import LearningProgressSection from '../components/dashboard/LearningProgressSection';
-import PendingApprovalPage from '../components/dashboard/PendingApprovalPage';
-import PageHead from '../components/common/PageHead';
+import { useAuth } from '../../hooks/useAuth';
+import { LearningProgressSection, PendingApprovalPage } from '../../components/features/dashboard';
+import { PageHead } from '../../components/common';
 
 const DashboardMainPage = () => {
   const { user } = useAuth();

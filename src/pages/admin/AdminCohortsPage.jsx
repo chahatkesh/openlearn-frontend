@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import CohortManagement from '../../components/admin/CohortManagement';
+import CohortManagement from '../../components/features/admin/CohortManagement';
 import AdminService from '../../utils/adminService';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;

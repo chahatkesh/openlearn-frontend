@@ -35,15 +35,14 @@ import {
   TermsOfServicePage
 } from './pages/legal'
 
-import DashboardLayout from './components/dashboard/DashboardLayout'
+import { DashboardLayout } from './components/layout'
 import { AuthProvider } from './context/AuthContext'
-import { ProtectedRoute } from './components/auth/ProtectedRoute'
-import MigrationRoute from './components/auth/MigrationRoute'
-import ScrollToTop from './components/common/ScrollToTop'
+import { ProtectedRoute, MigrationRoute } from './components/features/authentication'
+import { ScrollToTop } from './components/common'
 
 // Admin components
-import AdminLayout from './components/admin/AdminLayout'
-import AdminDefaultRedirect from './components/admin/AdminDefaultRedirect'
+import { AdminLayout } from './components/layout'
+import { AdminDefaultRedirect } from './components/features/admin'
 import {
   AdminUsersPage,
   AdminCohortsPage,

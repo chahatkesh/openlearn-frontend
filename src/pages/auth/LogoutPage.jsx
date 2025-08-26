@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { LogOut, ArrowRight } from 'lucide-react';
-import { useAuth } from '../hooks/useAuth';
-import PageHead from '../components/common/PageHead';
+import { useAuth } from '../../hooks/useAuth';
+import { PageHead } from "../../components/common";
 
 const LogoutPage = () => {
   const { logout, isAuthenticated } = useAuth();

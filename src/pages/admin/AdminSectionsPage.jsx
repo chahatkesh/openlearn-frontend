@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import SectionManagement from '../../components/admin/SectionManagement';
+import SectionManagement from '../../components/features/admin/SectionManagement';
 import AdminService from '../../utils/adminService';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;

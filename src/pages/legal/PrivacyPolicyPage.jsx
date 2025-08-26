@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import PageHead from '../components/common/PageHead';
+import { PageHead } from '../../components/common';
 
 const PrivacyPolicyPage = () => {
   return (

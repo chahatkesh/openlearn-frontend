@@ -1,11 +1,10 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
-import LeagueDetailPage from '../components/dashboard/LeagueDetailPage';
-import PendingApprovalPage from '../components/dashboard/PendingApprovalPage';
-import { LeagueDetailSkeleton } from '../components/common/SkeletonLoader';
-import PageHead from '../components/common/PageHead';
-import DataService from '../utils/dataService';
+import { useAuth } from '../../hooks/useAuth';
+import { LeagueDetailPage, PendingApprovalPage } from '../../components/features/dashboard';
+import { LeagueDetailSkeleton } from '../../components/ui';
+import { PageHead } from '../../components/common';
+import DataService from '../../utils/dataService';
 
 const LeagueDetailPageRoute = () => {
   const { id } = useParams();

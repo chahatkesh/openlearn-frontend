@@ -12,10 +12,10 @@ import {
   Play,
   Target
 } from 'lucide-react';
-import OptimizedDashboardService from '../utils/optimizedDashboardService';
-import ProgressService from '../utils/progressService';
-import { StatisticLoader, ResourceProgressBadge } from '../components/common/ResourceLoadingIndicator';
-import PageHead from '../components/common/PageHead';
+import OptimizedDashboardService from '../../utils/optimizedDashboardService';
+import ProgressService from '../../utils/progressService';
+import { StatisticLoader, ResourceProgressBadge } from '../../components/common/ResourceLoadingIndicator';
+import { PageHead } from "../../components/common";
 
 const LeaguesPage = () => {
   const navigate = useNavigate();

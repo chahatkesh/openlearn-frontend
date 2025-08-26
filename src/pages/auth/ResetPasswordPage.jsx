@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Eye, EyeOff, Lock, ArrowLeft, CheckCircle, AlertTriangle } from 'lucide-react';
-import AuthLayout from '../components/auth/AuthLayout';
-import AuthError from '../components/auth/AuthError';
-import LoadingSpinner from '../components/common/LoadingSpinner';
-import OTPInput from '../components/common/OTPInput';
-import PageHead from '../components/common/PageHead';
-import PasswordResetService from '../utils/passwordResetService';
+import { AuthLayout } from "../../components/features/authentication";
+import { AuthError } from "../../components/features/authentication";
+import { LoadingSpinner } from "../../components/ui";
+import { OTPInput } from "../../components/ui";
+import { PageHead } from "../../components/common";
+import PasswordResetService from '../../utils/passwordResetService';
 
 const ResetPasswordPage = () => {
   const [searchParams] = useSearchParams();

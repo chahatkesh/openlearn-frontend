@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import AssignmentManagement from '../../components/admin/AssignmentManagement';
+import AssignmentManagement from '../../components/features/admin/AssignmentManagement';
 import AdminService from '../../utils/adminService';
 
 const AdminAssignmentsPage = () => {

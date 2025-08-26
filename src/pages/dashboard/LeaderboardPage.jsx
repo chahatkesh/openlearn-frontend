@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Trophy, Medal, Star, Lock, TrendingUp, Users, Sparkles } from 'lucide-react';
-import { useAuth } from '../hooks/useAuth';
-import DataService from '../utils/dataService';
-import { getUserAvatarUrl } from '../utils/boringAvatarsUtils';
-import { MotionDiv, MotionA, MotionSection, MotionH2, MotionTr, MotionP } from '../components/common/MotionWrapper';
+import { useAuth } from '../../hooks/useAuth';
+import DataService from '../../utils/dataService';
+import { getUserAvatarUrl } from '../../utils/boringAvatarsUtils';
+import { MotionDiv, MotionA, MotionSection, MotionH2, MotionTr, MotionP } from '../../components/common/MotionWrapper';
 
 const Leaderboard = () => {
   const { isAuthenticated } = useAuth();

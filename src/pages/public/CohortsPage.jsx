@@ -1,8 +1,6 @@
 import React from 'react';
-import Navbar from '../components/common/Navbar';
-import Footer from '../components/common/Footer';
-import PageHead from '../components/common/PageHead';
-import HeroSection from '../components/common/HeroSection';
+import { Navbar, Footer } from '../../components/layout';
+import { PageHead, HeroSection } from '../../components/common';
 
 const CohortsPage = () => {
   return (

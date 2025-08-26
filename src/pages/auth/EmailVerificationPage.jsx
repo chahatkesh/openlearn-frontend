@@ -10,11 +10,10 @@ import {
   AlertCircle,
   ArrowRight
 } from 'lucide-react';
-import { useAuth } from '../hooks/useAuth';
-import EmailVerificationService from '../utils/emailVerificationService';
-import PageHead from '../components/common/PageHead';
-import LoadingSpinner from '../components/common/LoadingSpinner';
-import { MotionDiv, MotionSection } from '../components/common/MotionWrapper';
+import { useAuth } from '../../hooks/useAuth';
+import EmailVerificationService from '../../utils/emailVerificationService';
+import { PageHead, MotionDiv, MotionSection } from '../../components/common';
+import { LoadingSpinner } from '../../components/ui';
 
 const EmailVerificationPage = () => {
   const navigate = useNavigate();

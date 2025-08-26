@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import UserManagement from '../../components/admin/UserManagement';
+import UserManagement from '../../components/features/admin/UserManagement';
 import AdminService from '../../utils/adminService';
 
 const AdminUsersPage = () => {

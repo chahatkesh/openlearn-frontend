@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import LeagueManagement from '../../components/admin/LeagueManagement';
+import LeagueManagement from '../../components/features/admin/LeagueManagement';
 import AdminService from '../../utils/adminService';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;

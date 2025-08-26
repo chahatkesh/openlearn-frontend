@@ -1,12 +1,9 @@
 import React from 'react';
 import { Calendar, MapPin, Camera, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from '../components/common/Navbar';
-import Footer from '../components/common/Footer';
-import PageHead from '../components/common/PageHead';
-import HeroSection from '../components/common/HeroSection';
-import { MotionDiv, MotionSection } from '../components/common/MotionWrapper';
-import eventsData from '../data/eventsData';
+import { Navbar, Footer } from '../../components/layout';
+import { PageHead, HeroSection, MotionDiv, MotionSection } from '../../components/common';
+import eventsData from '../../data/eventsData';
 
 // Event Card component
 

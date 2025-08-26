@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth';
 import { 
   User, 
   Mail, 
@@ -19,8 +19,8 @@ import {
   Star,
   Globe
 } from 'lucide-react';
-import { getUserAvatarUrl } from '../utils/boringAvatarsUtils';
-import PageHead from '../components/common/PageHead';
+import { getUserAvatarUrl } from '../../utils/boringAvatarsUtils';
+import { PageHead } from "../../components/common";
 
 const ProfilePage = () => {
   const { user } = useAuth();
