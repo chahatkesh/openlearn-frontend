@@ -1,4 +1,4 @@
-import { generateSequentialImages, getEventThumbnail } from '../utils/eventImageService.js';
+import { generateSequentialImages, getEventThumbnail } from '../utils/helpers/eventImageService.js';
 
 // Helper function to create event with auto-generated paths
 const createEvent = (eventData) => ({

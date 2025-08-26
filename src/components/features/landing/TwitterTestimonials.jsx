@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { extractTweetId, isValidTweetUrl } from '../../../utils/twitterService';
+import { extractTweetId, isValidTweetUrl } from '../../../utils/social/twitterService';
 import { tweetUrls } from '../../../data/tweetData';
 import SectionHeader from '../../common/SectionHeader';
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import UserManagement from '../../components/features/admin/UserManagement';
-import AdminService from '../../utils/adminService';
+import AdminService from "../../utils/api/adminService";
 
 const AdminUsersPage = () => {
   const [allUsers, setAllUsers] = useState([]);

@@ -1,4 +1,4 @@
-import { getRealTimeCommits } from './githubService'
+import { getRealTimeCommits } from '../api/githubService'
 
 /**
  * Updates Service for processing and managing platform updates

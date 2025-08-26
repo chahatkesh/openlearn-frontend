@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SpecializationManagement from '../../components/features/admin/SpecializationManagement';
-import AdminService from '../../utils/adminService';
+import AdminService from "../../utils/api/adminService";
 import { useAuth } from '../../hooks/useAuth';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;

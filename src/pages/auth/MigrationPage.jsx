@@ -16,9 +16,9 @@ import {
 } from 'lucide-react';
 import { FaDiscord, FaLinkedin, FaGithub, FaTwitter } from 'react-icons/fa';
 import { useAuth } from '../../hooks/useAuth';
-import MigrationService from '../../utils/migrationService';
-import EmailVerificationService from '../../utils/emailVerificationService';
-import SocialService from '../../utils/socialService';
+import MigrationService from '../../utils/auth/migrationService';
+import EmailVerificationService from '../../utils/auth/emailVerificationService';
+import SocialService from '../../utils/social/socialService';
 import { PageHead } from "../../components/common";
 import { LoadingSpinner } from "../../components/ui";
 import { MotionDiv, MotionSection } from '../../components/common/MotionWrapper';

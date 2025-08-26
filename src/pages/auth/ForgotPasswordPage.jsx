@@ -4,7 +4,7 @@ import { Mail, ArrowLeft, Clock, CheckCircle } from 'lucide-react';
 import { AuthLayout, AuthError } from '../../components/features/authentication';
 import { LoadingSpinner } from '../../components/ui';
 import { PageHead } from '../../components/common';
-import PasswordResetService from '../../utils/passwordResetService';
+import PasswordResetService from '../../utils/auth/passwordResetService';
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState('');

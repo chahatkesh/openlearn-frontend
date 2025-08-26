@@ -18,7 +18,7 @@ import {
   Settings
 } from 'lucide-react';
 import PageHead from '../common/PageHead';
-import { getUserAvatarUrl } from '../../utils/boringAvatarsUtils';
+import { getUserAvatarUrl } from '../../utils/helpers/boringAvatarsUtils';
 
 const AdminLayout = () => {
   const { user } = useAuth();

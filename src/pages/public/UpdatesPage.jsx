@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Clock, ArrowLeft, GitCommit, ChevronDown, ExternalLink } from 'lucide-react'
-import { getAllUpdates, getUniqueContributors } from '../../utils/updatesService'
+import { getAllUpdates, getUniqueContributors } from '../../utils/helpers/updatesService'
 
 const UpdatesPage = () => {
   const [allUpdates, setAllUpdates] = useState([])

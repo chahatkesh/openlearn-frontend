@@ -14,8 +14,8 @@ import {
   UserMinus,
   Share2
 } from 'lucide-react';
-import BadgeService from '../../utils/badgeService';
-import DataService from '../../utils/dataService';
+import BadgeService from '../../utils/api/badgeService';
+import DataService from '../../utils/api/dataService';
 import { BadgeCollection } from './Badge';
 
 /**

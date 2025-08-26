@@ -4,7 +4,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { LeagueDetailPage, PendingApprovalPage } from '../../components/features/dashboard';
 import { LeagueDetailSkeleton } from '../../components/ui';
 import { PageHead } from '../../components/common';
-import DataService from '../../utils/dataService';
+import DataService from '../../utils/api/dataService';
 
 const LeagueDetailPageRoute = () => {
   const { id } = useParams();

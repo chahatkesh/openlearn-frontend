@@ -1,7 +1,7 @@
 import React from 'react';
 import { CheckCircle, Circle, Award, TrendingUp, Calendar, Share2, BookOpen } from 'lucide-react';
-import ProgressService from '../../../utils/progressService';
-import SocialService from '../../../utils/socialService';
+import ProgressService from '../../../utils/api/progressService';
+import SocialService from '../../../utils/social/socialService';
 
 const ProgressCard = ({ enrollment, onClick }) => {
   const progressPercentage = enrollment.progress.progressPercentage || 0;

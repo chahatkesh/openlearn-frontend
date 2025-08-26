@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { AuthContext } from './AuthContextProvider';
-import MigrationService from '../utils/migrationService';
-import EmailVerificationService from '../utils/emailVerificationService';
-import PasswordResetService from '../utils/passwordResetService';
+import MigrationService from '../utils/auth/migrationService';
+import EmailVerificationService from '../utils/auth/emailVerificationService';
+import PasswordResetService from '../utils/auth/passwordResetService';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const API_BASE_URL = `${BASE_URL}/api/auth`;

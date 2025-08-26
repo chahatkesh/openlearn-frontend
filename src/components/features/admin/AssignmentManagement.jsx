@@ -12,8 +12,8 @@ import {
   AlertCircle,
   ExternalLink
 } from 'lucide-react';
-import AdminService from '../../../utils/adminService';
-import DataService from '../../../utils/dataService';
+import AdminService from "../../../utils/api/adminService";
+import DataService from '../../../utils/api/dataService';
 
 const AssignmentManagement = ({ leagues }) => {
   const [assignments, setAssignments] = useState([]);

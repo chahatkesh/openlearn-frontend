@@ -20,7 +20,7 @@ import {
   Loader2
 } from 'lucide-react';
 import { FaXTwitter } from 'react-icons/fa6';
-import { getUserAvatarUrl } from '../../../utils/boringAvatarsUtils';
+import { getUserAvatarUrl } from '../../../utils/helpers/boringAvatarsUtils';
 import LeagueSelectionModal from './LeagueSelectionModal';
 
 // Modal component that renders to document.body for proper centering

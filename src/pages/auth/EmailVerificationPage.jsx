@@ -11,7 +11,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
-import EmailVerificationService from '../../utils/emailVerificationService';
+import EmailVerificationService from '../../utils/auth/emailVerificationService';
 import { PageHead, MotionDiv, MotionSection } from '../../components/common';
 import { LoadingSpinner } from '../../components/ui';
 

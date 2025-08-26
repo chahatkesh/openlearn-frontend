@@ -12,8 +12,8 @@ import {
   Play,
   Target
 } from 'lucide-react';
-import OptimizedDashboardService from '../../utils/optimizedDashboardService';
-import ProgressService from '../../utils/progressService';
+import OptimizedDashboardService from '../../utils/api/optimizedDashboardService';
+import ProgressService from '../../utils/api/progressService';
 import { StatisticLoader, ResourceProgressBadge } from '../../components/common/ResourceLoadingIndicator';
 import { PageHead } from "../../components/common";
 

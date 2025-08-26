@@ -12,7 +12,7 @@ import {
   ChevronDown,
   ChevronRight
 } from 'lucide-react';
-import ProgressService from '../../utils/progressService';
+import ProgressService from '../../utils/api/progressService';
 
 /**
  * Admin Progress Management Component

@@ -16,10 +16,10 @@ import {
   Star
 } from 'lucide-react';
 import { RiTwitterXFill } from 'react-icons/ri';
-import ProgressService from '../../../utils/progressService';
-import ResourceProgressService from '../../../utils/resourceProgressService';
-import SocialService from '../../../utils/socialService';
-import FaviconService from '../../../utils/faviconService'; // @see docs/development/favicon-service.md
+import ProgressService from '../../../utils/api/progressService';
+import ResourceProgressService from '../../../utils/api/resourceProgressService';
+import SocialService from '../../../utils/social/socialService';
+import FaviconService from '../../../utils/helpers/faviconService'; // @see docs/development/favicon-service.md
 import AssignmentManagement from './AssignmentManagement';
 import PageHead from '../../common/PageHead';
 import { 

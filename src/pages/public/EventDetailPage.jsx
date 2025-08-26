@@ -4,7 +4,7 @@ import { Calendar, MapPin, Camera, ArrowLeft, X, ChevronLeft, ChevronRight } fro
 import { Navbar, Footer } from '../../components/layout';
 import { PageHead, MotionDiv, MotionSection } from '../../components/common';
 import eventsData from '../../data/eventsData';
-import { useFilteredImages } from '../../utils/eventImageService';
+import { useFilteredImages } from '../../utils/helpers/eventImageService';
 
 // Image Modal Component
 const ImageModal = ({ image, isOpen, onClose, onNext, onPrev, currentIndex, totalImages }) => {

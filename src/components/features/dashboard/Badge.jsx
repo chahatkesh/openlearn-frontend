@@ -1,6 +1,6 @@
 import React from 'react';
 import { Award, Share2, Calendar, ExternalLink } from 'lucide-react';
-import ProgressService from '../../../utils/progressService';
+import ProgressService from '../../../utils/api/progressService';
 
 /**
  * Badge Component

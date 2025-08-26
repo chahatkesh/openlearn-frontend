@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import AssignmentManagement from '../../components/features/admin/AssignmentManagement';
-import AdminService from '../../utils/adminService';
+import AdminService from "../../utils/api/adminService";
 
 const AdminAssignmentsPage = () => {
   const [leagues, setLeagues] = useState([]);

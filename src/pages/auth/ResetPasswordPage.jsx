@@ -6,7 +6,7 @@ import { AuthError } from "../../components/features/authentication";
 import { LoadingSpinner } from "../../components/ui";
 import { OTPInput } from "../../components/ui";
 import { PageHead } from "../../components/common";
-import PasswordResetService from '../../utils/passwordResetService';
+import PasswordResetService from '../../utils/auth/passwordResetService';
 
 const ResetPasswordPage = () => {
   const [searchParams] = useSearchParams();

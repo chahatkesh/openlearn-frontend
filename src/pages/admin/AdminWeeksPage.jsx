@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import WeekManagement from '../../components/features/admin/WeekManagement';
-import AdminService from '../../utils/adminService';
+import AdminService from "../../utils/api/adminService";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const API_BASE_URL = `${BASE_URL}/api`;

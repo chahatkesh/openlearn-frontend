@@ -11,7 +11,7 @@ import {
   RefreshCw,
   Send
 } from 'lucide-react';
-import DataService from '../../../utils/dataService';
+import DataService from '../../../utils/api/dataService';
 
 /**
  * Assignment Management Component

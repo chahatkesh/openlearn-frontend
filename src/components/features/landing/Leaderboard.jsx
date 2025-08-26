@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Trophy, Medal, Star, Lock, TrendingUp, Users, Sparkles } from 'lucide-react';
 import { useAuth } from '../../../hooks/useAuth';
-import DataService from '../../../utils/dataService';
-import { getUserAvatarUrl } from '../../../utils/boringAvatarsUtils';
+import DataService from '../../../utils/api/dataService';
+import { getUserAvatarUrl } from '../../../utils/helpers/boringAvatarsUtils';
 import { MotionDiv, MotionA, MotionSection, MotionH2, MotionTr, MotionP } from '../../common/MotionWrapper';
 
 const Leaderboard = () => {

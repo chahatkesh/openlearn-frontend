@@ -19,10 +19,10 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { FaXTwitter } from 'react-icons/fa6';
-import ProgressService from '../../../utils/progressService';
-import BadgeService from '../../../utils/badgeService';
-import SocialService from '../../../utils/socialService';
-import { getUserAvatarUrl } from '../../../utils/boringAvatarsUtils';
+import ProgressService from '../../../utils/api/progressService';
+import BadgeService from '../../../utils/api/badgeService';
+import SocialService from '../../../utils/social/socialService';
+import { getUserAvatarUrl } from '../../../utils/helpers/boringAvatarsUtils';
 import { useAuth } from '../../../hooks/useAuth';
 import ModalPortal from '../../ui/ModalPortal';
 

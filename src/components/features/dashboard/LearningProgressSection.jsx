@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronRight, Play, CheckSquare, AlertCircle, Trophy, Clock, Target, Search } from 'lucide-react';
 import WelcomeBanner from './WelcomeBanner';
 import AssignmentManagement from './AssignmentManagement';
-import OptimizedDashboardService from '../../../utils/optimizedDashboardService';
-import ProgressService from '../../../utils/progressService';
+import OptimizedDashboardService from '../../../utils/api/optimizedDashboardService';
+import ProgressService from '../../../utils/api/progressService';
 import ResourceLoadingIndicator, { StatisticLoader, ResourceProgressBadge } from '../../common/ResourceLoadingIndicator';
 
 // OPTIMIZATION 1: Memoized sub-components to prevent unnecessary re-renders

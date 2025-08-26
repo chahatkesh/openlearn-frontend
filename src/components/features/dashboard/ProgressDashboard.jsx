@@ -12,9 +12,9 @@ import {
   Calendar,
   Users
 } from 'lucide-react';
-import ProgressService from '../../../utils/progressService';
-import SocialService from '../../../utils/socialService';
-import BadgeService from '../../../utils/badgeService';
+import ProgressService from '../../../utils/api/progressService';
+import SocialService from '../../../utils/social/socialService';
+import BadgeService from '../../../utils/api/badgeService';
 
 /**
  * Enhanced Progress Dashboard Component

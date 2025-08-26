@@ -12,8 +12,8 @@ import {
   ArrowLeft,
   Shield
 } from 'lucide-react';
-import { getUserAvatarUrl } from '../../utils/boringAvatarsUtils';
-import AdminService from '../../utils/adminService';
+import { getUserAvatarUrl } from '../../utils/helpers/boringAvatarsUtils';
+import AdminService from "../../utils/api/adminService";
 import PageHead from '../common/PageHead';
 
 const DashboardLayout = () => {

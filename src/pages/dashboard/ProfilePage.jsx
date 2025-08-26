@@ -19,7 +19,7 @@ import {
   Star,
   Globe
 } from 'lucide-react';
-import { getUserAvatarUrl } from '../../utils/boringAvatarsUtils';
+import { getUserAvatarUrl } from '../../utils/helpers/boringAvatarsUtils';
 import { PageHead } from "../../components/common";
 
 const ProfilePage = () => {
