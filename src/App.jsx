@@ -1,29 +1,41 @@
 import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
-import LandingPage from './pages/LandingPage'
-import AboutPage from './pages/AboutPage'
-import AcceleratePage from './pages/AcceleratePage'
-import CohortsPage from './pages/CohortsPage'
-import CommunityPage from './pages/CommunityPage'
-import EventsPage from './pages/EventsPage'
-import EventDetailPage from './pages/EventDetailPage'
-import SignInPage from './pages/SignInPage'
-import SignUpPage from './pages/SignUpPage'
-import ForgotPasswordPage from './pages/ForgotPasswordPage'
-import ResetPasswordPage from './pages/ResetPasswordPage'
-import MigrationPage from './pages/MigrationPage'
-import EmailVerificationPage from './pages/EmailVerificationPage'
+
+import {
+  LandingPage,
+  AboutPage,
+  AcceleratePage,
+  CohortsPage,
+  CommunityPage,
+  EventsPage,
+  EventDetailPage,
+  UpdatesPage
+} from './pages/public'
+
+import {
+  SignInPage,
+  SignUpPage,
+  ForgotPasswordPage,
+  ResetPasswordPage,
+  MigrationPage,
+  EmailVerificationPage,
+  LogoutPage
+} from './pages/auth'
+
+import {
+  DashboardMainPage,
+  LeaguesPage,
+  LeaderboardPage,
+  ProfilePage,
+  LeagueDetailPageRoute
+} from './pages/dashboard'
+
+import {
+  PrivacyPolicyPage,
+  TermsOfServicePage
+} from './pages/legal'
+
 import DashboardLayout from './components/dashboard/DashboardLayout'
-import DashboardMainPage from './pages/DashboardMainPage'
-import LeaguesPage from './pages/LeaguesPage'
-import LeaderboardPage from './pages/LeaderboardPage'
-import ProfilePage from './pages/ProfilePage'
-import LeagueDetailPageRoute from './pages/LeagueDetailPageRoute'
-import LogoutPage from './pages/LogoutPage'
-import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
-import TermsOfServicePage from './pages/TermsOfServicePage'
-import UpdatesPage from './pages/UpdatesPage'
-import AvatarDemoPage from './pages/AvatarDemoPage'
 import { AuthProvider } from './context/AuthContext'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
 import MigrationRoute from './components/auth/MigrationRoute'
@@ -32,14 +44,16 @@ import ScrollToTop from './components/common/ScrollToTop'
 // Admin components
 import AdminLayout from './components/admin/AdminLayout'
 import AdminDefaultRedirect from './components/admin/AdminDefaultRedirect'
-import AdminUsersPage from './pages/admin/AdminUsersPage'
-import AdminCohortsPage from './pages/admin/AdminCohortsPage'
-import AdminLeaguesPage from './pages/admin/AdminLeaguesPage'
-import AdminSpecializationsPage from './pages/admin/AdminSpecializationsPage'
-import AdminWeeksPage from './pages/admin/AdminWeeksPage'
-import AdminSectionsPage from './pages/admin/AdminSectionsPage'
-import AdminResourcesPage from './pages/admin/AdminResourcesPage'
-import AdminAssignmentsPage from './pages/admin/AdminAssignmentsPage'
+import {
+  AdminUsersPage,
+  AdminCohortsPage,
+  AdminLeaguesPage,
+  AdminSpecializationsPage,
+  AdminWeeksPage,
+  AdminSectionsPage,
+  AdminResourcesPage,
+  AdminAssignmentsPage
+} from './pages/admin'
 
 const App = () => {
   return (
@@ -63,7 +77,6 @@ const App = () => {
         <Route path="/privacy" element={<PrivacyPolicyPage />} />
         <Route path="/terms" element={<TermsOfServicePage />} />
         <Route path="/updates" element={<UpdatesPage />} />
-        <Route path="/avatar-demo" element={<AvatarDemoPage />} />
 
         {/* Migration and Email Verification Routes */}
         <Route element={<ProtectedRoute />}>
