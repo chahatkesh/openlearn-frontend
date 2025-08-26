@@ -1,432 +1,544 @@
-# API Data Models
-
-Complete reference for data structures and schemas used in OpenLearn Frontend APIs.
+# Data Models
 
 ## User Models
 
-### User Object
+### User Entity
+
+**Core User Model:**
 ```typescript
 interface User {
-  id: string;                    // Unique user identifier
+  id: string;                    // Unique identifier
+  email: string;                 // Email address (unique)
   name: string;                  // Full name
-  email: string;                 // Email address
-  role: UserRole;                // User role (see UserRole enum)
-  status: UserStatus;            // Account status (see UserStatus enum)
-  createdAt: string;             // ISO 8601 date string
-  lastLoginAt?: string;          // ISO 8601 date string (optional)
-  profilePicture?: string;       // Profile image URL (optional)
-  enrollments?: Enrollment[];    // User enrollments (optional)
-  badges?: Badge[];              // Earned badges (optional)
+  role: UserRole;                // User role in the system
+  status: UserStatus;            // Account status
+  department?: string;           // Academic department
+  bio?: string;                  // User biography
+  profileImage?: string;         // Profile image URL
+  enrollments: Enrollment[];     // User's league enrollments
+  badges: Badge[];               // Earned achievement badges
+  createdAt: Date;               // Account creation timestamp
+  updatedAt: Date;               // Last update timestamp
 }
+
+type UserRole = 
+  | 'PIONEER'           // Basic learner access
+  | 'LUMINARY'          // Advanced learner features
+  | 'PATHFINDER'        // Content management capabilities
+  | 'CHIEF_PATHFINDER'  // League and assignment management
+  | 'GRAND_PATHFINDER'; // Full administrative access
+
+type UserStatus = 
+  | 'ACTIVE'            // Active account
+  | 'PENDING'           // Awaiting approval
+  | 'SUSPENDED'         // Temporarily suspended
+  | 'INACTIVE';         // Deactivated account
 ```
 
-### User Role Enum
+**User Profile Extended:**
 ```typescript
-enum UserRole {
-  PIONEER = 'PIONEER',                    // Basic user role
-  LUMINARY = 'LUMINARY',                  // Advanced user
-  PATHFINDER = 'PATHFINDER',              // Expert user
-  CHIEF_PATHFINDER = 'CHIEF_PATHFINDER',  // Senior expert
-  GRAND_PATHFINDER = 'GRAND_PATHFINDER',  // Highest user role
-  ADMIN = 'ADMIN'                         // Administrator
+interface UserProfile extends User {
+  socialLinks?: {
+    linkedin?: string;
+    twitter?: string;
+    github?: string;
+  };
+  preferences: {
+    notifications: boolean;
+    emailUpdates: boolean;
+    publicProfile: boolean;
+  };
+  statistics: {
+    totalEnrollments: number;
+    completedLeagues: number;
+    totalBadges: number;
+    learningStreak: number;
+    lastActiveAt: Date;
+  };
 }
 ```
 
-### User Status Enum
-```typescript
-enum UserStatus {
-  PENDING = 'PENDING',          // Awaiting approval
-  ACTIVE = 'ACTIVE',            // Active account
-  SUSPENDED = 'SUSPENDED',      // Temporarily suspended
-  INACTIVE = 'INACTIVE'         // Deactivated account
-}
-```
+## Learning Models
 
-## Learning Content Models
+### League Entity
 
-### Cohort Object
-```typescript
-interface Cohort {
-  id: string;                   // Unique cohort identifier
-  name: string;                 // Cohort name
-  description: string;          // Cohort description
-  startDate: string;            // ISO 8601 date string
-  endDate?: string;             // ISO 8601 date string (optional)
-  isActive: boolean;            // Whether cohort is active
-  enrollmentCount?: number;     // Number of enrolled users
-  createdAt: string;            // ISO 8601 date string
-  updatedAt: string;            // ISO 8601 date string
-}
-```
-
-### League Object
+**League Structure:**
 ```typescript
 interface League {
-  id: string;                   // Unique league identifier
-  name: string;                 // League name
-  title: string;                // Display title
-  description: string;          // League description
-  cover: string;                // Cover image URL
-  color: string;                // Theme color (hex)
-  startingDate: string;         // Starting date
-  facilitatedBy: string;        // Facilitator name
-  isActive: boolean;            // Whether league is active
-  weekCount?: number;           // Number of weeks
-  createdAt: string;            // ISO 8601 date string
-  updatedAt: string;            // ISO 8601 date string
+  id: string;                    // Unique identifier
+  name: string;                  // League name (e.g., "Finance", "ML")
+  title: string;                 // Display title
+  description: string;           // Detailed description
+  cover: string;                 // Cover image URL
+  color: string;                 // Theme color (hex)
+  startingDate: string;          // Start date for cohorts
+  facilitatedBy: string;         // Facilitating organization
+  weeks: Week[];                 // Associated weeks
+  specializations: Specialization[]; // Related specializations
+  isActive: boolean;             // Whether league is active
+  prerequisites?: string[];      // Required prior knowledge
+  estimatedHours: number;        // Expected completion time
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
+  tags: string[];                // Searchable tags
+  createdAt: Date;
+  updatedAt: Date;
 }
 ```
 
-### Week Object
+### Week Entity
+
+**Week Structure:**
 ```typescript
 interface Week {
-  id: string;                   // Unique week identifier
-  leagueId: string;             // Associated league ID
-  name: string;                 // Week name
-  title: string;                // Display title
-  description: string;          // Week description
-  weekNumber: number;           // Week sequence number
-  startDate: string;            // ISO 8601 date string
-  endDate: string;              // ISO 8601 date string
-  isActive: boolean;            // Whether week is active
-  sectionCount?: number;        // Number of sections
-  createdAt: string;            // ISO 8601 date string
-  updatedAt: string;            // ISO 8601 date string
+  id: string;                    // Unique identifier
+  leagueId: string;              // Parent league ID
+  name: string;                  // Week name
+  description: string;           // Week description
+  order: number;                 // Week sequence order
+  sections: Section[];           // Week sections
+  isPublished: boolean;          // Publication status
+  startDate?: Date;              // Optional start date
+  endDate?: Date;                // Optional end date
+  objectives: string[];          // Learning objectives
+  estimatedHours: number;        // Expected completion time
+  createdAt: Date;
+  updatedAt: Date;
 }
 ```
 
-### Section Object
+### Section Entity
+
+**Section Structure:**
 ```typescript
 interface Section {
-  id: string;                   // Unique section identifier
-  weekId: string;               // Associated week ID
-  name: string;                 // Section name
-  title: string;                // Display title
-  description: string;          // Section description
-  sectionNumber: number;        // Section sequence number
-  isActive: boolean;            // Whether section is active
-  resourceCount?: number;       // Number of resources
-  estimatedDuration?: number;   // Estimated completion time (minutes)
-  createdAt: string;            // ISO 8601 date string
-  updatedAt: string;            // ISO 8601 date string
+  id: string;                    // Unique identifier
+  weekId: string;                // Parent week ID
+  name: string;                  // Section name
+  description: string;           // Section description
+  order: number;                 // Section sequence order
+  resources: Resource[];         // Section resources
+  isRequired: boolean;           // Whether section is mandatory
+  estimatedMinutes: number;      // Expected completion time
+  prerequisites?: string[];      // Required prior sections
+  createdAt: Date;
+  updatedAt: Date;
 }
 ```
 
-### Resource Object
+### Resource Entity
+
+**Resource Structure:**
 ```typescript
 interface Resource {
-  id: string;                   // Unique resource identifier
-  sectionId: string;            // Associated section ID
-  name: string;                 // Resource name
-  title: string;                // Display title
-  description: string;          // Resource description
-  type: ResourceType;           // Resource type (see ResourceType enum)
-  url?: string;                 // Resource URL (optional)
-  content?: string;             // Text content (optional)
-  resourceNumber: number;       // Resource sequence number
-  isRequired: boolean;          // Whether resource is required
-  estimatedDuration?: number;   // Estimated time (minutes)
-  metadata?: ResourceMetadata;  // Additional metadata (optional)
-  createdAt: string;            // ISO 8601 date string
-  updatedAt: string;            // ISO 8601 date string
+  id: string;                    // Unique identifier
+  sectionId: string;             // Parent section ID
+  name: string;                  // Resource name
+  description?: string;          // Resource description
+  type: ResourceType;            // Type of resource
+  url: string;                   // Resource URL or content
+  order: number;                 // Resource sequence order
+  isRequired: boolean;           // Whether resource is mandatory
+  estimatedMinutes: number;      // Expected completion time
+  metadata?: ResourceMetadata;   // Additional resource data
+  createdAt: Date;
+  updatedAt: Date;
 }
-```
 
-### Resource Type Enum
-```typescript
-enum ResourceType {
-  VIDEO = 'VIDEO',              // Video content
-  ARTICLE = 'ARTICLE',          // Text article
-  EXERCISE = 'EXERCISE',        // Practice exercise
-  ASSIGNMENT = 'ASSIGNMENT',    // Graded assignment
-  QUIZ = 'QUIZ',                // Quiz or test
-  DOCUMENT = 'DOCUMENT',        // PDF or document
-  EXTERNAL_LINK = 'EXTERNAL_LINK' // External resource
-}
-```
+type ResourceType = 
+  | 'VIDEO'                      // Video content
+  | 'ARTICLE'                    // Text article
+  | 'DOCUMENT'                   // PDF or document
+  | 'EXERCISE'                   // Interactive exercise
+  | 'QUIZ'                       // Assessment quiz
+  | 'PROJECT'                    // Hands-on project
+  | 'EXTERNAL_LINK';             // External resource
 
-### Resource Metadata Object
-```typescript
 interface ResourceMetadata {
-  videoLength?: number;         // Video duration (seconds)
-  wordCount?: number;           // Article word count
-  difficulty?: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
-  tags?: string[];              // Resource tags
-  prerequisites?: string[];     // Required prior knowledge
-  downloadUrl?: string;         // Download link
+  duration?: number;             // Video duration (seconds)
+  fileSize?: number;             // File size (bytes)
+  difficulty?: string;           // Resource difficulty
+  tags?: string[];               // Resource tags
+  author?: string;               // Content author
+  thumbnailUrl?: string;         // Preview thumbnail
 }
 ```
 
-## Progress Tracking Models
+## Progress Models
 
-### Enrollment Object
+### Enrollment Entity
+
+**Enrollment Structure:**
 ```typescript
 interface Enrollment {
-  id: string;                   // Unique enrollment identifier
-  userId: string;               // Associated user ID
-  cohortId: string;             // Associated cohort ID
-  leagueId: string;             // Associated league ID
-  enrolledAt: string;           // ISO 8601 date string
-  status: EnrollmentStatus;     // Enrollment status
-  progress?: ProgressSummary;   // Progress summary (optional)
+  id: string;                    // Unique identifier
+  userId: string;                // Enrolled user ID
+  cohortId: string;              // Cohort ID
+  leagueId: string;              // League ID
+  enrolledAt: Date;              // Enrollment timestamp
+  completedAt?: Date;            // Completion timestamp
+  progress: ProgressSummary;     // Progress summary
+  status: EnrollmentStatus;      // Current status
+  notes?: string;                // Personal notes
+  createdAt: Date;
+  updatedAt: Date;
 }
-```
 
-### Enrollment Status Enum
-```typescript
-enum EnrollmentStatus {
-  ENROLLED = 'ENROLLED',        // Actively enrolled
-  COMPLETED = 'COMPLETED',      // Successfully completed
-  DROPPED = 'DROPPED',          // Dropped out
-  SUSPENDED = 'SUSPENDED'       // Temporarily suspended
-}
-```
+type EnrollmentStatus = 
+  | 'ACTIVE'                     // Currently enrolled
+  | 'COMPLETED'                  // Successfully completed
+  | 'PAUSED'                     // Temporarily paused
+  | 'DROPPED';                   // Dropped out
 
-### Progress Summary Object
-```typescript
 interface ProgressSummary {
-  totalResources: number;       // Total resources in league
-  completedResources: number;   // Resources completed
-  completionPercentage: number; // Completion percentage (0-100)
-  lastActivityAt?: string;      // ISO 8601 date string (optional)
-  estimatedCompletion?: string; // Estimated completion date
-  weekProgress: WeekProgress[]; // Progress by week
+  completedSections: number;     // Sections completed
+  totalSections: number;         // Total sections in league
+  completedResources: number;    // Resources completed
+  totalResources: number;        // Total resources in league
+  progressPercentage: number;    // Overall completion percentage
+  lastActivityAt: Date;          // Last learning activity
+  timeSpent: number;             // Total time spent (minutes)
+  streak: number;                // Current learning streak (days)
 }
 ```
 
-### Week Progress Object
-```typescript
-interface WeekProgress {
-  weekId: string;               // Week identifier
-  weekNumber: number;           // Week sequence number
-  totalSections: number;        // Total sections in week
-  completedSections: number;    // Sections completed
-  completionPercentage: number; // Week completion percentage
-  startedAt?: string;           // ISO 8601 date string (optional)
-  completedAt?: string;         // ISO 8601 date string (optional)
-}
-```
+### Resource Progress
 
-### Resource Progress Object
+**Resource Progress Tracking:**
 ```typescript
 interface ResourceProgress {
-  id: string;                   // Unique progress identifier
-  userId: string;               // Associated user ID
-  resourceId: string;           // Associated resource ID
-  status: ProgressStatus;       // Progress status
-  startedAt?: string;           // ISO 8601 date string (optional)
-  completedAt?: string;         // ISO 8601 date string (optional)
-  timeSpent?: number;           // Time spent (minutes)
-  attempts?: number;            // Number of attempts
-  score?: number;               // Score achieved (if applicable)
-  notes?: string;               // User notes (optional)
-  isStarred?: boolean;          // Marked for revision
+  id: string;                    // Unique identifier
+  userId: string;                // User ID
+  resourceId: string;            // Resource ID
+  isCompleted: boolean;          // Completion status
+  completedAt?: Date;            // Completion timestamp
+  timeSpent: number;             // Time spent on resource (minutes)
+  score?: number;                // Score for assessments (0-100)
+  attempts: number;              // Number of attempts
+  notes?: string;                // Personal notes
+  metadata?: {
+    watchProgress?: number;      // Video watch progress (0-1)
+    bookmarks?: string[];        // Bookmarked sections
+    highlights?: string[];       // Important highlights
+  };
+  createdAt: Date;
+  updatedAt: Date;
 }
 ```
 
-### Progress Status Enum
+## Cohort Models
+
+### Cohort Entity
+
+**Cohort Structure:**
 ```typescript
-enum ProgressStatus {
-  NOT_STARTED = 'NOT_STARTED',  // Not yet started
-  IN_PROGRESS = 'IN_PROGRESS',  // Currently working on
-  COMPLETED = 'COMPLETED',      // Successfully completed
-  SKIPPED = 'SKIPPED'           // Skipped by user
+interface Cohort {
+  id: string;                    // Unique identifier
+  name: string;                  // Cohort name
+  description: string;           // Cohort description
+  startDate: Date;               // Cohort start date
+  endDate: Date;                 // Cohort end date
+  maxParticipants: number;       // Maximum enrollment
+  currentParticipants: number;   // Current enrollment count
+  leagues: string[];             // Available league IDs
+  status: CohortStatus;          // Current status
+  facilitators: string[];        // Facilitator user IDs
+  enrollments: Enrollment[];     // Student enrollments
+  settings: CohortSettings;      // Cohort configuration
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+type CohortStatus = 
+  | 'UPCOMING'                   // Not yet started
+  | 'ACTIVE'                     // Currently running
+  | 'COMPLETED'                  // Finished
+  | 'CANCELLED';                 // Cancelled
+
+interface CohortSettings {
+  allowLateEnrollment: boolean;  // Allow enrollment after start
+  autoProgressTracking: boolean; // Automatic progress tracking
+  certificateEnabled: boolean;   // Issue completion certificates
+  socialFeaturesEnabled: boolean; // Enable social features
+  notifications: {
+    weeklyReminders: boolean;    // Send weekly progress reminders
+    completionCongrats: boolean; // Congratulate on completion
+    milestoneAlerts: boolean;    // Alert on milestone achievements
+  };
 }
 ```
 
-## Gamification Models
+### Specialization Entity
 
-### Badge Object
+**Specialization Structure:**
 ```typescript
-interface Badge {
-  id: string;                   // Unique badge identifier
-  name: string;                 // Badge name
-  title: string;                // Display title
-  description: string;          // Badge description
-  icon: string;                 // Badge icon URL
-  category: BadgeCategory;      // Badge category
-  criteria: BadgeCriteria;      // Earning criteria
-  rarity: BadgeRarity;          // Badge rarity level
-  isActive: boolean;            // Whether badge is active
-  createdAt: string;            // ISO 8601 date string
-}
-```
-
-### Badge Category Enum
-```typescript
-enum BadgeCategory {
-  COMPLETION = 'COMPLETION',    // Completion badges
-  ACHIEVEMENT = 'ACHIEVEMENT',  // Achievement badges
-  PARTICIPATION = 'PARTICIPATION', // Participation badges
-  MILESTONE = 'MILESTONE',      // Milestone badges
-  SPECIAL = 'SPECIAL'           // Special event badges
-}
-```
-
-### Badge Rarity Enum
-```typescript
-enum BadgeRarity {
-  COMMON = 'COMMON',            // Common badges
-  UNCOMMON = 'UNCOMMON',        // Uncommon badges
-  RARE = 'RARE',                // Rare badges
-  EPIC = 'EPIC',                // Epic badges
-  LEGENDARY = 'LEGENDARY'       // Legendary badges
-}
-```
-
-### Badge Criteria Object
-```typescript
-interface BadgeCriteria {
-  type: 'COMPLETION' | 'STREAK' | 'SCORE' | 'PARTICIPATION' | 'MANUAL';
-  threshold?: number;           // Required threshold (optional)
-  timeframe?: number;           // Time period (days, optional)
-  specificResources?: string[]; // Specific resource IDs (optional)
-  conditions?: string[];        // Additional conditions (optional)
-}
-```
-
-### User Badge Object
-```typescript
-interface UserBadge {
-  id: string;                   // Unique user badge identifier
-  userId: string;               // Associated user ID
-  badgeId: string;              // Associated badge ID
-  earnedAt: string;             // ISO 8601 date string
-  awardedBy?: string;           // Awarded by user ID (optional)
-  notes?: string;               // Award notes (optional)
-  badge: Badge;                 // Badge details
+interface Specialization {
+  id: string;                    // Unique identifier
+  name: string;                  // Specialization name
+  description: string;           // Detailed description
+  leagues: string[];             // Required league IDs
+  prerequisites?: string[];      // Required specializations
+  estimatedHours: number;        // Total estimated hours
+  difficultyLevel: number;       // Difficulty (1-5)
+  certificate: {
+    available: boolean;          // Certificate available
+    templateUrl?: string;        // Certificate template
+    requirements: {
+      minScorePercentage: number; // Minimum score required
+      requiredLeagues: string[];  // Must complete all leagues
+      timeLimit?: number;         // Time limit (days)
+    };
+  };
+  isActive: boolean;             // Whether specialization is active
+  createdAt: Date;
+  updatedAt: Date;
 }
 ```
 
 ## Assignment Models
 
-### Assignment Object
+### Assignment Entity
+
+**Assignment Structure:**
 ```typescript
 interface Assignment {
-  id: string;                   // Unique assignment identifier
-  resourceId: string;           // Associated resource ID
-  title: string;                // Assignment title
-  description: string;          // Assignment description
-  instructions: string;         // Detailed instructions
-  dueDate?: string;             // ISO 8601 date string (optional)
-  maxScore?: number;            // Maximum possible score
-  submissionFormat: SubmissionFormat[]; // Accepted formats
-  isRequired: boolean;          // Whether assignment is required
-  allowLateSubmission: boolean; // Allow submissions after due date
-  maxAttempts?: number;         // Maximum submission attempts
-  createdAt: string;            // ISO 8601 date string
-  updatedAt: string;            // ISO 8601 date string
+  id: string;                    // Unique identifier
+  leagueId: string;              // Associated league ID
+  title: string;                 // Assignment title
+  description: string;           // Detailed description
+  instructions: string;          // Submission instructions
+  type: AssignmentType;          // Type of assignment
+  maxScore: number;              // Maximum possible score
+  dueDate?: Date;                // Optional due date
+  requirements: AssignmentRequirements; // Submission requirements
+  rubric?: AssignmentRubric;     // Grading rubric
+  isPublished: boolean;          // Publication status
+  createdBy: string;             // Creator user ID
+  submissions: Submission[];     // Student submissions
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+type AssignmentType = 
+  | 'PROJECT'                    // Project submission
+  | 'ESSAY'                      // Written essay
+  | 'CODE'                       // Code submission
+  | 'PRESENTATION'               // Presentation
+  | 'PORTFOLIO';                 // Portfolio submission
+
+interface AssignmentRequirements {
+  submissionFormat: string[];    // Accepted file formats
+  maxFileSize: number;           // Maximum file size (MB)
+  minWords?: number;             // Minimum word count
+  maxWords?: number;             // Maximum word count
+  requiresGithubRepo?: boolean;  // Requires GitHub repository
+  allowsMultipleFiles: boolean;  // Multiple file submission
+}
+
+interface AssignmentRubric {
+  criteria: RubricCriterion[];   // Grading criteria
+  totalPoints: number;           // Total possible points
+}
+
+interface RubricCriterion {
+  name: string;                  // Criterion name
+  description: string;           // Criterion description
+  maxPoints: number;             // Maximum points for criterion
+  levels: RubricLevel[];         // Performance levels
+}
+
+interface RubricLevel {
+  name: string;                  // Level name (e.g., "Excellent")
+  description: string;           // Level description
+  points: number;                // Points for this level
 }
 ```
 
-### Submission Format Enum
-```typescript
-enum SubmissionFormat {
-  TEXT = 'TEXT',                // Text submission
-  FILE_UPLOAD = 'FILE_UPLOAD',  // File upload
-  URL = 'URL',                  // URL submission
-  CODE = 'CODE',                // Code submission
-  MULTIPLE_CHOICE = 'MULTIPLE_CHOICE' // Multiple choice
-}
-```
+### Submission Entity
 
-### Submission Object
+**Submission Structure:**
 ```typescript
 interface Submission {
-  id: string;                   // Unique submission identifier
-  assignmentId: string;         // Associated assignment ID
-  userId: string;               // Associated user ID
-  content?: string;             // Text content (optional)
-  fileUrl?: string;             // File URL (optional)
-  submittedAt: string;          // ISO 8601 date string
-  status: SubmissionStatus;     // Submission status
-  score?: number;               // Assigned score (optional)
-  feedback?: string;            // Instructor feedback (optional)
-  gradedAt?: string;            // ISO 8601 date string (optional)
-  gradedBy?: string;            // Grader user ID (optional)
-  attempt: number;              // Submission attempt number
+  id: string;                    // Unique identifier
+  assignmentId: string;          // Assignment ID
+  userId: string;                // Submitter user ID
+  content: SubmissionContent;    // Submission content
+  status: SubmissionStatus;      // Current status
+  submittedAt: Date;             // Submission timestamp
+  gradedAt?: Date;               // Grading timestamp
+  gradedBy?: string;             // Grader user ID
+  grade?: Grade;                 // Assigned grade
+  feedback?: string;             // Instructor feedback
+  attempts: number;              // Submission attempt number
+  metadata?: SubmissionMetadata; // Additional data
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+type SubmissionStatus = 
+  | 'DRAFT'                      // Work in progress
+  | 'SUBMITTED'                  // Submitted for review
+  | 'GRADING'                    // Currently being graded
+  | 'GRADED'                     // Graded and returned
+  | 'REVISION_REQUESTED';        // Needs revision
+
+interface SubmissionContent {
+  type: 'TEXT' | 'FILE' | 'URL' | 'GITHUB';
+  data: string;                  // Content data
+  files?: SubmissionFile[];      // Attached files
+  githubUrl?: string;            // GitHub repository URL
+}
+
+interface SubmissionFile {
+  name: string;                  // File name
+  url: string;                   // File URL
+  size: number;                  // File size (bytes)
+  type: string;                  // MIME type
+}
+
+interface Grade {
+  score: number;                 // Numeric score
+  maxScore: number;              // Maximum possible score
+  percentage: number;            // Percentage score
+  letterGrade?: string;          // Letter grade (A, B, C, etc.)
+  rubricScores?: RubricScore[];  // Detailed rubric scores
+}
+
+interface RubricScore {
+  criterionId: string;           // Rubric criterion ID
+  score: number;                 // Points earned
+  maxScore: number;              // Maximum points possible
+  feedback?: string;             // Specific feedback
+}
+
+interface SubmissionMetadata {
+  wordCount?: number;            // Word count for text submissions
+  codeLines?: number;            // Lines of code
+  languagesUsed?: string[];      // Programming languages
+  collaborators?: string[];      // Collaboration partners
+  timeSpent?: number;            // Time spent (minutes)
 }
 ```
 
-### Submission Status Enum
+## Badge and Achievement Models
+
+### Badge Entity
+
+**Badge Structure:**
 ```typescript
-enum SubmissionStatus {
-  DRAFT = 'DRAFT',              // Draft submission
-  SUBMITTED = 'SUBMITTED',      // Submitted for review
-  UNDER_REVIEW = 'UNDER_REVIEW', // Being reviewed
-  GRADED = 'GRADED',            // Graded and returned
-  RETURNED = 'RETURNED'         // Returned for revision
+interface Badge {
+  id: string;                    // Unique identifier
+  name: string;                  // Badge name
+  description: string;           // Badge description
+  icon: string;                  // Badge icon URL
+  category: BadgeCategory;       // Badge category
+  requirements: BadgeRequirements; // Earning requirements
+  points: number;                // Points awarded
+  rarity: BadgeRarity;           // Badge rarity level
+  isActive: boolean;             // Whether badge can be earned
+  recipients: BadgeAward[];      // Users who earned this badge
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+type BadgeCategory = 
+  | 'PROGRESS'                   // Progress milestones
+  | 'COMPLETION'                 // Completion achievements
+  | 'ENGAGEMENT'                 // Community engagement
+  | 'EXCELLENCE'                 // Excellence in learning
+  | 'SPECIAL';                   // Special event badges
+
+type BadgeRarity = 
+  | 'COMMON'                     // Easy to obtain
+  | 'UNCOMMON'                   // Moderate difficulty
+  | 'RARE'                       // Challenging to obtain
+  | 'EPIC'                       // Very difficult
+  | 'LEGENDARY';                 // Extremely rare
+
+interface BadgeRequirements {
+  type: 'LEAGUE_COMPLETION' | 'PROGRESS_MILESTONE' | 'STREAK' | 'SCORE' | 'CUSTOM';
+  criteria: any;                 // Specific requirements based on type
+  conditions?: {
+    minLeagues?: number;         // Minimum leagues completed
+    minScore?: number;           // Minimum score required
+    consecutiveDays?: number;    // Consecutive learning days
+    timeFrame?: number;          // Time frame for completion (days)
+  };
+}
+
+interface BadgeAward {
+  id: string;                    // Unique identifier
+  userId: string;                // Recipient user ID
+  badgeId: string;               // Badge ID
+  earnedAt: Date;                // Award timestamp
+  context?: string;              // Context of earning (e.g., league name)
+  isVisible: boolean;            // Whether shown on profile
 }
 ```
 
 ## API Response Models
 
-### Standard API Response
+### Standard Response Format
+
+**Success Response:**
 ```typescript
-interface ApiResponse<T> {
-  success: boolean;             // Request success status
-  data?: T;                     // Response data (optional)
-  error?: string;               // Error message (optional)
-  message?: string;             // Success message (optional)
-  timestamp: string;            // ISO 8601 date string
+interface APIResponse<T> {
+  success: true;
+  data: T;
+  meta?: ResponseMeta;           // Optional metadata
+}
+
+interface ResponseMeta {
+  pagination?: {
+    page: number;                // Current page
+    limit: number;               // Items per page
+    totalPages: number;          // Total pages
+    totalItems: number;          // Total items
+    hasNextPage: boolean;        // Has next page
+    hasPrevPage: boolean;        // Has previous page
+  };
+  filters?: Record<string, any>; // Applied filters
+  sorting?: {
+    field: string;               // Sort field
+    direction: 'asc' | 'desc';   // Sort direction
+  };
 }
 ```
 
-### Paginated Response
+**Error Response:**
+```typescript
+interface APIError {
+  success: false;
+  error: string;                 // Error message
+  code?: string;                 // Error code
+  details?: any;                 // Additional error details
+  timestamp: Date;               // Error timestamp
+  path?: string;                 // API endpoint path
+}
+```
+
+### Pagination Models
+
+**Paginated Results:**
 ```typescript
 interface PaginatedResponse<T> {
-  success: boolean;             // Request success status
-  data: T[];                    // Array of data items
-  pagination: PaginationInfo;   // Pagination information
-  error?: string;               // Error message (optional)
-  timestamp: string;            // ISO 8601 date string
+  items: T[];                    // Page items
+  pagination: {
+    page: number;                // Current page (1-based)
+    limit: number;               // Items per page
+    totalItems: number;          // Total items
+    totalPages: number;          // Total pages
+    hasNextPage: boolean;        // Has next page
+    hasPrevPage: boolean;        // Has previous page
+  };
+}
+
+interface PaginationOptions {
+  page?: number;                 // Page number (default: 1)
+  limit?: number;                // Items per page (default: 20)
+  sortBy?: string;               // Sort field
+  sortOrder?: 'asc' | 'desc';    // Sort direction
+  filters?: Record<string, any>; // Filter criteria
 }
 ```
 
-### Pagination Info
-```typescript
-interface PaginationInfo {
-  page: number;                 // Current page number
-  limit: number;                // Items per page
-  total: number;                // Total number of items
-  totalPages: number;           // Total number of pages
-  hasNext: boolean;             // Whether next page exists
-  hasPrev: boolean;             // Whether previous page exists
-}
-```
-
-## Authentication Models
-
-### Login Request
-```typescript
-interface LoginRequest {
-  email: string;                // User email
-  password: string;             // User password
-}
-```
-
-### Login Response
-```typescript
-interface LoginResponse {
-  accessToken: string;          // JWT access token
-  refreshToken: string;         // JWT refresh token
-  user: User;                   // User information
-}
-```
-
-### Token Refresh Request
-```typescript
-interface TokenRefreshRequest {
-  refreshToken: string;         // Valid refresh token
-}
-```
-
-### Token Refresh Response
-```typescript
-interface TokenRefreshResponse {
-  accessToken: string;          // New JWT access token
-  refreshToken: string;         // New JWT refresh token
-}
-```
-
-This data model reference provides a comprehensive overview of all data structures used throughout the OpenLearn Frontend application. Use these models as a reference when implementing features or integrating with APIs.
+These data models provide a comprehensive foundation for the OpenLearn platform's data structure, ensuring consistency across the frontend and backend systems while supporting complex learning scenarios and user interactions.

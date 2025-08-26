@@ -1,304 +1,731 @@
-# Contributing to OpenLearn Frontend
+# Contributing Guidelines
 
-We welcome contributions to OpenLearn! This guide will help you get started with contributing to the project.
+## Code Standards and Conventions
 
-## 🚀 Getting Started
+### TypeScript and JavaScript Standards
 
-### Prerequisites
-- Node.js ≥ 18.0.0
-- npm ≥ 8.19.0
-- Git
-- Familiarity with React, JavaScript, and Tailwind CSS
+**File Naming Conventions:**
+- Components: PascalCase (e.g., `UserDashboard.jsx`)
+- Utilities: camelCase (e.g., `apiService.js`)
+- Constants: UPPER_SNAKE_CASE (e.g., `API_ENDPOINTS.js`)
+- Directories: kebab-case (e.g., `user-management/`)
 
-### Development Setup
+**Code Style Guidelines:**
 
-1. **Fork the Repository**
-   ```bash
-   # Fork on GitHub, then clone your fork
-   git clone https://github.com/YOUR_USERNAME/openlearn-frontend.git
-   cd openlearn-frontend
-   ```
+```javascript
+// ✅ Good: Functional components with proper destructuring
+const UserCard = ({ 
+  user, 
+  onEdit, 
+  onDelete, 
+  loading = false 
+}) => {
+  // State declarations
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [error, setError] = useState(null);
 
-2. **Set Up Local Development**
-   ```bash
-   # Install dependencies
-   npm install
-   
-   # Copy environment variables
-   cp .env.example .env
-   
-   # Start development server
-   npm run dev
-   ```
+  // Custom hooks
+  const { isAuthenticated } = useAuth();
 
-3. **Add Upstream Remote**
-   ```bash
-   git remote add upstream https://github.com/openlearnnitj/openlearn-frontend.git
-   ```
+  // Effects with clear dependencies
+  useEffect(() => {
+    if (user?.id) {
+      fetchUserDetails(user.id);
+    }
+  }, [user?.id]);
 
-## 🔄 Development Workflow
+  // Event handlers
+  const handleExpand = useCallback(() => {
+    setIsExpanded(prev => !prev);
+  }, []);
 
-### Creating a Feature Branch
-```bash
-# Sync with upstream
-git checkout main
-git pull upstream main
+  // Early returns for loading/error states
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
-# Create feature branch
-git checkout -b feature/your-feature-name
+  if (error) {
+    return <ErrorMessage message={error} />;
+  }
+
+  return (
+    <div className="user-card bg-white rounded-lg shadow-md p-4">
+      {/* Component content */}
+    </div>
+  );
+};
+
+// ✅ Good: PropTypes or TypeScript interfaces
+UserCard.propTypes = {
+  user: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    email: PropTypes.string.isRequired
+  }).isRequired,
+  onEdit: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  loading: PropTypes.bool
+};
 ```
 
-### Making Changes
-1. **Follow Code Standards**: Check our [coding standards](./standards.md)
-2. **Write Tests**: Add tests for new functionality
-3. **Update Documentation**: Keep docs current with changes
-4. **Test Thoroughly**: Test on different devices and browsers
+**ESLint Configuration Compliance:**
+```javascript
+// ✅ Good: Follow ESLint rules
+const ComponentName = () => {
+  // Hooks at the top level
+  const [state, setState] = useState(null);
+  const { user } = useAuth();
 
-### Committing Changes
-Use conventional commit format:
-```bash
-git commit -m "feat: add user dashboard search functionality"
-git commit -m "fix: resolve mobile navigation issue"
-git commit -m "docs: update installation guide"
+  // useCallback for expensive functions
+  const memoizedCallback = useCallback(() => {
+    // Expensive operation
+  }, [dependency]);
+
+  // useMemo for expensive calculations
+  const expensiveValue = useMemo(() => {
+    return computeExpensiveValue(state);
+  }, [state]);
+
+  return <div>{/* JSX */}</div>;
+};
+
+// ❌ Bad: Hooks in conditions or loops
+const BadComponent = () => {
+  if (condition) {
+    const [state, setState] = useState(null); // ❌ Hook in condition
+  }
+
+  for (let i = 0; i < 5; i++) {
+    useEffect(() => {}); // ❌ Hook in loop
+  }
+};
 ```
 
-### Submitting a Pull Request
-1. **Push to Your Fork**
-   ```bash
-   git push origin feature/your-feature-name
-   ```
+### Component Architecture Standards
 
-2. **Create Pull Request**
-   - Go to GitHub and create a PR from your fork
-   - Use the PR template
-   - Include screenshots for UI changes
-   - Reference related issues
-
-## 📋 Contribution Types
-
-### 🐛 Bug Reports
-Before submitting a bug report:
-- Check existing issues
-- Reproduce the bug
-- Gather system information
-
-**Bug Report Template:**
-```markdown
-## Bug Description
-Clear description of the bug
-
-## Steps to Reproduce
-1. Go to '...'
-2. Click on '...'
-3. Scroll down to '...'
-4. See error
-
-## Expected Behavior
-What should happen
-
-## Actual Behavior
-What actually happens
-
-## Environment
-- OS: [e.g., macOS 12.6]
-- Browser: [e.g., Chrome 104]
-- Node.js: [e.g., 18.15.0]
-- Device: [e.g., iPhone 13, Desktop]
-
-## Screenshots
-If applicable, add screenshots
+**Component Organization:**
+```
+src/components/
+├── common/              # Shared utilities across features
+│   ├── HeroSection.jsx
+│   ├── MotionWrapper.jsx
+│   └── index.js        # Barrel exports
+├── features/           # Domain-specific components
+│   ├── authentication/
+│   │   ├── LoginForm.jsx
+│   │   ├── ProtectedRoute.jsx
+│   │   └── index.js
+│   ├── dashboard/
+│   │   ├── LearningProgress.jsx
+│   │   ├── LeagueCard.jsx
+│   │   └── index.js
+│   └── admin/
+│       ├── UserManagement.jsx
+│       ├── ContentManager.jsx
+│       └── index.js
+├── layout/             # Application layouts
+│   ├── DashboardLayout.jsx
+│   ├── AdminLayout.jsx
+│   └── index.js
+└── ui/                 # Base UI components
+    ├── LoadingSpinner.jsx
+    ├── Modal.jsx
+    └── index.js
 ```
 
-### ✨ Feature Requests
-**Feature Request Template:**
-```markdown
-## Feature Description
-Clear description of the feature
+**Component Structure Standards:**
+```javascript
+// ✅ Standard component structure
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import PropTypes from 'prop-types';
+import { useAuth } from '../../context/AuthContext';
+import { ApiService } from '../../utils/api';
+import { LoadingSpinner, ErrorMessage } from '../ui';
 
-## Problem/Use Case
-What problem does this solve?
+/**
+ * ComponentName - Brief description of what this component does
+ * @param {Object} props - Component props
+ * @param {string} props.title - The title to display
+ * @param {Function} props.onAction - Callback when action is triggered
+ * @param {boolean} props.loading - Loading state
+ */
+const ComponentName = ({ title, onAction, loading = false }) => {
+  // 1. State declarations
+  const [localState, setLocalState] = useState(null);
+  const [error, setError] = useState(null);
 
-## Proposed Solution
-How should this feature work?
+  // 2. Context and custom hooks
+  const { user, isAuthenticated } = useAuth();
 
-## Alternatives Considered
-Other solutions you've considered
+  // 3. Computed values
+  const computedValue = useMemo(() => {
+    return expensiveComputation(localState);
+  }, [localState]);
 
-## Additional Context
-Mockups, examples, or related issues
+  // 4. Effects
+  useEffect(() => {
+    if (isAuthenticated()) {
+      loadData();
+    }
+  }, [isAuthenticated]);
+
+  // 5. Event handlers
+  const handleAction = useCallback(async () => {
+    try {
+      setError(null);
+      await onAction();
+    } catch (err) {
+      setError(err.message);
+    }
+  }, [onAction]);
+
+  const loadData = useCallback(async () => {
+    try {
+      const data = await ApiService.getData();
+      setLocalState(data);
+    } catch (err) {
+      setError(err.message);
+    }
+  }, []);
+
+  // 6. Early returns for loading/error states
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
+  if (error) {
+    return <ErrorMessage message={error} onRetry={loadData} />;
+  }
+
+  // 7. Main render
+  return (
+    <div className="component-container">
+      <h2 className="text-xl font-bold">{title}</h2>
+      <button 
+        onClick={handleAction}
+        className="btn-primary"
+        disabled={loading}
+      >
+        Action
+      </button>
+    </div>
+  );
+};
+
+// 8. PropTypes
+ComponentName.propTypes = {
+  title: PropTypes.string.isRequired,
+  onAction: PropTypes.func.isRequired,
+  loading: PropTypes.bool
+};
+
+// 9. Default export
+export default ComponentName;
 ```
 
-### 🔧 Code Contributions
+## API Service Standards
 
-#### Types of Contributions
-- **Bug fixes**: Fix reported issues
-- **New features**: Add functionality
-- **Performance improvements**: Optimize existing code
-- **Documentation**: Improve or add documentation
-- **Tests**: Add or improve test coverage
-- **Refactoring**: Improve code structure
+### Service Layer Architecture
 
-#### Before Starting
-- Check existing issues and PRs
-- Discuss large changes in an issue first
-- Ensure the feature aligns with project goals
+**Service File Structure:**
+```javascript
+/**
+ * Service Name - Description of service functionality
+ * Handles [specific domain] API operations
+ */
 
-## 🧪 Testing Guidelines
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = `${BASE_URL}/api`;
 
-### Running Tests
-```bash
-# Run all tests
-npm test
+/**
+ * Get authorization headers with JWT token
+ */
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('accessToken');
+  return {
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json'
+  };
+};
 
-# Run tests in watch mode
-npm run test:watch
+/**
+ * Handle API response and return data or throw error
+ */
+const handleResponse = async (response) => {
+  const result = await response.json();
+  if (!result.success) {
+    throw new Error(result.error || 'API request failed');
+  }
+  return result.data;
+};
 
-# Run tests with coverage
-npm run test:coverage
+/**
+ * Service Class with static methods
+ */
+class ServiceName {
+  // ==================== SECTION TITLE ====================
+  
+  /**
+   * Method description
+   * @param {string} param1 - Parameter description
+   * @param {Object} param2 - Parameter description
+   * @returns {Promise} Return value description
+   */
+  static async methodName(param1, param2) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/endpoint`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ param1, param2 })
+      });
+      
+      return handleResponse(response);
+    } catch (error) {
+      console.error('Method name failed:', error.message);
+      throw error;
+    }
+  }
+
+  // ==================== UTILITY METHODS ====================
+  
+  /**
+   * Helper method description
+   * @param {Object} data - Data to validate
+   * @returns {boolean} Validation result
+   */
+  static validateData(data) {
+    // Validation logic
+    return true;
+  }
+}
+
+export default ServiceName;
 ```
 
-### Writing Tests
-- Add tests for new components and functions
-- Follow existing test patterns
-- Ensure good test coverage
-- Test both happy paths and edge cases
+### Error Handling Standards
 
-### Test Structure
-```jsx
+**Consistent Error Handling:**
+```javascript
+// ✅ Good: Consistent error handling pattern
+const handleAPICall = async (apiFunction, errorContext) => {
+  try {
+    setLoading(true);
+    setError(null);
+    
+    const result = await apiFunction();
+    return result;
+  } catch (error) {
+    console.error(`${errorContext} failed:`, error);
+    setError(`${errorContext} failed: ${error.message}`);
+    throw error;
+  } finally {
+    setLoading(false);
+  }
+};
+
+// Usage in components
+const handleUserUpdate = async (userData) => {
+  await handleAPICall(
+    () => UserService.updateUser(userData),
+    'User update'
+  );
+};
+```
+
+## Testing Standards
+
+### Component Testing
+
+**Test Structure:**
+```javascript
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { AuthProvider } from '../../context/AuthContext';
+import ComponentName from './ComponentName';
+
+// Mock dependencies
+vi.mock('../../utils/api/ApiService');
+
+// Test wrapper for context providers
+const TestWrapper = ({ children }) => (
+  <AuthProvider>
+    {children}
+  </AuthProvider>
+);
+
 describe('ComponentName', () => {
   beforeEach(() => {
-    // Setup
+    // Clear mocks before each test
+    vi.clearAllMocks();
   });
 
-  it('should render correctly', () => {
-    // Test implementation
+  describe('Rendering', () => {
+    it('renders with required props', () => {
+      render(
+        <ComponentName title="Test Title" onAction={vi.fn()} />,
+        { wrapper: TestWrapper }
+      );
+      
+      expect(screen.getByText('Test Title')).toBeInTheDocument();
+    });
+
+    it('shows loading state', () => {
+      render(
+        <ComponentName title="Test" onAction={vi.fn()} loading={true} />,
+        { wrapper: TestWrapper }
+      );
+      
+      expect(screen.getByRole('progressbar')).toBeInTheDocument();
+    });
   });
 
-  it('should handle user interactions', () => {
-    // Test implementation
+  describe('User Interactions', () => {
+    it('calls onAction when button clicked', async () => {
+      const mockAction = vi.fn();
+      render(
+        <ComponentName title="Test" onAction={mockAction} />,
+        { wrapper: TestWrapper }
+      );
+
+      fireEvent.click(screen.getByRole('button'));
+      
+      await waitFor(() => {
+        expect(mockAction).toHaveBeenCalledTimes(1);
+      });
+    });
+  });
+
+  describe('Error Handling', () => {
+    it('displays error message on API failure', async () => {
+      const mockAction = vi.fn().mockRejectedValue(new Error('API Error'));
+      
+      render(
+        <ComponentName title="Test" onAction={mockAction} />,
+        { wrapper: TestWrapper }
+      );
+
+      fireEvent.click(screen.getByRole('button'));
+      
+      await waitFor(() => {
+        expect(screen.getByText(/API Error/)).toBeInTheDocument();
+      });
+    });
   });
 });
 ```
 
-## 📝 Documentation Guidelines
+### API Service Testing
 
-### Types of Documentation
-- **Code Comments**: For complex logic
-- **Component Documentation**: Props and usage
-- **API Documentation**: Endpoint specifications
-- **User Guides**: Feature explanations
-- **Developer Guides**: Setup and architecture
+**Service Test Standards:**
+```javascript
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import ServiceName from './ServiceName';
 
-### Documentation Standards
-- Use clear, concise language
-- Include code examples
-- Keep examples up to date
-- Use proper markdown formatting
+// Mock global fetch
+global.fetch = vi.fn();
 
-## 🎨 Design Guidelines
+describe('ServiceName', () => {
+  beforeEach(() => {
+    fetch.mockClear();
+    localStorage.clear();
+  });
 
-### UI/UX Considerations
-- Follow existing design patterns
-- Ensure mobile responsiveness
-- Consider accessibility (WCAG guidelines)
-- Test on multiple browsers and devices
+  describe('Authentication', () => {
+    it('includes auth headers in requests', async () => {
+      localStorage.setItem('accessToken', 'test-token');
+      
+      fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ success: true, data: {} })
+      });
 
-### Design Review Process
-- Include screenshots in PRs
-- Test responsive behavior
-- Verify accessibility features
-- Check color contrast ratios
+      await ServiceName.methodName('param1', {});
 
-## 🔍 Code Review Process
+      expect(fetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            'Authorization': 'Bearer test-token'
+          })
+        })
+      );
+    });
+  });
 
-### Submitting for Review
-- Ensure CI checks pass
-- Update relevant documentation
-- Add tests for new functionality
-- Follow the PR template
+  describe('Error Handling', () => {
+    it('throws error on API failure', async () => {
+      fetch.mockResolvedValueOnce({
+        ok: false,
+        json: async () => ({ success: false, error: 'API Error' })
+      });
 
-### Review Criteria
-- **Functionality**: Does it work as expected?
-- **Code Quality**: Is it readable and maintainable?
-- **Performance**: Is it optimized?
-- **Security**: Are there security concerns?
-- **Tests**: Is there adequate test coverage?
-- **Documentation**: Is documentation updated?
+      await expect(ServiceName.methodName('param1', {}))
+        .rejects.toThrow('API Error');
+    });
 
-### Addressing Feedback
-- Respond to review comments promptly
-- Make requested changes
-- Ask for clarification if needed
-- Update PR description if scope changes
+    it('handles network errors', async () => {
+      fetch.mockRejectedValueOnce(new Error('Network Error'));
 
-## 🏷️ Issue Labels
+      await expect(ServiceName.methodName('param1', {}))
+        .rejects.toThrow('Network Error');
+    });
+  });
+});
+```
 
-### Priority Labels
-- `priority: high` - Critical issues needing immediate attention
-- `priority: medium` - Important issues for next release
-- `priority: low` - Nice-to-have improvements
+## Git Workflow and Conventions
 
-### Type Labels
-- `bug` - Something isn't working correctly
-- `feature` - New functionality request
-- `enhancement` - Improvement to existing feature
-- `documentation` - Documentation improvements
-- `question` - Request for information
+### Branch Naming
 
-### Status Labels
-- `good first issue` - Good for newcomers
-- `help wanted` - Extra attention needed
-- `in progress` - Currently being worked on
-- `needs review` - Ready for review
+**Branch Types:**
+```bash
+# Feature branches
+feature/user-authentication
+feature/dashboard-optimization
+feature/admin-user-management
 
-## 🚦 Release Process
+# Bug fixes
+bugfix/login-redirect-issue
+bugfix/dashboard-loading-error
 
-### Version Numbering
-We follow [Semantic Versioning](https://semver.org/):
-- **MAJOR**: Breaking changes
-- **MINOR**: New features (backward compatible)
-- **PATCH**: Bug fixes (backward compatible)
+# Hotfixes
+hotfix/security-vulnerability
+hotfix/production-api-error
 
-### Release Checklist
+# Documentation
+docs/api-documentation
+docs/setup-guide-update
+
+# Refactoring
+refactor/component-structure
+refactor/api-service-optimization
+```
+
+### Commit Message Standards
+
+**Commit Message Format:**
+```
+type(scope): description
+
+[optional body]
+
+[optional footer]
+```
+
+**Commit Types:**
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation changes
+- `style`: Code style changes (formatting, etc.)
+- `refactor`: Code refactoring
+- `test`: Adding or updating tests
+- `chore`: Maintenance tasks
+
+**Examples:**
+```bash
+feat(auth): add role-based route protection
+
+Add ProtectedRoute component that checks user roles before
+allowing access to admin routes. Includes redirect logic
+for unauthorized users.
+
+Closes #123
+
+fix(dashboard): resolve infinite loading on progress page
+
+The progress calculation was causing an infinite loop when
+user had no enrollments. Added proper error handling and
+fallback states.
+
+Fixes #456
+
+docs(api): update service documentation
+
+Add comprehensive JSDoc comments for all API service methods
+including parameter types and return values.
+
+refactor(components): reorganize component directory structure
+
+Move components into feature-based directories for better
+organization and maintainability.
+
+- Move auth components to features/authentication/
+- Move dashboard components to features/dashboard/
+- Move admin components to features/admin/
+```
+
+### Pull Request Guidelines
+
+**PR Title Format:**
+```
+[Type] Brief description of changes
+```
+
+**PR Description Template:**
+```markdown
+## Description
+Brief description of what this PR does.
+
+## Type of Change
+- [ ] Bug fix (non-breaking change which fixes an issue)
+- [ ] New feature (non-breaking change which adds functionality)
+- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
+- [ ] Documentation update
+
+## Testing
+- [ ] Unit tests added/updated
+- [ ] Integration tests added/updated
+- [ ] Manual testing completed
+
+## Checklist
+- [ ] Code follows style guidelines
+- [ ] Self-review completed
+- [ ] Code is properly commented
+- [ ] No console.log statements in production code
 - [ ] All tests pass
-- [ ] Documentation updated
-- [ ] Version number updated
-- [ ] Changelog updated
-- [ ] Security review completed
+- [ ] No linting errors
+- [ ] Documentation updated if needed
 
-## 🤝 Community Guidelines
+## Related Issues
+Closes #123
+Related to #456
 
-### Code of Conduct
-- Be respectful and inclusive
-- Provide constructive feedback
-- Help newcomers get started
-- Follow community guidelines
+## Screenshots (if applicable)
+[Add screenshots of UI changes]
+```
 
-### Communication Channels
-- **GitHub Issues**: Bug reports and feature requests
-- **GitHub Discussions**: Questions and general discussion
-- **Pull Requests**: Code review and collaboration
+## Code Review Standards
 
-### Getting Help
-- Check existing documentation
-- Search GitHub issues
-- Ask questions in discussions
-- Reach out to maintainers
+### Review Checklist
 
-## 🏆 Recognition
+**Functionality:**
+- [ ] Code works as intended
+- [ ] Edge cases handled properly
+- [ ] Error handling implemented
+- [ ] No console.log statements left in code
 
-### Contributors
-- All contributors are recognized in our changelog
-- Significant contributors may be invited as maintainers
-- We celebrate contributions in our community channels
+**Code Quality:**
+- [ ] Follows established patterns
+- [ ] Proper component structure
+- [ ] Meaningful variable and function names
+- [ ] Adequate code comments
 
-### Hacktoberfest
-We participate in Hacktoberfest! Look for `hacktoberfest` labeled issues during October.
+**Performance:**
+- [ ] No unnecessary re-renders
+- [ ] Proper use of useCallback and useMemo
+- [ ] Efficient API calls
+- [ ] No memory leaks
 
-## 📞 Contact
+**Security:**
+- [ ] Input validation implemented
+- [ ] Authentication checks in place
+- [ ] No sensitive data exposure
+- [ ] Proper error message handling
 
-- **Issues**: GitHub Issues for bugs and features
-- **Discussions**: GitHub Discussions for questions
-- **Email**: For security issues or sensitive matters
+**Testing:**
+- [ ] Unit tests included
+- [ ] Test coverage adequate
+- [ ] Tests are meaningful
+- [ ] Mock dependencies properly
 
-Thank you for contributing to OpenLearn! Your efforts help make education more accessible and engaging for everyone.
+### Review Comments Standards
+
+**Constructive Feedback:**
+```markdown
+# ✅ Good feedback
+Consider using useCallback here to prevent unnecessary re-renders:
+```javascript
+const handleClick = useCallback(() => {
+  // handler logic
+}, [dependency]);
+```
+
+# ✅ Good feedback with explanation
+This could cause a memory leak. The effect cleanup should remove the event listener:
+```javascript
+useEffect(() => {
+  const handler = () => {};
+  window.addEventListener('resize', handler);
+  return () => window.removeEventListener('resize', handler);
+}, []);
+```
+
+# ❌ Poor feedback
+This is wrong.
+
+# ❌ Poor feedback
+Bad code.
+```
+
+## Documentation Standards
+
+### Code Documentation
+
+**JSDoc Standards:**
+```javascript
+/**
+ * Calculate user progress across all enrolled leagues
+ * @param {Array<Object>} enrollments - User enrollments with progress data
+ * @param {Object} resourceProgress - Resource completion mapping
+ * @returns {Object} Aggregated progress statistics
+ * @example
+ * const progress = calculateProgress(userEnrollments, resourceData);
+ * console.log(progress.overallPercentage); // 75
+ */
+const calculateProgress = (enrollments, resourceProgress) => {
+  // Implementation
+};
+```
+
+**Component Documentation:**
+```javascript
+/**
+ * UserDashboard - Main dashboard component for authenticated users
+ * 
+ * Displays user's learning progress, enrolled leagues, and quick actions.
+ * Handles real-time progress updates and provides navigation to league details.
+ * 
+ * @component
+ * @param {Object} props
+ * @param {Object} props.user - Current user object with profile information
+ * @param {Function} props.onLogout - Callback function for user logout
+ * @param {boolean} [props.showWelcome=true] - Whether to show welcome message
+ * 
+ * @example
+ * <UserDashboard 
+ *   user={currentUser} 
+ *   onLogout={handleLogout}
+ *   showWelcome={false}
+ * />
+ */
+const UserDashboard = ({ user, onLogout, showWelcome = true }) => {
+  // Component implementation
+};
+```
+
+### README Documentation
+
+**Feature Documentation:**
+```markdown
+# Feature Name
+
+## Overview
+Brief description of what this feature does and why it exists.
+
+## Usage
+Basic usage examples with code snippets.
+
+## API Reference
+Detailed API documentation for public interfaces.
+
+## Examples
+Comprehensive examples showing different use cases.
+
+## Configuration
+Any configuration options or environment variables needed.
+
+## Troubleshooting
+Common issues and their solutions.
+```
+
+This comprehensive guide ensures consistent, high-quality contributions to the OpenLearn platform while maintaining code standards and facilitating effective collaboration.

@@ -1,162 +1,281 @@
-# Learning Progress APIs
+# Learning Progress API
 
-This document covers all learning progress and enrollment-related API endpoints.
+## Overview
 
-## 📚 Progress Overview
+The Learning Progress API manages user enrollment, progress tracking, and learning analytics across the OpenLearn platform. It provides comprehensive functionality for monitoring user advancement through leagues, sections, and resources.
 
-The Learning Progress APIs handle user enrollment in cohorts/leagues, section completion tracking, badge awarding, and progress analytics.
+## Progress Service Architecture
 
-## 🌐 Base URL
-```
-Base URL: {API_BASE_URL}/api/progress
-```
+### Service Class Structure
 
-## 🎯 Enrollment Management
+**ProgressService Implementation:**
+```javascript
+/**
+ * Progress Service Class - Handles learning progress and enrollment management
+ */
+class ProgressService {
+  /**
+   * Enroll user in a cohort/league combination
+   * @param {string} cohortId - The cohort ID
+   * @param {string} leagueId - The league ID  
+   * @param {string} userId - Optional: user ID (for admin enrollment)
+   * @returns {Promise} Enrollment data
+   */
+  static async enrollUser(cohortId, leagueId, userId = null) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/enroll`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          cohortId,
+          leagueId,
+          ...(userId && { userId })
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      return handleResponse(response);
+    } catch (error) {
+      console.error('Enrollment failed:', error.message);
+      throw error;
+    }
+  }
 
-### POST `/enroll`
+  /**
+   * Mark a section as completed
+   * @param {string} sectionId - The section ID to mark as complete
+   * @param {string} personalNote - Optional personal note
+   * @param {boolean} markedForRevision - Whether to mark for revision
+   * @returns {Promise} Progress data
+   */
+  static async completeSection(sectionId, personalNote = null, markedForRevision = false) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/progress/section/${sectionId}/complete`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          personalNote,
+          markedForRevision
+        })
+      });
+      
+      return handleResponse(response);
+    } catch (error) {
+      console.error('Section completion failed:', error.message);
+      throw error;
+    }
+  }
 
-Enrolls a user in a cohort/league combination.
-
-#### Headers
-```
-Authorization: Bearer {accessToken}
-Content-Type: application/json
-```
-
-#### Request Body
-```json
-{
-  "cohortId": "cohort_123",
-  "leagueId": "league_456",
-  "userId": "user_789" // Optional: for admin enrollment
-}
-```
-
-#### Response Success (201)
-```json
-{
-  "success": true,
-  "data": {
-    "enrollmentId": "enrollment_101",
-    "userId": "user_789",
-    "cohortId": "cohort_123",
-    "leagueId": "league_456",
-    "enrolledAt": "2024-06-12T10:30:00Z",
-    "status": "ACTIVE",
-    "progress": {
-      "totalSections": 24,
-      "completedSections": 0,
-      "progressPercentage": 0
+  /**
+   * Update section progress (notes and revision flags only)
+   * @param {string} sectionId - The section ID
+   * @param {string} personalNote - Personal note
+   * @param {boolean} markedForRevision - Whether to mark for revision
+   * @returns {Promise} Updated progress data
+   */
+  static async updateSectionProgress(sectionId, personalNote, markedForRevision) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/progress/section/${sectionId}`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          personalNote,
+          markedForRevision
+        })
+      });
+      
+      return handleResponse(response);
+    } catch (error) {
+      console.error('Section progress update failed:', error.message);
+      throw error;
     }
   }
 }
 ```
 
-#### Response Error (409)
+## Enrollment Management
+
+### User Enrollment
+
+**Endpoint:** `POST /api/enroll`
+
+**Request:**
 ```json
 {
-  "success": false,
-  "error": "User already enrolled in this league"
+  "cohortId": "cohort_123",
+  "leagueId": "ml_league",
+  "userId": "user_456"  // Optional for admin enrollment
 }
 ```
 
-### GET `/enrollments`
-
-Gets all enrollments for the current user.
-
-#### Headers
-```
-Authorization: Bearer {accessToken}
-```
-
-#### Response Success (200)
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "enrollmentId": "enrollment_101",
-      "enrolledAt": "2024-06-12T10:30:00Z",
-      "status": "ACTIVE",
-      "cohort": {
-        "id": "cohort_123",
-        "name": "Web Development Bootcamp",
-        "description": "Comprehensive web development course"
-      },
-      "league": {
-        "id": "league_456", 
-        "name": "JavaScript Fundamentals",
-        "description": "Learn JavaScript from basics to advanced"
-      },
-      "progress": {
-        "totalSections": 24,
-        "completedSections": 8,
-        "progressPercentage": 33.33,
-        "lastAccessedAt": "2024-06-12T15:45:00Z"
-      }
-    }
-  ]
-}
-```
-
-### DELETE `/enrollments/{enrollmentId}`
-
-Withdraws from an enrollment.
-
-#### Headers
-```
-Authorization: Bearer {accessToken}
-```
-
-#### Response Success (200)
-```json
-{
-  "success": true,
-  "message": "Successfully withdrawn from league"
-}
-```
-
-## ✅ Section Progress
-
-### POST `/sections/{sectionId}/complete`
-
-Marks a section as completed.
-
-#### Headers
-```
-Authorization: Bearer {accessToken}
-Content-Type: application/json
-```
-
-#### Request Body
-```json
-{
-  "personalNote": "Great introduction to variables",
-  "markedForRevision": false
-}
-```
-
-#### Response Success (200)
+**Response:**
 ```json
 {
   "success": true,
   "data": {
-    "sectionProgressId": "progress_789",
-    "sectionId": "section_456",
-    "userId": "user_123",
-    "completedAt": "2024-06-12T16:30:00Z",
-    "personalNote": "Great introduction to variables", 
-    "markedForRevision": false,
-    "progressUpdate": {
-      "enrollmentId": "enrollment_101",
-      "totalSections": 24,
+    "enrollment": {
+      "id": "enrollment_789",
+      "userId": "user_456",
+      "cohortId": "cohort_123", 
+      "leagueId": "ml_league",
+      "enrolledAt": "2024-01-15T10:30:00Z",
+      "status": "ACTIVE",
+      "progress": {
+        "completedSections": 0,
+        "totalSections": 24,
+        "completedResources": 0,
+        "totalResources": 156,
+        "progressPercentage": 0,
+        "lastActivityAt": null,
+        "timeSpent": 0,
+        "streak": 0
+      }
+    },
+    "league": {
+      "id": "ml_league",
+      "name": "Machine Learning",
+      "description": "Comprehensive ML learning path",
+      "estimatedHours": 120,
+      "difficulty": "Intermediate"
+    },
+    "cohort": {
+      "id": "cohort_123",
+      "name": "Winter 2024 Cohort",
+      "startDate": "2024-01-15T00:00:00Z",
+      "endDate": "2024-04-15T23:59:59Z"
+    }
+  }
+}
+```
+
+**Frontend Implementation:**
+```javascript
+const handleEnrollment = async (cohortId, leagueId) => {
+  try {
+    setLoading(true);
+    setError(null);
+    
+    const result = await ProgressService.enrollUser(cohortId, leagueId);
+    
+    // Update UI state
+    setEnrollments(prev => [...prev, result.enrollment]);
+    
+    // Show success message
+    showNotification('Enrollment successful! Welcome to your learning journey!');
+    
+    // Refresh dashboard data
+    await loadDashboardData();
+    
+  } catch (error) {
+    console.error('Enrollment error:', error);
+    setError(`Enrollment failed: ${error.message}`);
+  } finally {
+    setLoading(false);
+  }
+};
+```
+
+### Get User Enrollments
+
+**Endpoint:** `GET /api/progress/enrollments`
+
+**Query Parameters:**
+- `status` (optional): Filter by enrollment status (ACTIVE, COMPLETED, PAUSED, DROPPED)
+- `leagueId` (optional): Filter by specific league
+- `page` (optional): Page number (default: 1)
+- `limit` (optional): Items per page (default: 20)
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "enrollments": [
+      {
+        "id": "enrollment_789",
+        "userId": "user_456",
+        "cohortId": "cohort_123",
+        "leagueId": "ml_league",
+        "enrolledAt": "2024-01-15T10:30:00Z",
+        "status": "ACTIVE",
+        "progress": {
+          "completedSections": 8,
+          "totalSections": 24,
+          "completedResources": 45,
+          "totalResources": 156,
+          "progressPercentage": 33,
+          "lastActivityAt": "2024-01-20T14:30:00Z",
+          "timeSpent": 1440,
+          "streak": 5
+        },
+        "league": {
+          "id": "ml_league",
+          "name": "Machine Learning",
+          "description": "Comprehensive ML learning path",
+          "cover": "/leagues/ml-cover.jpg",
+          "color": "#3B82F6"
+        },
+        "cohort": {
+          "id": "cohort_123",
+          "name": "Winter 2024 Cohort"
+        }
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 20,
+      "totalItems": 3,
+      "totalPages": 1,
+      "hasNextPage": false,
+      "hasPrevPage": false
+    }
+  }
+}
+```
+
+## Section Progress Management
+
+### Complete Section
+
+**Endpoint:** `POST /api/progress/section/{sectionId}/complete`
+
+**Request:**
+```json
+{
+  "personalNote": "Excellent content on neural networks. Need to review backpropagation.",
+  "markedForRevision": false
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "sectionProgress": {
+      "id": "section_progress_123",
+      "userId": "user_456",
+      "sectionId": "section_789",
+      "isCompleted": true,
+      "completedAt": "2024-01-20T14:30:00Z",
+      "timeSpent": 45,
+      "personalNote": "Excellent content on neural networks. Need to review backpropagation.",
+      "markedForRevision": false,
+      "resourcesCompleted": 8,
+      "totalResources": 8
+    },
+    "enrollmentProgress": {
       "completedSections": 9,
-      "progressPercentage": 37.5,
+      "totalSections": 24,
+      "progressPercentage": 37,
       "badgesEarned": [
         {
-          "id": "badge_555",
-          "name": "Progress Milestone",
-          "description": "Completed 25% of the course"
+          "id": "badge_first_section",
+          "name": "First Steps",
+          "description": "Completed your first section"
         }
       ]
     }
@@ -164,499 +283,397 @@ Content-Type: application/json
 }
 ```
 
-### PUT `/sections/{sectionId}`
-
-Updates section progress (notes and revision flags only).
-
-#### Headers
+**Frontend Implementation:**
+```javascript
+const handleSectionCompletion = async (sectionId, note = '', forRevision = false) => {
+  try {
+    setUpdatingSection(sectionId);
+    
+    const result = await ProgressService.completeSection(
+      sectionId, 
+      note, 
+      forRevision
+    );
+    
+    // Update local state
+    setSectionProgress(prev => ({
+      ...prev,
+      [sectionId]: result.sectionProgress
+    }));
+    
+    // Update overall progress
+    setEnrollmentProgress(result.enrollmentProgress);
+    
+    // Show badges if earned
+    if (result.enrollmentProgress.badgesEarned?.length > 0) {
+      showBadgeNotification(result.enrollmentProgress.badgesEarned);
+    }
+    
+    // Confetti effect for completion
+    triggerConfetti();
+    
+  } catch (error) {
+    console.error('Section completion failed:', error);
+    showErrorMessage('Failed to mark section as complete');
+  } finally {
+    setUpdatingSection(null);
+  }
+};
 ```
-Authorization: Bearer {accessToken}
-Content-Type: application/json
-```
 
-#### Request Body
+### Update Section Progress
+
+**Endpoint:** `PUT /api/progress/section/{sectionId}`
+
+**Request:**
 ```json
 {
-  "personalNote": "Updated notes after review",
+  "personalNote": "Updated notes after review session",
   "markedForRevision": true
 }
 ```
 
-#### Response Success (200)
+**Response:**
 ```json
 {
   "success": true,
   "data": {
-    "sectionProgressId": "progress_789",
-    "personalNote": "Updated notes after review",
-    "markedForRevision": true,
-    "updatedAt": "2024-06-12T17:00:00Z"
-  }
-}
-```
-
-### GET `/sections/{sectionId}/progress`
-
-Gets progress for a specific section.
-
-#### Headers
-```
-Authorization: Bearer {accessToken}
-```
-
-#### Response Success (200)
-```json
-{
-  "success": true,
-  "data": {
-    "sectionId": "section_456",
-    "completed": true,
-    "completedAt": "2024-06-12T16:30:00Z",
-    "personalNote": "Great introduction to variables",
-    "markedForRevision": false,
-    "timeSpent": 3600, // seconds
-    "attempts": 1
-  }
-}
-```
-
-## 📊 Dashboard Data
-
-### GET `/dashboard`
-
-Gets comprehensive dashboard data for the current user.
-
-#### Headers
-```
-Authorization: Bearer {accessToken}
-```
-
-#### Response Success (200)
-```json
-{
-  "success": true,
-  "data": {
-    "user": {
-      "id": "user_123",
-      "name": "John Doe",
-      "role": "PIONEER",
-      "status": "ACTIVE"
-    },
-    "enrollments": [
-      {
-        "enrollmentId": "enrollment_101",
-        "enrolledAt": "2024-06-12T10:30:00Z",
-        "league": {
-          "id": "league_456",
-          "name": "JavaScript Fundamentals",
-          "description": "Learn JavaScript basics"
-        },
-        "progress": {
-          "totalSections": 24,
-          "completedSections": 9,
-          "progressPercentage": 37.5,
-          "lastAccessedAt": "2024-06-12T15:45:00Z"
-        }
-      }
-    ],
-    "badges": [
-      {
-        "id": "badge_555",
-        "name": "Progress Milestone",
-        "description": "Completed 25% of the course",
-        "imageUrl": "https://example.com/badge.png",
-        "earnedAt": "2024-06-12T16:30:00Z",
-        "league": {
-          "id": "league_456",
-          "name": "JavaScript Fundamentals"
-        }
-      }
-    ],
-    "stats": {
-      "totalEnrollments": 1,
-      "completedLeagues": 0,
-      "totalBadges": 1,
-      "totalTimeSpent": 10800, // seconds
-      "currentStreak": 3 // days
+    "sectionProgress": {
+      "id": "section_progress_123",
+      "userId": "user_456",
+      "sectionId": "section_789",
+      "isCompleted": true,
+      "personalNote": "Updated notes after review session",
+      "markedForRevision": true,
+      "updatedAt": "2024-01-21T09:15:00Z"
     }
   }
 }
 ```
 
-## 🏆 Progress Analytics
+## Resource Progress Tracking
 
-### GET `/analytics/personal`
+### Mark Resource as Complete
 
-Gets personal learning analytics.
+**Endpoint:** `POST /api/progress/resource/{resourceId}/complete`
 
-#### Headers
+**Request:**
+```json
+{
+  "timeSpent": 15,
+  "score": 85,
+  "notes": "Great video explanation of gradient descent",
+  "metadata": {
+    "watchProgress": 1.0,
+    "bookmarks": ["2:30", "5:45"],
+    "highlights": ["Chain rule explanation", "Learning rate importance"]
+  }
+}
 ```
-Authorization: Bearer {accessToken}
-```
 
-#### Query Parameters
-- `period`: `week` | `month` | `year` | `all` (default: `month`)
-- `leagueId`: Filter by specific league (optional)
-
-#### Response Success (200)
+**Response:**
 ```json
 {
   "success": true,
   "data": {
-    "period": "month",
+    "resourceProgress": {
+      "id": "resource_progress_456",
+      "userId": "user_456",
+      "resourceId": "resource_123",
+      "isCompleted": true,
+      "completedAt": "2024-01-20T15:45:00Z",
+      "timeSpent": 15,
+      "score": 85,
+      "attempts": 1,
+      "notes": "Great video explanation of gradient descent",
+      "metadata": {
+        "watchProgress": 1.0,
+        "bookmarks": ["2:30", "5:45"],
+        "highlights": ["Chain rule explanation", "Learning rate importance"]
+      }
+    },
+    "sectionProgress": {
+      "resourcesCompleted": 3,
+      "totalResources": 8,
+      "progressPercentage": 37
+    }
+  }
+}
+```
+
+### Get Resource Progress
+
+**Endpoint:** `GET /api/progress/resource/{resourceId}`
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "resourceProgress": {
+      "id": "resource_progress_456",
+      "userId": "user_456",
+      "resourceId": "resource_123",
+      "isCompleted": true,
+      "completedAt": "2024-01-20T15:45:00Z",
+      "timeSpent": 15,
+      "score": 85,
+      "attempts": 1,
+      "notes": "Great video explanation of gradient descent",
+      "metadata": {
+        "watchProgress": 1.0,
+        "bookmarks": ["2:30", "5:45"],
+        "highlights": ["Chain rule explanation", "Learning rate importance"]
+      }
+    }
+  }
+}
+```
+
+## Progress Analytics
+
+### Get Learning Analytics
+
+**Endpoint:** `GET /api/progress/analytics`
+
+**Query Parameters:**
+- `period` (optional): Time period (week, month, quarter, year)
+- `leagueId` (optional): Filter by specific league
+- `includeDetails` (optional): Include detailed breakdown
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
     "overview": {
-      "sectionsCompleted": 25,
-      "timeSpent": 36000, // seconds
-      "averageSessionTime": 1800, // seconds
-      "streakDays": 7,
-      "badgesEarned": 3
+      "totalEnrollments": 3,
+      "activeEnrollments": 2,
+      "completedLeagues": 1,
+      "totalBadges": 8,
+      "currentStreak": 5,
+      "longestStreak": 12,
+      "totalTimeSpent": 4320,
+      "averageSessionTime": 45
     },
-    "dailyActivity": [
-      {
-        "date": "2024-06-01",
-        "sectionsCompleted": 2,
-        "timeSpent": 3600
-      },
-      {
-        "date": "2024-06-02",
-        "sectionsCompleted": 3,
-        "timeSpent": 2400
-      }
-    ],
-    "leagueProgress": [
-      {
-        "leagueId": "league_456",
-        "leagueName": "JavaScript Fundamentals",
-        "progressPercentage": 75,
-        "sectionsCompleted": 18,
-        "totalSections": 24
-      }
-    ],
-    "achievements": [
-      {
-        "type": "COMPLETION_MILESTONE",
-        "title": "Half Way There!",
-        "description": "Completed 50% of JavaScript Fundamentals",
-        "unlockedAt": "2024-06-10T14:30:00Z"
-      }
-    ]
-  }
-}
-```
-
-### GET `/analytics/leaderboard`
-
-Gets leaderboard data.
-
-#### Headers
-```
-Authorization: Bearer {accessToken}
-```
-
-#### Query Parameters
-- `period`: `week` | `month` | `all` (default: `month`)
-- `leagueId`: Filter by specific league (optional)
-- `limit`: Number of results (default: 10, max: 50)
-
-#### Response Success (200)
-```json
-{
-  "success": true,
-  "data": {
-    "period": "month",
-    "leaderboard": [
-      {
-        "rank": 1,
-        "userId": "user_456",
-        "name": "Jane Smith",
-        "avatar": "https://example.com/avatar.jpg",
-        "score": 950,
-        "sectionsCompleted": 38,
-        "badgesEarned": 5,
-        "timeSpent": 72000
-      },
-      {
-        "rank": 2,
-        "userId": "user_123", 
-        "name": "John Doe",
-        "avatar": "https://example.com/avatar2.jpg",
-        "score": 875,
-        "sectionsCompleted": 35,
-        "badgesEarned": 4,
-        "timeSpent": 65400
-      }
-    ],
-    "currentUser": {
-      "rank": 2,
-      "score": 875,
-      "sectionsCompleted": 35
-    }
-  }
-}
-```
-
-## 📋 Assignment Progress
-
-### GET `/assignments`
-
-Gets all assignments for enrolled leagues.
-
-#### Headers
-```
-Authorization: Bearer {accessToken}
-```
-
-#### Response Success (200)
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "assignmentId": "assignment_789",
-      "title": "Build a Todo App",
-      "description": "Create a functional todo application",
-      "leagueId": "league_456",
-      "leagueName": "JavaScript Fundamentals",
-      "dueDate": "2024-06-20T23:59:59Z",
-      "status": "PENDING", // PENDING, SUBMITTED, GRADED
-      "maxScore": 100,
-      "currentScore": null,
-      "submittedAt": null,
-      "feedback": null
-    }
-  ]
-}
-```
-
-### POST `/assignments/{assignmentId}/submit`
-
-Submits an assignment.
-
-#### Headers
-```
-Authorization: Bearer {accessToken}
-Content-Type: application/json
-```
-
-#### Request Body
-```json
-{
-  "submissionUrl": "https://github.com/user/todo-app",
-  "notes": "Implemented all required features plus dark mode"
-}
-```
-
-#### Response Success (200)
-```json
-{
-  "success": true,
-  "data": {
-    "submissionId": "submission_101",
-    "assignmentId": "assignment_789",
-    "submittedAt": "2024-06-15T18:30:00Z",
-    "submissionUrl": "https://github.com/user/todo-app",
-    "notes": "Implemented all required features plus dark mode",
-    "status": "SUBMITTED"
-  }
-}
-```
-
-## 📈 Progress Tracking Utilities
-
-### GET `/progress/status`
-
-Gets overall progress status for all enrollments.
-
-#### Headers
-```
-Authorization: Bearer {accessToken}
-```
-
-#### Response Success (200)
-```json
-{
-  "success": true,
-  "data": {
-    "overallProgress": {
-      "totalEnrollments": 2,
-      "averageProgress": 42.5,
-      "completedLeagues": 0,
-      "activeLeagues": 2
+    "progressBreakdown": {
+      "byLeague": [
+        {
+          "leagueId": "ml_league",
+          "leagueName": "Machine Learning",
+          "progressPercentage": 75,
+          "completedSections": 18,
+          "totalSections": 24,
+          "timeSpent": 2880,
+          "averageScore": 87
+        }
+      ],
+      "byWeek": [
+        {
+          "weekNumber": 1,
+          "sectionsCompleted": 3,
+          "timeSpent": 180,
+          "averageScore": 92
+        }
+      ]
     },
     "recentActivity": [
       {
         "type": "SECTION_COMPLETED",
-        "sectionId": "section_456",
-        "sectionTitle": "Variables and Data Types",
-        "leagueName": "JavaScript Fundamentals",
-        "timestamp": "2024-06-12T16:30:00Z"
-      },
-      {
-        "type": "BADGE_EARNED",
-        "badgeId": "badge_555",
-        "badgeName": "Progress Milestone",
-        "leagueName": "JavaScript Fundamentals",
-        "timestamp": "2024-06-12T16:30:00Z"
+        "timestamp": "2024-01-20T14:30:00Z",
+        "description": "Completed 'Introduction to Neural Networks'",
+        "leagueName": "Machine Learning",
+        "pointsEarned": 50
       }
     ],
-    "upcomingDeadlines": [
-      {
-        "type": "ASSIGNMENT",
-        "assignmentId": "assignment_789",
-        "title": "Build a Todo App",
-        "leagueName": "JavaScript Fundamentals",
-        "dueDate": "2024-06-20T23:59:59Z"
-      }
-    ]
-  }
-}
-```
-
-### POST `/progress/bulk-update`
-
-Updates progress for multiple sections (for admin use).
-
-#### Headers
-```
-Authorization: Bearer {accessToken}
-Content-Type: application/json
-```
-
-#### Request Body
-```json
-{
-  "userId": "user_123", // Optional: defaults to current user
-  "updates": [
-    {
-      "sectionId": "section_456",
-      "completed": true,
-      "personalNote": "Completed during review session"
-    },
-    {
-      "sectionId": "section_789",
-      "completed": false,
-      "markedForRevision": true
+    "achievements": {
+      "recentBadges": [
+        {
+          "id": "badge_ml_basics",
+          "name": "ML Foundations",
+          "earnedAt": "2024-01-19T16:20:00Z"
+        }
+      ],
+      "milestones": [
+        {
+          "type": "FIRST_LEAGUE_50_PERCENT",
+          "achievedAt": "2024-01-18T12:00:00Z",
+          "description": "Reached 50% completion in first league"
+        }
+      ]
     }
-  ]
+  }
 }
 ```
 
-#### Response Success (200)
+### Get League-Specific Progress
+
+**Endpoint:** `GET /api/progress/league/{leagueId}`
+
+**Response:**
 ```json
 {
   "success": true,
   "data": {
-    "updatedSections": 2,
-    "progressUpdates": [
+    "enrollment": {
+      "id": "enrollment_789",
+      "enrolledAt": "2024-01-15T10:30:00Z",
+      "status": "ACTIVE"
+    },
+    "progress": {
+      "completedSections": 8,
+      "totalSections": 24,
+      "completedResources": 45,
+      "totalResources": 156,
+      "progressPercentage": 33,
+      "timeSpent": 1440,
+      "averageScore": 87
+    },
+    "weeklyProgress": [
       {
-        "enrollmentId": "enrollment_101",
-        "newProgressPercentage": 45.8,
-        "badgesEarned": []
+        "weekId": "week_1",
+        "weekName": "Introduction to ML",
+        "sectionsCompleted": 4,
+        "totalSections": 4,
+        "progressPercentage": 100,
+        "timeSpent": 360
+      }
+    ],
+    "nextRecommendations": [
+      {
+        "type": "SECTION",
+        "id": "section_next",
+        "name": "Deep Learning Fundamentals",
+        "estimatedTime": 45,
+        "difficulty": "Intermediate"
       }
     ]
   }
 }
 ```
 
-## 🔄 Progress Synchronization
+## Progress Calculation Utilities
 
-### POST `/progress/sync`
+### Frontend Progress Calculations
 
-Synchronizes progress data (useful after connectivity issues).
-
-#### Headers
-```
-Authorization: Bearer {accessToken}
-```
-
-#### Response Success (200)
-```json
-{
-  "success": true,
-  "data": {
-    "syncedEnrollments": 2,
-    "syncedSections": 15,
-    "conflicts": [], // Any data conflicts found
-    "lastSyncAt": "2024-06-12T18:00:00Z"
-  }
-}
-```
-
-## 🚨 Error Responses
-
-### Common Error Codes
-- **400**: Bad Request (invalid section ID, already completed)
-- **401**: Unauthorized (invalid/expired token)
-- **403**: Forbidden (not enrolled in league)
-- **404**: Not Found (section/enrollment not found)
-- **409**: Conflict (already enrolled/completed)
-- **429**: Too Many Requests (rate limiting)
-
-### Error Response Format
-```json
-{
-  "success": false,
-  "error": "Section already completed",
-  "code": "SECTION_ALREADY_COMPLETED",
-  "details": {
-    "sectionId": "section_456",
-    "completedAt": "2024-06-12T16:30:00Z"
-  }
-}
-```
-
-## 🔧 Frontend Integration
-
-### Progress Tracking Hook
+**Accurate Progress Calculation:**
 ```javascript
-const useProgress = (enrollmentId) => {
-  const [progress, setProgress] = useState(null);
-  const [loading, setLoading] = useState(true);
+/**
+ * Calculate accurate resource progress across enrollments
+ */
+static calculateAccurateResourceProgress(dashboardData, allResourceProgress) {
+  if (!dashboardData?.enrollments?.length) {
+    return { completedResources: 0, totalResources: 0 };
+  }
 
-  const completeSection = async (sectionId, note = null, revision = false) => {
+  let totalCompleted = 0;
+  let totalResources = 0;
+
+  dashboardData.enrollments.forEach(enrollment => {
+    // Count resources that belong to this league
+    Object.entries(allResourceProgress).forEach(([resourceId, progress]) => {
+      if (progress.leagueId === enrollment.league.id) {
+        totalResources++;
+        if (progress.isCompleted) {
+          totalCompleted++;
+        }
+      }
+    });
+  });
+
+  return {
+    completedResources: totalCompleted,
+    totalResources: totalResources
+  };
+}
+
+/**
+ * Calculate section progress with resource completion validation
+ */
+static calculateAccurateSectionProgress(dashboardData, allResourceProgress, allSectionResources) {
+  if (!dashboardData?.enrollments?.length) {
+    return { completed: 0, total: 0 };
+  }
+
+  let completedSections = 0;
+  let totalSections = 0;
+
+  dashboardData.enrollments.forEach(enrollment => {
+    Object.entries(allSectionResources).forEach(([sectionId, resources]) => {
+      if (resources.leagueId === enrollment.league.id) {
+        totalSections++;
+        
+        // Check if all resources in section are completed
+        const allResourcesCompleted = resources.every(resource => 
+          allResourceProgress[resource.id]?.isCompleted
+        );
+        
+        if (allResourcesCompleted && resources.length > 0) {
+          completedSections++;
+        }
+      }
+    });
+  });
+
+  return {
+    completed: completedSections,
+    total: totalSections
+  };
+}
+```
+
+**Progress Update Handlers:**
+```javascript
+const useProgressTracking = (enrollmentId) => {
+  const [progress, setProgress] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const updateResourceProgress = useCallback(async (resourceId, progressData) => {
+    setLoading(true);
+    
     try {
-      const response = await ProgressService.completeSection(
-        sectionId, 
-        note, 
-        revision
+      const result = await ProgressService.markResourceComplete(
+        resourceId,
+        progressData
       );
+      
       // Update local progress state
       setProgress(prev => ({
         ...prev,
-        completedSections: prev.completedSections + 1,
-        progressPercentage: response.progressUpdate.progressPercentage
+        resources: {
+          ...prev.resources,
+          [resourceId]: result.resourceProgress
+        },
+        section: result.sectionProgress
       }));
-      return response;
+      
+      // Trigger progress recalculation
+      await recalculateProgress();
+      
     } catch (error) {
-      console.error('Failed to complete section:', error);
+      console.error('Failed to update resource progress:', error);
       throw error;
+    } finally {
+      setLoading(false);
     }
-  };
+  }, [enrollmentId]);
 
-  return { progress, loading, completeSection };
-};
-```
-
-### Dashboard Data Hook
-```javascript
-const useDashboardData = () => {
-  const [dashboardData, setDashboardData] = useState(null);
-
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        const data = await ProgressService.getUserDashboard();
-        setDashboardData(data);
-      } catch (error) {
-        console.error('Failed to fetch dashboard data:', error);
-      }
-    };
-
-    fetchDashboardData();
+  const recalculateProgress = useCallback(async () => {
+    try {
+      const analytics = await ProgressService.getAnalytics();
+      setProgress(analytics);
+    } catch (error) {
+      console.error('Failed to recalculate progress:', error);
+    }
   }, []);
 
-  return { dashboardData };
+  return {
+    progress,
+    loading,
+    updateResourceProgress,
+    recalculateProgress
+  };
 };
 ```
 
-This Learning Progress API documentation provides comprehensive coverage of all progress tracking functionality in the OpenLearn platform.
+This comprehensive Learning Progress API enables detailed tracking of user advancement through the OpenLearn platform, providing both granular resource-level progress and high-level analytics for effective learning management.

@@ -1,260 +1,201 @@
 # Development Setup Guide
 
-This guide will help you set up the OpenLearn platform for local development.
+## Prerequisites
 
-## 🛠️ Prerequisites
+### System Requirements
 
-### Required Software
-- **Node.js**: Version 18.0.0 or higher
-- **npm**: Comes with Node.js (version 8.19.0+)
-- **Git**: For version control
-- **Code Editor**: VS Code recommended
+**Node.js Environment:**
+- Node.js 18.0.0 or higher
+- npm 8.0.0 or higher (comes with Node.js)
+- Git for version control
 
-### Recommended Tools
-- **VS Code Extensions**:
-  - ES7+ React/Redux/React-Native snippets
-  - Tailwind CSS IntelliSense
-  - ESLint
-  - Prettier
-  - Auto Rename Tag
-- **Browser**: Chrome or Firefox with React DevTools
+**Development Tools:**
+- Visual Studio Code (recommended)
+- Chrome/Firefox with developer tools
+- Postman or similar API testing tool
 
-## 📥 Installation
+### Verification Commands
 
-### 1. Clone the Repository
 ```bash
+# Check Node.js version
+node --version  # Should be >= 18.0.0
+
+# Check npm version
+npm --version   # Should be >= 8.0.0
+
+# Check Git installation
+git --version
+```
+
+## Quick Start
+
+### 1. Repository Setup
+
+```bash
+# Clone the repository
 git clone <repository-url>
 cd openlearn-frontend
-```
 
-### 2. Install Dependencies
-```bash
+# Install dependencies
 npm install
+
+# Copy environment configuration
+cp .env.example .env
 ```
 
-### 3. Environment Setup
-Create a `.env` file in the root directory:
+### 2. Environment Configuration
+
+**Edit `.env` file:**
 ```env
 # API Configuration
-VITE_API_BASE_URL=http://localhost:3001
+VITE_API_BASE_URL=http://localhost:3000
 
-# Environment
-NODE_ENV=development
-
-# Optional: Analytics and tracking
-VITE_ANALYTICS_ID=your-analytics-id
+# Twitter API Configuration (optional for development)
+VITE_TWITTER_API_KEY=your_api_key_here
+VITE_TWITTER_API_KEY_SECRET=your_api_key_secret_here
+VITE_TWITTER_BEARER_TOKEN=your_bearer_token_here
+VITE_TWITTER_ACCESS_TOKEN=your_access_token_here
+VITE_TWITTER_ACCESS_TOKEN_SECRET=your_access_token_secret_here
 ```
 
-### 4. Start Development Server
+### 3. Development Server
+
 ```bash
+# Start development server
 npm run dev
+
+# Access the application
+# Open http://localhost:5173 in your browser
 ```
 
-The application will be available at `http://localhost:5173`
+## Development Workflow
 
-## 🏗️ Project Structure
+### Available Scripts
 
-```
-openlearn-frontend/
-├── public/                 # Static assets
-│   ├── favicon.png
-│   ├── logo.jpg
-│   └── whatsapp-qr.png
-├── src/                    # Source code
-│   ├── components/         # React components
-│   │   ├── admin/         # Admin panel components
-│   │   ├── auth/          # Authentication components
-│   │   ├── common/        # Shared components
-│   │   ├── dashboard/     # User dashboard components
-│   │   └── landingPage/   # Landing page components
-│   ├── context/           # React Context providers
-│   ├── hooks/             # Custom React hooks
-│   ├── pages/             # Page components
-│   ├── utils/             # Utility functions and services
-│   ├── App.jsx            # Main app component
-│   ├── main.jsx           # Entry point
-│   └── index.css          # Global styles
-├── docs/                  # Documentation
-├── package.json           # Dependencies and scripts
-├── vite.config.js         # Vite configuration
-├── tailwind.config.js     # Tailwind CSS configuration
-└── eslint.config.js       # ESLint configuration
-```
-
-## 🎨 Styling System
-
-### Tailwind CSS
-The project uses Tailwind CSS for styling with custom configuration:
-
-```javascript
-// tailwind.config.js
-export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
-  theme: {
-    extend: {
-      colors: {
-        primary: '#FFDE59',
-        secondary: '#000000',
-      },
-      animation: {
-        'float': 'float 6s ease-in-out infinite',
-      }
-    },
-  },
-  plugins: [],
-}
-```
-
-### Custom CSS
-Global styles are defined in `src/index.css`:
-- CSS reset and base styles
-- Custom animations
-- Utility classes
-
-## 📦 Available Scripts
-
-### Development
 ```bash
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run preview      # Preview production build
-npm run lint         # Run ESLint
+# Development
+npm run dev              # Start development server with HMR
+npm run preview          # Preview production build locally
+
+# Code Quality
+npm run lint             # Run ESLint for code quality checks
+npm run lint:fix         # Auto-fix linting issues
+
+# Build Process
+npm run build            # Create production build
+npm run type-check       # TypeScript type checking
+
+# Maintenance
+npm run clean            # Clean build artifacts and cache
+npm run deps:check       # Check for unused dependencies
+npm run deps:update      # Update dependencies to latest versions
+npm run security:audit   # Security audit of dependencies
+npm run security:fix     # Fix security vulnerabilities
+
+# CI/CD
+npm run ci               # Complete CI pipeline (install, lint, build)
 ```
 
-### Code Quality
+### Development Server Features
+
+**Vite Development Server:**
+- Hot Module Replacement (HMR) for instant updates
+- Fast build times with native ES modules
+- Automatic browser refresh on file changes
+- Source map support for debugging
+- CSS preprocessing with Tailwind CSS
+
+**Development URLs:**
+- Application: `http://localhost:5173`
+- Network access: `http://[your-ip]:5173` (for mobile testing)
+
+## Code Organization
+
+### Component Development
+
+**Creating New Components:**
+
 ```bash
-npm run lint         # Check for linting errors
-npm run lint:fix     # Fix auto-fixable linting errors
+# Navigate to appropriate directory
+cd src/components/features/[domain]
+
+# Create component file
+touch NewComponent.jsx
+
+# Add to barrel export
+echo "export { default as NewComponent } from './NewComponent';" >> index.js
 ```
 
-## 🔧 Configuration Files
-
-### Vite Configuration
+**Component Template:**
 ```javascript
-// vite.config.js
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
+import React, { useState, useEffect } from 'react';
 
-export default defineConfig({
-  plugins: [react(), tailwindcss()],
-  server: {
-    port: 5173,
-    open: true
-  },
-  build: {
-    outDir: 'dist',
-    sourcemap: true
+const NewComponent = ({ 
+  // Props with default values
+  title = '',
+  onAction = () => {},
+  loading = false 
+}) => {
+  // Local state
+  const [localState, setLocalState] = useState(null);
+
+  // Effects
+  useEffect(() => {
+    // Component logic
+  }, []);
+
+  // Event handlers
+  const handleAction = () => {
+    onAction();
+  };
+
+  // Loading state
+  if (loading) {
+    return <div>Loading...</div>;
   }
-})
-```
 
-### ESLint Configuration
-```javascript
-// eslint.config.js
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-
-export default [
-  // ESLint configuration
-]
-```
-
-## 🔄 State Management
-
-### Context API Setup
-The application uses React Context for global state management:
-
-```javascript
-// src/context/AuthContext.jsx
-export const AuthContext = createContext();
-
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  
-  // Authentication logic
-  
+  // Main render
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
-      {children}
-    </AuthContext.Provider>
+    <div className="new-component">
+      <h2>{title}</h2>
+      <button onClick={handleAction}>
+        Action
+      </button>
+    </div>
   );
 };
+
+export default NewComponent;
 ```
 
-### Custom Hooks
-```javascript
-// src/hooks/useAuth.js
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
-  }
-  return context;
-};
+### API Service Development
+
+**Creating New Services:**
+
+```bash
+# Navigate to API services directory
+cd src/utils/api
+
+# Create service file
+touch newService.js
+
+# Add to barrel export
+echo "export { default as NewService } from './newService';" >> index.js
 ```
 
-## 🛣️ Routing Setup
-
-### React Router Configuration
+**Service Template:**
 ```javascript
-// src/App.jsx
-import { Routes, Route, Navigate } from 'react-router-dom'
-import { ProtectedRoute } from './components/auth/ProtectedRoute'
+/**
+ * New Service for OpenLearn Platform
+ * Handles [specific functionality] API calls
+ */
 
-const App = () => {
-  return (
-    <AuthProvider>
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/signin" element={<SignInPage />} />
-        <Route path="/signup" element={<SignUpPage />} />
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = `${BASE_URL}/api`;
 
-        {/* Protected Routes */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<DashboardPage />} />
-        </Route>
-        
-        {/* Admin Routes */}
-        <Route element={<ProtectedRoute requiredRoles={['GRAND_PATHFINDER', 'CHIEF_PATHFINDER']} />}>
-          <Route path="/admin" element={<AdminPage />} />
-        </Route>
-
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </AuthProvider>
-  )
-}
-```
-
-## 🔌 API Integration
-
-### Service Layer Pattern
-API calls are abstracted into service classes:
-
-```javascript
-// src/utils/dataService.js
-class DataService {
-  static async getCohorts() {
-    const response = await fetch(`${API_BASE_URL}/cohorts`, {
-      headers: getAuthHeaders()
-    });
-    return handleResponse(response);
-  }
-  
-  // More API methods
-}
-```
-
-### Authentication Headers
-```javascript
+/**
+ * Get authorization header with JWT token
+ */
 const getAuthHeaders = () => {
   const token = localStorage.getItem('accessToken');
   return {
@@ -262,10 +203,10 @@ const getAuthHeaders = () => {
     'Content-Type': 'application/json'
   };
 };
-```
 
-### Error Handling
-```javascript
+/**
+ * Handle API response and return data or throw error
+ */
 const handleResponse = async (response) => {
   const result = await response.json();
   if (!result.success) {
@@ -273,170 +214,307 @@ const handleResponse = async (response) => {
   }
   return result.data;
 };
-```
 
-## 🎨 Component Development
-
-### Component Structure Template
-```javascript
-import React, { useState, useEffect } from 'react';
-import { SomeIcon } from 'lucide-react';
-
-const ComponentName = ({ 
-  prop1,
-  prop2 = 'defaultValue',
-  onAction = null,
-  className = ''
-}) => {
-  const [localState, setLocalState] = useState(null);
-
-  useEffect(() => {
-    // Side effects
-  }, []);
-
-  const handleAction = () => {
-    // Event handling
-    onAction?.(data);
-  };
-
-  if (loading) return <LoadingSpinner />;
-  if (error) return <ErrorMessage error={error} />;
-
-  return (
-    <div className={`base-classes ${className}`}>
-      {/* Component JSX */}
-    </div>
-  );
-};
-
-export default ComponentName;
-```
-
-### Props Documentation
-```javascript
 /**
- * ComponentName - Description of what this component does
- * 
- * @param {string} prop1 - Description of prop1
- * @param {string} prop2 - Description of prop2 with default value
- * @param {function} onAction - Callback function when action occurs
- * @param {string} className - Additional CSS classes
+ * New Service Class
  */
-```
+class NewService {
+  /**
+   * Get data from API
+   * @param {string} id - Resource ID
+   * @returns {Promise} API response data
+   */
+  static async getData(id) {
+    const response = await fetch(`${API_BASE_URL}/resource/${id}`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
 
-## 🔍 Debugging
-
-### React DevTools
-1. Install React DevTools browser extension
-2. Open browser developer tools
-3. Use "Components" and "Profiler" tabs
-
-### Console Debugging
-```javascript
-// Development logging
-if (import.meta.env.DEV) {
-  console.log('Debug info:', data);
+  /**
+   * Create new resource
+   * @param {Object} data - Resource data
+   * @returns {Promise} Created resource
+   */
+  static async create(data) {
+    const response = await fetch(`${API_BASE_URL}/resource`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(data)
+    });
+    return handleResponse(response);
+  }
 }
 
-// Error boundary
+export default NewService;
+```
+
+## Debugging and Development Tools
+
+### Browser Developer Tools
+
+**React Developer Tools:**
+```bash
+# Install React Developer Tools browser extension
+# Chrome: https://chrome.google.com/webstore/detail/react-developer-tools/
+# Firefox: https://addons.mozilla.org/en-US/firefox/addon/react-devtools/
+```
+
+**Debugging Features:**
+- Component tree inspection
+- Props and state examination
+- Performance profiling
+- Hook debugging
+
+### Console Debugging
+
+**Development Logging:**
+```javascript
+// Use console.log for development debugging
+console.log('Debug info:', { data, state, props });
+
+// Use console.error for error tracking
 console.error('Error occurred:', error);
+
+// Use console.warn for warnings
+console.warn('Deprecated feature used:', feature);
+
+// Use console.table for tabular data
+console.table(arrayOfObjects);
 ```
 
 ### Network Debugging
+
+**API Call Monitoring:**
 - Use browser Network tab to inspect API calls
-- Check request/response headers and payloads
-- Monitor failed requests and status codes
+- Check request headers for authentication
+- Verify response status codes and data
+- Monitor loading times and performance
 
-## 🚀 Build Process
-
-### Development Build
-```bash
-npm run dev
-```
-- Hot module replacement (HMR)
-- Source maps for debugging
-- Faster build times
-
-### Production Build
-```bash
-npm run build
-```
-- Minified and optimized code
-- Tree shaking for smaller bundle size
-- Asset optimization
-
-### Build Analysis
-```bash
-npm run build -- --analyze
-```
-- Bundle size analysis
-- Dependency visualization
-- Performance optimization insights
-
-## 🧪 Testing Setup
-
-### Testing Framework (Future)
-When adding tests, consider:
-- **Vitest**: For unit testing
-- **React Testing Library**: For component testing
-- **Cypress**: For end-to-end testing
-
-### Test Structure
-```
-src/
-├── components/
-│   ├── Component.jsx
-│   └── __tests__/
-│       └── Component.test.jsx
-```
-
-## 📁 Environment Management
-
-### Development Environment
-```env
-NODE_ENV=development
-VITE_API_BASE_URL=http://localhost:3001
-VITE_DEBUG=true
-```
-
-### Production Environment
-```env
-NODE_ENV=production
-VITE_API_BASE_URL=https://api.openlearn.com
-VITE_DEBUG=false
-```
-
-### Environment Variables Access
+**Common Debugging Scenarios:**
 ```javascript
-const apiUrl = import.meta.env.VITE_API_BASE_URL;
-const isDev = import.meta.env.DEV;
-const isProd = import.meta.env.PROD;
+// Debug authentication issues
+const debugAuth = () => {
+  const token = localStorage.getItem('accessToken');
+  console.log('Current token:', token ? 'Present' : 'Missing');
+  
+  if (token) {
+    // Decode JWT to check expiration (development only)
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    console.log('Token expires:', new Date(payload.exp * 1000));
+  }
+};
+
+// Debug API calls
+const debugAPICall = async (url, options) => {
+  console.log('API Call:', { url, options });
+  
+  try {
+    const response = await fetch(url, options);
+    console.log('Response:', response.status, response.statusText);
+    
+    const data = await response.json();
+    console.log('Response data:', data);
+    
+    return data;
+  } catch (error) {
+    console.error('API Error:', error);
+    throw error;
+  }
+};
 ```
 
-## 🔧 Development Workflow
+## Testing Environment
 
-### 1. Feature Development
-1. Create feature branch: `git checkout -b feature/feature-name`
-2. Develop and test locally
-3. Follow coding standards and conventions
-4. Commit with descriptive messages
+### Component Testing Setup
 
-### 2. Code Quality Checks
+**Testing Dependencies:**
 ```bash
-npm run lint          # Check for issues
-npm run lint:fix      # Auto-fix issues
+# Install testing dependencies (if not already included)
+npm install --save-dev @testing-library/react @testing-library/jest-dom vitest
 ```
 
-### 3. Testing
-- Test in multiple browsers
-- Check responsive design
-- Verify all user flows
-- Test error scenarios
+**Basic Component Test:**
+```javascript
+import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import NewComponent from './NewComponent';
 
-### 4. Deployment Preparation
+describe('NewComponent', () => {
+  it('renders with title', () => {
+    render(<NewComponent title="Test Title" />);
+    expect(screen.getByText('Test Title')).toBeInTheDocument();
+  });
+
+  it('calls onAction when button clicked', () => {
+    const mockAction = vi.fn();
+    render(<NewComponent onAction={mockAction} />);
+    
+    fireEvent.click(screen.getByText('Action'));
+    expect(mockAction).toHaveBeenCalled();
+  });
+
+  it('shows loading state', () => {
+    render(<NewComponent loading={true} />);
+    expect(screen.getByText('Loading...')).toBeInTheDocument();
+  });
+});
+```
+
+### API Service Testing
+
+**Service Test Example:**
+```javascript
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import NewService from './newService';
+
+// Mock fetch
+global.fetch = vi.fn();
+
+describe('NewService', () => {
+  beforeEach(() => {
+    fetch.mockClear();
+  });
+
+  it('fetches data successfully', async () => {
+    const mockData = { id: 1, name: 'Test' };
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ success: true, data: mockData })
+    });
+
+    const result = await NewService.getData('1');
+    expect(result).toEqual(mockData);
+    expect(fetch).toHaveBeenCalledWith(
+      'http://localhost:3000/api/resource/1',
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          'Authorization': expect.stringContaining('Bearer')
+        })
+      })
+    );
+  });
+
+  it('handles API errors', async () => {
+    fetch.mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({ success: false, error: 'Not found' })
+    });
+
+    await expect(NewService.getData('1')).rejects.toThrow('Not found');
+  });
+});
+```
+
+## Performance Optimization
+
+### Development Performance
+
+**Bundle Analysis:**
 ```bash
-npm run build         # Create production build
-npm run preview       # Test production build locally
+# Install bundle analyzer
+npm install --save-dev rollup-plugin-visualizer
+
+# Add to vite.config.js
+import { visualizer } from 'rollup-plugin-visualizer';
+
+export default defineConfig({
+  plugins: [
+    // ... other plugins
+    visualizer({
+      filename: 'dist/stats.html',
+      open: true
+    })
+  ]
+});
 ```
 
-This development setup provides a solid foundation for contributing to the OpenLearn platform. Follow the conventions and patterns established in the codebase for consistency.
+**Performance Monitoring:**
+```javascript
+// Monitor component render times
+const PerformanceWrapper = ({ children, name }) => {
+  useEffect(() => {
+    const startTime = performance.now();
+    
+    return () => {
+      const endTime = performance.now();
+      console.log(`${name} render time: ${endTime - startTime}ms`);
+    };
+  });
+
+  return children;
+};
+
+// Monitor API call performance
+const monitorAPI = async (apiCall, name) => {
+  const startTime = performance.now();
+  
+  try {
+    const result = await apiCall();
+    const endTime = performance.now();
+    console.log(`${name} API call: ${endTime - startTime}ms`);
+    return result;
+  } catch (error) {
+    const endTime = performance.now();
+    console.error(`${name} API error after ${endTime - startTime}ms:`, error);
+    throw error;
+  }
+};
+```
+
+## Common Development Issues
+
+### Troubleshooting Guide
+
+**Issue: Development server won't start**
+```bash
+# Clear npm cache
+npm cache clean --force
+
+# Delete node_modules and reinstall
+rm -rf node_modules package-lock.json
+npm install
+
+# Check port availability
+lsof -ti:5173  # If occupied, kill process or change port
+```
+
+**Issue: Authentication not working**
+```javascript
+// Check token storage
+console.log('Access token:', localStorage.getItem('accessToken'));
+console.log('Refresh token:', localStorage.getItem('refreshToken'));
+
+// Clear tokens and re-login
+localStorage.removeItem('accessToken');
+localStorage.removeItem('refreshToken');
+```
+
+**Issue: API calls failing**
+```javascript
+// Verify API base URL
+console.log('API Base URL:', import.meta.env.VITE_API_BASE_URL);
+
+// Check network connectivity
+fetch(import.meta.env.VITE_API_BASE_URL + '/health')
+  .then(response => console.log('API health:', response.status))
+  .catch(error => console.error('API unreachable:', error));
+```
+
+**Issue: Components not updating**
+```javascript
+// Check for missing dependencies in useEffect
+useEffect(() => {
+  // Add all referenced variables to dependency array
+}, [dependency1, dependency2]); // Don't forget dependencies!
+
+// Verify state updates
+const [state, setState] = useState(initialValue);
+
+const updateState = (newValue) => {
+  console.log('Updating state from', state, 'to', newValue);
+  setState(newValue);
+};
+```
+
+This development setup guide provides everything needed to start contributing to the OpenLearn platform efficiently and effectively.

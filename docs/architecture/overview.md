@@ -1,220 +1,302 @@
-# System Overview
+# System Architecture
 
-High-level architecture and design principles of the OpenLearn Frontend application.
+## Overview
 
-## Architecture Overview
+OpenLearn implements a modern single-page application (SPA) architecture with a clear separation of concerns, modular component organization, and optimized performance patterns.
 
-OpenLearn Frontend is a modern React-based single-page application (SPA) built with performance, scalability, and user experience in mind.
-
-```mermaid
-graph TB
-    User[👤 User] --> Frontend[🌐 React Frontend]
-    Frontend --> API[🔌 Backend API]
-    API --> Database[🗄️ Database]
-    
-    subgraph "Frontend Stack"
-        React[⚛️ React 19]
-        Router[🛣️ React Router]
-        Tailwind[🎨 Tailwind CSS]
-        Vite[⚡ Vite]
-    end
-    
-    Frontend --> React
-    React --> Router
-    React --> Tailwind
-    React --> Vite
-```
-
-## Core Technologies
-
-### Frontend Framework
-- **React 19.1.0**: Component-based UI development with latest features
-- **React Router DOM 7.6.2**: Client-side routing and navigation
-- **Vite 6.3.5**: Fast development server and optimized production builds
-
-### Styling & UI
-- **Tailwind CSS 4.1.8**: Utility-first CSS framework
-- **Lucide React**: Modern icon library
-- **Framer Motion**: Animation library for smooth interactions
-
-### Development Tools
-- **ESLint**: Code quality and consistency
-- **TypeScript Support**: Type checking and IntelliSense
-- **Hot Module Replacement**: Fast development feedback
-
-## Application Architecture
+## Frontend Architecture
 
 ### Component Hierarchy
 
-```mermaid
-graph TB
-    App[App.jsx] --> AuthProvider[🔐 AuthProvider]
-    App --> Router[🛣️ Router]
-    
-    Router --> Public[🌍 Public Routes]
-    Router --> Protected[🔒 Protected Routes]
-    Router --> Admin[👑 Admin Routes]
-    
-    Public --> Landing[🏠 Landing Page]
-    Public --> Auth[🔑 Auth Pages]
-    
-    Protected --> Dashboard[📊 Dashboard]
-    Protected --> Leagues[🏆 Leagues]
-    Protected --> Profile[👤 Profile]
-    
-    Admin --> AdminPanel[⚙️ Admin Panel]
-    Admin --> UserMgmt[👥 User Management]
-    Admin --> ContentMgmt[📝 Content Management]
+```
+Application Layer
+├── App.jsx (Root routing and providers)
+├── Layout Components
+│   ├── DashboardLayout (Protected user interface)
+│   ├── AdminLayout (Administrative interface)
+│   ├── Navbar (Global navigation)
+│   └── Footer (Site footer)
+├── Feature Components
+│   ├── Authentication (Login, signup, protection)
+│   ├── Dashboard (Learning progress, leagues)
+│   ├── Admin (User management, content creation)
+│   └── Landing (Public marketing pages)
+├── UI Components
+│   ├── LoadingScreen, LoadingSpinner
+│   ├── ModalPortal, OTPInput
+│   ├── ProgressIndicator, SkeletonLoader
+│   └── Base interactive components
+└── Common Components
+    ├── HeroSection, SectionHeader
+    ├── MotionWrapper, PageHead
+    ├── ResourceLoadingIndicator
+    └── ScrollToTop
 ```
 
-### Data Flow
+### State Management Architecture
 
-```mermaid
-graph LR
-    Components[📱 Components] --> Context[🔄 Context]
-    Context --> Services[🔧 Services]
-    Services --> API[🌐 API]
-    
-    API --> Backend[🖥️ Backend]
-    Backend --> Database[🗄️ Database]
-    
-    subgraph "State Management"
-        AuthContext[🔐 Auth Context]
-        SearchContext[🔍 Search Context]
-    end
-    
-    Context --> AuthContext
-    Context --> SearchContext
-```
+**Global State (React Context):**
+- **AuthContext**: User authentication, role management, session handling
+- **SearchContext**: Global search functionality across the platform
 
-## Project Structure
+**Local State Patterns:**
+- Component-level useState for UI state
+- useReducer for complex state logic
+- Custom hooks for reusable stateful logic
+- Memoization with useMemo and useCallback for performance
+
+### Service Layer Architecture
 
 ```
-src/
-├── 📱 components/          # React components
-│   ├── 🔐 auth/           # Authentication components
-│   ├── 👑 admin/          # Admin panel components  
-│   ├── 📊 dashboard/      # User dashboard components
-│   ├── 🏠 landingPage/    # Public landing page
-│   └── 🔧 common/         # Shared utility components
-├── 📄 pages/              # Route-based page components
-├── 🔄 context/            # React Context providers
-├── 🪝 hooks/              # Custom React hooks
-├── 🔧 utils/              # Utility functions and services
-├── 📊 data/               # Static data definitions
-├── 🎨 index.css           # Global styles
-├── ⚛️ App.jsx             # Main application component
-└── 🚀 main.jsx            # Application entry point
+API Service Layer
+├── AdminService (User, content, role management)
+├── ProgressService (Learning progress, enrollments)
+├── DataService (Core data fetching, caching)
+├── OptimizedDashboardService (Performance-optimized data loading)
+├── BadgeService (Achievement system)
+├── ResourceProgressService (Detailed progress tracking)
+└── GitHubService (Repository integration)
+
+Authentication Services
+├── EmailVerificationService
+├── MigrationService
+└── PasswordResetService
+
+Utility Services
+├── SocialService (Social media sharing)
+├── GitHubService (Repository integration)
+└── Helper utilities (formatting, validation)
 ```
 
-## Key Features
-
-### Authentication & Authorization
-- **JWT-based Authentication**: Secure token-based auth
-- **Role-based Access Control**: Multiple user roles and permissions
-- **Protected Routes**: Route-level security
-- **Token Management**: Automatic refresh and storage
-
-### Learning Management
-- **Hierarchical Content**: Cohorts → Leagues → Weeks → Sections → Resources
-- **Progress Tracking**: Real-time learning progress
-- **Assignment System**: Submission and grading
-- **Achievement Badges**: Gamification elements
-
-### User Experience
-- **Responsive Design**: Mobile-first approach
-- **Modern UI**: Clean, professional interface
-- **Smooth Animations**: Micro-interactions and transitions
-- **Performance Optimized**: Fast loading and navigation
-
-## Security Architecture
+## Data Flow Architecture
 
 ### Authentication Flow
 
-```mermaid
-sequenceDiagram
-    participant User
-    participant Frontend
-    participant AuthContext
-    participant API
-    participant Backend
-    
-    User->>Frontend: Login Request
-    Frontend->>API: POST /auth/login
-    API->>Backend: Validate Credentials
-    Backend-->>API: JWT Tokens
-    API-->>Frontend: Access & Refresh Tokens
-    Frontend->>AuthContext: Store User State
-    AuthContext-->>User: Authenticated
+```
+1. User Login Request
+   ├── Form submission to AuthContext
+   ├── API call to /api/login
+   ├── JWT token storage (access + refresh)
+   ├── User profile fetch
+   └── Global state update
+
+2. Protected Route Access
+   ├── Route guard checks authentication
+   ├── Token validation with backend
+   ├── Role-based access control
+   └── Redirect handling (login/unauthorized)
+
+3. Token Refresh Flow
+   ├── Automatic refresh on expiration
+   ├── Background token renewal
+   ├── Graceful fallback on failure
+   └── Session cleanup on logout
 ```
 
-### Access Control
+### Learning Progress Flow
 
-```mermaid
-graph TB
-    Request[📱 User Request] --> Auth{🔐 Authenticated?}
-    Auth -->|No| Login[🔑 Login Page]
-    Auth -->|Yes| Role{👤 Role Check}
-    
-    Role -->|Pioneer| UserRoutes[📊 User Routes]
-    Role -->|Admin| AdminRoutes[👑 Admin Routes]
-    Role -->|Pathfinder| ExtendedRoutes[🏆 Extended Routes]
-    
-    UserRoutes --> Dashboard[📊 Dashboard]
-    AdminRoutes --> AdminPanel[⚙️ Admin Panel]
-    ExtendedRoutes --> AllFeatures[🌟 All Features]
+```
+1. Dashboard Data Loading
+   ├── Initial data fetch (enrollments, leagues)
+   ├── Progressive loading with UI feedback
+   ├── Background resource calculation
+   └── Real-time progress updates
+
+2. Progress Tracking
+   ├── Resource completion events
+   ├── Section progress calculation
+   ├── League progress aggregation
+   └── Badge achievement evaluation
+
+3. Enrollment Process
+   ├── Cohort selection
+   ├── League enrollment
+   ├── Progress initialization
+   └── Dashboard refresh
 ```
 
-## Performance Considerations
+## Performance Architecture
+
+### Loading Optimization
+
+**Progressive Loading Strategy:**
+1. **Initial Load**: Essential user data and navigation
+2. **Secondary Load**: Dashboard statistics and basic league info
+3. **Background Load**: Detailed resource progress and calculations
+4. **On-Demand Load**: League-specific content and assignments
+
+**Caching Strategy:**
+- Browser localStorage for user session data
+- Component-level state caching for recently accessed data
+- API response caching with OptimizedDashboardService
+- Static asset caching through Vite build optimization
 
 ### Build Optimization
-- **Code Splitting**: Separate vendor and utility chunks
-- **Tree Shaking**: Remove unused code
-- **Asset Optimization**: Minification and compression
-- **Caching Strategy**: Efficient browser caching
 
-### Runtime Performance
-- **React Optimization**: Proper component memoization
-- **Lazy Loading**: On-demand component loading
-- **API Caching**: Intelligent response caching
-- **Image Optimization**: Responsive images
-
-## Scalability Features
-
-### Component Reusability
-- **Atomic Design**: Reusable component patterns
-- **Design System**: Consistent UI components
-- **Prop-based Configuration**: Flexible components
-
-### State Management
-- **Context API**: Centralized state management
-- **Custom Hooks**: Reusable stateful logic
-- **Service Layer**: Clean separation of concerns
-
-## Development Workflow
-
-### Local Development
-```mermaid
-graph LR
-    Code[💻 Write Code] --> HMR[⚡ Hot Reload]
-    HMR --> Test[🧪 Test Changes]
-    Test --> Lint[📝 ESLint Check]
-    Lint --> Build[🏗️ Build Verification]
+**Code Splitting:**
+```javascript
+manualChunks: {
+  'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+  'ui-vendor': ['lucide-react', 'react-icons', 'framer-motion'],
+  'utils': ['./src/utils/api/dataService.js', './src/utils/api/progressService.js']
+}
 ```
 
-### Deployment Pipeline
-```mermaid
-graph LR
-    Push[📤 Git Push] --> CI[🔄 CI/CD]
-    CI --> Test[🧪 Run Tests]
-    Test --> Build[🏗️ Build App]
-    Build --> Deploy[🚀 Deploy]
-    Deploy --> Monitor[📊 Monitor]
+**Bundle Optimization:**
+- Vendor libraries separated for better caching
+- Utility functions bundled separately
+- Tree shaking for unused code elimination
+- ES2015 target with esbuild minification
+
+## Security Architecture
+
+### Authentication Security
+
+**Token Management:**
+- JWT access tokens (short-lived)
+- Refresh tokens (longer-lived)
+- Secure storage in localStorage
+- Automatic cleanup on logout/expiration
+
+**Route Protection:**
+```javascript
+// Role-based route protection
+<Route element={<ProtectedRoute requiredRoles={['ADMIN', 'PATHFINDER']} />}>
+  <Route path="/admin" element={<AdminLayout />} />
+</Route>
 ```
 
-## Next Steps
+### Authorization Levels
 
-- **[Component Structure](./components.md)** - Detailed component architecture
-- **[State Management](./state-management.md)** - State and context patterns
-- **[Security](./security.md)** - Security implementation details
-- **[Development Setup](../development/setup.md)** - Development environment setup
+**User Roles and Permissions:**
+```
+PIONEER
+├── Basic learning access
+├── Progress tracking
+├── League enrollment
+└── Profile management
+
+LUMINARY
+├── All Pioneer permissions
+├── Advanced learning features
+├── Badge achievements
+└── Social sharing
+
+PATHFINDER
+├── All Luminary permissions
+├── Content management (weeks, sections, resources)
+├── Basic administrative functions
+└── Progress analytics
+
+CHIEF_PATHFINDER
+├── All Pathfinder permissions
+├── League management
+├── Assignment creation/management
+├── User progress oversight
+└── Advanced analytics
+
+GRAND_PATHFINDER
+├── All Chief Pathfinder permissions
+├── User management and approval
+├── Role assignment
+├── System configuration
+└── Full administrative access
+```
+
+## Integration Architecture
+
+### External Service Integration
+
+**Social Media Integration:**
+- Twitter API for content sharing
+- LinkedIn sharing capabilities
+- WhatsApp integration for community
+- Social progress sharing functionality
+
+**Development Tool Integration:**
+- GitHub repository integration for assignments
+- Code submission and review workflows
+- Project-based learning support
+
+### API Integration Patterns
+
+**RESTful API Communication:**
+```javascript
+// Standardized API service pattern
+class APIService {
+  static async request(endpoint, options = {}) {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      headers: getAuthHeaders(),
+      ...options
+    });
+    return handleResponse(response);
+  }
+}
+```
+
+**Error Handling Strategy:**
+- Centralized error handling in service layer
+- User-friendly error messages
+- Automatic retry for transient failures
+- Graceful degradation for optional features
+
+## Scalability Architecture
+
+### Component Scalability
+
+**Modular Design:**
+- Feature-based component organization
+- Reusable UI component library
+- Consistent prop interfaces
+- Standardized error boundaries
+
+**State Scalability:**
+- Context providers for global state
+- Local state for component-specific data
+- Custom hooks for reusable logic
+- Performance optimization with memoization
+
+### Data Scalability
+
+**Efficient Data Loading:**
+- Pagination for large datasets
+- Background loading for non-critical data
+- Progressive enhancement for better UX
+- Optimistic updates for immediate feedback
+
+**Performance Monitoring:**
+- Bundle size tracking
+- Runtime performance metrics
+- User experience monitoring
+- API response time tracking
+
+## Deployment Architecture
+
+### Build Process
+
+```
+Development → Staging → Production
+├── ESLint validation
+├── TypeScript checking
+├── Unit test execution
+├── Integration test suite
+├── Performance benchmarking
+├── Security scanning
+└── Production bundle creation
+```
+
+### Environment Configuration
+
+**Environment Variables:**
+- `VITE_API_BASE_URL`: Backend API endpoint
+- `VITE_TWITTER_*`: Social media API credentials
+- Environment-specific feature flags
+- Debug and logging configurations
+
+**Deployment Targets:**
+- Static file hosting (Vercel, Netlify)
+- CDN distribution for global performance
+- Progressive Web App capabilities
+- Mobile-responsive design standards
+
+This architecture supports the OpenLearn platform's requirements for scalability, maintainability, and performance while providing a solid foundation for future enhancements and feature additions.

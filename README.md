@@ -1,133 +1,340 @@
-# OpenLearn Frontend
+# OpenLearn Platform
 
-Modern React-based learning management system with gamification and role-based education.
+A comprehensive learning management system designed for skill-based cohort learning with role-based progression and collaborative learning experiences.
 
-[![React](https://img.shields.io/badge/React-19.1.0-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/)
-[![Vite](https://img.shields.io/badge/Vite-6.3.5-646CFF?style=for-the-badge&logo=vite)](https://vitejs.dev/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.1.8-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
+## Platform Overview
 
-## 🎯 Overview
+OpenLearn is a modern learning platform that combines structured learning paths (Leagues) with cohort-based progression, gamification elements, and role-based access control. The platform facilitates collaborative learning through organized cohorts, specialization tracks, and progressive skill development.
 
-OpenLearn is an educational platform designed for NIT Jalandhar that combines structured learning with gamification elements. Students progress through leagues, earn achievements, and compete in a collaborative learning environment.
+## Core Architecture
 
-## ✨ Key Features
+### Technology Stack
 
-- **🏆 Learning Leagues**: Competitive learning tracks (ML, Finance, Quantum Computing, Soft Skills, IoT, CP)
-- **📊 Progress Tracking**: Real-time learning progress with completion analytics
-- **🎖️ Achievement System**: Badges and milestones for learning accomplishments
-- **👥 Role-Based Access**: Progressive roles from Pioneer to Grand Pathfinder
-- **📱 Responsive Design**: Mobile-first design optimized for all devices
-- **🔐 Secure Authentication**: JWT-based auth with role-based permissions
-- **⚡ Modern Stack**: React 19, Vite, Tailwind CSS for optimal performance
+- **Frontend**: React 19 with functional components and hooks
+- **Build System**: Vite 6.3.5 with optimized bundling and HMR
+- **Styling**: Tailwind CSS 4.1.8 with custom component system
+- **Routing**: React Router DOM 7.6.2 with protected routes
+- **Icons**: Lucide React + React Icons
+- **Animations**: Framer Motion 12.18.1
+- **Development**: ESLint 9.25.0 with modern configuration
 
-## 🚀 Quick Start
-
-### Prerequisites
-- Node.js ≥ 18.0.0
-- npm ≥ 8.19.0
-
-### Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/openlearnnitj/openlearn-frontend.git
-cd openlearn-frontend
-
-# Install dependencies
-npm install
-
-# Set up environment variables
-cp .env.example .env
-# Edit .env with your configuration
-
-# Start development server
-npm run dev
-```
-
-Visit `http://localhost:5173` to see the application.
-
-## 🛠️ Available Scripts
-
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start development server with hot reload |
-| `npm run build` | Build for production |
-| `npm run preview` | Preview production build |
-| `npm run lint` | Run ESLint for code quality |
-| `npm run lint:fix` | Fix ESLint issues automatically |
-
-## 📁 Project Structure
+### Project Structure
 
 ```
 src/
-├── components/         # React components
-│   ├── auth/          # Authentication components
-│   ├── dashboard/     # User dashboard
-│   ├── admin/         # Admin panel
-│   ├── landingPage/   # Public pages
-│   └── common/        # Shared components
-├── pages/             # Route-based pages
-├── context/           # React Context providers
+├── components/           # Organized component library
+│   ├── common/          # Shared utilities (6 components)
+│   ├── features/        # Domain-specific components
+│   │   ├── admin/       # Administrative functionality
+│   │   ├── authentication/ # Auth flows and protection
+│   │   ├── dashboard/   # Learning dashboard components
+│   │   └── landing/     # Public-facing components
+│   ├── layout/          # Application layouts (4 components)
+│   ├── ui/             # Base UI components (6 components)
+│   └── _deprecated/    # Legacy components (isolated)
+├── context/            # React context providers
+├── data/              # Static data and configuration
 ├── hooks/             # Custom React hooks
-├── utils/             # Utility functions and services
-└── data/              # Static data definitions
+├── pages/             # Route components
+│   ├── admin/         # Admin interface pages
+│   ├── auth/          # Authentication pages
+│   ├── dashboard/     # User dashboard pages
+│   ├── legal/         # Legal documentation
+│   └── public/        # Public pages
+└── utils/             # Organized utility services
+    ├── api/           # API service layer (7 services)
+    ├── auth/          # Authentication utilities (3 services)
+    ├── helpers/       # General utilities (5 helpers)
+    └── social/        # Social media integration (2 services)
 ```
 
-## 🔧 Technology Stack
+## Business Logic
 
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| **React** | 19.1.0 | Frontend framework |
-| **Vite** | 6.3.5 | Build tool and dev server |
-| **Tailwind CSS** | 4.1.8 | Utility-first CSS |
-| **React Router** | 7.6.2 | Client-side routing |
-| **Framer Motion** | 12.18.1 | Animations |
-| **Lucide React** | Latest | Icon library |
+### Learning Model
 
-## 📚 Documentation
+**Hierarchical Content Structure:**
+- **Cohorts**: Time-bound learning groups with defined start/end dates
+- **Leagues**: Skill-based learning tracks (Finance, ML, Quantum Computing, etc.)
+- **Weeks**: Structured learning periods within leagues
+- **Sections**: Topical learning units within weeks
+- **Resources**: Individual learning materials (videos, articles, exercises)
 
-Comprehensive documentation is available in the [`docs/`](./docs/) directory:
+**User Progression System:**
+- **Pioneer**: Basic learner access
+- **Luminary**: Advanced learner with additional privileges
+- **Pathfinder**: Content management for weeks, sections, resources
+- **Chief Pathfinder**: League and assignment management
+- **Grand Pathfinder**: Full administrative access
 
-- **[📖 Complete Documentation](./docs/README.md)** - Full documentation index
-- **[🚀 Quick Start Guide](./docs/getting-started/quick-start.md)** - Get started in minutes
-- **[💻 Installation Guide](./docs/getting-started/installation.md)** - Detailed setup
-- **[🏗️ System Architecture](./docs/architecture/overview.md)** - Technical overview
-- **[🔌 API Reference](./docs/api/authentication.md)** - API documentation
-- **[🛠️ Development Guide](./docs/development/setup.md)** - Development workflow
+### Key Features
 
-## 🔐 Environment Variables
+**Learning Management:**
+- Cohort-based enrollment with league specialization
+- Progress tracking at resource and section levels
+- Assignment submission and evaluation system
+- Badge system for achievement recognition
+- Leaderboards for competitive learning
 
-Required environment variables:
+**Administrative Systems:**
+- Role-based content management
+- User approval and role assignment workflows
+- League assignment to pathfinders with permissions
+- Comprehensive analytics and progress monitoring
+- Assignment creation and submission management
 
-```env
-VITE_API_BASE_URL=your_backend_api_url
+**Social Features:**
+- Progress sharing on social platforms
+- Community engagement through events
+- Team profiles and facilitator information
+- Twitter integration for updates and engagement
+
+## Technical Implementation
+
+### State Management
+
+- **Context-based**: AuthContext for global authentication state
+- **Component-level**: useState and useReducer for local state
+- **Optimization**: useCallback and useMemo for performance
+- **Search**: Dedicated SearchContext for global search functionality
+
+### API Architecture
+
+**Service Layer Pattern:**
+- **AdminService**: Comprehensive admin operations (1000+ lines)
+- **ProgressService**: Learning progress and enrollment management
+- **DataService**: Core data fetching and caching
+- **OptimizedDashboardService**: Performance-optimized dashboard data
+- **BadgeService**: Achievement and badge management
+- **ResourceProgressService**: Detailed resource tracking
+- **GitHubService**: Repository integration for assignments
+
+**Authentication Flow:**
+- JWT-based with access and refresh tokens
+- Role-based route protection
+- Automatic token refresh with fallback handling
+- Migration system for user data updates
+
+### Performance Optimizations
+
+**Build Configuration:**
+- Manual chunk splitting for vendor libraries
+- Optimized bundle sizes with 1000kb warning threshold
+- ES2015 target with esbuild minification
+- Separate chunks for React, UI libraries, and utilities
+
+**Runtime Optimizations:**
+- Progressive data loading for dashboard
+- Background resource calculation with user feedback
+- Memoized components for expensive operations
+- Optimized re-renders with dependency arrays
+
+## Development Guidelines
+
+### Code Organization
+
+**Component Architecture:**
+- Functional components with hooks pattern
+- Props validation and TypeScript interfaces
+- Barrel exports for clean import statements
+- Separation of concerns with specialized directories
+
+**API Service Pattern:**
+- Centralized error handling with consistent responses
+- Authorization headers with token management
+- RESTful endpoint organization
+- Promise-based with async/await syntax
+
+**State Management:**
+- Context for global state (auth, search)
+- Local state for component-specific data
+- Custom hooks for reusable stateful logic
+- Performance optimization with React.memo and callbacks
+
+### Security Implementation
+
+**Authentication:**
+- JWT token storage in localStorage
+- Automatic token refresh mechanism
+- Protected routes with role-based access
+- Secure logout with token cleanup
+
+**Authorization:**
+- Role-based component rendering
+- API endpoint protection with auth headers
+- Admin function access control
+- User permission validation
+
+## Deployment Architecture
+
+### Build System
+
+**Vite Configuration:**
+```javascript
+// Optimized for production with manual chunks
+manualChunks: {
+  'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+  'ui-vendor': ['lucide-react', 'react-icons', 'framer-motion'],
+  'utils': ['./src/utils/api/dataService.js', './src/utils/api/progressService.js']
+}
 ```
 
-See [Environment Configuration](./docs/getting-started/environment.md) for complete details.
+**Environment Configuration:**
+- `VITE_API_BASE_URL`: Backend API endpoint
+- Twitter API credentials for social integration
+- Environment-specific configuration management
 
-## 🤝 Contributing
+**Deployment Requirements:**
+- Node.js 18.0.0+ for build process
+- Modern browser support (ES2015+)
+- CDN-compatible static asset serving
+- Environment variable configuration
 
-We welcome contributions! Please see our [Contributing Guide](./docs/development/contributing.md) for details.
+### Performance Metrics
+
+- **Build Size**: Optimized chunks under 1000kb warning threshold
+- **Load Time**: Progressive loading with immediate UI feedback
+- **Bundle Analysis**: Separate vendor and utility chunks
+- **Lighthouse Optimization**: Configured lighthouse CI for performance monitoring
+
+## API Integration
+
+### Backend Requirements
+
+**Authentication Endpoints:**
+- `POST /api/login` - User authentication
+- `POST /api/logout` - Session termination
+- `GET /api/profile` - User profile retrieval
+- `POST /api/refresh` - Token refresh
+
+**Learning Management:**
+- `GET /api/leagues` - Available learning tracks
+- `POST /api/enroll` - Cohort enrollment
+- `GET /api/progress` - Learning progress tracking
+- `GET /api/resources` - Learning materials
+- `POST /api/assignments/submit` - Assignment submission
+
+**Administrative Operations:**
+- `GET /api/admin/users` - User management
+- `POST /api/admin/approve-user` - User approval
+- `PUT /api/admin/update-role` - Role management
+- `POST /api/admin/assign-leagues` - League assignments
+
+### Data Models
+
+**User Model:**
+```javascript
+{
+  id: string,
+  email: string,
+  name: string,
+  role: 'PIONEER' | 'LUMINARY' | 'PATHFINDER' | 'CHIEF_PATHFINDER' | 'GRAND_PATHFINDER',
+  status: 'ACTIVE' | 'PENDING' | 'SUSPENDED',
+  enrollments: Array<Enrollment>,
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+**Learning Progress Model:**
+```javascript
+{
+  userId: string,
+  leagueId: string,
+  cohortId: string,
+  progressPercentage: number,
+  completedSections: number,
+  totalSections: number,
+  enrolledAt: Date,
+  lastActivityAt: Date
+}
+```
+
+## Quality Assurance
+
+### Code Quality
+
+**ESLint Configuration:**
+- React hooks validation
+- Modern JavaScript standards
+- Import/export consistency
+- Code style enforcement
+
+**Build Validation:**
+- Type checking with TypeScript interfaces
+- Dependency security auditing
+- Bundle size monitoring
+- Performance lighthouse testing
+
+### Testing Strategy
+
+**Component Testing:**
+- React component unit tests
+- Hook testing with React Testing Library
+- Integration tests for user flows
+- API service testing with mocks
+
+**Performance Testing:**
+- Lighthouse CI integration
+- Bundle analyzer for optimization
+- Load testing for API endpoints
+- User experience metrics
+
+## Maintenance and Operations
 
 ### Development Workflow
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Make your changes and test thoroughly
-4. Commit your changes: `git commit -m 'Add amazing feature'`
-5. Push to the branch: `git push origin feature/amazing-feature`
-6. Open a Pull Request
 
-## 📄 License
+**Scripts:**
+```json
+{
+  "dev": "vite",                    // Development server
+  "build": "vite build",            // Production build
+  "lint": "eslint .",               // Code quality check
+  "lint:fix": "eslint . --fix",     // Auto-fix linting issues
+  "preview": "vite preview",        // Preview production build
+  "ci": "npm ci && npm run lint && npm run build"  // CI pipeline
+}
+```
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+**Dependency Management:**
+- Regular security audits with `npm audit`
+- Dependency updates with `npm-check-updates`
+- Clean builds with cache clearing
+- Version pinning for stability
 
-## 🆘 Support
+### Monitoring and Analytics
 
-- **📖 Documentation**: [docs/README.md](./docs/README.md)
-- **🐛 Issues**: [GitHub Issues](https://github.com/openlearnnitj/openlearn-frontend/issues)
-- **💬 Discussions**: [GitHub Discussions](https://github.com/openlearnnitj/openlearn-frontend/discussions)
+**Performance Monitoring:**
+- Build time tracking
+- Bundle size analysis
+- Runtime performance metrics
+- User engagement analytics
 
----
+**Error Tracking:**
+- Console error monitoring
+- API failure tracking
+- User experience issue detection
+- Performance regression alerts
 
-**Built with ❤️ by the OpenLearn Team at NIT Jalandhar**
+## Support and Documentation
+
+### Developer Resources
+
+**Getting Started:**
+1. Clone repository and install dependencies
+2. Configure environment variables
+3. Run development server with `npm run dev`
+4. Access development environment at localhost
+
+**Contributing Guidelines:**
+- Follow ESLint configuration for code style
+- Implement proper error handling in all API calls
+- Add TypeScript interfaces for new data models
+- Test components and API integrations thoroughly
+
+**Architecture Decisions:**
+- Component organization by domain and purpose
+- Service layer pattern for API communication
+- Context-based state management for global state
+- Progressive loading for optimal user experience
+
+This documentation provides a comprehensive foundation for understanding, developing, and maintaining the OpenLearn platform.
