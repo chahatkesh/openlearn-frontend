@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Clock, AlertCircle } from 'lucide-react';
 
 const PendingApprovalPage = ({ user }) => {  
@@ -65,12 +66,12 @@ const PendingApprovalPage = ({ user }) => {
 
         {/* Logout Link */}
         <div className="mt-4">
-          <a 
-            href="/logout" 
+          <Link 
+            to="/logout" 
             className="text-sm text-gray-500 hover:text-gray-700 underline"
           >
             Sign out
-          </a>
+          </Link>
         </div>
       </div>
     </div>

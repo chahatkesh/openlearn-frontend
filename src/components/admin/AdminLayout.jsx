@@ -21,10 +21,9 @@ import PageHead from '../common/PageHead';
 import { getUserAvatarUrl } from '../../utils/boringAvatarsUtils';
 
 const AdminLayout = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   // Close sidebar when clicking outside (only on mobile)
   useEffect(() => {
@@ -136,19 +135,6 @@ const AdminLayout = () => {
   };
 
   const currentPage = getCurrentPage();
-
-  const handleLogout = () => {
-    setShowLogoutConfirm(true);
-  };
-
-  const confirmLogout = () => {
-    logout();
-    setShowLogoutConfirm(false);
-  };
-
-  const cancelLogout = () => {
-    setShowLogoutConfirm(false);
-  };
 
   const NavItem = ({ item, onClick }) => {
     const isActive = location.pathname === item.path || location.pathname.startsWith(item.path + '/');
@@ -271,13 +257,14 @@ const AdminLayout = () => {
           </Link>
 
           {/* Logout Button */}
-          <button
-            onClick={handleLogout}
+          <Link
+            to="/logout"
             className="flex items-center w-full px-4 py-3 mx-2 rounded-xl text-red-600 hover:text-red-700 hover:bg-red-50/80 hover:backdrop-blur-sm transition-all duration-300"
+            onClick={() => setIsSidebarOpen(false)}
           >
             <LogOut className="w-5 h-5 mr-3" />
             <span className="font-medium">Sign Out</span>
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -341,42 +328,6 @@ const AdminLayout = () => {
             setIsSidebarOpen(false);
           }}
         />
-      )}
-
-      {/* Logout Confirmation Modal */}
-      {showLogoutConfirm && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white/95 backdrop-blur-xl rounded-2xl border border-gray-200/50 p-6 max-w-md w-full">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
-                <LogOut className="w-6 h-6 text-red-600" />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-gray-900">Sign Out</h3>
-                <p className="text-sm text-gray-500">Are you sure you want to sign out?</p>
-              </div>
-            </div>
-            
-            <p className="text-gray-600 text-sm mb-6">
-              You'll need to sign in again to access the admin panel and continue managing the platform.
-            </p>
-            
-            <div className="flex gap-3">
-              <button
-                onClick={cancelLogout}
-                className="flex-1 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-medium transition-all duration-200"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={confirmLogout}
-                className="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium transition-all duration-200"
-              >
-                Sign Out
-              </button>
-            </div>
-          </div>
-        </div>
       )}
     </div>
   );
