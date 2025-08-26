@@ -139,7 +139,7 @@ const EventsPage = () => {
   return (
     <>
       <PageHead 
-        title="Events"
+        title="Events Gallery"
         description="Explore OpenLearn's journey through our events. Discover workshops, hackathons, guest lectures, and community gatherings that showcase our collaborative learning environment."
         keywords="events, workshops, hackathons, guest lectures, community gatherings, NIT Jalandhar, learning events"
       />
@@ -149,7 +149,7 @@ const EventsPage = () => {
       {/* Hero Section */}
       <div className="pt-16">
         <HeroSection 
-          title="Events"
+          title="Events Gallery"
           subtitle="Our Learning Journey"
           description="Explore our community's growth through <em>workshops, hackathons, and gatherings</em>. Each event represents a milestone in our journey of <strong style='color: #000000'> collaborative learning and innovation</strong>."
         />

@@ -15,7 +15,7 @@ const CohortsPage = () => {
       
       <div className="min-h-screen pt-16 bg-white">
         <HeroSection 
-          title="Cohorts"
+          title="Available Cohorts"
           subtitle="Structured Learning Journey"
           description="Join <em>cohort-based learning experiences</em> where students explore diverse fields together. From Machine Learning to Space Science, build real projects and connect with <strong style='color: #000000'> motivated peers and industry experts</strong>."
         />
