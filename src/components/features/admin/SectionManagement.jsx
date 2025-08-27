@@ -77,13 +77,13 @@ const SectionManagement = ({
     const newErrors = {};
     
     if (!formData.name.trim()) {
-      newErrors.name = 'Day name is required';
+      newErrors.name = 'Topic name is required';
     } else if (formData.name.length > 100) {
-      newErrors.name = 'Day name must be 100 characters or less';
+      newErrors.name = 'Topic name must be 100 characters or less';
     }
     
     if (!formData.weekId) {
-      newErrors.weekId = 'Week selection is required';
+      newErrors.weekId = 'Module selection is required';
     }
     
     if (!formData.order || formData.order < 1) {
@@ -112,13 +112,13 @@ const SectionManagement = ({
             throw new Error('Update function not available');
           }
           await onUpdateSection(editingSection.id, formData);
-          showToast('Learning day updated successfully!', 'success');
+          showToast('Learning topic updated successfully!', 'success');
         } else {
           if (typeof onCreateSection !== 'function') {
             throw new Error('Create function not available');
           }
           await onCreateSection(formData);
-          showToast('Learning day created successfully!', 'success');
+          showToast('Learning topic created successfully!', 'success');
         }
         // Only reset form and close modal on success
         setFormData({
@@ -223,7 +223,7 @@ const SectionManagement = ({
   };
 
   const handleDelete = async (sectionId, sectionName) => {
-    if (window.confirm(`Are you sure you want to delete day "${sectionName}"? This will also delete all associated resources and progress records.`)) {
+    if (window.confirm(`Are you sure you want to delete topic "${sectionName}"? This will also delete all associated resources and progress records.`)) {
       try {
         await onDeleteSection(sectionId);
       } catch (error) {
@@ -239,7 +239,7 @@ const SectionManagement = ({
     return true;
   });
 
-  // Group sections by week
+  // Group sections by module
   const sectionsByWeek = filteredSections.reduce((acc, section) => {
     const weekId = section.weekId;
     if (!acc[weekId]) {
@@ -274,10 +274,10 @@ const SectionManagement = ({
               <div className="p-2 bg-gray-900 rounded-xl">
                 <Calendar className="w-5 h-5 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">Learning Days</h2>
+              <h2 className="text-2xl font-bold text-gray-900">Learning Topics</h2>
             </div>
             <p className="text-gray-600 mb-4">
-              Manage daily learning content and organize educational resources by weeks.
+              Manage learning content and organize educational resources by modules.
             </p>
             
             {/* Quick Stats */}
@@ -324,7 +324,7 @@ const SectionManagement = ({
               className="inline-flex items-center px-6 py-2 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-gray-800 transition-all duration-200 shadow-sm hover:shadow-md"
             >
               <Plus className="w-4 h-4 mr-2" />
-              New Day
+              New Topic
             </button>
           </div>
         </div>
@@ -334,7 +334,7 @@ const SectionManagement = ({
       {showFilters && (
         <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">Filter Days</h3>
+            <h3 className="text-lg font-semibold text-gray-900">Filter Topics</h3>
             <button
               onClick={() => setShowFilters(false)}
               className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
@@ -366,14 +366,14 @@ const SectionManagement = ({
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <Calendar className="w-4 h-4 inline mr-2" />
-                Week
+                Module
               </label>
               <select
                 value={selectedWeekId}
                 onChange={(e) => onSelectWeek(e.target.value)}
                 className="block w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200"
               >
-                <option value="">All Weeks</option>
+                <option value="">All Modules</option>
                 {getFilteredWeeks().map((week) => (
                   <option key={week.id} value={week.id}>
                     {week.name} {week.league?.name && `(${week.league.name})`}
@@ -425,7 +425,7 @@ const SectionManagement = ({
                     {editingSection ? <Edit className="w-4 h-4 text-white" /> : <Plus className="w-4 h-4 text-white" />}
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900">
-                    {editingSection ? 'Edit Learning Day' : 'Create New Learning Day'}
+                    {editingSection ? 'Edit Learning Topic' : 'Create New Learning Topic'}
                   </h3>
                 </div>
                 <button
@@ -470,7 +470,7 @@ const SectionManagement = ({
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   <div className="lg:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Day Name *
+                      Topic Name *
                     </label>
                     <input
                       type="text"
@@ -518,7 +518,7 @@ const SectionManagement = ({
                 <div className="mt-6">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     <Calendar className="w-4 h-4 inline mr-1" />
-                    Week *
+                    Module *
                   </label>
                   <select
                     value={formData.weekId}
@@ -533,7 +533,7 @@ const SectionManagement = ({
                     }`}
                     disabled={isSubmitting}
                   >
-                    <option value="">Select a week</option>
+                    <option value="">Select a module</option>
                     {getFilteredWeeks().map((week) => (
                       <option key={week.id} value={week.id}>
                         {week.name} {week.league?.name && `(${week.league.name})`}
@@ -569,7 +569,7 @@ const SectionManagement = ({
                   ) : (
                     <>
                       {editingSection ? <Edit className="w-4 h-4 mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
-                      {editingSection ? 'Update Day' : 'Create Day'}
+                      {editingSection ? 'Update Topic' : 'Create Topic'}
                     </>
                   )}
                 </button>
@@ -587,11 +587,11 @@ const SectionManagement = ({
               <div className="bg-gray-100 rounded-full p-4 w-16 h-16 mx-auto mb-4">
                 <Calendar className="w-8 h-8 text-gray-400 mx-auto" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Learning Days Found</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Learning Topics Found</h3>
               <p className="text-gray-600 mb-6">
                 {selectedWeekId || selectedLeagueId 
                   ? 'No days match your current filters. Try adjusting your search criteria.' 
-                  : 'Get started by creating your first learning day to organize educational content.'
+                  : 'Get started by creating your first learning topic to organize educational content.'
                 }
               </p>
               {!showCreateForm && (
@@ -600,7 +600,7 @@ const SectionManagement = ({
                   className="inline-flex items-center px-6 py-3 bg-gray-900 text-white rounded-xl font-medium hover:bg-gray-800 transition-all duration-200"
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  Create First Day
+                  Create First Topic
                 </button>
               )}
             </div>
@@ -625,7 +625,7 @@ const SectionManagement = ({
                       </span>
                       <span className="flex items-center">
                         <Target className="w-4 h-4 mr-1" />
-                        {weekGroup.sections.length} Day{weekGroup.sections.length !== 1 ? 's' : ''}
+                        {weekGroup.sections.length} Topic{weekGroup.sections.length !== 1 ? 's' : ''}
                       </span>
                     </div>
                   </div>
@@ -699,7 +699,7 @@ const SectionManagement = ({
                             <button
                               onClick={() => handleEdit(section)}
                               className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
-                              title="Edit Day"
+                              title="Edit Topic"
                             >
                               <Edit className="w-4 h-4" />
                             </button>

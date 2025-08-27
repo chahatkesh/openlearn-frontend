@@ -116,7 +116,7 @@ const WeekManagement = ({
   if (leagues.length === 0 && !loading) {
     return (
       <div className="text-center py-8 text-gray-500">
-        No leagues found. Please create a league first before adding weeks.
+        No leagues found. Please create a league first before adding modules.
       </div>
     );
   }
@@ -147,7 +147,7 @@ const WeekManagement = ({
       {(showCreateForm || editingWeek) && (
         <div className="bg-gray-50 p-6 mb-6 rounded-lg border border-gray-200">
           <h3 className="text-lg font-medium text-gray-900 mb-4">
-            {editingWeek ? 'Edit Week' : 'Create New Week'}
+            {editingWeek ? 'Edit Module' : 'Create New Module'}
           </h3>
           <form onSubmit={editingWeek ? handleEditSubmit : handleCreateSubmit}>
             <div className="mb-4">
@@ -218,7 +218,7 @@ const WeekManagement = ({
                 type="submit"
                 className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800"
               >
-                {editingWeek ? 'Save Changes' : 'Create Week'}
+                {editingWeek ? 'Save Changes' : 'Create Module'}
               </button>
             </div>
           </form>
@@ -232,7 +232,7 @@ const WeekManagement = ({
             onClick={startCreate}
             className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800"
           >
-            Create New Week
+            Create New Module
           </button>
         </div>
       )}
@@ -300,13 +300,13 @@ const WeekManagement = ({
       ) : (
         !showCreateForm && !editingWeek && !loading && (
           <div className="text-center py-8 text-gray-500 bg-white shadow rounded-md">
-            No weeks found for {selectedLeagueId ? 'this league' : 'any league'}
+            No modules found for {selectedLeagueId ? 'this league' : 'any league'}
             <div className="mt-4">
               <button 
                 onClick={startCreate}
                 className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800"
               >
-                Create First Week
+                Create First Module
               </button>
             </div>
           </div>

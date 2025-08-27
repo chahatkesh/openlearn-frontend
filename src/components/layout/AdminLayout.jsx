@@ -95,8 +95,8 @@ const AdminLayout = () => {
     { id: 'cohorts', label: 'Cohorts', icon: Archive, path: '/admin/cohorts' },
     { id: 'leagues', label: 'Leagues', icon: BookOpen, path: '/admin/leagues' },
     { id: 'specializations', label: 'Specializations', icon: Award, path: '/admin/specializations' },
-    { id: 'weeks', label: 'Weeks', icon: Calendar, path: '/admin/weeks' },
-    { id: 'sections', label: 'Days', icon: FileText, path: '/admin/sections' },
+    { id: 'weeks', label: 'Modules', icon: Calendar, path: '/admin/weeks' },
+    { id: 'sections', label: 'Topics', icon: FileText, path: '/admin/sections' },
     { id: 'resources', label: 'Resources', icon: Database, path: '/admin/resources' },
     { id: 'assignments', label: 'Assignments', icon: ClipboardList, path: '/admin/assignments' }
   ];
@@ -111,11 +111,11 @@ const AdminLayout = () => {
         return true;
         
       case 'CHIEF_PATHFINDER':
-        // Chief Pathfinder can see: Weeks, Days, Resources, Assignments (no Leagues access)
+        // Chief Pathfinder can see: Modules, Topics, Resources, Assignments (no Leagues access)
         return ['weeks', 'sections', 'resources', 'assignments'].includes(item.id);
         
       case 'PATHFINDER':
-        // Pathfinder can see: Weeks, Days, Resources
+        // Pathfinder can see: Modules, Topics, Resources
         return ['weeks', 'sections', 'resources'].includes(item.id);
         
       default:
