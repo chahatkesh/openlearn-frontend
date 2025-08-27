@@ -57,7 +57,7 @@ const FeaturedEvent = ({ event }) => {
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       onClick={handleEventClick}
     >
-      <div className="relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 ease-out border border-gray-100 hover:border-[#FFDE59]/30">
+      <div className="relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-500 ease-out border border-gray-100 hover:border-[#FFDE59]/30">
         {/* Event Image */}
         <div className="relative aspect-[16/10] overflow-hidden bg-gray-100">
           <img
@@ -72,7 +72,7 @@ const FeaturedEvent = ({ event }) => {
           
           {/* Hover overlay with arrow */}
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-400">
-            <div className="w-14 h-14 rounded-full bg-[#FFDE59]/95 backdrop-blur-sm flex items-center justify-center shadow-xl scale-95 group-hover:scale-100 transition-transform duration-400">
+            <div className="w-14 h-14 rounded-full bg-[#FFDE59]/95 backdrop-blur-sm flex items-center justify-center shadow-sm scale-95 group-hover:scale-100 transition-transform duration-400">
               <ArrowRight size={20} className="text-black" />
             </div>
           </div>
@@ -189,7 +189,7 @@ const FeaturedEvents = () => {
         >
           <button
             onClick={() => navigate('/events')}
-            className="inline-flex items-center gap-2 text-black px-8 py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl border-2 border-black hover:border-[#FFDE59] group"
+            className="inline-flex items-center gap-2 text-black px-8 py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-sm hover:shadow-md border-2 border-black hover:border-[#FFDE59] group"
             style={{ backgroundColor: '#FFDE59' }}
           >
             View All Events

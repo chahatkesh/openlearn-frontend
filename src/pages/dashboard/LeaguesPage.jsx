@@ -16,6 +16,7 @@ import OptimizedDashboardService from '../../utils/api/optimizedDashboardService
 import ProgressService from '../../utils/api/progressService';
 import { StatisticLoader, ResourceProgressBadge } from '../../components/common/ResourceLoadingIndicator';
 import { PageHead } from "../../components/common";
+import { MotionDiv, MotionSection } from '../../components/common/MotionWrapper';
 
 const LeaguesPage = () => {
   const navigate = useNavigate();
@@ -131,182 +132,244 @@ const LeaguesPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen">
+      <MotionSection className="min-h-screen bg-gray-50/50">
         <PageHead 
           title="Leagues - OpenLearn"
           description="Browse and enroll in available learning leagues at OpenLearn"
           keywords="leagues, courses, learning paths, enrollment, OpenLearn"
         />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin mx-auto text-gray-400 mb-4" />
-            <p className="text-gray-600">Loading leagues...</p>
-          </div>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+          <MotionDiv 
+            className="flex flex-col items-center justify-center py-20 lg:py-32"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+          >
+            <div className="w-16 h-16 mb-6 rounded-2xl bg-white/80 backdrop-blur-sm border border-gray-200/50 flex items-center justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-gray-600" />
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Loading Leagues</h3>
+            <p className="text-gray-600 text-center max-w-md">
+              Discovering amazing learning opportunities for you...
+            </p>
+          </MotionDiv>
         </div>
-      </div>
+      </MotionSection>
     );
   }
 
   return (
-    <div className="min-h-screen">
+    <MotionSection className="min-h-screen bg-transparent">
       <PageHead 
-        title="Leagues - OpenLearn"
-        description="Browse and enroll in available learning leagues. Find the perfect learning path for your skill development journey."
-        keywords="leagues, courses, learning paths, enrollment, programming, skill development, OpenLearn"
+        title="Learning Leagues"
+        description="Explore and join specialized learning leagues to advance your skills"
       />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Learning Leagues</h1>
-          <p className="text-gray-600">Discover and join learning leagues to advance your skills</p>
-        </div>
-
-        {/* Error Message */}
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 lg:pt-12 pb-16 lg:pb-20">
+        {/* Dashboard Header */}
+        <MotionDiv
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="mb-8 lg:mb-12"
+        >
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 lg:mb-4 tracking-tight">
+            Learning Leagues
+          </h1>
+          <p className="text-lg lg:text-xl text-gray-700 max-w-3xl leading-relaxed">
+            Join specialized learning tracks designed to help you master new skills and advance your career
+          </p>
+        </MotionDiv>        {/* Error Message */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-8">
-            <div className="flex items-start">
-              <AlertCircle className="h-5 w-5 text-red-600 mt-0.5" />
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800">Error</h3>
-                <p className="text-red-700 text-sm mt-1">{error}</p>
+          <MotionDiv
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="mb-8 sm:mb-12"
+          >
+            <div className="bg-red-50/80 backdrop-blur-sm border border-red-200/50 rounded-2xl p-6">
+              <div className="flex items-start">
+                <div className="flex-shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center">
+                    <AlertCircle className="h-5 w-5 text-red-600" />
+                  </div>
+                </div>
+                <div className="ml-4">
+                  <h3 className="text-sm font-medium text-red-800 mb-1">Unable to Load Leagues</h3>
+                  <p className="text-red-700 text-sm leading-relaxed">{error}</p>
+                </div>
               </div>
             </div>
-          </div>
+          </MotionDiv>
         )}
 
         {/* Leagues Grid */}
         {filteredLeagues.length > 0 ? (
-            <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredLeagues.map((league) => {
-                  const isEnrolled = dashboardData?.enrollments?.some(
-                    enrollment => enrollment.league.id === league.id
-                  );
+          <MotionDiv
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+              {filteredLeagues.map((league, index) => {
+                const isEnrolled = dashboardData?.enrollments?.some(
+                  enrollment => enrollment.league.id === league.id
+                );
 
-                  const dynamicStats = leagueStatistics[league.id];
-                  const weeksCount = dynamicStats?.weeksCount || league.weeksCount || 0;
-                  const sectionsCount = dynamicStats?.sectionsCount || league.sectionsCount || 0;
-                  const resourcesCount = dynamicStats?.resourcesCount || league.totalResources || 0;
-                  const isCalculatingResources = resourceCalculationsInProgress.has(league.id);
+                const dynamicStats = leagueStatistics[league.id];
+                const weeksCount = dynamicStats?.weeksCount || league.weeksCount || 0;
+                const sectionsCount = dynamicStats?.sectionsCount || league.sectionsCount || 0;
+                const resourcesCount = dynamicStats?.resourcesCount || league.totalResources || 0;
+                const isCalculatingResources = resourceCalculationsInProgress.has(league.id);
 
-                  return (
-                    <div 
-                      key={league.id}
-                      className={`group relative bg-gradient-to-br from-gray-50 to-white rounded-xl border transition-all duration-300 ${
-                        isEnrolled 
-                          ? 'border-green-200 hover:border-green-300 cursor-pointer hover:shadow-lg' 
-                          : 'border-gray-200 hover:border-gray-300 hover:shadow-lg'
-                      }`}
-                      onClick={() => {
-                        if (isEnrolled) {
-                          handleLeagueClick(league);
-                        }
-                      }}
-                    >
-                      {/* Resource calculation progress badge */}
-                      {isCalculatingResources && (
-                        <ResourceProgressBadge 
-                          isCalculating={true}
-                          completedCount={resourceCalculationsCompleted.size}
-                          totalCount={totalResourceCalculations}
-                        />
-                      )}
+                return (
+                  <MotionDiv
+                    key={league.id}
+                    initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ 
+                      duration: 0.7, 
+                      delay: index * 0.1,
+                      ease: [0.25, 0.46, 0.45, 0.94] 
+                    }}
+                    className={`group relative bg-white/80 backdrop-blur-sm rounded-2xl lg:rounded-3xl border border-gray-200/50 transition-all duration-500 ease-out overflow-hidden ${
+                      isEnrolled 
+                        ? 'hover:border-gray-400/60 cursor-pointer hover:bg-white/90' 
+                        : 'hover:border-gray-300/60 hover:bg-white/90'
+                    }`}
+                    whileHover={{ 
+                      y: -4,
+                      transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }
+                    }}
+                    onClick={() => {
+                      if (isEnrolled) {
+                        handleLeagueClick(league);
+                      }
+                    }}
+                  >
+                    {/* Resource calculation progress badge */}
+                    {isCalculatingResources && (
+                      <ResourceProgressBadge 
+                        isCalculating={true}
+                        completedCount={resourceCalculationsCompleted.size}
+                        totalCount={totalResourceCalculations}
+                      />
+                    )}
 
-                      {/* Enrollment status badge */}
-                      {isEnrolled && (
-                        <div className="absolute top-4 right-4 z-10">
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            <CheckCircle className="h-3 w-3 mr-1" />
-                            Enrolled
+                    {/* Enrollment status badge */}
+                    {isEnrolled && (
+                      <div className="absolute top-4 sm:top-6 right-4 sm:right-6 z-10">
+                        <div className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-medium bg-[#FFDE59]/80 backdrop-blur-sm text-black border border-[#FFDE59]/70">
+                          <CheckCircle className="h-3 w-3 mr-1.5" />
+                          Enrolled
+                        </div>
+                      </div>
+                    )}
+                    
+                    <div className="p-6 lg:p-8">
+                      <div className="mb-6">
+                        <h3 className="text-xl lg:text-2xl font-semibold text-gray-900 mb-3 tracking-tight group-hover:text-black transition-colors duration-300">
+                          {league.name}
+                        </h3>
+                        <p className="text-gray-600 text-sm lg:text-base leading-relaxed line-clamp-3">
+                          {league.description}
+                        </p>
+                      </div>
+
+                      {/* Stats */}
+                      <div className="space-y-3 mb-6">
+                        <div className="flex items-center text-sm lg:text-base text-gray-600">
+                          <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center mr-3">
+                            <Calendar className="h-4 w-4 text-gray-700" />
+                          </div>
+                          <span className="font-medium">
+                            {`${weeksCount} ${weeksCount === 1 ? 'Module' : 'Modules'}`}
                           </span>
                         </div>
-                      )}
-                      
-                      <div className="p-6">
-                        <div className="mb-4">
-                          <h3 className="font-bold text-gray-900 mb-2 group-hover:text-black transition-colors">
-                            {league.name}
-                          </h3>
-                          <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
-                            {league.description}
-                          </p>
+                        <div className="flex items-center text-sm lg:text-base text-gray-600">
+                          <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center mr-3">
+                            <BookOpen className="h-4 w-4 text-gray-700" />
+                          </div>
+                          <span className="font-medium">
+                            {`${sectionsCount} ${sectionsCount === 1 ? 'Topic' : 'Topics'}`}
+                          </span>
                         </div>
-
-                        {/* Stats */}
-                        <div className="space-y-2 mb-4">
-                          <div className="flex items-center text-sm text-gray-600">
-                            <Calendar className="h-4 w-4 mr-2 text-blue-500" />
-                            {`${weeksCount} ${weeksCount === 1 ? 'week' : 'weeks'}`}
-                          </div>
-                          <div className="flex items-center text-sm text-gray-600">
-                            <BookOpen className="h-4 w-4 mr-2 text-green-500" />
-                            {`${sectionsCount} ${sectionsCount === 1 ? 'section' : 'sections'}`}
-                          </div>
-                          <div className="flex items-center text-sm text-gray-600">
-                            <Target className="h-4 w-4 mr-2 text-purple-500" />
-                            {isCalculatingResources ? (
-                              <StatisticLoader color="purple" />
-                            ) : (
-                              `${resourcesCount} ${resourcesCount === 1 ? 'resource' : 'resources'}`
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Action Button */}
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (isEnrolled) {
-                              handleLeagueClick(league);
-                            } else {
-                              // For now, we'll use the first cohort's ID or a default
-                              const cohortId = cohorts.length > 0 ? cohorts[0].id : 'default';
-                              handleEnrollment(cohortId, league.id);
-                            }
-                          }}
-                          className={`w-full px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-center ${
-                            isEnrolled
-                              ? 'bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800'
-                              : 'bg-gradient-to-r from-gray-900 to-gray-800 text-white hover:from-gray-800 hover:to-gray-700'
-                          }`}
-                        >
-                          {isEnrolled ? (
-                            <>
-                              <Play className="h-4 w-4 mr-2" />
-                              Continue Learning
-                            </>
-                          ) : (
-                            <>
-                              <ArrowRight className="h-4 w-4 mr-2" />
-                              Enroll Now
-                            </>
-                          )}
-                        </button>
                       </div>
+
+                      {/* Action Button */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (isEnrolled) {
+                            handleLeagueClick(league);
+                          } else {
+                            const cohortId = cohorts.length > 0 ? cohorts[0].id : 'default';
+                            handleEnrollment(cohortId, league.id);
+                          }
+                        }}
+                        className={`w-full px-6 py-3 lg:py-4 rounded-xl lg:rounded-2xl text-sm lg:text-base font-medium transition-all duration-300 flex items-center justify-center ${
+                          isEnrolled
+                            ? 'bg-[#FFDE59] text-black hover:bg-[#FFDE59]/90 focus:ring-4 focus:ring-[#FFDE59]/30'
+                            : 'bg-black text-white hover:bg-gray-800 focus:ring-4 focus:ring-gray-200'
+                        }`}
+                      >
+                        {isEnrolled ? (
+                          <>
+                            <Play className="h-4 w-4 mr-2" />
+                            Continue Learning
+                          </>
+                        ) : (
+                          <>
+                            <ArrowRight className="h-4 w-4 mr-2" />
+                            Enroll Now
+                          </>
+                        )}
+                      </button>
                     </div>
-                  );
-                })}
-              </div>
+
+                    {/* Subtle border highlight */}
+                    <div className="absolute inset-0 rounded-2xl lg:rounded-3xl ring-1 ring-gray-200/30 group-hover:ring-gray-300/50 transition-all duration-300 pointer-events-none"></div>
+                  </MotionDiv>
+                );
+              })}
             </div>
+          </MotionDiv>
         ) : (
-          <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-            <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No Leagues Available</h3>
-            <p className="text-gray-600">Learning leagues will appear here when they become available.</p>
-          </div>
+          <MotionDiv
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="bg-white/80 backdrop-blur-sm rounded-2xl lg:rounded-3xl border border-gray-200/50 p-12 lg:p-16 text-center"
+          >
+            <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-6">
+              <BookOpen className="h-8 w-8 text-gray-400" />
+            </div>
+            <h3 className="text-xl lg:text-2xl font-medium text-gray-900 mb-3">No Leagues Available</h3>
+            <p className="text-gray-600 max-w-md mx-auto leading-relaxed">
+              Learning leagues will appear here when they become available. Check back soon for exciting opportunities!
+            </p>
+          </MotionDiv>
         )}
 
         {/* No Results */}
         {leagues.length > 0 && filteredLeagues.length === 0 && (
-          <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-            <Search className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No Results Found</h3>
-            <p className="text-gray-600">No leagues are currently available.</p>
-          </div>
+          <MotionDiv
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="bg-white/80 backdrop-blur-sm rounded-2xl lg:rounded-3xl border border-gray-200/50 p-12 lg:p-16 text-center"
+          >
+            <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-6">
+              <Search className="h-8 w-8 text-gray-400" />
+            </div>
+            <h3 className="text-xl lg:text-2xl font-medium text-gray-900 mb-3">No Results Found</h3>
+            <p className="text-gray-600 max-w-md mx-auto leading-relaxed">
+              No leagues match your current search criteria. Try adjusting your filters.
+            </p>
+          </MotionDiv>
         )}
       </div>
-    </div>
+    </MotionSection>
   );
 };
 

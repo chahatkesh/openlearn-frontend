@@ -137,7 +137,7 @@ const TwitterTestimonials = () => {
         <SectionHeader 
           title="What Our Pioneers Say"
           description="Real stories from real learners who found their path with us"
-          titleClassName="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-8 tracking-tight"
+          titleClassName="text-4xl hover:text-white sm:text-5xl lg:text-6xl font-bold text-white mb-8 tracking-tight"
           descriptionClassName="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed font-light"
         />
 
