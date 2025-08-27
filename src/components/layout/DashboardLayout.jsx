@@ -88,16 +88,16 @@ const DashboardLayout = () => {
         onClick={onClick}
         className={`group relative flex items-center px-4 py-3 mx-2 rounded-xl transition-all duration-300 ease-out ${
           isActive
-            ? 'bg-gradient-to-r from-yellow-400/20 to-yellow-500/20 text-gray-900 border border-yellow-400/30 backdrop-blur-sm'
+            ? 'bg-[#FFDE59]/20 text-gray-900 border border-[#FFDE59]/30 backdrop-blur-sm'
             : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50/80 hover:backdrop-blur-sm'
         }`}
       >
         {isActive && (
-          <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-yellow-400 to-yellow-500 rounded-r-full" />
+          <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-[#FFDE59] rounded-r-full" />
         )}
         <Icon 
           className={`w-5 h-5 mr-3 transition-all duration-300 ${
-            isActive ? 'text-yellow-600 scale-110' : 'text-gray-500 group-hover:text-gray-700'
+            isActive ? 'text-black scale-110' : 'text-gray-500 group-hover:text-gray-700'
           }`} 
         />
         <span className={`font-medium transition-all duration-300 ${
@@ -233,7 +233,7 @@ const DashboardLayout = () => {
               <img
                 src={getUserAvatarUrl(user)}
                 alt="Profile"
-                className="w-10 h-10 rounded-full border-2 border-yellow-400/50"
+                className="w-10 h-10 rounded-full border-2 border-[#FFDE59]/50"
               />
             </div>
           </div>
