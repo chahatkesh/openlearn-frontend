@@ -11,7 +11,6 @@ import {
   Trophy,
   ExternalLink,
   Github,
-  Twitter,
   Linkedin,
   Activity,
   Shield,
@@ -19,6 +18,7 @@ import {
   Star,
   Globe
 } from 'lucide-react';
+import { FaXTwitter } from 'react-icons/fa6';
 import { getUserAvatarUrl } from '../../utils/helpers/boringAvatarsUtils';
 import { PageHead } from "../../components/common";
 
@@ -364,11 +364,11 @@ const ProfilePage = () => {
               
               {user.twitterHandle && (
                 <SocialLink 
-                  icon={Twitter} 
-                  label="Twitter" 
-                  url={`https://twitter.com/${user.twitterHandle.replace('@', '')}`}
+                  icon={FaXTwitter} 
+                  label="X (formerly Twitter)" 
+                  url={`https://x.com/${user.twitterHandle.replace('@', '')}`}
                   username={user.twitterHandle}
-                  color="blue"
+                  color="black"
                 />
               )}
               

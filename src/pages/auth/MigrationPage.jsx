@@ -11,21 +11,21 @@ import {
   Users,
   ArrowRight,
   CheckCircle,
-  AlertCircle,
-  Loader2
+  Loader2,
+  LogOut
 } from 'lucide-react';
-import { FaDiscord, FaLinkedin, FaGithub, FaTwitter } from 'react-icons/fa';
+import { FaDiscord, FaLinkedin, FaGithub } from 'react-icons/fa';
+import { FaXTwitter } from 'react-icons/fa6';
 import { useAuth } from '../../hooks/useAuth';
 import MigrationService from '../../utils/auth/migrationService';
 import EmailVerificationService from '../../utils/auth/emailVerificationService';
 import SocialService from '../../utils/social/socialService';
 import { PageHead } from "../../components/common";
-import { LoadingSpinner } from "../../components/ui";
-import { MotionDiv, MotionSection } from '../../components/common/MotionWrapper';
+import { AuthLayout, AuthError } from '../../components/features/authentication';
 
 const MigrationPage = () => {
   const navigate = useNavigate();
-  const { user, refreshUser } = useAuth();
+  const { user, refreshUser, logout } = useAuth();
   
   // Form state
   const [formData, setFormData] = useState({
@@ -68,25 +68,106 @@ const MigrationPage = () => {
   }, [user, navigate]);
 
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-    
-    // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors(prev => ({
-        ...prev,
-        [field]: ''
-      }));
+    // Special handling for phone number to restrict to 10 digits
+    if (field === 'phoneNumber') {
+      // Remove all non-digit characters
+      const phoneDigits = value.replace(/\D/g, '');
+      // Limit to 10 digits
+      const limitedPhone = phoneDigits.slice(0, 10);
+      setFormData(prev => ({ ...prev, [field]: limitedPhone }));
+    } else {
+      setFormData(prev => ({ ...prev, [field]: value }));
     }
+    
+    // Clear error for this field when user starts typing
+    if (errors[field]) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
+  };
+
+  // Validate step 1 (Academic Details)
+  const validateStep1 = () => {
+    const errors = {};
+    
+    // Institute validation
+    if (!formData.institute.trim()) {
+      errors.institute = 'Institute is required';
+    } else if (formData.institute === 'Other' && !customInstitute.trim()) {
+      errors.institute = 'Please enter your institute name';
+    }
+    
+    // Department validation
+    if (!formData.department.trim()) {
+      errors.department = 'Department is required';
+    } else if (formData.department === 'Other' && !customDepartment.trim()) {
+      errors.department = 'Please enter your department name';
+    }
+    
+    // Graduation year validation
+    if (!formData.graduationYear) {
+      errors.graduationYear = 'Graduation year is required';
+    } else {
+      const year = parseInt(formData.graduationYear);
+      if (year < 2000 || year > 2029) {
+        errors.graduationYear = 'Please enter a valid graduation year (2000-2029)';
+      }
+    }
+    
+    // Student ID validation
+    if (!formData.studentId.trim()) {
+      errors.studentId = 'Student ID is required';
+    }
+    
+    // Phone number validation - must be exactly 10 digits
+    if (!formData.phoneNumber.trim()) {
+      errors.phoneNumber = 'Phone number is required';
+    } else {
+      // Remove any non-digit characters for validation
+      const phoneDigits = formData.phoneNumber.replace(/\D/g, '');
+      if (phoneDigits.length !== 10) {
+        errors.phoneNumber = 'Phone number must be exactly 10 digits';
+      } else if (!/^[6-9]\d{9}$/.test(phoneDigits)) {
+        errors.phoneNumber = 'Please enter a valid Indian mobile number';
+      }
+    }
+    
+    return {
+      isValid: Object.keys(errors).length === 0,
+      errors
+    };
+  };
+
+  // Check if step 1 is complete and valid
+  const isStep1Valid = () => {
+    // Check all required fields are filled
+    const hasInstitute = formData.institute.trim() && 
+      (formData.institute !== 'Other' || customInstitute.trim());
+    
+    const hasDepartment = formData.department.trim() && 
+      (formData.department !== 'Other' || customDepartment.trim());
+    
+    const hasGraduationYear = formData.graduationYear && 
+      parseInt(formData.graduationYear) >= 2000 && 
+      parseInt(formData.graduationYear) <= 2029;
+    
+    const hasStudentId = formData.studentId.trim();
+    
+    const hasValidPhone = formData.phoneNumber.trim() && 
+      formData.phoneNumber.replace(/\D/g, '').length === 10 &&
+      /^[6-9]\d{9}$/.test(formData.phoneNumber.replace(/\D/g, ''));
+    
+    return hasInstitute && hasDepartment && hasGraduationYear && hasStudentId && hasValidPhone;
   };
 
   // Validate social handles
   const validateSocialHandles = (socialData) => {
     const errors = {};
 
-    // Twitter handle validation
+    // X (formerly Twitter) handle validation
     if (!socialData.twitterHandle || !socialData.twitterHandle.trim()) {
       errors.twitterHandle = 'Twitter handle is required';
     } else if (!socialData.twitterHandle.startsWith('@')) {
@@ -219,6 +300,23 @@ const MigrationPage = () => {
   };
 
   const nextStep = () => {
+    if (step === 1) {
+      const validation = validateStep1();
+      if (!validation.isValid) {
+        setErrors(prev => ({ ...prev, ...validation.errors }));
+        return;
+      }
+      // Clear any previous errors for step 1
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors.institute;
+        delete newErrors.department;
+        delete newErrors.graduationYear;
+        delete newErrors.studentId;
+        delete newErrors.phoneNumber;
+        return newErrors;
+      });
+    }
     setStep(prev => Math.min(prev + 1, 2));
   };
 
@@ -227,7 +325,13 @@ const MigrationPage = () => {
   };
 
   if (!user) {
-    return <LoadingSpinner />;
+    return (
+      <AuthLayout title="Loading Profile" subtitle="Please wait...">
+        <div className="flex justify-center py-8">
+          <Loader2 className="w-8 h-8 animate-spin text-black" />
+        </div>
+      </AuthLayout>
+    );
   }
 
   return (
@@ -238,277 +342,239 @@ const MigrationPage = () => {
         keywords="profile migration, user details, account upgrade"
       />
       
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-yellow-50 py-12">
-        <div className="max-w-3xl mx-auto px-6">
-          {/* Header */}
-          <MotionDiv
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
-          >
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-[#FFDE59] rounded-full mb-6">
-              <User size={24} className="text-black" />
-            </div>
-            
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Complete Your Profile
-            </h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              We're upgrading to OpenLearn V2! Please provide some additional details to enhance your learning experience.
+      <AuthLayout 
+        title="Complete Your Profile" 
+        subtitle="We're upgrading to OpenLearn V2!"
+      >
+        {/* Error Message */}
+        {errors.general && (
+          <AuthError message={errors.general} />
+        )}
+
+        {/* Wrong Email? Logout Option */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+          <div className="text-center">
+            <p className="text-sm text-gray-700 mb-2">
+              Signed in as: <span className="font-medium text-gray-900">{user?.email}</span>
             </p>
-            
-            {/* Progress Bar */}
-            <div className="flex items-center justify-center mt-8 space-x-4">
-              <div className={`flex items-center ${step >= 1 ? 'text-[#FFDE59]' : 'text-gray-300'}`}>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
-                  step >= 1 ? 'bg-[#FFDE59] text-black' : 'bg-gray-200 text-gray-500'
-                }`}>
-                  {step > 1 ? <CheckCircle size={16} /> : '1'}
-                </div>
-                <span className="ml-2 text-sm font-medium">Academic Details</span>
+            <button
+              type="button"
+              onClick={async () => {
+                try {
+                  await logout();
+                  navigate('/auth/signin');
+                } catch (error) {
+                  console.error('Logout error:', error);
+                }
+              }}
+              className="text-sm text-red-600 hover:text-red-800 underline transition-colors duration-200 flex items-center gap-1 mx-auto"
+            >
+              <LogOut size={14} />
+              Wrong email? Sign out and try again
+            </button>
+          </div>
+        </div>
+
+        {/* Progress Indicator */}
+        <div className="mb-6 sm:mb-8">
+          <div className="flex items-center justify-center space-x-3 sm:space-x-4">
+            <div className={`flex items-center ${step >= 1 ? 'text-black' : 'text-gray-400'}`}>
+              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-sm font-semibold transition-colors ${
+                step >= 1 ? 'bg-black text-white' : 'bg-gray-200 text-gray-500'
+              }`}>
+                {step > 1 ? <CheckCircle size={16} /> : '1'}
               </div>
-              
-              <div className={`w-12 h-0.5 ${step >= 2 ? 'bg-[#FFDE59]' : 'bg-gray-200'}`} />
-              
-              <div className={`flex items-center ${step >= 2 ? 'text-[#FFDE59]' : 'text-gray-300'}`}>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
-                  step >= 2 ? 'bg-[#FFDE59] text-black' : 'bg-gray-200 text-gray-500'
-                }`}>
-                  2
-                </div>
-                <span className="ml-2 text-sm font-medium">Social & Contact</span>
+              <span className="ml-2 text-xs sm:text-sm font-medium hidden sm:block">Academic Details</span>
+            </div>
+            
+            <div className={`w-8 sm:w-12 h-0.5 transition-colors ${step >= 2 ? 'bg-black' : 'bg-gray-200'}`} />
+            
+            <div className={`flex items-center ${step >= 2 ? 'text-black' : 'text-gray-400'}`}>
+              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-sm font-semibold transition-colors ${
+                step >= 2 ? 'bg-black text-white' : 'bg-gray-200 text-gray-500'
+              }`}>
+                2
+              </div>
+              <span className="ml-2 text-xs sm:text-sm font-medium hidden sm:block">Social & Contact</span>
+            </div>
+          </div>
+          <div className="flex justify-center mt-3 sm:hidden">
+            <span className="text-xs text-gray-600">
+              Step {step} of 2: {step === 1 ? 'Academic Details' : 'Social & Contact'}
+            </span>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+          {/* Step 1: Academic Details */}
+          {step === 1 && (
+            <div className="space-y-5 sm:space-y-6">
+              {/* Institute */}
+              <div className="space-y-2">
+                <label className="block text-sm sm:text-base font-medium text-gray-800">
+                  <Building size={16} className="inline mr-2" />
+                  Institute *
+                </label>
+                <select
+                  value={formData.institute}
+                  onChange={(e) => handleInputChange('institute', e.target.value)}
+                  className={`w-full px-3 sm:px-4 py-3 sm:py-4 border rounded-xl sm:rounded-2xl bg-gray-50/50 placeholder-gray-400 focus:ring-2 focus:ring-black/10 focus:border-black focus:bg-white transition-all duration-200 outline-none ${
+                    errors.institute ? 'border-red-300 bg-red-50/50' : 'border-gray-200'
+                  }`}
+                >
+                  <option value="">Select your institute</option>
+                  {MigrationService.getInstitutes().map(institute => (
+                    <option key={institute} value={institute}>{institute}</option>
+                  ))}
+                </select>
+                
+                {formData.institute === 'Other' && (
+                  <input
+                    type="text"
+                    placeholder="Enter your institute name"
+                    value={customInstitute}
+                    onChange={(e) => setCustomInstitute(e.target.value)}
+                    className="w-full px-3 sm:px-4 py-3 sm:py-4 border border-gray-200 rounded-xl sm:rounded-2xl bg-gray-50/50 placeholder-gray-400 focus:ring-2 focus:ring-black/10 focus:border-black focus:bg-white transition-all duration-200 outline-none mt-2"
+                  />
+                )}
+                
+                {errors.institute && (
+                  <p className="text-red-600 text-xs sm:text-sm mt-1 font-medium">{errors.institute}</p>
+                )}
+              </div>
+
+              {/* Department */}
+              <div className="space-y-2">
+                <label className="block text-sm sm:text-base font-medium text-gray-800">
+                  <GraduationCap size={16} className="inline mr-2" />
+                  Department *
+                </label>
+                <select
+                  value={formData.department}
+                  onChange={(e) => handleInputChange('department', e.target.value)}
+                  className={`w-full px-3 sm:px-4 py-3 sm:py-4 border rounded-xl sm:rounded-2xl bg-gray-50/50 placeholder-gray-400 focus:ring-2 focus:ring-black/10 focus:border-black focus:bg-white transition-all duration-200 outline-none ${
+                    errors.department ? 'border-red-300 bg-red-50/50' : 'border-gray-200'
+                  }`}
+                >
+                  <option value="">Select your department</option>
+                  {MigrationService.getDepartments().map(department => (
+                    <option key={department} value={department}>{department}</option>
+                  ))}
+                </select>
+                
+                {formData.department === 'Other' && (
+                  <input
+                    type="text"
+                    placeholder="Enter your department name"
+                    value={customDepartment}
+                    onChange={(e) => setCustomDepartment(e.target.value)}
+                    className="w-full px-3 sm:px-4 py-3 sm:py-4 border border-gray-200 rounded-xl sm:rounded-2xl bg-gray-50/50 placeholder-gray-400 focus:ring-2 focus:ring-black/10 focus:border-black focus:bg-white transition-all duration-200 outline-none mt-2"
+                  />
+                )}
+                
+                {errors.department && (
+                  <p className="text-red-600 text-xs sm:text-sm mt-1 font-medium">{errors.department}</p>
+                )}
+              </div>
+
+              {/* Graduation Year */}
+              <div className="space-y-2">
+                <label className="block text-sm sm:text-base font-medium text-gray-800">
+                  <Calendar size={16} className="inline mr-2" />
+                  Graduation Year *
+                </label>
+                <input
+                  type="number"
+                  placeholder="e.g., 2025"
+                  value={formData.graduationYear}
+                  onChange={(e) => handleInputChange('graduationYear', e.target.value)}
+                  min={2000}
+                  max={2029}
+                  className={`w-full px-3 sm:px-4 py-3 sm:py-4 border rounded-xl sm:rounded-2xl bg-gray-50/50 placeholder-gray-400 focus:ring-2 focus:ring-black/10 focus:border-black focus:bg-white transition-all duration-200 outline-none ${
+                    errors.graduationYear ? 'border-red-300 bg-red-50/50' : 'border-gray-200'
+                  }`}
+                />
+                {errors.graduationYear && (
+                  <p className="text-red-600 text-xs sm:text-sm mt-1 font-medium">{errors.graduationYear}</p>
+                )}
+              </div>
+
+              {/* Student ID */}
+              <div className="space-y-2">
+                <label className="block text-sm sm:text-base font-medium text-gray-800">
+                  <IdCard size={16} className="inline mr-2" />
+                  Student ID *
+                </label>
+                <input
+                  type="text"
+                  placeholder="Your student roll number"
+                  value={formData.studentId}
+                  onChange={(e) => handleInputChange('studentId', e.target.value)}
+                  className={`w-full px-3 sm:px-4 py-3 sm:py-4 border rounded-xl sm:rounded-2xl bg-gray-50/50 placeholder-gray-400 focus:ring-2 focus:ring-black/10 focus:border-black focus:bg-white transition-all duration-200 outline-none ${
+                    errors.studentId ? 'border-red-300 bg-red-50/50' : 'border-gray-200'
+                  }`}
+                />
+                {errors.studentId && (
+                  <p className="text-red-600 text-xs sm:text-sm mt-1 font-medium">{errors.studentId}</p>
+                )}
+              </div>
+
+              {/* Phone Number */}
+              <div className="space-y-2">
+                <label className="block text-sm sm:text-base font-medium text-gray-800">
+                  <Phone size={16} className="inline mr-2" />
+                  Phone Number *
+                </label>
+                <input
+                  type="tel"
+                  placeholder="9876543210"
+                  value={formData.phoneNumber}
+                  onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                  maxLength="10"
+                  className={`w-full px-3 sm:px-4 py-3 sm:py-4 border rounded-xl sm:rounded-2xl bg-gray-50/50 placeholder-gray-400 focus:ring-2 focus:ring-black/10 focus:border-black focus:bg-white transition-all duration-200 outline-none ${
+                    errors.phoneNumber ? 'border-red-300 bg-red-50/50' : 'border-gray-200'
+                  }`}
+                />
+                <p className="text-xs text-gray-500 mt-1">Enter 10-digit mobile number (without +91)</p>
+                {errors.phoneNumber && (
+                  <p className="text-red-600 text-xs sm:text-sm mt-1 font-medium">{errors.phoneNumber}</p>
+                )}
+              </div>
+
+              {/* Next Button */}
+              <div className="flex justify-end pt-6">
+                <button
+                  type="button"
+                  onClick={nextStep}
+                  disabled={!isStep1Valid()}
+                  className={`inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-4 font-medium rounded-xl sm:rounded-2xl focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 ${
+                    isStep1Valid() 
+                      ? 'bg-black text-white hover:bg-gray-800 focus:ring-black/20 transform hover:scale-[1.02] active:scale-[0.98] cursor-pointer' 
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
+                >
+                  Next Step
+                  <ArrowRight size={16} />
+                </button>
               </div>
             </div>
-          </MotionDiv>
+          )}
 
-          {/* Form */}
-          <MotionSection
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8"
-          >
-            {/* Error Message */}
-            {errors.general && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
-                <AlertCircle size={20} className="text-red-600 flex-shrink-0" />
-                <p className="text-red-700">{errors.general}</p>
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Step 1: Academic Details */}
-              {step === 1 && (
-                <MotionDiv
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5 }}
-                  className="space-y-6"
-                >
-                  {/* Institute */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      <Building size={16} className="inline mr-2" />
-                      Institute *
-                    </label>
-                    <select
-                      value={formData.institute}
-                      onChange={(e) => handleInputChange('institute', e.target.value)}
-                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none transition-colors ${
-                        errors.institute ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                      }`}
-                    >
-                      <option value="">Select your institute</option>
-                      {MigrationService.getInstitutes().map(institute => (
-                        <option key={institute} value={institute}>{institute}</option>
-                      ))}
-                    </select>
-                    
-                    {formData.institute === 'Other' && (
-                      <input
-                        type="text"
-                        placeholder="Enter your institute name"
-                        value={customInstitute}
-                        onChange={(e) => setCustomInstitute(e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none mt-2"
-                      />
-                    )}
-                    
-                    {errors.institute && (
-                      <p className="text-red-600 text-sm mt-1">{errors.institute}</p>
-                    )}
-                  </div>
-
-                  {/* Department */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      <GraduationCap size={16} className="inline mr-2" />
-                      Department *
-                    </label>
-                    <select
-                      value={formData.department}
-                      onChange={(e) => handleInputChange('department', e.target.value)}
-                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none transition-colors ${
-                        errors.department ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                      }`}
-                    >
-                      <option value="">Select your department</option>
-                      {MigrationService.getDepartments().map(department => (
-                        <option key={department} value={department}>{department}</option>
-                      ))}
-                    </select>
-                    
-                    {formData.department === 'Other' && (
-                      <input
-                        type="text"
-                        placeholder="Enter your department name"
-                        value={customDepartment}
-                        onChange={(e) => setCustomDepartment(e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none mt-2"
-                      />
-                    )}
-                    
-                    {errors.department && (
-                      <p className="text-red-600 text-sm mt-1">{errors.department}</p>
-                    )}
-                  </div>
-
-                  {/* Graduation Year */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      <Calendar size={16} className="inline mr-2" />
-                      Graduation Year *
-                    </label>
-                    <input
-                      type="number"
-                      placeholder="e.g., 2025"
-                      value={formData.graduationYear}
-                      onChange={(e) => handleInputChange('graduationYear', e.target.value)}
-                      min={new Date().getFullYear()}
-                      max={new Date().getFullYear() + 10}
-                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none transition-colors ${
-                        errors.graduationYear ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                      }`}
-                    />
-                    {errors.graduationYear && (
-                      <p className="text-red-600 text-sm mt-1">{errors.graduationYear}</p>
-                    )}
-                  </div>
-
-                  {/* Student ID */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      <IdCard size={16} className="inline mr-2" />
-                      Student ID *
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Your student roll number"
-                      value={formData.studentId}
-                      onChange={(e) => handleInputChange('studentId', e.target.value)}
-                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none transition-colors ${
-                        errors.studentId ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                      }`}
-                    />
-                    {errors.studentId && (
-                      <p className="text-red-600 text-sm mt-1">{errors.studentId}</p>
-                    )}
-                  </div>
-
-                  {/* Phone Number */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      <Phone size={16} className="inline mr-2" />
-                      Phone Number *
-                    </label>
-                    <input
-                      type="tel"
-                      placeholder="+91 9876543210"
-                      value={formData.phoneNumber}
-                      onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
-                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none transition-colors ${
-                        errors.phoneNumber ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                      }`}
-                    />
-                    {errors.phoneNumber && (
-                      <p className="text-red-600 text-sm mt-1">{errors.phoneNumber}</p>
-                    )}
-                  </div>
-
-                  {/* Next Button */}
-                  <div className="flex justify-end pt-4">
-                    <button
-                      type="button"
-                      onClick={nextStep}
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-[#FFDE59] text-black font-semibold rounded-lg hover:bg-yellow-400 transition-colors duration-200"
-                    >
-                      Next Step
-                      <ArrowRight size={16} />
-                    </button>
-                  </div>
-                </MotionDiv>
-              )}
-
-              {/* Step 2: Social & Contact */}
-              {step === 2 && (
-                <MotionDiv
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5 }}
-                  className="space-y-6"
-                >
-                  {/* Discord Username */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      <FaDiscord size={16} className="inline mr-2 text-indigo-600" />
-                      Discord Username <span className="text-gray-500 text-sm">(Optional)</span>
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="your_discord_username"
-                      value={formData.discordUsername}
-                      onChange={(e) => handleInputChange('discordUsername', e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none transition-colors"
-                    />
-                  </div>
-
-                  {/* Portfolio URL */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      <Globe size={16} className="inline mr-2" />
-                      Portfolio URL
-                    </label>
-                    <input
-                      type="url"
-                      placeholder="https://yourportfolio.com"
-                      value={formData.portfolioUrl}
-                      onChange={(e) => handleInputChange('portfolioUrl', e.target.value)}
-                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none transition-colors ${
-                        errors.portfolioUrl ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                      }`}
-                    />
-                    {errors.portfolioUrl && (
-                      <p className="text-red-600 text-sm mt-1">{errors.portfolioUrl}</p>
-                    )}
-                  </div>
-
-                  {/* Social Handles Section */}
+          {/* Step 2: Social & Contact */}
+          {step === 2 && (
+            <div className="space-y-5 sm:space-y-6">
+                  {/* Required Social Handles Section */}
                   <div className="bg-gray-50 rounded-lg p-6">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                       <Users size={20} className="mr-2" />
-                      Social Handles
+                      Required Social Handles
                     </h3>
-                    <p className="text-sm text-gray-600 mb-4">
-                      Connect your social profiles to showcase your work and connect with the community. <span className="font-medium text-gray-800">All fields marked with * are required.</span>
-                    </p>
-                    
                     <div className="space-y-4">
                       {/* Twitter */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          <FaTwitter size={16} className="inline mr-2 text-blue-500" />
-                          Twitter Handle <span className="text-red-500">*</span>
+                          <FaXTwitter size={16} className="inline mr-2 text-black" />
+                          X (formerly Twitter) Handle <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="text"
@@ -569,12 +635,56 @@ const MigrationPage = () => {
                     </div>
                   </div>
 
+                  {/* Optional Information Section */}
+                  <div className="bg-blue-50 rounded-lg p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                      <Globe size={20} className="mr-2" />
+                      Optional Information
+                    </h3>
+                    <div className="space-y-4">
+                      {/* Discord Username */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <FaDiscord size={16} className="inline mr-2 text-indigo-600" />
+                          Discord Username <span className="text-gray-500 text-sm">(Optional)</span>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="your_discord_username"
+                          value={formData.discordUsername}
+                          onChange={(e) => handleInputChange('discordUsername', e.target.value)}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none transition-colors"
+                        />
+                      </div>
+
+                      {/* Portfolio URL */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <Globe size={16} className="inline mr-2" />
+                          Portfolio URL <span className="text-gray-500 text-sm">(Optional)</span>
+                        </label>
+                        <input
+                          type="url"
+                          placeholder="https://yourportfolio.com"
+                          value={formData.portfolioUrl}
+                          onChange={(e) => handleInputChange('portfolioUrl', e.target.value)}
+                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none transition-colors ${
+                            errors.portfolioUrl ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                          }`}
+                        />
+                        {errors.portfolioUrl && (
+                          <p className="text-red-600 text-sm mt-1">{errors.portfolioUrl}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Action Buttons */}
                   <div className="flex justify-between pt-4">
                     <button
                       type="button"
                       onClick={prevStep}
-                      className="px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                      className="px-4 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors duration-200"
                     >
                       Previous
                     </button>
@@ -582,27 +692,25 @@ const MigrationPage = () => {
                     <button
                       type="submit"
                       disabled={loading}
-                      className="inline-flex items-center gap-2 px-8 py-3 bg-[#FFDE59] text-black font-semibold rounded-lg hover:bg-yellow-400 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm sm:text-base font-medium text-white bg-black hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none"
                     >
                       {loading ? (
                         <>
-                          <Loader2 size={16} className="animate-spin" />
+                          <Loader2 size={18} className="animate-spin mr-2" />
                           Completing Profile...
                         </>
                       ) : (
                         <>
                           Complete Profile
-                          <CheckCircle size={16} />
+                          <CheckCircle size={18} className="ml-2" />
                         </>
                       )}
                     </button>
                   </div>
-                </MotionDiv>
-              )}
-            </form>
-          </MotionSection>
-        </div>
-      </div>
+            </div>
+          )}
+        </form>
+      </AuthLayout>
     </>
   );
 };

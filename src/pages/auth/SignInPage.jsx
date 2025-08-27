@@ -57,96 +57,104 @@ const SignInPage = () => {
       >
         <AuthError message={error} />
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-            Email Address
-          </label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Mail size={18} className="text-gray-400" />
-            </div>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none"
-              placeholder="you@example.com"
-            />
-          </div>
-        </div>
-
-        <div>
-          <div className="flex items-center justify-between mb-1">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-              Password
+        <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+          {/* Email Field */}
+          <div className="space-y-2">
+            <label htmlFor="email" className="block text-sm sm:text-base font-medium text-gray-800">
+              Email Address
             </label>
-            <Link to="/forgot-password" className="text-xs text-gray-600 hover:text-black">
-              Forgot password?
-            </Link>
-          </div>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Lock size={18} className="text-gray-400" />
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
+                <Mail size={18} className="text-gray-400" />
+              </div>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="block w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 border border-gray-200 rounded-xl sm:rounded-2xl bg-gray-50/50 text-sm sm:text-base placeholder-gray-400 focus:ring-2 focus:ring-black/10 focus:border-black focus:bg-white transition-all duration-200 outline-none"
+                placeholder="you@example.com"
+              />
             </div>
-            <input
-              id="password"
-              name="password"
-              type={showPassword ? "text" : "password"}
-              autoComplete="current-password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none"
-              placeholder="••••••••"
-            />
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-              <button
-                type="button"
-                onClick={togglePasswordVisibility}
-                className="text-gray-400 hover:text-gray-500 focus:outline-none"
+          </div>
+
+          {/* Password Field */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label htmlFor="password" className="block text-sm sm:text-base font-medium text-gray-800">
+                Password
+              </label>
+              <Link 
+                to="/forgot-password" 
+                className="text-xs sm:text-sm text-gray-600 hover:text-black font-medium transition-colors duration-200"
               >
-                {showPassword ? (
-                  <EyeOff size={18} />
-                ) : (
-                  <Eye size={18} />
-                )}
-              </button>
+                Forgot password?
+              </Link>
+            </div>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
+                <Lock size={18} className="text-gray-400" />
+              </div>
+              <input
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="block w-full pl-10 sm:pl-12 pr-12 sm:pr-14 py-3 sm:py-4 border border-gray-200 rounded-xl sm:rounded-2xl bg-gray-50/50 text-sm sm:text-base placeholder-gray-400 focus:ring-2 focus:ring-black/10 focus:border-black focus:bg-white transition-all duration-200 outline-none"
+                placeholder="••••••••"
+              />
+              <div className="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center">
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-black/10 rounded-lg p-1 transition-all duration-200"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? (
+                    <EyeOff size={18} />
+                  ) : (
+                    <Eye size={18} />
+                  )}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div>
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white transition-all duration-200 hover:-translate-y-1 active:translate-y-0 active:scale-95"
-            style={{ backgroundColor: '#000000' }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = '#1F2937'}
-            onMouseLeave={(e) => e.target.style.backgroundColor = '#000000'}
-          >
-            {isLoading ? (
-              <LoadingSpinner size="sm" color="white" />
-            ) : (
-              'Sign In'
-            )}
-          </button>
-        </div>
-      </form>
+          {/* Submit Button */}
+          <div className="pt-2">
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full flex justify-center items-center py-3 sm:py-4 px-4 border border-transparent rounded-xl sm:rounded-2xl shadow-sm text-sm sm:text-base font-medium text-white bg-black hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
+            >
+              {isLoading ? (
+                <LoadingSpinner size="sm" color="white" />
+              ) : (
+                'Sign In'
+              )}
+            </button>
+          </div>
+        </form>
 
-      <div className="mt-6 text-center">
-        <p className="text-sm text-gray-600">
-          Don't have an account?{' '}
-          <Link to="/signup" className="font-medium text-black hover:underline">
-            Sign up
-          </Link>
-        </p>
-      </div>
-    </AuthLayout>
+        {/* Sign up link */}
+        <div className="text-center pt-4 sm:pt-6 border-t border-gray-100">
+          <p className="text-sm sm:text-base text-gray-600">
+            Don't have an account?{' '}
+            <Link 
+              to="/signup" 
+              className="font-medium text-black hover:text-gray-800 transition-colors duration-200"
+            >
+              Sign up
+            </Link>
+          </p>
+        </div>
+      </AuthLayout>
     </>
   );
 };

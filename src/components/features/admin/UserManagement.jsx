@@ -479,7 +479,7 @@ const UserManagement = ({
                         <div className="flex items-center gap-2">
                           {user.twitterHandle && (
                             <a
-                              href={`https://twitter.com/${user.twitterHandle}`}
+                              href={`https://x.com/${user.twitterHandle}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="w-8 h-8 rounded-lg bg-blue-50 hover:bg-blue-100 flex items-center justify-center text-blue-600 hover:text-blue-700 transition-colors cursor-pointer group/social"
@@ -735,7 +735,7 @@ const UserDetailModal = ({ user, onClose, onUpdateStatus, onApproveUser }) => {
               <div className="space-y-3">
                 {user.twitterHandle ? (
                   <a
-                    href={`https://twitter.com/${user.twitterHandle}`}
+                    href={`https://x.com/${user.twitterHandle}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-between p-3 rounded-lg bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-colors cursor-pointer group"

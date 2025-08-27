@@ -12,7 +12,7 @@ const TwitterEmbed = ({ tweetId }) => {
     setIsLoading(true);
     setHasError(false);
 
-    // Load Twitter widgets script if not already loaded
+    // Load X (Twitter) widgets script if not already loaded
     if (!window.twttr) {
       const script = document.createElement('script');
       script.src = 'https://platform.twitter.com/widgets.js';
@@ -36,7 +36,7 @@ const TwitterEmbed = ({ tweetId }) => {
       };
       document.head.appendChild(script);
     } else {
-      // If Twitter widgets are already loaded, just load this specific tweet
+      // If X (Twitter) widgets are already loaded, just load this specific tweet
       window.twttr.widgets.load(tweetRef.current).then(() => {
         setIsLoading(false);
       }).catch(() => {
@@ -76,7 +76,7 @@ const TwitterEmbed = ({ tweetId }) => {
       )}
       <div ref={tweetRef} className="flex justify-center">
         <blockquote className="twitter-tweet" data-theme="dark">
-          <a href={`https://twitter.com/twitter/statuses/${tweetId}`}>Loading tweet...</a>
+          <a href={`https://x.com/twitter/statuses/${tweetId}`}>Loading tweet...</a>
         </blockquote>
       </div>
     </div>

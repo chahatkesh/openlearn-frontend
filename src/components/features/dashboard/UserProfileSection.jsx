@@ -557,7 +557,7 @@ const UserProfileSection = ({ user, dashboardData = null, isMobile = false }) =>
             {/* Twitter */}
             {user?.twitterHandle ? (
               <a 
-                href={`https://twitter.com/${user.twitterHandle}`}
+                href={`https://x.com/${user.twitterHandle}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`flex items-center justify-between group ${isMobile ? 'p-2' : 'p-2.5'} rounded-lg bg-white/40 hover:bg-blue-50/80 border border-white/30 hover:border-blue-200 transition-all duration-200 hover:scale-[1.02]`}

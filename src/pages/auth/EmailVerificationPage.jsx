@@ -7,13 +7,13 @@ import {
   RefreshCw, 
   Clock,
   Loader2,
-  AlertCircle,
   ArrowRight
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import EmailVerificationService from '../../utils/auth/emailVerificationService';
-import { PageHead, MotionDiv, MotionSection } from '../../components/common';
-import { LoadingSpinner } from '../../components/ui';
+import { PageHead } from '../../components/common';
+import { AuthLayout, AuthError } from '../../components/features/authentication';
+import { OTPInput } from "../../components/ui";
 
 const EmailVerificationPage = () => {
   const navigate = useNavigate();
@@ -58,9 +58,7 @@ const EmailVerificationPage = () => {
 
   // Handle OTP input
   const handleOtpChange = (value) => {
-    // Only allow numeric input and limit to 6 digits
-    const numericValue = value.replace(/[^0-9]/g, '').slice(0, 6);
-    setOtp(numericValue);
+    setOtp(value);
     
     // Clear errors
     if (errors.otp) {
@@ -145,30 +143,30 @@ const EmailVerificationPage = () => {
           keywords="email verification, account verification, success"
         />
         
-        <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-yellow-50 flex items-center justify-center">
-          <MotionDiv
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}
-            className="text-center"
-          >
-            <div className="inline-flex items-center justify-center w-24 h-24 bg-green-100 rounded-full mb-6">
-              <CheckCircle size={48} className="text-green-600" />
+        <AuthLayout 
+          title="Email Verified!" 
+          subtitle="Welcome to OpenLearn"
+        >
+          <div className="text-center space-y-5 sm:space-y-6">
+            <div className="mx-auto w-12 h-12 sm:w-14 sm:h-14 bg-green-100/80 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-4">
+              <CheckCircle className="w-6 h-6 text-green-600" />
             </div>
             
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Email Verified Successfully!
-            </h1>
-            <p className="text-xl text-gray-600 mb-6">
-              Welcome to OpenLearn V2! Redirecting to your dashboard...
-            </p>
-            
-            <div className="inline-flex items-center gap-2 text-[#FFDE59]">
-              <Loader2 size={20} className="animate-spin" />
-              <span className="font-medium">Loading dashboard...</span>
+            <div>
+              <h3 className="text-lg sm:text-xl font-medium text-gray-900 mb-2 sm:mb-3">
+                Email Verified Successfully!
+              </h3>
+              <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
+                Welcome to OpenLearn! Redirecting to your dashboard...
+              </p>
             </div>
-          </MotionDiv>
-        </div>
+            
+            <div className="flex items-center justify-center gap-2 text-gray-600 pt-2">
+              <Loader2 size={18} className="animate-spin" />
+              <span className="text-sm sm:text-base font-medium">Loading dashboard...</span>
+            </div>
+          </div>
+        </AuthLayout>
       </>
     );
   }
@@ -181,144 +179,116 @@ const EmailVerificationPage = () => {
         keywords="email verification, OTP verification, account security"
       />
       
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-yellow-50 py-12">
-        <div className="max-w-md mx-auto px-6">
+      <AuthLayout 
+        title="Verify Your Email" 
+        subtitle={`We sent a verification code to ${user?.email}`}
+      >
+        {/* Error Message */}
+        {errors.general && (
+          <AuthError message={errors.general} />
+        )}
+
+        <form onSubmit={handleVerifyOtp} className="space-y-5 sm:space-y-6">
           {/* Header */}
-          <MotionDiv
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-8"
-          >
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-6">
-              <Mail size={24} className="text-blue-600" />
+          <div className="text-center mb-6 sm:mb-8">
+            <div className="mx-auto w-12 h-12 sm:w-14 sm:h-14 bg-blue-100/80 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-4">
+              <Mail className="w-6 h-6 text-blue-600" />
             </div>
-            
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">
-              Verify Your Email
-            </h1>
-            <p className="text-gray-600">
-              We've sent a 6-digit verification code to
+            <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
+              Enter the 6-digit verification code to complete your account setup
             </p>
-            <p className="font-semibold text-gray-900">
-              {user?.email}
-            </p>
-          </MotionDiv>
+          </div>
 
-          {/* Form */}
-          <MotionSection
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8"
-          >
-            {/* Error Message */}
-            {errors.general && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
-                <AlertCircle size={20} className="text-red-600 flex-shrink-0" />
-                <p className="text-red-700">{errors.general}</p>
-              </div>
+          {/* OTP Input */}
+          <div className="space-y-2">
+            <label className="block text-sm sm:text-base font-medium text-gray-800 mb-3">
+              <Shield size={16} className="inline mr-2" />
+              Verification Code
+            </label>
+            <OTPInput
+              value={otp}
+              onChange={handleOtpChange}
+              length={6}
+              disabled={loading}
+              className="mb-2"
+            />
+            <p className="text-xs sm:text-sm text-gray-500 text-center">Enter the 6-digit code from your email</p>
+            {errors.otp && (
+              <p className="text-red-600 text-xs sm:text-sm mt-1 font-medium text-center">{errors.otp}</p>
             )}
+          </div>
 
-            <form onSubmit={handleVerifyOtp} className="space-y-6">
-              {/* OTP Input */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  <Shield size={16} className="inline mr-2" />
-                  Verification Code
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter 6-digit code"
-                  value={otp}
-                  onChange={(e) => handleOtpChange(e.target.value)}
-                  className={`w-full px-4 py-4 border rounded-lg text-center text-2xl font-mono tracking-widest focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors ${
-                    errors.otp ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                  }`}
-                  maxLength={6}
-                  autoComplete="one-time-code"
-                />
-                {errors.otp && (
-                  <p className="text-red-600 text-sm mt-1">{errors.otp}</p>
-                )}
+          {/* Verify Button */}
+          <div className="pt-2">
+            <button
+              type="submit"
+              disabled={loading || otp.length !== 6}
+              className="w-full flex justify-center items-center py-3 sm:py-4 px-4 border border-transparent rounded-xl sm:rounded-2xl shadow-sm text-sm sm:text-base font-medium text-white bg-black hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none"
+            >
+              {loading ? (
+                <>
+                  <Loader2 size={18} className="animate-spin mr-2" />
+                  Verifying...
+                </>
+              ) : (
+                <>
+                  Verify Email
+                  <ArrowRight size={18} className="ml-2" />
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* Resend OTP */}
+          <div className="text-center pt-4 sm:pt-6 border-t border-gray-100">
+            {!canResend ? (
+              <div className="flex items-center justify-center gap-2 text-gray-500">
+                <Clock size={16} />
+                <span className="text-sm sm:text-base">
+                  Resend code in {EmailVerificationService.formatTimeRemaining(timeRemaining)}
+                </span>
               </div>
-
-              {/* Verify Button */}
+            ) : (
               <button
-                type="submit"
-                disabled={loading || otp.length !== 6}
-                className="w-full py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                type="button"
+                onClick={handleSendOtp}
+                disabled={sendingOtp}
+                className="inline-flex items-center gap-2 text-black hover:text-gray-800 font-medium transition-colors duration-200 disabled:opacity-50 text-sm sm:text-base"
               >
-                {loading ? (
+                {sendingOtp ? (
                   <>
-                    <Loader2 size={20} className="animate-spin" />
-                    Verifying...
+                    <Loader2 size={16} className="animate-spin" />
+                    Sending...
                   </>
                 ) : (
                   <>
-                    Verify Email
-                    <ArrowRight size={20} />
+                    <RefreshCw size={16} />
+                    Resend Code
                   </>
                 )}
               </button>
+            )}
+          </div>
+        </form>
 
-              {/* Resend OTP */}
-              <div className="text-center">
-                {!canResend ? (
-                  <div className="flex items-center justify-center gap-2 text-gray-500">
-                    <Clock size={16} />
-                    <span>
-                      Resend code in {EmailVerificationService.formatTimeRemaining(timeRemaining)}
-                    </span>
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handleSendOtp}
-                    disabled={sendingOtp}
-                    className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200 disabled:opacity-50"
-                  >
-                    {sendingOtp ? (
-                      <>
-                        <Loader2 size={16} className="animate-spin" />
-                        Sending...
-                      </>
-                    ) : (
-                      <>
-                        <RefreshCw size={16} />
-                        Resend Code
-                      </>
-                    )}
-                  </button>
-                )}
-              </div>
-            </form>
-
-            {/* Help Text */}
-            <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-              <h3 className="font-semibold text-gray-900 mb-2">Didn't receive the code?</h3>
-              <ul className="text-sm text-gray-600 space-y-1">
-                <li>• Check your spam/junk folder</li>
-                <li>• Make sure {user?.email} is correct</li>
-                <li>• Wait a few minutes for email delivery</li>
-                <li>• Click "Resend Code" if needed</li>
-              </ul>
-            </div>
-          </MotionSection>
-
-          {/* Security Notice */}
-          <MotionDiv
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="mt-6 text-center"
-          >
-            <p className="text-sm text-gray-500">
-              🔒 This verification helps keep your account secure
-            </p>
-          </MotionDiv>
+        {/* Help Text */}
+        <div className="mt-6 p-3 sm:p-4 bg-gray-50/50 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-gray-100">
+          <h3 className="font-medium text-gray-900 mb-2 text-sm sm:text-base">Didn't receive the code?</h3>
+          <ul className="text-xs sm:text-sm text-gray-600 space-y-1">
+            <li>• Check your spam/junk folder</li>
+            <li>• Make sure {user?.email} is correct</li>
+            <li>• Wait a few minutes for email delivery</li>
+            <li>• Click "Resend Code" if needed</li>
+          </ul>
         </div>
-      </div>
+
+        {/* Security Notice */}
+        <div className="text-center pt-4">
+          <p className="text-xs sm:text-sm text-gray-500">
+            🔒 This verification helps keep your account secure
+          </p>
+        </div>
+      </AuthLayout>
     </>
   );
 };

@@ -56,18 +56,19 @@ const SignUpPage = () => {
       />
       
       <AuthLayout 
-        title="Create an Account" 
+        title="Create Account" 
         subtitle="Join the OpenLearn community today"
       >
         <AuthError message={error} />
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+        <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+          {/* Full Name Field */}
+          <div className="space-y-2">
+            <label htmlFor="name" className="block text-sm sm:text-base font-medium text-gray-800">
               Full Name
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
                 <User size={18} className="text-gray-400" />
               </div>
               <input
@@ -78,18 +79,19 @@ const SignUpPage = () => {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none"
+                className="block w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 border border-gray-200 rounded-xl sm:rounded-2xl bg-gray-50/50 text-sm sm:text-base placeholder-gray-400 focus:ring-2 focus:ring-black/10 focus:border-black focus:bg-white transition-all duration-200 outline-none"
                 placeholder="Enter your full name"
               />
             </div>
           </div>
 
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+          {/* Email Field */}
+          <div className="space-y-2">
+            <label htmlFor="email" className="block text-sm sm:text-base font-medium text-gray-800">
               Email Address
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
                 <Mail size={18} className="text-gray-400" />
               </div>
               <input
@@ -100,18 +102,19 @@ const SignUpPage = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none"
+                className="block w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 border border-gray-200 rounded-xl sm:rounded-2xl bg-gray-50/50 text-sm sm:text-base placeholder-gray-400 focus:ring-2 focus:ring-black/10 focus:border-black focus:bg-white transition-all duration-200 outline-none"
                 placeholder="you@example.com"
               />
             </div>
           </div>
 
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+          {/* Password Field */}
+          <div className="space-y-2">
+            <label htmlFor="password" className="block text-sm sm:text-base font-medium text-gray-800">
               Password
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
                 <Lock size={18} className="text-gray-400" />
               </div>
               <input
@@ -122,15 +125,16 @@ const SignUpPage = () => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none"
+                className="block w-full pl-10 sm:pl-12 pr-12 sm:pr-14 py-3 sm:py-4 border border-gray-200 rounded-xl sm:rounded-2xl bg-gray-50/50 text-sm sm:text-base placeholder-gray-400 focus:ring-2 focus:ring-black/10 focus:border-black focus:bg-white transition-all duration-200 outline-none"
                 placeholder="••••••••"
                 minLength="8"
               />
-              <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+              <div className="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center">
                 <button
                   type="button"
                   onClick={togglePasswordVisibility}
-                  className="text-gray-400 hover:text-gray-500 focus:outline-none"
+                  className="text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-black/10 rounded-lg p-1 transition-all duration-200"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? (
                     <EyeOff size={18} />
@@ -140,35 +144,35 @@ const SignUpPage = () => {
                 </button>
               </div>
             </div>
-            <p className="text-xs text-gray-500 mt-1">Must be at least 8 characters</p>
-          </div>
-
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <p className="text-sm text-blue-800">
-              💡 <strong>Next step:</strong> After creating your account, you'll be asked to complete your profile with academic information and social links.
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">
+              Must be at least 8 characters
             </p>
           </div>
 
-          <button
-            type="submit"
-            disabled={isLoading || !name || !email || password.length < 8}
-            className="flex w-full justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white transition-all duration-200 hover:-translate-y-1 active:translate-y-0 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-            style={{ backgroundColor: '#000000' }}
-            onMouseEnter={(e) => !isLoading && (e.target.style.backgroundColor = '#1F2937')}
-            onMouseLeave={(e) => !isLoading && (e.target.style.backgroundColor = '#000000')}
-          >
-            {isLoading ? (
-              <LoadingSpinner size="sm" color="white" />
-            ) : (
-              'Create Account'
-            )}
-          </button>
+          {/* Submit Button */}
+          <div className="pt-2">
+            <button
+              type="submit"
+              disabled={isLoading || !name || !email || password.length < 8}
+              className="w-full flex justify-center items-center py-3 sm:py-4 px-4 border border-transparent rounded-xl sm:rounded-2xl shadow-sm text-sm sm:text-base font-medium text-white bg-black hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none"
+            >
+              {isLoading ? (
+                <LoadingSpinner size="sm" color="white" />
+              ) : (
+                'Create Account'
+              )}
+            </button>
+          </div>
         </form>
 
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
+        {/* Sign in link */}
+        <div className="text-center pt-4 sm:pt-6 border-t border-gray-100">
+          <p className="text-sm sm:text-base text-gray-600">
             Already have an account?{' '}
-            <Link to="/signin" className="font-medium text-black hover:underline">
+            <Link 
+              to="/signin" 
+              className="font-medium text-black hover:text-gray-800 transition-colors duration-200"
+            >
               Sign in
             </Link>
           </p>

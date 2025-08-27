@@ -104,13 +104,13 @@ const ResetPasswordPage = () => {
     ];
 
     return (
-      <div className="mt-2 space-y-1">
-        <p className="text-xs text-gray-600 mb-2">Password must contain:</p>
+      <div className="mt-3 space-y-2 bg-gray-50/50 rounded-xl p-3">
+        <p className="text-xs sm:text-sm text-gray-600 font-medium mb-2">Password must contain:</p>
         {requirements.map(({ key, text }) => (
-          <div key={key} className="flex items-center text-xs">
+          <div key={key} className="flex items-center text-xs sm:text-sm">
             <CheckCircle 
-              size={12} 
-              className={`mr-2 ${
+              size={14} 
+              className={`mr-2 flex-shrink-0 ${
                 passwordValidation.errors[key] === false 
                   ? 'text-green-500' 
                   : 'text-gray-300'
@@ -118,7 +118,7 @@ const ResetPasswordPage = () => {
             />
             <span className={
               passwordValidation.errors[key] === false 
-                ? 'text-green-600' 
+                ? 'text-green-600 font-medium' 
                 : 'text-gray-500'
             }>
               {text}
@@ -130,19 +130,19 @@ const ResetPasswordPage = () => {
   };
 
   const renderResetStep = () => (
-    <form onSubmit={handleResetPassword} className="space-y-6">
-      <div className="text-center mb-6">
-        <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+    <form onSubmit={handleResetPassword} className="space-y-5 sm:space-y-6">
+      <div className="text-center mb-6 sm:mb-8">
+        <div className="mx-auto w-12 h-12 sm:w-14 sm:h-14 bg-blue-100/80 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-4">
           <Lock className="w-6 h-6 text-blue-600" />
         </div>
-        <h3 className="text-lg font-medium text-gray-900 mb-2">Reset your password</h3>
-        <p className="text-gray-600">
-          Enter the verification code sent to <strong>{email}</strong> and create a new password
+        <h3 className="text-lg sm:text-xl font-medium text-gray-900 mb-2 sm:mb-3">Reset your password</h3>
+        <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
+          Enter the verification code sent to <span className="font-medium text-gray-900">{email}</span> and create a new password
         </p>
       </div>
 
-      <div>
-        <label htmlFor="otp" className="block text-sm font-medium text-gray-700 mb-3">
+      <div className="space-y-2">
+        <label htmlFor="otp" className="block text-sm sm:text-base font-medium text-gray-800 mb-3">
           Verification Code
         </label>
         <OTPInput
@@ -152,20 +152,20 @@ const ResetPasswordPage = () => {
           disabled={isLoading}
           className="mb-2"
         />
-        <p className="text-xs text-gray-500 text-center">Enter the 6-digit code from your email</p>
+        <p className="text-xs sm:text-sm text-gray-500 text-center">Enter the 6-digit code from your email</p>
         {attemptsRemaining !== null && (
-          <p className="mt-1 text-xs text-red-600 text-center">
+          <p className="mt-2 text-xs sm:text-sm text-red-600 text-center font-medium">
             {attemptsRemaining} attempts remaining
           </p>
         )}
       </div>
 
-      <div>
-        <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-1">
+      <div className="space-y-2">
+        <label htmlFor="newPassword" className="block text-sm sm:text-base font-medium text-gray-800">
           New Password
         </label>
         <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
             <Lock size={18} className="text-gray-400" />
           </div>
           <input
@@ -175,14 +175,15 @@ const ResetPasswordPage = () => {
             required
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
-            className="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none"
+            className="block w-full pl-10 sm:pl-12 pr-12 sm:pr-14 py-3 sm:py-4 border border-gray-200 rounded-xl sm:rounded-2xl bg-gray-50/50 text-sm sm:text-base placeholder-gray-400 focus:ring-2 focus:ring-black/10 focus:border-black focus:bg-white transition-all duration-200 outline-none"
             placeholder="••••••••"
           />
-          <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+          <div className="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center">
             <button
               type="button"
               onClick={() => setShowNewPassword(!showNewPassword)}
-              className="text-gray-400 hover:text-gray-500 focus:outline-none"
+              className="text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-black/10 rounded-lg p-1 transition-all duration-200"
+              aria-label={showNewPassword ? "Hide password" : "Show password"}
             >
               {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
@@ -191,12 +192,12 @@ const ResetPasswordPage = () => {
         {newPassword && renderPasswordRequirements()}
       </div>
 
-      <div>
-        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+      <div className="space-y-2">
+        <label htmlFor="confirmPassword" className="block text-sm sm:text-base font-medium text-gray-800">
           Confirm New Password
         </label>
         <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
             <Lock size={18} className="text-gray-400" />
           </div>
           <input
@@ -206,35 +207,33 @@ const ResetPasswordPage = () => {
             required
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none"
+            className="block w-full pl-10 sm:pl-12 pr-12 sm:pr-14 py-3 sm:py-4 border border-gray-200 rounded-xl sm:rounded-2xl bg-gray-50/50 text-sm sm:text-base placeholder-gray-400 focus:ring-2 focus:ring-black/10 focus:border-black focus:bg-white transition-all duration-200 outline-none"
             placeholder="••••••••"
           />
-          <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+          <div className="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center">
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="text-gray-400 hover:text-gray-500 focus:outline-none"
+              className="text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-black/10 rounded-lg p-1 transition-all duration-200"
+              aria-label={showConfirmPassword ? "Hide password" : "Show password"}
             >
               {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
         </div>
         {confirmPassword && newPassword !== confirmPassword && (
-          <p className="mt-1 text-xs text-red-600 flex items-center">
-            <AlertTriangle size={12} className="mr-1" />
+          <p className="mt-2 text-xs sm:text-sm text-red-600 flex items-center bg-red-50/50 rounded-lg px-3 py-2">
+            <AlertTriangle size={14} className="mr-2 flex-shrink-0" />
             Passwords do not match
           </p>
         )}
       </div>
 
-      <div>
+      <div className="pt-2">
         <button
           type="submit"
           disabled={isLoading || !passwordValidation.isValid || newPassword !== confirmPassword || otp.length !== 6}
-          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white transition-all duration-200 hover:-translate-y-1 active:translate-y-0 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
-          style={{ backgroundColor: '#000000' }}
-          onMouseEnter={(e) => !e.target.disabled && (e.target.style.backgroundColor = '#1F2937')}
-          onMouseLeave={(e) => !e.target.disabled && (e.target.style.backgroundColor = '#000000')}
+          className="w-full flex justify-center items-center py-3 sm:py-4 px-4 border border-transparent rounded-xl sm:rounded-2xl shadow-sm text-sm sm:text-base font-medium text-white bg-black hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none"
         >
           {isLoading ? (
             <LoadingSpinner size="sm" color="white" />
@@ -244,13 +243,13 @@ const ResetPasswordPage = () => {
         </button>
       </div>
 
-      <div className="text-center">
+      <div className="text-center pt-2">
         <button
           type="button"
           onClick={handleBackToForgotPassword}
-          className="text-sm text-gray-600 hover:text-gray-800 flex items-center justify-center mx-auto"
+          className="text-sm sm:text-base text-gray-600 hover:text-gray-800 flex items-center justify-center mx-auto font-medium transition-colors duration-200"
         >
-          <ArrowLeft size={16} className="mr-1" />
+          <ArrowLeft size={16} className="mr-2" />
           Request new code
         </button>
       </div>
@@ -258,17 +257,19 @@ const ResetPasswordPage = () => {
   );
 
   const renderSuccessStep = () => (
-    <div className="text-center space-y-6">
-      <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
+    <div className="text-center space-y-5 sm:space-y-6">
+      <div className="mx-auto w-12 h-12 sm:w-14 sm:h-14 bg-green-100/80 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-4">
         <CheckCircle className="w-6 h-6 text-green-600" />
       </div>
-      <h3 className="text-lg font-medium text-gray-900">Password Reset Successfully</h3>
-      <p className="text-gray-600">
-        Your password has been reset successfully. You can now sign in with your new password.
-      </p>
+      <div>
+        <h3 className="text-lg sm:text-xl font-medium text-gray-900 mb-2 sm:mb-3">Password Reset Successfully</h3>
+        <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
+          Your password has been reset successfully. You can now sign in with your new password.
+        </p>
+      </div>
       <Link
         to="/signin"
-        className="inline-flex items-center px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-black hover:bg-gray-800 transition-colors"
+        className="inline-flex items-center px-4 sm:px-6 py-3 sm:py-4 border border-transparent rounded-xl sm:rounded-2xl shadow-sm text-sm sm:text-base font-medium text-white bg-black hover:bg-gray-800 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
       >
         Go to Sign In
       </Link>
@@ -293,10 +294,10 @@ const ResetPasswordPage = () => {
       >
         {/* Success message */}
         {successMessage && step !== 'success' && (
-          <div className="mb-4 p-3 rounded-md bg-green-50 border border-green-200">
+          <div className="mb-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-green-50/80 backdrop-blur-sm border border-green-200/50">
             <div className="flex">
-              <CheckCircle className="h-5 w-5 text-green-400 mr-2 mt-0.5 flex-shrink-0" />
-              <p className="text-sm text-green-700">{successMessage}</p>
+              <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+              <p className="text-xs sm:text-sm text-green-700 font-medium">{successMessage}</p>
             </div>
           </div>
         )}

@@ -220,7 +220,7 @@ class ProgressService {
    * @param {string} message - Message to share
    */
   static shareOnTwitter(message) {
-    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}`;
+    const twitterUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(message)}`;
     window.open(twitterUrl, '_blank', 'width=550,height=420');
   }
 
