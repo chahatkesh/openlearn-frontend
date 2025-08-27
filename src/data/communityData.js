@@ -146,7 +146,7 @@ const communityData = {
     // Soft Skills Pathfinders
     {
       id: 'soft-skills-1',
-      name: 'Aman Gupta',
+      name: 'Aryan Kalia',
       league: 'Soft Skills',
       role: 'Soft Skills Pathfinder',
       color: '#F59E0B',
