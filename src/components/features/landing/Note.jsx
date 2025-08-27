@@ -11,6 +11,11 @@ import {
   SiPrisma, 
   SiDocker,
   SiRedis,
+  SiGo,
+  SiAwslambda,
+  SiVercel,
+  SiGithubactions,
+  SiAmazondynamodb
 } from 'react-icons/si';
 import { FaAws } from "react-icons/fa";
 import { MotionDiv, MotionA, MotionSection, MotionP } from '../../common/MotionWrapper';
@@ -50,18 +55,23 @@ const Note = () => {
 
   // Technology stack information
   const techStack = [
-    { name: 'React.js', icon: SiReact },
-    { name: 'JavaScript', icon: SiJavascript },
-    { name: 'TypeScript', icon: SiTypescript },
-    { name: 'Node.js', icon: SiNodedotjs },
-    { name: 'Express', icon: SiExpress },
-    { name: 'Tailwind CSS', icon: SiTailwindcss },
-    { name: 'PostgreSQL', icon: SiPostgresql },
-    { name: 'Prisma', icon: SiPrisma },
-    { name: 'Docker', icon: SiDocker },
-    { name: 'Redis', icon: SiRedis },
-    { name: 'AWS', icon: FaAws }
-  ];
+  { name: 'React.js', icon: SiReact },
+  { name: 'JavaScript', icon: SiJavascript },
+  { name: 'TypeScript', icon: SiTypescript },
+  { name: 'Node.js', icon: SiNodedotjs },
+  { name: 'Express', icon: SiExpress },
+  { name: 'Tailwind CSS', icon: SiTailwindcss },
+  { name: 'PostgreSQL', icon: SiPostgresql },
+  { name: 'Prisma', icon: SiPrisma },
+  { name: 'Docker', icon: SiDocker },
+  { name: 'Redis', icon: SiRedis },
+  { name: 'AWS', icon: FaAws },
+  { name: 'Golang', icon: SiGo },
+  { name: 'AWS Lambda', icon: SiAwslambda },
+  { name: 'Vercel', icon: SiVercel },
+  { name: 'GitHub Actions', icon: SiGithubactions },
+  { name: 'Amazon DynamoDB', icon: SiAmazondynamodb },
+];
 
   return (
     <MotionSection 
