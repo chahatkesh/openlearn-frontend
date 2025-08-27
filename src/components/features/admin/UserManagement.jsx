@@ -17,7 +17,8 @@ import {
   Crown,
   Sparkles,
   ChevronDown,
-  Loader2
+  Loader2,
+  Hash
 } from 'lucide-react';
 import { FaXTwitter } from 'react-icons/fa6';
 import { getUserAvatarUrl } from '../../../utils/helpers/boringAvatarsUtils';
@@ -725,6 +726,13 @@ const UserDetailModal = ({ user, onClose, onUpdateStatus, onApproveUser }) => {
                     }) : 'N/A'}
                   </span>
                 </div>
+                <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">OpenLearn ID</span>
+                <div className="flex items-center gap-2">
+                  <Hash size={14} className="text-gray-400" />
+                  <span className="text-sm font-medium text-gray-900">{user.olid}</span>
+                </div>
+              </div>
               </div>
             </div>
 

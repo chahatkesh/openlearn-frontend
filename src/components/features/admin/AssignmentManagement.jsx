@@ -15,7 +15,7 @@ import {
 import AdminService from "../../../utils/api/adminService";
 import DataService from '../../../utils/api/dataService';
 
-const AssignmentManagement = ({ user, leagues }) => {
+const AssignmentManagement = ({ leagues }) => {
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
