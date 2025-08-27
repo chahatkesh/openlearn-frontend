@@ -8,6 +8,7 @@ const WeekManagement = ({
   onDeleteWeek,
   selectedLeagueId,
   onSelectLeague,
+  user, // Add user prop for role checking
   loading
 }) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -17,6 +18,9 @@ const WeekManagement = ({
     order: '',
     leagueId: ''
   });
+
+  // Check if user is Grand Pathfinder (has access to all data)
+  const isGrandPathfinder = user?.role === 'GRAND_PATHFINDER';
 
   // If leagues change while the form is open
   useEffect(() => {
@@ -105,8 +109,8 @@ const WeekManagement = ({
     setShowCreateForm(true);
   };
 
-  // Filter weeks by selected league if applicable
-  const filteredWeeks = selectedLeagueId 
+  // Filter weeks by selected league if applicable (skip for Grand Pathfinder)
+  const filteredWeeks = (!isGrandPathfinder && selectedLeagueId) 
     ? weeks.filter(week => week.leagueId === selectedLeagueId)
     : weeks;
 
@@ -138,25 +142,27 @@ const WeekManagement = ({
                 </p>
               </div>
               
-              {/* League Filter */}
-              <div className="flex-shrink-0 w-full sm:w-auto">
-                <label htmlFor="leagueFilter" className="block text-xs font-medium text-gray-700 mb-2">
-                  Filter by League
-                </label>
-                <select
-                  id="leagueFilter"
-                  value={selectedLeagueId || ''}
-                  onChange={handleLeagueChange}
-                  className="w-full sm:w-64 px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/20 focus:border-gray-400 transition-all duration-200"
-                >
-                  <option value="">All Leagues</option>
-                  {leagues.map(league => (
-                    <option key={league.id} value={league.id}>
-                      {league.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              {/* League Filter - Hide for Grand Pathfinder */}
+              {!isGrandPathfinder && (
+                <div className="flex-shrink-0 w-full sm:w-auto">
+                  <label htmlFor="leagueFilter" className="block text-xs font-medium text-gray-700 mb-2">
+                    Filter by League
+                  </label>
+                  <select
+                    id="leagueFilter"
+                    value={selectedLeagueId || ''}
+                    onChange={handleLeagueChange}
+                    className="w-full sm:w-64 px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/20 focus:border-gray-400 transition-all duration-200"
+                  >
+                    <option value="">All Leagues</option>
+                    {leagues.map(league => (
+                      <option key={league.id} value={league.id}>
+                        {league.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
           </div>
         </div>

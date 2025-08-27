@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 
 const ResourceManagement = ({
+  user,
   resources,
   sections,
   weeks,
@@ -44,6 +45,9 @@ const ResourceManagement = ({
   const [errors, setErrors] = useState({});
   const [typeFilter, setTypeFilter] = useState('ALL');
   const [expandedSections, setExpandedSections] = useState({});
+
+  // Check if user is Grand Pathfinder (has access to all data without filtering)
+  const isGrandPathfinder = user?.role === 'GRAND_PATHFINDER';
 
   // Resource types with icons and labels
   const resourceTypes = {
@@ -189,7 +193,7 @@ const ResourceManagement = ({
   // Get active filter count
   const getActiveFilterCount = () => {
     let count = 0;
-    if (selectedLeagueId) count++;
+    if (!isGrandPathfinder && selectedLeagueId) count++;
     if (selectedWeekId) count++;
     if (selectedSectionId) count++;
     if (typeFilter !== 'ALL') count++;
@@ -199,7 +203,7 @@ const ResourceManagement = ({
   // Get filter summary for display
   const getFilterSummary = () => {
     const filters = [];
-    if (selectedLeagueId) {
+    if (!isGrandPathfinder && selectedLeagueId) {
       const league = leagues.find(l => l.id === selectedLeagueId);
       filters.push({ type: 'league', label: league?.name || 'Unknown League', value: selectedLeagueId });
     }
@@ -247,7 +251,8 @@ const ResourceManagement = ({
     if (!week) return false;
     
     // Filter by league (if selected, only show resources in that league)
-    if (selectedLeagueId && week.leagueId !== selectedLeagueId) return false;
+    // Skip league filtering for Grand Pathfinder users
+    if (!isGrandPathfinder && selectedLeagueId && week.leagueId !== selectedLeagueId) return false;
     
     // Filter by week (if selected, only show resources in that week)
     if (selectedWeekId && section.weekId !== selectedWeekId) return false;
@@ -314,24 +319,26 @@ const ResourceManagement = ({
       <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
         {/* Filter Controls */}
         <div className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                League
-              </label>
-              <select
-                value={selectedLeagueId}
-                onChange={(e) => onSelectLeague(e.target.value)}
-                className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-              >
-                <option value="">All Leagues</option>
-                {leagues.map((league) => (
-                  <option key={league.id} value={league.id}>
-                    {league.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+          <div className={`grid grid-cols-1 gap-4 ${isGrandPathfinder ? 'md:grid-cols-3' : 'md:grid-cols-4'}`}>
+            {!isGrandPathfinder && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  League
+                </label>
+                <select
+                  value={selectedLeagueId}
+                  onChange={(e) => onSelectLeague(e.target.value)}
+                  className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                >
+                  <option value="">All Leagues</option>
+                  {leagues.map((league) => (
+                    <option key={league.id} value={league.id}>
+                      {league.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -341,11 +348,11 @@ const ResourceManagement = ({
                 value={selectedWeekId}
                 onChange={(e) => onSelectWeek(e.target.value)}
                 className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors disabled:bg-gray-50 disabled:text-gray-500"
-                disabled={!selectedLeagueId}
+                disabled={!isGrandPathfinder && !selectedLeagueId}
               >
                 <option value="">All Weeks</option>
                 {weeks
-                  .filter(week => !selectedLeagueId || week.leagueId === selectedLeagueId)
+                  .filter(week => isGrandPathfinder || !selectedLeagueId || week.leagueId === selectedLeagueId)
                   .map((week) => (
                     <option key={week.id} value={week.id}>
                       {week.name}

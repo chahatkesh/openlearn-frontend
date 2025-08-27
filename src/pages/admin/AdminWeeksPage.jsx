@@ -7,23 +7,37 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const API_BASE_URL = `${BASE_URL}/api`;
 
 const AdminWeeksPage = () => {
+  const { user } = useContext(AuthContext);
   const [weeks, setWeeks] = useState([]);
   const [leagues, setLeagues] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedLeagueId, setSelectedLeagueId] = useState('');
   const [error, setError] = useState(null);
-  const { user } = useContext(AuthContext);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     
     try {
-      // Get user's pathfinder scopes to determine accessible leagues
-      const accessibleLeagueIds = user?.pathfinderScopes?.map(scope => scope.leagueId) || [];
+      // Grand Pathfinder has access to all data
+      const isGrandPathfinder = user?.role === 'GRAND_PATHFINDER';
       
       let weeksData, leaguesData;
       
-      if (accessibleLeagueIds.length > 0) {
+      if (isGrandPathfinder) {
+        // Fetch all data for Grand Pathfinder
+        const [allWeeksData, allLeaguesData] = await Promise.all([
+          AdminService.getAllWeeks(),
+          AdminService.getAllLeagues()
+        ]);
+        
+        weeksData = allWeeksData;
+        leaguesData = allLeaguesData;
+      } else {
+        // Get user's pathfinder scopes to determine accessible leagues
+        const accessibleLeagueIds = user?.pathfinderScopes?.map(scope => scope.leagueId) || [];
+        
+        if (accessibleLeagueIds.length > 0) {
         // Fetch weeks for each accessible league
         const weeksPromises = accessibleLeagueIds.map(leagueId => 
           AdminService.getWeeksByLeague(leagueId)
@@ -40,10 +54,11 @@ const AdminWeeksPage = () => {
           accessibleLeagueIds.includes(league.id)
         ) || [];
         leaguesData = { leagues: accessibleLeagues };
-      } else {
-        // If no pathfinder scopes, return empty data
-        weeksData = { weeks: [] };
-        leaguesData = { leagues: [] };
+        } else {
+          // If no pathfinder scopes, return empty data
+          weeksData = { weeks: [] };
+          leaguesData = { leagues: [] };
+        }
       }
       
       setWeeks(weeksData.weeks || []);
@@ -171,12 +186,15 @@ const AdminWeeksPage = () => {
 
   return (
     <WeekManagement
+      user={user}
       weeks={weeks}
       leagues={leagues}
       onCreateWeek={handleCreateWeek}
       onUpdateWeek={handleUpdateWeek}
       onDeleteWeek={handleDeleteWeek}
       loading={loading}
+      selectedLeagueId={selectedLeagueId}
+      setSelectedLeagueId={setSelectedLeagueId}
     />
   );
 };

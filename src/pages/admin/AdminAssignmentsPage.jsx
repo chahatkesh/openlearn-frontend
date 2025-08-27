@@ -14,22 +14,30 @@ const AdminAssignmentsPage = () => {
     setError(null);
     
     try {
-      // Get user's pathfinder scopes to determine accessible leagues
-      const accessibleLeagueIds = user?.pathfinderScopes?.map(scope => scope.leagueId) || [];
+      // Grand Pathfinder has access to all data
+      const isGrandPathfinder = user?.role === 'GRAND_PATHFINDER';
       
       // Fetch all leagues first
       const allLeaguesData = await AdminService.getAllLeagues();
       
       let filteredLeagues;
       
-      if (accessibleLeagueIds.length > 0) {
-        // Filter to only accessible leagues
-        filteredLeagues = allLeaguesData.leagues?.filter(league => 
-          accessibleLeagueIds.includes(league.id)
-        ) || [];
+      if (isGrandPathfinder) {
+        // Grand Pathfinder can access all leagues
+        filteredLeagues = allLeaguesData.leagues || [];
       } else {
-        // If no pathfinder scopes, show no leagues
-        filteredLeagues = [];
+        // Get user's pathfinder scopes to determine accessible leagues
+        const accessibleLeagueIds = user?.pathfinderScopes?.map(scope => scope.leagueId) || [];
+        
+        if (accessibleLeagueIds.length > 0) {
+          // Filter to only accessible leagues
+          filteredLeagues = allLeaguesData.leagues?.filter(league => 
+            accessibleLeagueIds.includes(league.id)
+          ) || [];
+        } else {
+          // If no pathfinder scopes, show no leagues
+          filteredLeagues = [];
+        }
       }
       
       setLeagues(filteredLeagues);
@@ -73,7 +81,7 @@ const AdminAssignmentsPage = () => {
   }
 
   return (
-    <AssignmentManagement leagues={leagues} />
+    <AssignmentManagement user={user} leagues={leagues} />
   );
 };
 

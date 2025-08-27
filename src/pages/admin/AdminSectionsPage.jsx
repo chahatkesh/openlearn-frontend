@@ -12,6 +12,8 @@ const AdminSectionsPage = () => {
   const [leagues, setLeagues] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedLeagueId, setSelectedLeagueId] = useState('');
+  const [selectedWeekId, setSelectedWeekId] = useState('');
   const { user } = useContext(AuthContext);
 
   const fetchData = useCallback(async () => {
@@ -19,12 +21,27 @@ const AdminSectionsPage = () => {
     setError(null);
     
     try {
-      // Get user's pathfinder scopes to determine accessible leagues
-      const accessibleLeagueIds = user?.pathfinderScopes?.map(scope => scope.leagueId) || [];
+      // Grand Pathfinder has access to all data
+      const isGrandPathfinder = user?.role === 'GRAND_PATHFINDER';
       
       let sectionsData, weeksData, leaguesData;
       
-      if (accessibleLeagueIds.length > 0) {
+      if (isGrandPathfinder) {
+        // Fetch all data for Grand Pathfinder
+        const [allSectionsData, allWeeksData, allLeaguesData] = await Promise.all([
+          AdminService.getAllSectionsComplete(),
+          AdminService.getAllWeeks(),
+          AdminService.getAllLeagues()
+        ]);
+        
+        sectionsData = allSectionsData;
+        weeksData = allWeeksData;
+        leaguesData = allLeaguesData;
+      } else {
+        // Get user's pathfinder scopes to determine accessible leagues
+        const accessibleLeagueIds = user?.pathfinderScopes?.map(scope => scope.leagueId) || [];
+        
+        if (accessibleLeagueIds.length > 0) {
         // Fetch weeks for each accessible league
         const weeksPromises = accessibleLeagueIds.map(leagueId => 
           AdminService.getWeeksByLeague(leagueId)
@@ -51,11 +68,12 @@ const AdminSectionsPage = () => {
           accessibleLeagueIds.includes(league.id)
         ) || [];
         leaguesData = { leagues: accessibleLeagues };
-      } else {
-        // If no pathfinder scopes, return empty data
-        sectionsData = { sections: [] };
-        weeksData = { weeks: [] };
-        leaguesData = { leagues: [] };
+        } else {
+          // If no pathfinder scopes, return empty data
+          sectionsData = { sections: [] };
+          weeksData = { weeks: [] };
+          leaguesData = { leagues: [] };
+        }
       }
       
       setSections(sectionsData.sections || []);
@@ -190,6 +208,11 @@ const AdminSectionsPage = () => {
       onCreateSection={handleCreateSection}
       onUpdateSection={handleUpdateSection}
       onDeleteSection={handleDeleteSection}
+      selectedLeagueId={selectedLeagueId}
+      selectedWeekId={selectedWeekId}
+      onSelectLeague={setSelectedLeagueId}
+      onSelectWeek={setSelectedWeekId}
+      user={user}
       loading={loading}
     />
   );

@@ -51,7 +51,8 @@ const SectionManagement = ({
   selectedLeagueId,
   selectedWeekId,
   onSelectLeague,
-  onSelectWeek, 
+  onSelectWeek,
+  user // Add user prop for role checking
 }) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingSection, setEditingSection] = useState(null);
@@ -65,6 +66,9 @@ const SectionManagement = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [toast, setToast] = useState(null);
+
+  // Check if user is Grand Pathfinder (has access to all data)
+  const isGrandPathfinder = user?.role === 'GRAND_PATHFINDER';
 
   // Toast function
   const showToast = (message, type = 'success') => {
@@ -235,7 +239,8 @@ const SectionManagement = ({
   // Filter sections based on selected filters
   const filteredSections = sections.filter(section => {
     if (selectedWeekId && section.weekId !== selectedWeekId) return false;
-    if (selectedLeagueId && !section.week?.league?.id === selectedLeagueId) return false;
+    // Skip league filtering for Grand Pathfinder users
+    if (!isGrandPathfinder && selectedLeagueId && section.week?.league?.id !== selectedLeagueId) return false;
     return true;
   });
 
@@ -258,7 +263,8 @@ const SectionManagement = ({
   });
 
   const getFilteredWeeks = () => {
-    if (selectedLeagueId) {
+    // Skip league filtering for Grand Pathfinder users
+    if (!isGrandPathfinder && selectedLeagueId) {
       return weeks.filter(week => week.leagueId === selectedLeagueId);
     }
     return weeks;
@@ -343,25 +349,28 @@ const SectionManagement = ({
             </button>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <BookOpen className="w-4 h-4 inline mr-2" />
-                League
-              </label>
-              <select
-                value={selectedLeagueId}
-                onChange={(e) => onSelectLeague(e.target.value)}
-                className="block w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200"
-              >
-                <option value="">All Leagues</option>
-                {leagues.map((league) => (
-                  <option key={league.id} value={league.id}>
-                    {league.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+          <div className={`grid grid-cols-1 ${!isGrandPathfinder ? 'md:grid-cols-2' : ''} gap-6`}>
+            {/* Show league filter only for non-Grand Pathfinder users */}
+            {!isGrandPathfinder && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <BookOpen className="w-4 h-4 inline mr-2" />
+                  League
+                </label>
+                <select
+                  value={selectedLeagueId}
+                  onChange={(e) => onSelectLeague(e.target.value)}
+                  className="block w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200"
+                >
+                  <option value="">All Leagues</option>
+                  {leagues.map((league) => (
+                    <option key={league.id} value={league.id}>
+                      {league.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -384,10 +393,10 @@ const SectionManagement = ({
           </div>
           
           {/* Active Filters */}
-          {(selectedLeagueId || selectedWeekId) && (
+          {((!isGrandPathfinder && selectedLeagueId) || selectedWeekId) && (
             <div className="flex items-center space-x-2 mt-4 pt-4 border-t border-gray-100">
               <span className="text-sm text-gray-500">Active filters:</span>
-              {selectedLeagueId && (
+              {!isGrandPathfinder && selectedLeagueId && (
                 <span className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-lg">
                   {leagues.find(l => l.id === selectedLeagueId)?.name}
                   <button 
