@@ -95,7 +95,7 @@ export const getUserBoringAvatarUrl = (user, size = 64) => {
     return generateBoringAvatarUrl('anonymous-user', size);
   }
   
-  const seed = user.email || user.name || user.id || 'anonymous-user';
+  const seed = user.name || user.email || user.id || 'anonymous-user';
   return generateBoringAvatarUrl(seed, size);
 };
 
@@ -105,7 +105,7 @@ export const getUserBoringAvatarUrl = (user, size = 64) => {
 export const generateAvatarUrl = (seed, service = 'boring', style = 'bauhaus', size = 64) => {
   switch (service) {
     case 'boring': {
-      return getUserBoringAvatarUrl({ email: seed }, size);
+      return getUserBoringAvatarUrl({ name: seed }, size);
     }
     case 'dicebear': {
       const cleanSeed = encodeURIComponent(seed.toLowerCase().trim());
@@ -115,7 +115,7 @@ export const generateAvatarUrl = (seed, service = 'boring', style = 'bauhaus', s
       return `https://ui-avatars.com/api/?name=${encodeURIComponent(seed)}&size=${size}&background=random`;
     }
     default:
-      return getUserBoringAvatarUrl({ email: seed }, size);
+      return getUserBoringAvatarUrl({ name: seed }, size);
   }
 };
 
@@ -127,6 +127,6 @@ export const getUserAvatarUrl = (user, service = 'boring', style = 'bauhaus', si
     return generateAvatarUrl('anonymous-user', service, style, size);
   }
   
-  const seed = user.email || user.name || user.id || 'anonymous-user';
+  const seed = user.name || user.email || user.id || 'anonymous-user';
   return generateAvatarUrl(seed, service, style, size);
 };

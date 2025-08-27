@@ -172,7 +172,7 @@ export const BoringAvatar = ({
   palette = 'default',
   className = ''
 }) => {
-  const seed = user?.email || user?.name || user?.id || 'anonymous';
+  const seed = user?.name || user?.email || user?.id || 'anonymous';
   const name = user?.name || user?.email || 'Anonymous';
   
   const avatarProps = { seed, size, palette };

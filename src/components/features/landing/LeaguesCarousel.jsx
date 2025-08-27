@@ -125,7 +125,7 @@ const LeagueCard = ({ league, isActive, isMobile }) => {
                 transition: 'all 0.5s cubic-bezier(0.23, 1, 0.32, 1)',
               }}
             >
-              <Play className="w-6 h-6 text-gray-800 ml-1" fill="currentColor" />
+              <ArrowRight className="w-6 h-6 text-gray-800" />
             </div>
           </div>
         </div>
