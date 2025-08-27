@@ -212,53 +212,78 @@ const LearningProgressSection = ({ user }) => {
   // IMPROVEMENT: Show loading skeleton only for basic dashboard loading, not resource calculations
   // This allows users to see and interact with the dashboard immediately while resources load in background
   if (loading) {
-    
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="space-y-6">
-            {/* Header skeleton */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-6 space-y-4">
-              <div className="h-8 bg-gray-200 rounded w-1/3 animate-pulse"></div>
-              <div className="h-4 bg-gray-200 rounded w-2/3 animate-pulse"></div>
-            </div>
+      <div className="min-h-screen bg-gray-50/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 lg:pt-12 pb-16 lg:pb-20">
+          
+          {/* Dashboard Header Skeleton - Similar to LeaguesPage */}
+          <div className="mb-8 lg:mb-12">
+            <div className="h-12 sm:h-16 lg:h-20 bg-gray-200 rounded-2xl w-2/3 mb-3 lg:mb-4 animate-pulse"></div>
+            <div className="h-6 sm:h-8 bg-gray-200 rounded-xl w-1/2 animate-pulse"></div>
+          </div>
 
+          <div className="space-y-8 sm:space-y-12 lg:space-y-16">
+            
             {/* Progress stats skeleton */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-6">
-              <div className="h-6 bg-gray-200 rounded w-1/4 mb-6 animate-pulse"></div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl border border-gray-200/30 p-6 sm:p-8 lg:p-10">
+              <div className="mb-8 sm:mb-12">
+                <div className="h-8 sm:h-10 lg:h-12 bg-gray-200 rounded-2xl w-1/3 mb-3 sm:mb-4 animate-pulse"></div>
+                <div className="h-5 sm:h-6 bg-gray-200 rounded-xl w-1/2 animate-pulse"></div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
                 {[1, 2, 3].map(i => (
-                  <div key={i} className="text-center space-y-4">
-                    <div className="w-20 h-20 bg-gray-200 rounded-full mx-auto animate-pulse"></div>
-                    <div className="h-4 bg-gray-200 rounded w-24 mx-auto animate-pulse"></div>
-                    <div className="h-3 bg-gray-200 rounded w-16 mx-auto animate-pulse"></div>
+                  <div key={i} className="text-center group">
+                    <div className="bg-gradient-to-br from-gray-50 to-gray-100/50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-gray-200/50">
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gray-200 rounded-full mx-auto mb-4 animate-pulse"></div>
+                      <div className="h-5 sm:h-6 bg-gray-200 rounded-xl w-3/4 mx-auto mb-2 animate-pulse"></div>
+                      <div className="h-4 bg-gray-200 rounded-lg w-1/2 mx-auto animate-pulse"></div>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Available Learning Paths skeleton */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-6">
-              <div className="h-6 bg-gray-200 rounded w-1/3 mb-6 animate-pulse"></div>
-              <div className="space-y-4">
-                {[1].map(i => (
-                  <div key={i} className="border border-gray-100 rounded-xl p-6">
-                    <div className="h-5 bg-gray-200 rounded w-1/4 mb-4 animate-pulse"></div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {[1, 2, 3].map(j => (
-                        <div key={j} className="p-4 bg-gray-50 rounded-lg">
-                          <div className="h-4 bg-gray-200 rounded w-3/4 mb-2 animate-pulse"></div>
-                          <div className="h-3 bg-gray-200 rounded w-full mb-3 animate-pulse"></div>
-                          <div className="flex space-x-2">
-                            <div className="h-3 bg-gray-200 rounded w-12 animate-pulse"></div>
-                            <div className="h-3 bg-gray-200 rounded w-16 animate-pulse"></div>
-                            <div className="h-3 bg-gray-200 rounded w-14 animate-pulse"></div>
-                          </div>
+            {/* Active leagues skeleton */}
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl border border-gray-200/30 p-6 sm:p-8 lg:p-10">
+              <div className="mb-8 sm:mb-12">
+                <div className="h-8 sm:h-10 lg:h-12 bg-gray-200 rounded-2xl w-1/3 mb-3 sm:mb-4 animate-pulse"></div>
+                <div className="h-5 sm:h-6 bg-gray-200 rounded-xl w-1/2 animate-pulse"></div>
+              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+                {[1, 2].map(i => (
+                  <div key={i} className="bg-gradient-to-br from-white to-gray-50/30 rounded-2xl sm:rounded-3xl border border-gray-200/30 overflow-hidden">
+                    <div className="p-6 sm:p-8 border-b border-gray-100/50">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="h-6 sm:h-8 bg-gray-200 rounded-xl w-3/4 mb-3 animate-pulse"></div>
+                          <div className="h-4 sm:h-5 bg-gray-200 rounded-lg w-full animate-pulse"></div>
                         </div>
-                      ))}
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-200 rounded-full animate-pulse"></div>
+                      </div>
+                    </div>
+                    <div className="p-6 sm:p-8">
+                      <div className="grid grid-cols-3 gap-4 sm:gap-6 mb-6">
+                        {[1, 2, 3].map(j => (
+                          <div key={j} className="p-4 bg-gray-50 rounded-xl sm:rounded-2xl">
+                            <div className="w-8 h-8 bg-gray-200 rounded-xl mx-auto mb-2 animate-pulse"></div>
+                            <div className="h-6 bg-gray-200 rounded-lg w-8 mx-auto mb-1 animate-pulse"></div>
+                            <div className="h-3 bg-gray-200 rounded w-full animate-pulse"></div>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="h-12 bg-gray-200 rounded-xl sm:rounded-2xl w-full animate-pulse"></div>
                     </div>
                   </div>
                 ))}
+              </div>
+            </div>
+
+            {/* Explore leagues skeleton */}
+            <div className="bg-gray-900 rounded-2xl sm:rounded-3xl p-8 sm:p-12 lg:p-16">
+              <div className="text-center">
+                <div className="h-8 sm:h-10 lg:h-12 bg-gray-700 rounded-2xl w-1/3 mx-auto mb-4 sm:mb-6 animate-pulse"></div>
+                <div className="h-5 sm:h-6 bg-gray-700 rounded-xl w-2/3 mx-auto mb-8 sm:mb-10 animate-pulse"></div>
+                <div className="h-12 sm:h-16 bg-gray-700 rounded-xl sm:rounded-2xl w-48 mx-auto animate-pulse"></div>
               </div>
             </div>
           </div>
@@ -278,161 +303,180 @@ const LearningProgressSection = ({ user }) => {
   }
   
   return (
-    <div className="bg-transparent">
-      <div className="p-2 md:p-6 space-y-6">
+    <div className="min-h-screen bg-gray-50/30">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 lg:pt-12 pb-16 lg:pb-20">
         
-        {/* Header Section */}
-        <div className="relative">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-1">Learning Dashboard</h1>
-              <p className="text-sm text-gray-600">Track your progress and continue your journey</p>
-            </div>
-          </div>
+        {/* Dashboard Header - Similar to LeaguesPage */}
+        <div className="mb-8 lg:mb-12">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 lg:mb-4 tracking-tight">
+            Learning Dashboard
+          </h1>
+          <p className="text-lg lg:text-xl text-gray-700 max-w-3xl leading-relaxed">
+            Track your progress and continue your learning journey with personalized insights
+          </p>
           
-          {/* Search Results Indicator */}
+          {/* Search Results Indicator - Dashboard Style */}
           {isSearchActive && (
-            <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="flex items-center gap-2 text-blue-800">
-                <Search className="h-4 w-4" />
-                <span className="text-sm font-medium">
-                  Showing search results for: "<span className="font-semibold">{searchTerm}</span>"
-                </span>
-                <button
-                  onClick={() => {
-                    window.dispatchEvent(new CustomEvent('dashboardSearch', {
-                      detail: { searchTerm: '', isActive: false }
-                    }));
-                  }}
-                  className="ml-auto text-blue-600 hover:text-blue-800 text-sm underline"
-                >
-                  Clear search
-                </button>
+            <div className="mt-6 max-w-2xl">
+              <div className="bg-blue-50/80 backdrop-blur-sm border border-blue-200/50 rounded-2xl p-4 sm:p-6">
+                <div className="flex items-center gap-3 text-blue-800">
+                  <div className="w-8 h-8 rounded-xl bg-blue-100 flex items-center justify-center">
+                    <Search className="h-4 w-4 text-blue-600" />
+                  </div>
+                  <div className="flex-1">
+                    <span className="text-sm sm:text-base font-medium">
+                      Search results for "<span className="font-semibold">{searchTerm}</span>"
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      window.dispatchEvent(new CustomEvent('dashboardSearch', {
+                        detail: { searchTerm: '', isActive: false }
+                      }));
+                    }}
+                    className="text-blue-600 hover:text-blue-800 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-all duration-200"
+                  >
+                    Clear
+                  </button>
+                </div>
               </div>
             </div>
           )}
         </div>
+
+        <div className="space-y-8 sm:space-y-12 lg:space-y-16">
         
-        {/* IMPROVEMENT: Global Resource Calculation Progress */}
+        {/* Resource Calculation Progress - Apple Style */}
         {resourceCalculationsInProgress.size > 0 && (
-          <ResourceLoadingIndicator
-            isLoading={true}
-            completedCount={resourceCalculationsCompleted.size}
-            totalCount={totalResourceCalculations}
-            compact={false}
-          />
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl border border-gray-200/30 p-6 sm:p-8">
+            <ResourceLoadingIndicator
+              isLoading={true}
+              completedCount={resourceCalculationsCompleted.size}
+              totalCount={totalResourceCalculations}
+              compact={false}
+            />
+          </div>
         )}
 
-        {/* Welcome Banner for New Users */}
+        {/* Welcome Banner for New Users - Apple Style */}
         {(!dashboardData?.enrollments || dashboardData.enrollments.length === 0) && (
-          <div className="bg-gradient-to-r from-yellow-50 to-amber-50 rounded-2xl border border-yellow-100 shadow-sm overflow-hidden">
+          <div className="relative overflow-hidden bg-gradient-to-br from-[#FFDE59]/10 via-white to-[#FFDE59]/5 rounded-2xl sm:rounded-3xl border border-[#FFDE59]/20">
             <MemoizedWelcomeBanner user={user} onExploreClick={scrollToLeagues} />
           </div>
         )}
 
-        {/* Learning Progress Section - Only show if user has enrollments */}
+        {/* Learning Progress Section - Apple Style Enhanced */}
         {dashboardData?.enrollments?.length > 0 && (
-          <div className="bg-white rounded-xl md:rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="p-4 md:p-6">
-              <div className="flex items-center mb-6">
-                <div>
-                  <h2 className="text-xl font-bold text-gray-900">Learning Progress</h2>
-                  <p className="text-sm text-gray-600">Your overall learning statistics</p>
-                </div>
+          <section className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl border border-gray-200/30 overflow-hidden">
+            <div className="p-6 sm:p-8 lg:p-10">
+              {/* Section Header */}
+              <div className="mb-8 sm:mb-12">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-black mb-3 sm:mb-4 tracking-tight leading-tight">
+                  Learning Progress
+                </h2>
+                <p className="text-base sm:text-lg text-gray-600 leading-relaxed font-light">
+                  Your overall learning statistics and achievements
+                </p>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Progress Stats - Apple Style Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
                 {(() => {
-                  // Calculate accurate progress once and reuse
                   const accurateProgress = ProgressService.calculateAccurateResourceProgress(dashboardData, allResourceProgress);
                   const accurateSectionProgress = ProgressService.calculateAccurateSectionProgress(dashboardData, allResourceProgress, allSectionResources);
                   
                   return (
                     <>
                       {/* Active Leagues Count */}
-                      <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
-                        <div className="relative inline-flex items-center justify-center w-20 h-20">
-                          <svg className="w-20 h-20 transform -rotate-90" viewBox="0 0 36 36">
-                            <path
-                              d="M18 2.0845 A 15.9155 15.9155 0 0 1 18 33.9155"
-                              fill="none"
-                              stroke="#DBEAFE"
-                              strokeWidth="3"
-                            />
-                            <path
-                              d="M18 2.0845 A 15.9155 15.9155 0 0 1 18 33.9155"
-                              fill="none"
-                              stroke="#3B82F6"
-                              strokeWidth="3"
-                              strokeDasharray={`${leagues.length > 0 ? Math.round((dashboardData.enrollments.length / leagues.length) * 50) : 0}, 100`}
-                              className="transition-all duration-1000 ease-out"
-                            />
-                          </svg>
-                          <span className="absolute text-sm font-bold text-gray-900">
-                            {leagues.length > 0 ? Math.round((dashboardData.enrollments.length / leagues.length) * 100) : 0}%
-                          </span>
-                        </div>
-                        <div className="text-sm font-semibold text-gray-900 mb-1">Active Leagues</div>
-                        <div className="text-xs text-gray-600">
-                          {dashboardData.enrollments.length} of {leagues.length} leagues
+                      <div className="text-center group">
+                        <div className="bg-gradient-to-br from-blue-50 to-indigo-50/50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-blue-100/50 transition-all duration-300 hover:-translate-y-1">
+                          <div className="relative inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 mb-4">
+                            <svg className="w-20 h-20 sm:w-24 sm:h-24 transform -rotate-90" viewBox="0 0 36 36">
+                              <path
+                                d="M18 2.0845 A 15.9155 15.9155 0 0 1 18 33.9155"
+                                fill="none"
+                                stroke="#E0F2FE"
+                                strokeWidth="2.5"
+                              />
+                              <path
+                                d="M18 2.0845 A 15.9155 15.9155 0 0 1 18 33.9155"
+                                fill="none"
+                                stroke="#3B82F6"
+                                strokeWidth="2.5"
+                                strokeDasharray={`${leagues.length > 0 ? Math.round((dashboardData.enrollments.length / leagues.length) * 50) : 0}, 100`}
+                                className="transition-all duration-1000 ease-out"
+                              />
+                            </svg>
+                            <span className="absolute text-lg sm:text-xl font-bold text-blue-900">
+                              {leagues.length > 0 ? Math.round((dashboardData.enrollments.length / leagues.length) * 100) : 0}%
+                            </span>
+                          </div>
+                          <div className="text-base sm:text-lg font-semibold text-blue-900 mb-2">Active Leagues</div>
+                          <div className="text-sm text-blue-600">
+                            {dashboardData.enrollments.length} of {leagues.length} leagues
+                          </div>
                         </div>
                       </div>
 
-                      {/* Sections Progress */}
-                      <div className="text-center p-6 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-100">
-                        <div className="relative inline-flex items-center justify-center w-20 h-20">
-                          <svg className="w-20 h-20 transform -rotate-90" viewBox="0 0 36 36">
-                            <path
-                              d="M18 2.0845 A 15.9155 15.9155 0 0 1 18 33.9155"
-                              fill="none"
-                              stroke="#D1FAE5"
-                              strokeWidth="3"
-                            />
-                            <path
-                              d="M18 2.0845 A 15.9155 15.9155 0 0 1 18 33.9155"
-                              fill="none"
-                              stroke="#10B981"
-                              strokeWidth="3"
-                              strokeDasharray={`${accurateSectionProgress.sectionCompletionPercentage / 2}, 100`}
-                              className="transition-all duration-1000 ease-out"
-                            />
-                          </svg>
-                          <span className="absolute text-sm font-bold text-gray-900">
-                            {accurateSectionProgress.sectionCompletionPercentage}%
-                          </span>
-                        </div>
-                        <div className="text-sm font-semibold text-gray-900 mb-1">Sections Complete</div>
-                        <div className="text-xs text-gray-600">
-                          {accurateSectionProgress.completedSections} of {accurateSectionProgress.totalSections} total
+                      {/* Topics Progress */}
+                      <div className="text-center group">
+                        <div className="bg-gradient-to-br from-green-50 to-emerald-50/50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-green-100/50 transition-all duration-300 hover:-translate-y-1">
+                          <div className="relative inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 mb-4">
+                            <svg className="w-20 h-20 sm:w-24 sm:h-24 transform -rotate-90" viewBox="0 0 36 36">
+                              <path
+                                d="M18 2.0845 A 15.9155 15.9155 0 0 1 18 33.9155"
+                                fill="none"
+                                stroke="#ECFDF5"
+                                strokeWidth="2.5"
+                              />
+                              <path
+                                d="M18 2.0845 A 15.9155 15.9155 0 0 1 18 33.9155"
+                                fill="none"
+                                stroke="#10B981"
+                                strokeWidth="2.5"
+                                strokeDasharray={`${accurateSectionProgress.sectionCompletionPercentage / 2}, 100`}
+                                className="transition-all duration-1000 ease-out"
+                              />
+                            </svg>
+                            <span className="absolute text-lg sm:text-xl font-bold text-green-900">
+                              {accurateSectionProgress.sectionCompletionPercentage}%
+                            </span>
+                          </div>
+                          <div className="text-base sm:text-lg font-semibold text-green-900 mb-2">Topics Complete</div>
+                          <div className="text-sm text-green-600">
+                            {accurateSectionProgress.completedSections} of {accurateSectionProgress.totalSections} topics
+                          </div>
                         </div>
                       </div>
 
                       {/* Overall Resource Progress */}
-                      <div className="text-center p-6 bg-gradient-to-br from-yellow-50 to-amber-50 rounded-xl border border-yellow-100">
-                        <div className="relative inline-flex items-center justify-center w-20 h-20">
-                          <svg className="w-20 h-20 transform -rotate-90" viewBox="0 0 36 36">
-                            <path
-                              d="M18 2.0845 A 15.9155 15.9155 0 0 1 18 33.9155"
-                              fill="none"
-                              stroke="#FEF3C7"
-                              strokeWidth="3"
-                            />
-                            <path
-                              d="M18 2.0845 A 15.9155 15.9155 0 0 1 18 33.9155"
-                              fill="none"
-                              stroke="#FFDE59"
-                              strokeWidth="3"
-                              strokeDasharray={`${accurateProgress.overallResourceProgress / 2}, 100`}
-                              className="transition-all duration-1000 ease-out"
-                            />
-                          </svg>
-                          <span className="absolute text-sm font-bold text-gray-900">
-                            {accurateProgress.overallResourceProgress}%
-                          </span>
-                        </div>
-                        <div className="text-sm font-semibold text-gray-900 mb-1">Resources Completed</div>
-                        <div className="text-xs text-gray-600">
-                          {accurateProgress.completedResources} of {accurateProgress.totalResources}
+                      <div className="text-center group">
+                        <div className="bg-gradient-to-br from-[#FFDE59]/20 to-amber-50/50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-[#FFDE59]/30 transition-all duration-300 hover:-translate-y-1">
+                          <div className="relative inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 mb-4">
+                            <svg className="w-20 h-20 sm:w-24 sm:h-24 transform -rotate-90" viewBox="0 0 36 36">
+                              <path
+                                d="M18 2.0845 A 15.9155 15.9155 0 0 1 18 33.9155"
+                                fill="none"
+                                stroke="#FEF3C7"
+                                strokeWidth="2.5"
+                              />
+                              <path
+                                d="M18 2.0845 A 15.9155 15.9155 0 0 1 18 33.9155"
+                                fill="none"
+                                stroke="#FFDE59"
+                                strokeWidth="2.5"
+                                strokeDasharray={`${accurateProgress.overallResourceProgress / 2}, 100`}
+                                className="transition-all duration-1000 ease-out"
+                              />
+                            </svg>
+                            <span className="absolute text-lg sm:text-xl font-bold text-amber-900">
+                              {accurateProgress.overallResourceProgress}%
+                            </span>
+                          </div>
+                          <div className="text-base sm:text-lg font-semibold text-amber-900 mb-2">Resources Completed</div>
+                          <div className="text-sm text-amber-600">
+                            {accurateProgress.completedResources} of {accurateProgress.totalResources}
+                          </div>
                         </div>
                       </div>
                     </>
@@ -440,33 +484,37 @@ const LearningProgressSection = ({ user }) => {
                 })()}
               </div>
             </div>
-          </div>
+          </section>
         )}
 
-        {/* Active Leagues Section */}
+        {/* Active Leagues Section - Apple Style Enhanced */}
         {dashboardData?.enrollments?.length > 0 && (
-          <div className="bg-white rounded-xl md:rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="p-6">
-              <div className="flex items-center mb-6">
-                <div>
-                  <h2 className="text-xl font-bold text-gray-900">Active Leagues</h2>
-                  <p className="text-sm text-gray-600">Continue your learning journey</p>
-                </div>
+          <section className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl border border-gray-200/30 overflow-hidden">
+            <div className="p-6 sm:p-8 lg:p-10">
+              {/* Section Header */}
+              <div className="mb-8 sm:mb-12">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-black mb-3 sm:mb-4 tracking-tight leading-tight">
+                  Active Leagues
+                </h2>
+                <p className="text-base sm:text-lg text-gray-600 leading-relaxed font-light">
+                  Continue your learning journey and track your progress
+                </p>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Leagues Grid - Enhanced Apple Style */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
                 {filterEnrollments(dashboardData.enrollments).length > 0 ? (
                   filterEnrollments(dashboardData.enrollments).map((enrollment) => {
-                  // Calculate accurate section progress for this specific league
+                  // Calculate accurate topic progress for this specific league
                   const leagueSectionProgress = (() => {
                     let completedSections = 0;
                     let totalSections = 0;
                     let completedResources = 0;
                     let totalResources = 0;
                     
-                    // Count sections that belong to this league and have all resources completed
+                    // Count topics that belong to this league and have all resources completed
                     Object.entries(allSectionResources).forEach(([sectionId, resources]) => {
-                      // Only count sections that belong to this league
+                      // Only count topics that belong to this league
                       if (sectionToLeagueMap[sectionId] === enrollment.league.id && resources.length >= 0) {
                         totalSections++;
                         totalResources += resources.length;
@@ -504,55 +552,51 @@ const LearningProgressSection = ({ user }) => {
                     };
                   })();
                   
-                  // Calculate enrollment duration and weeks completed
+                  // Calculate enrollment duration and modules completed
                   const enrollmentDate = new Date(enrollment.enrolledAt || enrollment.createdAt);
                   
-                  // Calculate weeks completed based on actual progress
-                  const weeksCompleted = Math.floor(leagueSectionProgress.progressPercentage / 100 * (leagueStatistics[enrollment.league.id]?.weeksCount || 1));
+                  // Calculate modules completed based on actual progress
+                  const modulesCompleted = Math.floor(leagueSectionProgress.progressPercentage / 100 * (leagueStatistics[enrollment.league.id]?.weeksCount || 1));
                   
                   return (
                     <div 
                       key={enrollment.league.id} 
-                      className="group bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all duration-300 overflow-hidden"
+                      className="group bg-gradient-to-br from-white to-gray-50/30 rounded-2xl sm:rounded-3xl border border-gray-200/30 hover:border-gray-300/50 transition-all duration-500 hover:-translate-y-2 hover:shadow-xl hover:shadow-gray-200/25 overflow-hidden"
                     >
-                      {/* League Header */}
-                      <div className="p-5 border-b border-gray-100">
-                        <div className="flex items-start justify-between mb-0 md:mb-3">
+                      {/* League Header - Enhanced */}
+                      <div className="p-6 sm:p-8 border-b border-gray-100/50">
+                        <div className="flex items-start justify-between mb-4">
                           <div className="flex-1">
-                            <div className="flex items-center mb-2">
-                              <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-                              <h3 className="text-lg font-semibold text-gray-900 group-hover:text-black transition-colors">
+                            <div className="flex items-center mb-3">
+                              <h3 className="text-xl sm:text-2xl font-semibold text-black group-hover:text-gray-800 transition-colors tracking-tight leading-tight">
                                 {enrollment.league.name}
                               </h3>
                             </div>
-                            <p className="hidden md:block text-gray-600 text-sm leading-relaxed">
-                              {enrollment.league.description.length > 100
-                              ? enrollment.league.description.slice(0, 100) + '...'
-                              : enrollment.league.description}
-                              </p>
-
+                            <p className="text-gray-600 text-sm sm:text-base leading-relaxed font-light line-clamp-2">
+                              {enrollment.league.description}
+                            </p>
                           </div>
                           
-                          {/* Circular Progress Badge */}
-                          <div className="ml-4 hidden md:block flex-shrink-0">
-                            <div className="relative w-14 h-14">
-                              <svg className="w-14 h-14 transform -rotate-90" viewBox="0 0 36 36">
+                          {/* Circular Progress Badge - Enhanced */}
+                          <div className="ml-6 flex-shrink-0">
+                            <div className="relative w-16 h-16 sm:w-20 sm:h-20">
+                              <svg className="w-16 h-16 sm:w-20 sm:h-20 transform -rotate-90" viewBox="0 0 36 36">
                                 <path
                                   d="M18 2.0845 A 15.9155 15.9155 0 0 1 18 33.9155"
                                   fill="none"
-                                  stroke="#F3F4F6"
-                                  strokeWidth="3"
+                                  stroke="#F9FAFB"
+                                  strokeWidth="2"
                                 />
                                 <path
                                   d="M18 2.0845 A 15.9155 15.9155 0 0 1 18 33.9155"
                                   fill="none"
                                   stroke="#FFDE59"
-                                  strokeWidth="3"
+                                  strokeWidth="2"
                                   strokeDasharray={`${leagueSectionProgress.progressPercentage / 2}, 100`}
                                   className="transition-all duration-1000 ease-out"
                                 />
                               </svg>
-                              <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-900">
+                              <span className="absolute inset-0 flex items-center justify-center text-sm sm:text-base font-bold text-black">
                                 {leagueSectionProgress.progressPercentage}%
                               </span>
                             </div>
@@ -560,42 +604,45 @@ const LearningProgressSection = ({ user }) => {
                         </div>
                       </div>
                       
-                      {/* Stats Section */}
-                      <div className="p-5">
+                      {/* Stats Section - Enhanced Apple Style */}
+                      <div className="p-6 sm:p-8">
                         {/* Key Metrics Grid */}
-                        <div className="grid grid-cols-3 gap-3 mb-4">
-                          <div className="text-center p-3 bg-blue-50 rounded-lg border border-blue-100">
-                            <div className="flex items-center justify-center mb-1">
-                              <Target size={12} className="text-blue-600 mr-1" />
-                              <span className="text-xs font-medium text-blue-700">Sections</span>
+                        <div className="grid grid-cols-3 gap-4 sm:gap-6 mb-6">
+                          <div className="text-center p-4 bg-gradient-to-br from-blue-50/50 to-indigo-50/30 rounded-xl sm:rounded-2xl border border-blue-100/30">
+                            <div className="flex items-center justify-center mb-2">
+                              <div className="w-8 h-8 rounded-xl bg-blue-100 flex items-center justify-center">
+                                <Target size={16} className="text-blue-600" />
+                              </div>
                             </div>
-                            <div className="text-lg font-bold text-blue-900">{leagueSectionProgress.completed}</div>
-                            <div className="text-xs text-blue-600">of {leagueSectionProgress.total}</div>
+                            <div className="text-xl sm:text-2xl font-bold text-blue-900 mb-1">{leagueSectionProgress.completed}</div>
+                            <div className="text-xs sm:text-sm text-blue-600 font-medium">of {leagueSectionProgress.total} topics</div>
                           </div>
                           
-                          <div className="text-center p-3 bg-green-50 rounded-lg border border-green-100">
-                            <div className="flex items-center justify-center mb-1">
-                              <CheckSquare size={12} className="text-green-600 mr-1" />
-                              <span className="text-xs font-medium text-green-700">Resources</span>
+                          <div className="text-center p-4 bg-gradient-to-br from-green-50/50 to-emerald-50/30 rounded-xl sm:rounded-2xl border border-green-100/30">
+                            <div className="flex items-center justify-center mb-2">
+                              <div className="w-8 h-8 rounded-xl bg-green-100 flex items-center justify-center">
+                                <CheckSquare size={16} className="text-green-600" />
+                              </div>
                             </div>
-                            <div className="text-lg font-bold text-green-900">{leagueSectionProgress.resourcesCompleted}</div>
-                            <div className="text-xs text-green-600">of {leagueSectionProgress.resourcesTotal}</div>
+                            <div className="text-xl sm:text-2xl font-bold text-green-900 mb-1">{leagueSectionProgress.resourcesCompleted}</div>
+                            <div className="text-xs sm:text-sm text-green-600 font-medium">of {leagueSectionProgress.resourcesTotal} resources</div>
                           </div>
                           
-                          <div className="text-center p-3 bg-amber-50 rounded-lg border border-amber-100">
-                            <div className="flex items-center justify-center mb-1">
-                              <Clock size={12} className="text-amber-600 mr-1" />
-                              <span className="text-xs font-medium text-amber-700">Week</span>
+                          <div className="text-center p-4 bg-gradient-to-br from-amber-50/50 to-yellow-50/30 rounded-xl sm:rounded-2xl border border-amber-100/30">
+                            <div className="flex items-center justify-center mb-2">
+                              <div className="w-8 h-8 rounded-xl bg-amber-100 flex items-center justify-center">
+                                <Clock size={16} className="text-amber-600" />
+                              </div>
                             </div>
-                            <div className="text-lg font-bold text-amber-900">{weeksCompleted}</div>
-                            <div className="text-xs text-amber-600">of {leagueStatistics[enrollment.league.id]?.weeksCount || 0}</div>
+                            <div className="text-xl sm:text-2xl font-bold text-amber-900 mb-1">{modulesCompleted}</div>
+                            <div className="text-xs sm:text-sm text-amber-600 font-medium">of {leagueStatistics[enrollment.league.id]?.weeksCount || 0} modules</div>
                           </div>
                         </div>
                         
                         {/* Additional Stats */}
-                        <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
-                          <span className="flex items-center">
-                            <Trophy size={12} className="mr-1" />
+                        <div className="flex items-center justify-between text-sm text-gray-500 mb-6 px-2">
+                          <span className="flex items-center font-light">
+                            <Trophy size={14} className="mr-2 text-gray-400" />
                             Enrolled {enrollmentDate.toLocaleDateString('en-US', { 
                               month: 'short', 
                               day: 'numeric', 
@@ -604,12 +651,12 @@ const LearningProgressSection = ({ user }) => {
                           </span>
                         </div>
                         
-                        {/* Action Button - Made Smaller */}
+                        {/* Action Button - Apple Style */}
                         <button
                           onClick={() => handleLeagueClick(enrollment.league)}
-                          className="w-full bg-gradient-to-r from-black to-gray-800 text-white px-3 py-2.5 rounded-lg text-sm font-medium hover:from-gray-800 hover:to-black transition-all duration-300 flex items-center justify-center group-hover:shadow-lg cursor-pointer"
+                          className="w-full bg-gradient-to-r from-black to-gray-800 text-white px-6 py-4 rounded-xl sm:rounded-2xl text-base font-medium hover:from-gray-800 hover:to-black transition-all duration-300 flex items-center justify-center group-hover:shadow-lg transform hover:scale-[1.02] active:scale-[0.98]"
                         >
-                          <Play size={14} className="mr-2" />
+                          <Play size={18} className="mr-3" />
                           Continue Learning
                         </button>
                       </div>
@@ -619,20 +666,20 @@ const LearningProgressSection = ({ user }) => {
                 ) : (
                   // Show "No results found" message when search yields no results
                   isSearchActive && searchTerm ? (
-                    <div className="col-span-full text-center py-12">
-                      <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <Search size={24} className="text-gray-400" />
+                    <div className="col-span-full text-center py-16 sm:py-20">
+                      <div className="w-20 h-20 bg-gray-100 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                        <Search size={32} className="text-gray-400" />
                       </div>
-                      <h3 className="font-medium text-gray-900 mb-2">No Active Leagues Found</h3>
-                      <p className="text-sm text-gray-600 mb-4">
-                        No leagues match your search for "<span className="font-medium">{searchTerm}</span>"
+                      <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-3">No Active Leagues Found</h3>
+                      <p className="text-base text-gray-600 mb-6 max-w-md mx-auto">
+                        No leagues match your search for "<span className="font-medium text-black">{searchTerm}</span>"
                       </p>
                       <button
                         onClick={() => {
                           // Clear search by dispatching event
                           window.dispatchEvent(new CustomEvent('clearSearch'));
                         }}
-                        className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                        className="text-base text-blue-600 hover:text-blue-700 font-medium px-6 py-3 rounded-xl hover:bg-blue-50 transition-all duration-200"
                       >
                         Clear search to see all leagues
                       </button>
@@ -641,66 +688,74 @@ const LearningProgressSection = ({ user }) => {
                 )}
               </div>
             </div>
-          </div>
+          </section>
         )}
 
-        {/* Explore All Leagues */}
-        <div id="available-leagues" className="bg-white rounded-xl md:rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="p-8 text-center">
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Explore Learning Leagues</h3>
-            <p className="text-gray-600 mb-6">
-              Discover all available learning leagues and find the perfect path for your skill development journey.
-            </p>
-            <button
-              onClick={scrollToLeagues}
-              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-gray-900 to-gray-800 text-white rounded-lg hover:from-gray-800 hover:to-gray-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl"
-            >
-              <Trophy className="h-5 w-5 mr-2" />
-              Browse All Leagues
-              <ChevronRight className="h-4 w-4 ml-2" />
-            </button>
+        {/* Explore All Leagues - Apple Style Enhanced */}
+        <section className="relative overflow-hidden bg-gradient-to-br from-black via-gray-900 to-gray-800 rounded-2xl sm:rounded-3xl">
+          <div className="relative p-8 sm:p-12 lg:p-16 text-center">
+            {/* Subtle pattern overlay */}
+            <div className="absolute inset-0 opacity-10 bg-gradient-to-br from-[#FFDE59] to-transparent rounded-2xl sm:rounded-3xl"></div>
+            
+            <div className="relative z-10">
+              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-white mb-4 sm:mb-6 tracking-tight leading-tight">
+                Explore Learning Leagues
+              </h3>
+              <p className="text-base sm:text-lg lg:text-xl text-gray-300 mb-8 sm:mb-10 max-w-2xl mx-auto leading-relaxed font-light">
+                Discover all available learning leagues and find the perfect path for your skill development journey.
+              </p>
+              <button
+                onClick={scrollToLeagues}
+                className="inline-flex items-center px-8 py-4 sm:px-10 sm:py-5 bg-gradient-to-r from-[#FFDE59] to-[#FFD700] text-black rounded-xl sm:rounded-2xl hover:from-[#FFD700] hover:to-[#FFC107] transition-all duration-300 font-semibold text-base sm:text-lg shadow-xl hover:shadow-2xl hover:shadow-[#FFDE59]/20 transform hover:scale-105 active:scale-95"
+              >
+                <Trophy className="h-5 w-5 sm:h-6 sm:w-6 mr-3" />
+                Browse All Leagues
+                <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6 ml-3" />
+              </button>
+            </div>
           </div>
-        </div>
+        </section>
 
+        {/* Error Handling - Apple Style */}
         {error && (
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
+          <div className="bg-red-50/80 backdrop-blur-sm border border-red-200/50 rounded-2xl sm:rounded-3xl p-6 sm:p-8">
             <div className="flex items-start">
               <div className="flex-shrink-0">
-                <AlertCircle className="h-5 w-5 text-amber-600" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-red-100 flex items-center justify-center">
+                  <AlertCircle className="h-5 w-5 sm:h-6 sm:w-6 text-red-600" />
+                </div>
               </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-amber-800">Connection Issue</h3>
-                <p className="text-amber-700 text-sm mt-1">
+              <div className="ml-4 sm:ml-6">
+                <h3 className="text-base sm:text-lg font-semibold text-red-800 mb-2">Connection Issue</h3>
+                <p className="text-red-700 text-sm sm:text-base leading-relaxed">
                   Unable to connect to the learning platform. Please check your internet connection and try refreshing the page.
                 </p>
               </div>
             </div>
           </div>
         )}
-
-        {/* Bottom spacer */}
-        <div className="h-6"></div>
+        </div>
       </div>
       
-      {/* IMPROVEMENT: Resource Calculations Complete Toast */}
+      {/* Resource Calculations Complete Toast - Apple Style */}
       {showResourcesCompleteToast && (
         <div className="fixed top-4 right-4 z-50 animate-slide-in-right">
-          <div className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-3 max-w-sm">
+          <div className="bg-green-500 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center space-x-4 max-w-sm backdrop-blur-sm">
             <div className="flex-shrink-0">
-              <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
-                <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+              <div className="w-8 h-8 bg-white rounded-xl flex items-center justify-center">
+                <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
               </div>
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium">Dashboard data fetched! 🎉</p>
+              <p className="text-base font-semibold">Dashboard data fetched! 🎉</p>
             </div>
             <button
               onClick={() => setShowResourcesCompleteToast(false)}
-              className="flex-shrink-0 text-white/80 hover:text-white transition-colors"
+              className="flex-shrink-0 text-white/80 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/10"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
