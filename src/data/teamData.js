@@ -27,13 +27,13 @@ const team = [
     twitter: "https://x.com/Rishi2220",
     instagram: "",
   },
-  // {
-  //   name: "Samaira Wahi",
-  //   description: "Samaira is the <strong>voice of OpenLearn</strong> to the world - sharing our story, reaching more learners, and keeping the <strong>spark of curiosity alive</strong> in our community.",
-  //   linkedin: "https://www.linkedin.com/in/samaira-wahi-91678a349/",
-  //   twitter: "https://x.com/samairawahi_10",
-  //   instagram: "https://www.instagram.com/samairawahi_10/",
-  // },
+  {
+    name: "Samaira Wahi",
+    description: "Samaira is the <strong>voice of OpenLearn</strong> to the world - sharing our story, reaching more learners, and keeping the <strong>spark of curiosity alive</strong> in our community.",
+    linkedin: "https://www.linkedin.com/in/samaira-wahi-91678a349/",
+    twitter: "https://x.com/samairawahi_10",
+    instagram: "https://www.instagram.com/samairawahi_10/",
+  },
 ];
 
 export default {

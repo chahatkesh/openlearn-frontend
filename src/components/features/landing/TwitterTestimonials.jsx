@@ -76,7 +76,7 @@ const TwitterEmbed = ({ tweetId }) => {
       )}
       <div ref={tweetRef} className="flex justify-center">
         <blockquote className="twitter-tweet" data-theme="dark">
-          <a href={`https://x.com/twitter/statuses/${tweetId}`}>Loading tweet...</a>
+          <a href={`https://twitter.com/twitter/statuses/${tweetId}`}>Loading tweet...</a>
         </blockquote>
       </div>
     </div>
