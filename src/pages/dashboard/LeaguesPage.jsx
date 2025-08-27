@@ -294,6 +294,18 @@ const LeaguesPage = () => {
                             {`${sectionsCount} ${sectionsCount === 1 ? 'Topic' : 'Topics'}`}
                           </span>
                         </div>
+                        <div className="flex items-center text-sm lg:text-base text-gray-600">
+                          <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center mr-3">
+                            <Target className="h-4 w-4 text-gray-700" />
+                          </div>
+                          <span className="font-medium">
+                            {isCalculatingResources ? (
+                              <StatisticLoader color="gray" />
+                            ) : (
+                              `${resourcesCount} ${resourcesCount === 1 ? 'resource' : 'resources'}`
+                            )}
+                          </span>
+                        </div>
                       </div>
 
                       {/* Action Button */}
