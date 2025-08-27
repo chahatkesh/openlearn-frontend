@@ -175,7 +175,7 @@ const ProfilePage = () => {
     );
   };
 
-  const SocialLink = ({ icon: label, url, username, color = "gray" }) => {
+  const SocialLink = ({ icon: Icon, label, url, username, color = "gray" }) => {
     const colorClasses = {
       gray: "hover:bg-gray-50/80 border-gray-200/30",
       blue: "hover:bg-blue-50/80 border-blue-200/30",
