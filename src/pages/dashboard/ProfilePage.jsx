@@ -175,6 +175,7 @@ const ProfilePage = () => {
     );
   };
 
+  // eslint-disable-next-line no-unused-vars
   const SocialLink = ({ icon: Icon, label, url, username, color = "gray" }) => {
     const colorClasses = {
       gray: "hover:bg-gray-50/80 border-gray-200/30",
