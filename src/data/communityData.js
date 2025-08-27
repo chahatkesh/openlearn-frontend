@@ -36,7 +36,7 @@ const communityData = {
       league: 'Soft Skills',
       role: 'Soft Skills Chief Pathfinder',
       color: '#F59E0B', // Amber
-      imageUrl: '',
+      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756323988/648c64de-b6c0-4aeb-9269-67dae2d0d36b.png',
       isActive: false
     },
     {
@@ -45,7 +45,7 @@ const communityData = {
       league: 'Competitive Programming',
       role: 'Competitive Programming Chief Pathfinder',
       color: '#EF4444', // Red
-      imageUrl: '',
+      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756323863/ef5964f5-18f4-4bab-bf7a-349edbf04042.png',
       isActive: false
     },
     {
@@ -150,13 +150,22 @@ const communityData = {
       color: '#3B82F6',
       imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756322411/5125b0eb-7856-404f-a8a9-e957d8129152.png'
     },
+    {
+      id: 'ml-3',
+      name: 'Kunal Kashyap',
+      league: 'ML',
+      role: 'ML Pathfinder',
+      color: '#3B82F6',
+      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756324159/0cd7f49d-05d4-4fe6-ac76-d63f9a022675.png'
+    },
     // Soft Skills Pathfinders
     {
       id: 'soft-skills-1',
       name: 'Aryan Kalia',
       league: 'Soft Skills',
       role: 'Soft Skills Pathfinder',
-      color: '#F59E0B'
+      color: '#F59E0B',
+      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756324085/7c59d9b9-60df-41f3-b18e-408f5d470dbb.png'
     },
     // Competitive Programming Pathfinders
     // {
