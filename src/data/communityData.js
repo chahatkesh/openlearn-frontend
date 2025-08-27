@@ -9,16 +9,16 @@ const communityData = {
       league: 'Finance',
       role: 'Finance Chief Pathfinder',
       color: '#10B981', // Green
-      linkedin: '',
+      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756321756/pratham-andotra_jyjcwy.jpg',
       isActive: true
     },
     {
       id: 'quantum',
       name: 'Guransh Singh',
-      league: 'Quantum Computing League',
+      league: 'Quantum Computing',
       role: 'Quantum Chief Pathfinder',
       color: '#8B5CF6', // Purple
-      linkedin: '',
+      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756321933/IMG_20240601_105257_136_g9yrji.jpg',
       isActive: true
     },
     {
@@ -27,7 +27,7 @@ const communityData = {
       league: 'ML',
       role: 'ML Chief Pathfinder',
       color: '#3B82F6', // Blue
-      linkedin: '',
+      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756321893/ratinderdeep-singh_ltfwbw.jpg',
       isActive: false
     },
     {
@@ -36,7 +36,7 @@ const communityData = {
       league: 'Soft Skills',
       role: 'Soft Skills Chief Pathfinder',
       color: '#F59E0B', // Amber
-      linkedin: '',
+      imageUrl: '',
       isActive: false
     },
     {
@@ -45,25 +45,25 @@ const communityData = {
       league: 'Competitive Programming',
       role: 'Competitive Programming Chief Pathfinder',
       color: '#EF4444', // Red
-      linkedin: '',
+      imageUrl: '',
       isActive: false
     },
     {
       id: 'iot',
       name: 'Shikhar Shrivastav',
-      league: 'IoT League',
+      league: 'IoT',
       role: 'IoT Chief Pathfinder',
       color: '#06B6D4', // Cyan
-      linkedin: '',
+      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756322099/WhatsApp_Image_2025-08-27_at_15.22.01_phjg9i.jpg',
       isActive: false
     },
     {
       id: 'exmatrix',
       name: 'Sathvik G A',
-      league: 'ExMatrix League',
+      league: 'ExMatrix',
       role: 'ExMatrix Chief Pathfinder',
       color: '#EC4899', // Pink
-      linkedin: '',
+      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756322558/07912ad3-767a-464f-b74e-7583de7fd0d7.png',
       isActive: false
     }
   ],
@@ -75,56 +75,56 @@ const communityData = {
       league: 'Finance',
       role: 'Finance Pathfinder',
       color: '#10B981',
-      linkedin: ''
+      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756322277/tanveer-singh_wf3ckb.jpg' 
     },
-    // Quantum Computing League Pathfinders
+    // Quantum Computing Pathfinders
     {
       id: 'quantum-1',
       name: 'Gursimarpreet Singh',
-      league: 'Quantum Computing League',
+      league: 'Quantum Computing',
       role: 'Quantum Pathfinder',
       color: '#8B5CF6',
-      linkedin: ''
+      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756321813/Screenshot_20241213_162311_ad3tpt.jpg'
     },
     {
       id: 'quantum-2',
       name: 'Aryan Sinha',
-      league: 'Quantum Computing League',
+      league: 'Quantum Computing',
       role: 'Quantum Pathfinder',
       color: '#8B5CF6',
-      linkedin: ''
+      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756320521/Aryan_Sinha_xfpiz0.png'
     },
     {
       id: 'quantum-3',
       name: 'Akanshaa',
-      league: 'Quantum Computing League',
+      league: 'Quantum Computing',
       role: 'Quantum Pathfinder',
       color: '#8B5CF6',
-      linkedin: ''
+      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756321030/Screenshot_2025-08-28_at_12.26.41_AM_x4x7th.png' 
     },
     {
       id: 'quantum-4',
       name: 'Tanveer Singh',
-      league: 'Quantum Computing League',
+      league: 'Quantum Computing',
       role: 'Quantum Pathfinder',
       color: '#8B5CF6',
-      linkedin: ''
+      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756321557/Photo_lytuyj.jpg' 
     },
     {
       id: 'quantum-5',
       name: 'Harsh',
-      league: 'Quantum Computing League',
+      league: 'Quantum Computing',
       role: 'Quantum Pathfinder',
       color: '#8B5CF6',
-      linkedin: ''
+      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756321623/20250706_092413_kqehrh.jpg' 
     },
     {
       id: 'quantum-6',
       name: 'Piyush',
-      league: 'Quantum Computing League',
+      league: 'Quantum Computing',
       role: 'Quantum Pathfinder',
       color: '#8B5CF6',
-      linkedin: ''
+      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756321487/1000023504_tywv7c.jpg'
     },
     // ML Pathfinders
     {
@@ -133,15 +133,22 @@ const communityData = {
       league: 'ML',
       role: 'ML Pathfinder',
       color: '#3B82F6',
-      linkedin: ''
+      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756322361/0bb8191e-7423-43ef-9f38-f515cc353216.png'
     },
     {
       id: 'ml-2',
       name: 'Vivek Dhiman',
       league: 'ML',
       role: 'ML Pathfinder',
+      color: '#3B82F6'
+    },
+    {
+      id: 'ml-3',
+      name: 'Achintya Sharma',
+      league: 'ML',
+      role: 'ML Pathfinder',
       color: '#3B82F6',
-      linkedin: ''
+      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756322411/5125b0eb-7856-404f-a8a9-e957d8129152.png'
     },
     // Soft Skills Pathfinders
     {
@@ -149,107 +156,98 @@ const communityData = {
       name: 'Aryan Kalia',
       league: 'Soft Skills',
       role: 'Soft Skills Pathfinder',
-      color: '#F59E0B',
-      linkedin: ''
+      color: '#F59E0B'
     },
     // Competitive Programming Pathfinders
-    {
-      id: 'cp-1',
-      name: 'Aryan Kumar',
-      league: 'Competitive Programming',
-      role: 'Competitive Programming Pathfinder',
-      color: '#EF4444',
-      linkedin: ''
-    },
-    // IoT League Pathfinders
+    // {
+    //   id: 'cp-1',
+    //   name: 'Aryan Kumar',
+    //   league: 'Competitive Programming',
+    //   role: 'Competitive Programming Pathfinder',
+    //   color: '#EF4444'
+    // },
+    // IoT Pathfinders
     {
       id: 'iot-1',
       name: 'Kapil Singh',
-      league: 'IoT League',
+      league: 'IoT',
       role: 'IoT Pathfinder',
       color: '#06B6D4',
-      linkedin: ''
+      imageUrl: "https://res.cloudinary.com/dgjd6n8up/image/upload/v1756322101/WhatsApp_Image_2025-08-27_at_15.22.14_om5p3y.jpg"
     },
     {
       id: 'iot-2',
       name: 'Ansh Srivastav',
-      league: 'IoT League',
+      league: 'IoT',
       role: 'IoT Pathfinder',
       color: '#06B6D4',
-      linkedin: ''
+      imageUrl: "https://res.cloudinary.com/dgjd6n8up/image/upload/v1756322098/WhatsApp_Image.14_vlmike.jpg"
     },
     {
       id: 'iot-3',
       name: 'Irfan Khan',
-      league: 'IoT League',
+      league: 'IoT',
       role: 'IoT Pathfinder',
       color: '#06B6D4',
-      linkedin: ''
+      imageUrl: "https://res.cloudinary.com/dgjd6n8up/image/upload/v1756322100/WhatsApp_Image_2025-08-27_at_15.22.22_exrebl.jpg"
     },
     {
       id: 'iot-4',
       name: 'Keshav Jindal',
-      league: 'IoT League',
+      league: 'IoT',
       role: 'IoT Pathfinder',
       color: '#06B6D4',
-      linkedin: ''
+      imageUrl: "https://res.cloudinary.com/dgjd6n8up/image/upload/v1756322100/WhatsApp_Image_2025-08-27_at_15.22.13_x7sb2y.jpg"
     },
-    // ExMatrix League Pathfinders
+    // ExMatrix Pathfinders
     {
       id: 'exmatrix-1',
       name: 'Saaransh Saxena',
-      league: 'ExMatrix League',
+      league: 'ExMatrix',
       role: 'ExMatrix Pathfinder',
-      color: '#EC4899',
-      linkedin: ''
+      color: '#EC4899'
     },
     {
       id: 'exmatrix-2',
       name: 'Jeetashwar Singh',
-      league: 'ExMatrix League',
+      league: 'ExMatrix',
       role: 'ExMatrix Pathfinder',
-      color: '#EC4899',
-      linkedin: ''
+      color: '#EC4899'
     },
     {
       id: 'exmatrix-3',
       name: 'Laksh Arora',
-      league: 'ExMatrix League',
+      league: 'ExMatrix',
       role: 'ExMatrix Pathfinder',
-      color: '#EC4899',
-      linkedin: ''
+      color: '#EC4899'
     },
     {
       id: 'exmatrix-4',
       name: 'Krrish Bhagla',
-      league: 'ExMatrix League',
+      league: 'ExMatrix',
       role: 'ExMatrix Pathfinder',
-      color: '#EC4899',
-      linkedin: ''
+      color: '#EC4899'
     },
     {
       id: 'exmatrix-5',
       name: 'Divyansh Jangid',
-      league: 'ExMatrix League',
+      league: 'ExMatrix',
       role: 'ExMatrix Pathfinder',
-      color: '#EC4899',
-      linkedin: ''
+      color: '#EC4899'
     },
     {
       id: 'exmatrix-6',
       name: 'Nipun Khatri',
-      league: 'ExMatrix League',
+      league: 'ExMatrix',
       role: 'ExMatrix Pathfinder',
-      color: '#EC4899',
-      linkedin: ''
+      color: '#EC4899'
     },
     {
       id: 'exmatrix-7',
       name: 'G Rohit Varshan',
-      league: 'ExMatrix League',
+      league: 'ExMatrix',
       role: 'ExMatrix Pathfinder',
-      color: '#EC4899',
-      linkedin: ''
+      color: '#EC4899'
     },
   ],
   stats: {
