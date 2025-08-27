@@ -455,6 +455,8 @@ Learning never stops! 💪
    * @param {string} socialHandles.linkedinUrl - LinkedIn profile URL
    * @param {string} socialHandles.githubUsername - GitHub username (without @)
    * @param {string} socialHandles.kaggleUsername - Kaggle username
+   * @param {string} socialHandles.portfolioUrl - Portfolio website URL
+   * @param {string} socialHandles.discordUsername - Discord username
    * @returns {Promise} Updated user data
    */
   static async updateSocialHandles(socialHandles) {
@@ -463,10 +465,10 @@ Learning never stops! 💪
       twitterHandle: socialHandles.twitterHandle || null,
       linkedinUrl: socialHandles.linkedinUrl || null,
       githubUsername: socialHandles.githubUsername || null,
-      kaggleUsername: socialHandles.kaggleUsername || null
+      kaggleUsername: socialHandles.kaggleUsername || null,
+      portfolioUrl: socialHandles.portfolioUrl || null,
+      discordUsername: socialHandles.discordUsername || null
     };
-
-    console.log('📤 Updating social handles with payload:', payload);
 
     const response = await fetch(`${BASE_URL}/api/auth/profile`, {
       method: 'PUT',
@@ -475,7 +477,6 @@ Learning never stops! 💪
     });
     
     const result = await response.json();
-    console.log('📥 Social handles update response:', result);
     
     if (!result.success) {
       throw new Error(result.error || 'Failed to update social handles');

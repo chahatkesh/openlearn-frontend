@@ -88,12 +88,6 @@ const LearningProgressSection = ({ user }) => {
         // Only process leagues the user is actually enrolled in
         const enrolledLeagues = data.leagues.filter(league => enrolledLeagueIds.has(league.id));
         
-        // Log for debugging (can be removed in production)
-        console.log(`📊 Dashboard: User enrolled in ${enrolledLeagues.length} of ${data.leagues.length} leagues`, {
-          enrolled: enrolledLeagues.map(l => l.name),
-          total: data.leagues.map(l => l.name)
-        });
-        
         // IMPROVEMENT: Check which enrolled leagues already have complete resource calculations
         const leaguesNeedingCalculation = enrolledLeagues.filter(league => {
           const cachedStats = data.basicLeagueStats[league.id];
@@ -158,7 +152,7 @@ const LearningProgressSection = ({ user }) => {
       }
 
     } catch (err) {
-      console.error('❌ Error loading dashboard data:', err);
+      console.error('Error loading dashboard data:', err);
       setError(`Failed to connect to the learning platform. Please try again later. (${err.message})`);
       
       // Set fallback data to prevent crashes
