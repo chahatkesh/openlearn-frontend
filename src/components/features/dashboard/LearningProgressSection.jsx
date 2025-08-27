@@ -214,26 +214,40 @@ const LearningProgressSection = ({ user }) => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 lg:pt-12 pb-16 lg:pb-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 lg:pt-8 pb-12 lg:pb-16">
           
           {/* Dashboard Header Skeleton - Similar to LeaguesPage */}
-          <div className="mb-8 lg:mb-12">
+          <div className="mb-6 lg:mb-8">
             <div className="h-12 sm:h-16 lg:h-20 bg-gray-200 rounded-2xl w-2/3 mb-3 lg:mb-4 animate-pulse"></div>
             <div className="h-6 sm:h-8 bg-gray-200 rounded-xl w-1/2 animate-pulse"></div>
           </div>
 
-          <div className="space-y-8 sm:space-y-12 lg:space-y-16">
-            
-            {/* Progress stats skeleton */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl border border-gray-200/30 p-6 sm:p-8 lg:p-10">
-              <div className="mb-8 sm:mb-12">
-                <div className="h-8 sm:h-10 lg:h-12 bg-gray-200 rounded-2xl w-1/3 mb-3 sm:mb-4 animate-pulse"></div>
-                <div className="h-5 sm:h-6 bg-gray-200 rounded-xl w-1/2 animate-pulse"></div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+          <div className="space-y-6 sm:space-y-8 lg:space-y-10">
+
+            <div className="">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
                 {[1, 2, 3].map(i => (
                   <div key={i} className="text-center group">
-                    <div className="bg-gradient-to-br from-gray-50 to-gray-100/50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-gray-200/50">
+                    <div className="bg-gradient-to-br from-gray-50 to-gray-100/50 rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-gray-200/50">
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gray-200 rounded-full mx-auto mb-4 animate-pulse"></div>
+                      <div className="h-5 sm:h-6 bg-gray-200 rounded-xl w-3/4 mx-auto mb-2 animate-pulse"></div>
+                      <div className="h-4 bg-gray-200 rounded-lg w-1/2 mx-auto animate-pulse"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            {/* Progress stats skeleton */}
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl border border-gray-200/30 p-5 sm:p-6 lg:p-8">
+              <div className="mb-6 sm:mb-8">
+                <div className="h-8 sm:h-10 lg:h-12 bg-gray-200 rounded-2xl w-1/3 mb-2 sm:mb-3 animate-pulse"></div>
+                <div className="h-5 sm:h-6 bg-gray-200 rounded-xl w-1/2 animate-pulse"></div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="text-center group">
+                    <div className="bg-gradient-to-br from-gray-50 to-gray-100/50 rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-gray-200/50">
                       <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gray-200 rounded-full mx-auto mb-4 animate-pulse"></div>
                       <div className="h-5 sm:h-6 bg-gray-200 rounded-xl w-3/4 mx-auto mb-2 animate-pulse"></div>
                       <div className="h-4 bg-gray-200 rounded-lg w-1/2 mx-auto animate-pulse"></div>
@@ -304,7 +318,7 @@ const LearningProgressSection = ({ user }) => {
   
   return (
     <div className="min-h-screen bg-gray-50/30">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 lg:pt-12 pb-16 lg:pb-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 lg:pt-8 pb-12 lg:pb-16">
         
         {/* Dashboard Header - Similar to LeaguesPage */}
         <div className="mb-8 lg:mb-12">
@@ -344,7 +358,7 @@ const LearningProgressSection = ({ user }) => {
           )}
         </div>
 
-        <div className="space-y-8 sm:space-y-12 lg:space-y-16">
+        <div className="space-y-6 sm:space-y-8 lg:space-y-10">
         
         {/* Resource Calculation Progress - Apple Style */}
         {resourceCalculationsInProgress.size > 0 && (
@@ -367,20 +381,10 @@ const LearningProgressSection = ({ user }) => {
 
         {/* Learning Progress Section - Apple Style Enhanced */}
         {dashboardData?.enrollments?.length > 0 && (
-          <section className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl border border-gray-200/30 overflow-hidden">
-            <div className="p-6 sm:p-8 lg:p-10">
-              {/* Section Header */}
-              <div className="mb-8 sm:mb-12">
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-black mb-3 sm:mb-4 tracking-tight leading-tight">
-                  Learning Progress
-                </h2>
-                <p className="text-base sm:text-lg text-gray-600 leading-relaxed font-light">
-                  Your overall learning statistics and achievements
-                </p>
-              </div>
-              
+          <section className="">
+            <div className="p-5 sm:p-6 lg:p-8">
               {/* Progress Stats - Apple Style Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
                 {(() => {
                   const accurateProgress = ProgressService.calculateAccurateResourceProgress(dashboardData, allResourceProgress);
                   const accurateSectionProgress = ProgressService.calculateAccurateSectionProgress(dashboardData, allResourceProgress, allSectionResources);
@@ -389,7 +393,7 @@ const LearningProgressSection = ({ user }) => {
                     <>
                       {/* Active Leagues Count */}
                       <div className="text-center group">
-                        <div className="bg-gradient-to-br from-blue-50 to-indigo-50/50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-blue-100/50 transition-all duration-300 hover:-translate-y-1">
+                        <div className="bg-gradient-to-br from-blue-50 to-indigo-50/50 rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-blue-100/50 transition-all duration-300 hover:-translate-y-1">
                           <div className="relative inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 mb-4">
                             <svg className="w-20 h-20 sm:w-24 sm:h-24 transform -rotate-90" viewBox="0 0 36 36">
                               <path
@@ -420,7 +424,7 @@ const LearningProgressSection = ({ user }) => {
 
                       {/* Topics Progress */}
                       <div className="text-center group">
-                        <div className="bg-gradient-to-br from-green-50 to-emerald-50/50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-green-100/50 transition-all duration-300 hover:-translate-y-1">
+                        <div className="bg-gradient-to-br from-green-50 to-emerald-50/50 rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-green-100/50 transition-all duration-300 hover:-translate-y-1">
                           <div className="relative inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 mb-4">
                             <svg className="w-20 h-20 sm:w-24 sm:h-24 transform -rotate-90" viewBox="0 0 36 36">
                               <path
@@ -451,7 +455,7 @@ const LearningProgressSection = ({ user }) => {
 
                       {/* Overall Resource Progress */}
                       <div className="text-center group">
-                        <div className="bg-gradient-to-br from-[#FFDE59]/20 to-amber-50/50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-[#FFDE59]/30 transition-all duration-300 hover:-translate-y-1">
+                        <div className="bg-gradient-to-br from-[#FFDE59]/20 to-amber-50/50 rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-[#FFDE59]/30 transition-all duration-300 hover:-translate-y-1">
                           <div className="relative inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 mb-4">
                             <svg className="w-20 h-20 sm:w-24 sm:h-24 transform -rotate-90" viewBox="0 0 36 36">
                               <path
@@ -490,10 +494,10 @@ const LearningProgressSection = ({ user }) => {
         {/* Active Leagues Section - Apple Style Enhanced */}
         {dashboardData?.enrollments?.length > 0 && (
           <section className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl border border-gray-200/30 overflow-hidden">
-            <div className="p-6 sm:p-8 lg:p-10">
+            <div className="p-5 sm:p-6 lg:p-8">
               {/* Section Header */}
-              <div className="mb-8 sm:mb-12">
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-black mb-3 sm:mb-4 tracking-tight leading-tight">
+              <div className="mb-6 sm:mb-8">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-black mb-2 sm:mb-3 tracking-tight leading-tight">
                   Active Leagues
                 </h2>
                 <p className="text-base sm:text-lg text-gray-600 leading-relaxed font-light">
@@ -502,7 +506,7 @@ const LearningProgressSection = ({ user }) => {
               </div>
               
               {/* Leagues Grid - Enhanced Apple Style */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                 {filterEnrollments(dashboardData.enrollments).length > 0 ? (
                   filterEnrollments(dashboardData.enrollments).map((enrollment) => {
                   // Calculate accurate topic progress for this specific league
@@ -564,7 +568,7 @@ const LearningProgressSection = ({ user }) => {
                       className="group bg-gradient-to-br from-white to-gray-50/30 rounded-2xl sm:rounded-3xl border border-gray-200/30 hover:border-gray-300/50 transition-all duration-500 hover:-translate-y-2 hover:shadow-xl hover:shadow-gray-200/25 overflow-hidden"
                     >
                       {/* League Header - Enhanced */}
-                      <div className="p-6 sm:p-8 border-b border-gray-100/50">
+                      <div className="p-5 sm:p-6 border-b border-gray-100/50">
                         <div className="flex items-start justify-between mb-4">
                           <div className="flex-1">
                             <div className="flex items-center mb-3">
@@ -605,9 +609,9 @@ const LearningProgressSection = ({ user }) => {
                       </div>
                       
                       {/* Stats Section - Enhanced Apple Style */}
-                      <div className="p-6 sm:p-8">
+                      <div className="p-5 sm:p-6">
                         {/* Key Metrics Grid */}
-                        <div className="grid grid-cols-3 gap-4 sm:gap-6 mb-6">
+                        <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-5">
                           <div className="text-center p-4 bg-gradient-to-br from-blue-50/50 to-indigo-50/30 rounded-xl sm:rounded-2xl border border-blue-100/30">
                             <div className="flex items-center justify-center mb-2">
                               <div className="w-8 h-8 rounded-xl bg-blue-100 flex items-center justify-center">
