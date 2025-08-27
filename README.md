@@ -1,3 +1,6 @@
+<img width="3000" height="1000" alt="openlearnV2" src="https://github.com/user-attachments/assets/1cbb20e2-1345-4600-8d10-df4c6913a3eb" />
+
+
 # OpenLearn Platform
 
 A comprehensive learning management system designed for skill-based cohort learning with role-based progression and collaborative learning experiences.
