@@ -476,7 +476,7 @@ const LeaguesCarousel = () => {
           </div>
 
           {/* Apple-style Dot Indicators */}
-          <div className="flex justify-center mt-8 md:mt-12 gap-2" role="tablist" aria-label="League navigation">
+          <div className="hidden md:flex justify-center mt-8 md:mt-12 gap-2" role="tablist" aria-label="League navigation">
             {leagues.map((league, index) => (
               <button
                 key={index}

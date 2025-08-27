@@ -15,7 +15,7 @@ const AdminDefaultRedirect = () => {
       case 'GRAND_PATHFINDER':
         return '/admin/users'; // Grand Pathfinder can access users
       case 'CHIEF_PATHFINDER':
-        return '/admin/leagues'; // Chief Pathfinder defaults to leagues
+        return '/admin/weeks'; // Chief Pathfinder defaults to leagues
       case 'PATHFINDER':
         return '/admin/weeks'; // Pathfinder defaults to weeks
       default:
