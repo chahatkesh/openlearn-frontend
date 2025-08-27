@@ -593,6 +593,18 @@ class AdminService {
   }
 
   /**
+   * Get weeks by league ID
+   * @param {string} leagueId - League ID to filter weeks
+   * @returns {Promise} Weeks data for the specific league
+   */
+  static async getWeeksByLeague(leagueId) {
+    const response = await fetch(`${API_BASE_URL}/weeks?leagueId=${leagueId}`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+
+  /**
    * Create a new week
    * @param {Object} weekData - Week data
    * @returns {Promise} Created week

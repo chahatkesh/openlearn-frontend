@@ -111,8 +111,8 @@ const AdminLayout = () => {
         return true;
         
       case 'CHIEF_PATHFINDER':
-        // Chief Pathfinder can see: Leagues, Weeks, Days, Resources, Assignments
-        return ['leagues', 'weeks', 'sections', 'resources', 'assignments'].includes(item.id);
+        // Chief Pathfinder can see: Weeks, Days, Resources, Assignments (no Leagues access)
+        return ['weeks', 'sections', 'resources', 'assignments'].includes(item.id);
         
       case 'PATHFINDER':
         // Pathfinder can see: Weeks, Days, Resources

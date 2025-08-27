@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
 import ResourceManagement from '../../components/features/admin/ResourceManagement';
 import AdminService from "../../utils/api/adminService";
+import { AuthContext } from '../../context/AuthContextProvider';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const API_BASE_URL = `${BASE_URL}/api`;
@@ -15,18 +16,62 @@ const AdminResourcesPage = () => {
   const [selectedSectionId, setSelectedSectionId] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { user } = useContext(AuthContext);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     
     try {
-      const [resourcesData, sectionsData, weeksData, leaguesData] = await Promise.all([
-        AdminService.getAllResources(),
-        AdminService.getAllSectionsComplete(),
-        AdminService.getAllWeeks(),
-        AdminService.getAllLeagues()
-      ]);
+      // Get user's pathfinder scopes to determine accessible leagues
+      const accessibleLeagueIds = user?.pathfinderScopes?.map(scope => scope.leagueId) || [];
+      
+      let resourcesData, sectionsData, weeksData, leaguesData;
+      
+      if (accessibleLeagueIds.length > 0) {
+        // Fetch weeks for each accessible league
+        const weeksPromises = accessibleLeagueIds.map(leagueId => 
+          AdminService.getWeeksByLeague(leagueId)
+        );
+        const weeksResults = await Promise.all(weeksPromises);
+        
+        // Combine all weeks from accessible leagues
+        const allWeeks = weeksResults.flatMap(result => result.weeks || []);
+        weeksData = { weeks: allWeeks };
+        
+        // Get accessible week IDs for filtering sections and resources
+        const accessibleWeekIds = allWeeks.map(week => week.id);
+        
+        // Fetch all sections but filter to only accessible ones
+        const allSectionsData = await AdminService.getAllSectionsComplete();
+        const accessibleSections = allSectionsData.sections?.filter(section => 
+          accessibleWeekIds.includes(section.weekId)
+        ) || [];
+        sectionsData = { sections: accessibleSections };
+        
+        // Get accessible section IDs for filtering resources
+        const accessibleSectionIds = accessibleSections.map(section => section.id);
+        
+        // Fetch all resources but filter to only accessible ones
+        const allResourcesData = await AdminService.getAllResources();
+        const accessibleResources = allResourcesData.resources?.filter(resource => 
+          accessibleSectionIds.includes(resource.sectionId)
+        ) || [];
+        resourcesData = { resources: accessibleResources };
+        
+        // Fetch all leagues but filter to only accessible ones
+        const allLeaguesData = await AdminService.getAllLeagues();
+        const accessibleLeagues = allLeaguesData.leagues?.filter(league => 
+          accessibleLeagueIds.includes(league.id)
+        ) || [];
+        leaguesData = { leagues: accessibleLeagues };
+      } else {
+        // If no pathfinder scopes, return empty data
+        resourcesData = { resources: [] };
+        sectionsData = { sections: [] };
+        weeksData = { weeks: [] };
+        leaguesData = { leagues: [] };
+      }
       
       setResources(resourcesData.resources || []);
       setSections(sectionsData.sections || []);
@@ -38,11 +83,13 @@ const AdminResourcesPage = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    if (user) {
+      fetchData();
+    }
+  }, [fetchData, user]);
 
   const handleSelectLeague = (leagueId) => {
     setSelectedLeagueId(leagueId);
@@ -189,7 +236,7 @@ const AdminResourcesPage = () => {
     );
   }
 
-  if (loading) {
+  if (loading || !user) {
     return (
       <div className="flex justify-center py-12">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-black"></div>

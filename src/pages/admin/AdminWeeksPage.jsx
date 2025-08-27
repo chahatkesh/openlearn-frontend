@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
 import WeekManagement from '../../components/features/admin/WeekManagement';
 import AdminService from "../../utils/api/adminService";
+import { AuthContext } from '../../context/AuthContextProvider';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const API_BASE_URL = `${BASE_URL}/api`;
@@ -10,16 +11,40 @@ const AdminWeeksPage = () => {
   const [leagues, setLeagues] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { user } = useContext(AuthContext);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     
     try {
-      const [weeksData, leaguesData] = await Promise.all([
-        AdminService.getAllWeeks(),
-        AdminService.getAllLeagues()
-      ]);
+      // Get user's pathfinder scopes to determine accessible leagues
+      const accessibleLeagueIds = user?.pathfinderScopes?.map(scope => scope.leagueId) || [];
+      
+      let weeksData, leaguesData;
+      
+      if (accessibleLeagueIds.length > 0) {
+        // Fetch weeks for each accessible league
+        const weeksPromises = accessibleLeagueIds.map(leagueId => 
+          AdminService.getWeeksByLeague(leagueId)
+        );
+        const weeksResults = await Promise.all(weeksPromises);
+        
+        // Combine all weeks from accessible leagues
+        const allWeeks = weeksResults.flatMap(result => result.weeks || []);
+        weeksData = { weeks: allWeeks };
+        
+        // Fetch all leagues but filter to only accessible ones
+        const allLeaguesData = await AdminService.getAllLeagues();
+        const accessibleLeagues = allLeaguesData.leagues?.filter(league => 
+          accessibleLeagueIds.includes(league.id)
+        ) || [];
+        leaguesData = { leagues: accessibleLeagues };
+      } else {
+        // If no pathfinder scopes, return empty data
+        weeksData = { weeks: [] };
+        leaguesData = { leagues: [] };
+      }
       
       setWeeks(weeksData.weeks || []);
       setLeagues(leaguesData.leagues || []);
@@ -29,11 +54,13 @@ const AdminWeeksPage = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    if (user) {
+      fetchData();
+    }
+  }, [fetchData, user]);
 
   const handleCreateWeek = async (week) => {
     try {
@@ -134,7 +161,7 @@ const AdminWeeksPage = () => {
     );
   }
 
-  if (loading) {
+  if (loading || !user) {
     return (
       <div className="flex justify-center py-12">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-black"></div>

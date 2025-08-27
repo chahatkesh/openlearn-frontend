@@ -1,30 +1,51 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
 import AssignmentManagement from '../../components/features/admin/AssignmentManagement';
 import AdminService from "../../utils/api/adminService";
+import { AuthContext } from '../../context/AuthContextProvider';
 
 const AdminAssignmentsPage = () => {
   const [leagues, setLeagues] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { user } = useContext(AuthContext);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     
     try {
-      const leaguesData = await AdminService.getAllLeagues();
-      setLeagues(leaguesData.leagues || []);
+      // Get user's pathfinder scopes to determine accessible leagues
+      const accessibleLeagueIds = user?.pathfinderScopes?.map(scope => scope.leagueId) || [];
+      
+      // Fetch all leagues first
+      const allLeaguesData = await AdminService.getAllLeagues();
+      
+      let filteredLeagues;
+      
+      if (accessibleLeagueIds.length > 0) {
+        // Filter to only accessible leagues
+        filteredLeagues = allLeaguesData.leagues?.filter(league => 
+          accessibleLeagueIds.includes(league.id)
+        ) || [];
+      } else {
+        // If no pathfinder scopes, show no leagues
+        filteredLeagues = [];
+      }
+      
+      setLeagues(filteredLeagues);
     } catch (err) {
       console.error('Error fetching assignments data:', err);
       setError(`Failed to load assignments: ${err.message}`);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    if (user) {
+      fetchData();
+    }
+  }, [fetchData, user]);
 
   if (error) {
     return (
@@ -43,7 +64,7 @@ const AdminAssignmentsPage = () => {
     );
   }
 
-  if (loading) {
+  if (loading || !user) {
     return (
       <div className="flex justify-center py-12">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-black"></div>

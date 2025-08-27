@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
 import SectionManagement from '../../components/features/admin/SectionManagement';
 import AdminService from "../../utils/api/adminService";
+import { AuthContext } from '../../context/AuthContextProvider';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const API_BASE_URL = `${BASE_URL}/api`;
@@ -11,17 +12,51 @@ const AdminSectionsPage = () => {
   const [leagues, setLeagues] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { user } = useContext(AuthContext);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     
     try {
-      const [sectionsData, weeksData, leaguesData] = await Promise.all([
-        AdminService.getAllSectionsComplete(),
-        AdminService.getAllWeeks(),
-        AdminService.getAllLeagues()
-      ]);
+      // Get user's pathfinder scopes to determine accessible leagues
+      const accessibleLeagueIds = user?.pathfinderScopes?.map(scope => scope.leagueId) || [];
+      
+      let sectionsData, weeksData, leaguesData;
+      
+      if (accessibleLeagueIds.length > 0) {
+        // Fetch weeks for each accessible league
+        const weeksPromises = accessibleLeagueIds.map(leagueId => 
+          AdminService.getWeeksByLeague(leagueId)
+        );
+        const weeksResults = await Promise.all(weeksPromises);
+        
+        // Combine all weeks from accessible leagues
+        const allWeeks = weeksResults.flatMap(result => result.weeks || []);
+        weeksData = { weeks: allWeeks };
+        
+        // Get accessible week IDs for filtering sections
+        const accessibleWeekIds = allWeeks.map(week => week.id);
+        
+        // Fetch all sections but filter to only accessible ones
+        const allSectionsData = await AdminService.getAllSectionsComplete();
+        const accessibleSections = allSectionsData.sections?.filter(section => 
+          accessibleWeekIds.includes(section.weekId)
+        ) || [];
+        sectionsData = { sections: accessibleSections };
+        
+        // Fetch all leagues but filter to only accessible ones
+        const allLeaguesData = await AdminService.getAllLeagues();
+        const accessibleLeagues = allLeaguesData.leagues?.filter(league => 
+          accessibleLeagueIds.includes(league.id)
+        ) || [];
+        leaguesData = { leagues: accessibleLeagues };
+      } else {
+        // If no pathfinder scopes, return empty data
+        sectionsData = { sections: [] };
+        weeksData = { weeks: [] };
+        leaguesData = { leagues: [] };
+      }
       
       setSections(sectionsData.sections || []);
       setWeeks(weeksData.weeks || []);
@@ -32,11 +67,13 @@ const AdminSectionsPage = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    if (user) {
+      fetchData();
+    }
+  }, [fetchData, user]);
 
   const handleCreateSection = async (section) => {
     try {
@@ -137,7 +174,7 @@ const AdminSectionsPage = () => {
     );
   }
 
-  if (loading) {
+  if (loading || !user) {
     return (
       <div className="flex justify-center py-12">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-black"></div>

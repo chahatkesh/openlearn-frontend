@@ -106,10 +106,10 @@ const App = () => {
                 <Route path="users" element={<AdminUsersPage />} />
                 <Route path="specializations" element={<AdminSpecializationsPage />} />
                 <Route path="cohorts" element={<AdminCohortsPage />} />
+                <Route path="leagues" element={<AdminLeaguesPage />} />
               </Route>
               {/* Routes for GRAND_PATHFINDER and CHIEF_PATHFINDER */}
               <Route element={<ProtectedRoute requiredRoles={['GRAND_PATHFINDER', 'CHIEF_PATHFINDER']} />}>
-                <Route path="leagues" element={<AdminLeaguesPage />} />
                 <Route path="assignments" element={<AdminAssignmentsPage />} />
               </Route>
               {/* Routes for GRAND_PATHFINDER, CHIEF_PATHFINDER, and PATHFINDER */}

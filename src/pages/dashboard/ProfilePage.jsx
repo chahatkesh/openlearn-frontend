@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { 
   User, 
@@ -39,8 +39,9 @@ const ProfilePage = () => {
   const [saveMessage, setSaveMessage] = useState('');
 
   // Update social data when user changes (important for async user loading)
+  // Only update if not currently editing to prevent losing focus
   useEffect(() => {
-    if (user) {
+    if (user && !isEditingSocial) {
       setSocialData({
         portfolioUrl: user.portfolioUrl || '',
         githubUsername: user.githubUsername || '',
@@ -50,7 +51,32 @@ const ProfilePage = () => {
         kaggleUsername: user.kaggleUsername || ''
       });
     }
-  }, [user]);
+  }, [user, isEditingSocial]);
+
+  // Memoized handlers to prevent unnecessary re-renders
+  const handlePortfolioChange = useCallback((e) => {
+    setSocialData(prev => ({ ...prev, portfolioUrl: e.target.value }));
+  }, []);
+
+  const handleGithubChange = useCallback((e) => {
+    setSocialData(prev => ({ ...prev, githubUsername: e.target.value }));
+  }, []);
+
+  const handleTwitterChange = useCallback((e) => {
+    setSocialData(prev => ({ ...prev, twitterHandle: e.target.value }));
+  }, []);
+
+  const handleLinkedinChange = useCallback((e) => {
+    setSocialData(prev => ({ ...prev, linkedinUrl: e.target.value }));
+  }, []);
+
+  const handleDiscordChange = useCallback((e) => {
+    setSocialData(prev => ({ ...prev, discordUsername: e.target.value }));
+  }, []);
+
+  const handleKaggleChange = useCallback((e) => {
+    setSocialData(prev => ({ ...prev, kaggleUsername: e.target.value }));
+  }, []);
 
   const formatRole = (role) => {
     return role?.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase()) || 'Member';
@@ -377,7 +403,7 @@ const ProfilePage = () => {
               {/* Header with Edit Button */}
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center space-x-2">
-                  <h3 className="text-sm font-medium text-gray-700">Connect your profiles</h3>
+                  <h3 className="text-sm font-medium text-gray-700">Add your profiles</h3>
                   {saveMessage && (
                     <MotionSpan 
                       initial={{ opacity: 0, scale: 0.8 }}
@@ -439,15 +465,8 @@ const ProfilePage = () => {
                 </div>
               </div>
 
-              <AnimatePresence mode="wait">
-                {isEditingSocial ? (
-                  <MotionDiv 
-                    key="edit-form"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    className="space-y-4"
-                  >
+              {isEditingSocial ? (
+                <div className="space-y-4">
                     {/* Portfolio URL */}
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1">
@@ -456,9 +475,10 @@ const ProfilePage = () => {
                       <div className="relative">
                         <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
+                          key="portfolio-input"
                           type="url"
                           value={socialData.portfolioUrl}
-                          onChange={(e) => setSocialData(prev => ({ ...prev, portfolioUrl: e.target.value }))}
+                          onChange={handlePortfolioChange}
                           placeholder="https://yourportfolio.com"
                           className="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
@@ -473,9 +493,10 @@ const ProfilePage = () => {
                       <div className="relative">
                         <SiGithub className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
+                          key="github-input"
                           type="text"
                           value={socialData.githubUsername}
-                          onChange={(e) => setSocialData(prev => ({ ...prev, githubUsername: e.target.value }))}
+                          onChange={handleGithubChange}
                           placeholder="yourusername"
                           className="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
@@ -490,9 +511,10 @@ const ProfilePage = () => {
                       <div className="relative">
                         <SiX className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
+                          key="twitter-input"
                           type="text"
                           value={socialData.twitterHandle}
-                          onChange={(e) => setSocialData(prev => ({ ...prev, twitterHandle: e.target.value }))}
+                          onChange={handleTwitterChange}
                           placeholder="@yourusername"
                           className="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
@@ -507,9 +529,10 @@ const ProfilePage = () => {
                       <div className="relative">
                         <SiLinkedin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
+                          key="linkedin-input"
                           type="url"
                           value={socialData.linkedinUrl}
-                          onChange={(e) => setSocialData(prev => ({ ...prev, linkedinUrl: e.target.value }))}
+                          onChange={handleLinkedinChange}
                           placeholder="https://linkedin.com/in/yourusername"
                           className="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
@@ -524,9 +547,10 @@ const ProfilePage = () => {
                       <div className="relative">
                         <Activity className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
+                          key="discord-input"
                           type="text"
                           value={socialData.discordUsername}
-                          onChange={(e) => setSocialData(prev => ({ ...prev, discordUsername: e.target.value }))}
+                          onChange={handleDiscordChange}
                           placeholder="yourusername#1234"
                           className="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
@@ -541,6 +565,7 @@ const ProfilePage = () => {
                       <div className="relative">
                         <SiKaggle className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
+                          key="kaggle-input"
                           type="text"
                           value={socialData.kaggleUsername}
                           onChange={(e) => setSocialData(prev => ({ ...prev, kaggleUsername: e.target.value }))}
@@ -549,14 +574,9 @@ const ProfilePage = () => {
                         />
                       </div>
                     </div>
-                  </MotionDiv>
+                  </div>
                 ) : (
-                  <MotionDiv 
-                    key="display-links"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
-                  >
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                     {user.portfolioUrl && (
                       <SocialLink 
                         icon={Globe} 
@@ -618,9 +638,8 @@ const ProfilePage = () => {
                         color="green"
                       />
                     )}
-                  </MotionDiv>
+                  </div>
                 )}
-              </AnimatePresence>
             </InfoCard>
           )}
 
