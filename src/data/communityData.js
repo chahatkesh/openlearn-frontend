@@ -9,7 +9,8 @@ const communityData = {
       league: 'Finance',
       role: 'Finance Chief Pathfinder',
       color: '#10B981', // Green
-      linkedin: ''
+      linkedin: '',
+      isActive: true
     },
     {
       id: 'quantum',
@@ -17,7 +18,8 @@ const communityData = {
       league: 'Quantum Computing League',
       role: 'Quantum Chief Pathfinder',
       color: '#8B5CF6', // Purple
-      linkedin: ''
+      linkedin: '',
+      isActive: true
     },
     {
       id: 'ml',
@@ -25,7 +27,8 @@ const communityData = {
       league: 'ML',
       role: 'ML Chief Pathfinder',
       color: '#3B82F6', // Blue
-      linkedin: ''
+      linkedin: '',
+      isActive: false
     },
     {
       id: 'soft-skills',
@@ -33,7 +36,8 @@ const communityData = {
       league: 'Soft Skills',
       role: 'Soft Skills Chief Pathfinder',
       color: '#F59E0B', // Amber
-      linkedin: ''
+      linkedin: '',
+      isActive: false
     },
     {
       id: 'competitive-programming',
@@ -41,7 +45,8 @@ const communityData = {
       league: 'Competitive Programming',
       role: 'Competitive Programming Chief Pathfinder',
       color: '#EF4444', // Red
-      linkedin: ''
+      linkedin: '',
+      isActive: false
     },
     {
       id: 'iot',
@@ -49,14 +54,24 @@ const communityData = {
       league: 'IoT League',
       role: 'IoT Chief Pathfinder',
       color: '#06B6D4', // Cyan
-      linkedin: ''
+      linkedin: '',
+      isActive: false
+    },
+    {
+      id: 'exmatrix',
+      name: 'Sathvik G A',
+      league: 'ExMatrix League',
+      role: 'ExMatrix Chief Pathfinder',
+      color: '#EC4899', // Pink
+      linkedin: '',
+      isActive: false
     }
   ],
   pathfinders: [
     // Finance Pathfinders
     {
       id: 'finance-1',
-      name: 'Priya Gupta',
+      name: 'Tanveer Singh',
       league: 'Finance',
       role: 'Finance Pathfinder',
       color: '#10B981',
@@ -114,7 +129,15 @@ const communityData = {
     // ML Pathfinders
     {
       id: 'ml-1',
-      name: 'Samaira Wahi',
+      name: 'Adesh Anurag',
+      league: 'ML',
+      role: 'ML Pathfinder',
+      color: '#3B82F6',
+      linkedin: ''
+    },
+    {
+      id: 'ml-2',
+      name: 'Vivek Dhiman',
       league: 'ML',
       role: 'ML Pathfinder',
       color: '#3B82F6',
@@ -171,6 +194,63 @@ const communityData = {
       color: '#06B6D4',
       linkedin: ''
     },
+    // ExMatrix League Pathfinders
+    {
+      id: 'exmatrix-1',
+      name: 'Saaransh Saxena',
+      league: 'ExMatrix League',
+      role: 'ExMatrix Pathfinder',
+      color: '#EC4899',
+      linkedin: ''
+    },
+    {
+      id: 'exmatrix-2',
+      name: 'Jeetashwar Singh',
+      league: 'ExMatrix League',
+      role: 'ExMatrix Pathfinder',
+      color: '#EC4899',
+      linkedin: ''
+    },
+    {
+      id: 'exmatrix-3',
+      name: 'Laksh Arora',
+      league: 'ExMatrix League',
+      role: 'ExMatrix Pathfinder',
+      color: '#EC4899',
+      linkedin: ''
+    },
+    {
+      id: 'exmatrix-4',
+      name: 'Krrish Bhagla',
+      league: 'ExMatrix League',
+      role: 'ExMatrix Pathfinder',
+      color: '#EC4899',
+      linkedin: ''
+    },
+    {
+      id: 'exmatrix-5',
+      name: 'Divyansh Jangid',
+      league: 'ExMatrix League',
+      role: 'ExMatrix Pathfinder',
+      color: '#EC4899',
+      linkedin: ''
+    },
+    {
+      id: 'exmatrix-6',
+      name: 'Nipun Khatri',
+      league: 'ExMatrix League',
+      role: 'ExMatrix Pathfinder',
+      color: '#EC4899',
+      linkedin: ''
+    },
+    {
+      id: 'exmatrix-7',
+      name: 'G Rohit Varshan',
+      league: 'ExMatrix League',
+      role: 'ExMatrix Pathfinder',
+      color: '#EC4899',
+      linkedin: ''
+    },
   ],
   stats: {
     activeLeagues: 5,
@@ -190,9 +270,8 @@ const countPathfinders = () => {
 };
 
 const countActiveLeagues = () => {
-  // Count unique leagues from chief pathfinders
-  const uniqueLeagues = new Set(communityData.chiefPathfinders.map(chief => chief.league));
-  return uniqueLeagues.size;
+  // Count only active leagues from chief pathfinders
+  return communityData.chiefPathfinders.filter(chief => chief.isActive).length;
 };
 
 // Update stats dynamically

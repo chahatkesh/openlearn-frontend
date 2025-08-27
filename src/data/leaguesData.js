@@ -62,6 +62,16 @@ const leaguesData = {
       color: '#06B6D4', // Cyan
       startingDate: 'to be announced',
       facilitatedBy: 'Electronics Society'
+    },
+    {
+      id: 'exmatrix',
+      name: 'ExMatrix',
+      title: 'ExMatrix League',
+      description: 'Explore advanced matrix operations, linear algebra applications, and computational mathematics.',
+      cover: '/leagues/exmatrix-cover.jpg',
+      color: '#EC4899', // Pink
+      startingDate: 'to be announced',
+      facilitatedBy: 'gaNIT NITJ'
     }
   ]
 };
