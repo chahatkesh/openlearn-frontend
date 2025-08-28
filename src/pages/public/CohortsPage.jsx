@@ -244,7 +244,7 @@ const CohortsPage = () => {
             style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}
           >
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 text-gray-900 leading-tight">
-              {cohort.name} Learning Programs
+              Cohort 1.5 Learning Programs
             </h2>
             
             <p className="text-lg lg:text-xl text-gray-600 mb-8 leading-relaxed max-w-3xl mx-auto">
