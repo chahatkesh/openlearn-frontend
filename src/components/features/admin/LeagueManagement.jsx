@@ -181,7 +181,7 @@ const LeagueManagement = ({
                 <h3 className="text-lg font-bold text-gray-900 mb-2">{league.name}</h3>
                 <p className="text-gray-600 mb-4">{league.description}</p>
                 <div className="flex justify-between items-center text-sm text-gray-500">
-                  <span>{league._count?.weeks || 0} weeks</span>
+                  <span>{league._count?.weeks || 0} modules</span>
                   <span>{league._count?.enrollments || 0} students</span>
                 </div>
               </div>

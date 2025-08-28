@@ -202,18 +202,18 @@ const AdminSectionsPage = () => {
 
   return (
     <SectionManagement
+      user={user}
       sections={sections}
       weeks={weeks}
       leagues={leagues}
       onCreateSection={handleCreateSection}
       onUpdateSection={handleUpdateSection}
       onDeleteSection={handleDeleteSection}
+      loading={loading}
       selectedLeagueId={selectedLeagueId}
       selectedWeekId={selectedWeekId}
       onSelectLeague={setSelectedLeagueId}
       onSelectWeek={setSelectedWeekId}
-      user={user}
-      loading={loading}
     />
   );
 };

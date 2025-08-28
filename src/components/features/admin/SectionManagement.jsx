@@ -1,255 +1,138 @@
 import React, { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { Plus, Edit, Trash2, GripVertical, ChevronDown, ChevronRight, Calendar, BookOpen, Hash, Target, Filter, X } from 'lucide-react';
 
-// Modal component that renders to document.body
-const Modal = ({ isOpen, onClose, children }) => {
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handleEscapeKey = (e) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-
-    document.addEventListener('keydown', handleEscapeKey);
-    document.body.style.overflow = 'hidden'; // Prevent background scrolling
-
-    return () => {
-      document.removeEventListener('keydown', handleEscapeKey);
-      document.body.style.overflow = 'unset';
-    };
-  }, [isOpen, onClose]);
-
-  if (!isOpen) return null;
-
-  const handleOverlayClick = (e) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
-
-  return createPortal(
-    <div 
-      className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-[10000]"
-      onClick={handleOverlayClick}
-    >
-      {children}
-    </div>,
-    document.body
-  );
-};
-
-const SectionManagement = ({ 
-  sections, 
-  weeks, 
+const SectionManagement = ({
+  sections,
+  weeks,
   leagues,
-  onCreateSection, 
-  onUpdateSection, 
+  onCreateSection,
+  onUpdateSection,
   onDeleteSection,
   selectedLeagueId,
   selectedWeekId,
   onSelectLeague,
   onSelectWeek,
-  user // Add user prop for role checking
+  user,
+  loading
 }) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingSection, setEditingSection] = useState(null);
-  const [showFilters, setShowFilters] = useState(false);
-  const [formData, setFormData] = useState({
+  const [expandedModules, setExpandedModules] = useState(new Set());
+  const [sectionForm, setSectionForm] = useState({
     name: '',
-    order: 1,
+    order: '',
     weekId: ''
   });
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState(null);
-  const [toast, setToast] = useState(null);
 
   // Check if user is Grand Pathfinder (has access to all data)
   const isGrandPathfinder = user?.role === 'GRAND_PATHFINDER';
 
-  // Toast function
-  const showToast = (message, type = 'success') => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
+  // If weeks change while the form is open
+  useEffect(() => {
+    if (weeks.length > 0) {
+      const weekId = selectedWeekId || weeks[0].id;
+      setSectionForm(prev => ({
+        ...prev,
+        weekId
+      }));
+    }
+  }, [weeks, selectedWeekId]);
+
+  useEffect(() => {
+    // When switching weeks, update the form's weekId
+    if (selectedWeekId) {
+      setSectionForm(prev => ({
+        ...prev,
+        weekId: selectedWeekId
+      }));
+    }
+  }, [selectedWeekId]);
+
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    setSectionForm({
+      ...sectionForm,
+      [name]: name === 'order' ? parseInt(value, 10) || '' : value
+    });
   };
 
-  // Form validation
-  const validateForm = () => {
-    const newErrors = {};
-    
-    if (!formData.name.trim()) {
-      newErrors.name = 'Topic name is required';
-    } else if (formData.name.length > 100) {
-      newErrors.name = 'Topic name must be 100 characters or less';
-    }
-    
-    if (!formData.weekId) {
-      newErrors.weekId = 'Module selection is required';
-    }
-    
-    if (!formData.order || formData.order < 1) {
-      newErrors.order = 'Order must be a positive integer';
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const handleCreateSubmit = (e) => {
+    e.preventDefault();
+    onCreateSection(sectionForm);
+    resetForm();
   };
 
-  const handleSubmit = async (e) => {
-    try {
-      e.preventDefault();
-      e.stopPropagation();
-      
-      const validationResult = validateForm();
-      if (!validationResult) {
-        return;
-      }
-      
-      setIsSubmitting(true);
-      setSubmitError(null);
-      try {
-        if (editingSection) {
-          if (typeof onUpdateSection !== 'function') {
-            throw new Error('Update function not available');
-          }
-          await onUpdateSection(editingSection.id, formData);
-          showToast('Learning topic updated successfully!', 'success');
-        } else {
-          if (typeof onCreateSection !== 'function') {
-            throw new Error('Create function not available');
-          }
-          await onCreateSection(formData);
-          showToast('Learning topic created successfully!', 'success');
-        }
-        // Only reset form and close modal on success
-        setFormData({
-          name: '',
-          order: 1,
-          weekId: selectedWeekId || ''
-        });
-        setErrors({});
-        setSubmitError(null);
-        setIsSubmitting(false);
-        setShowCreateForm(false);
-        setEditingSection(null);
-      } catch (error) {
-        console.error('Error submitting form:', error);
-        
-        // Prevent error from bubbling up to global error handlers
-        e?.preventDefault();
-        e?.stopPropagation();
-        
-        // Extract error message from backend response
-        let errorMessage = 'An error occurred while saving. Please try again.';
-      
-      if (error.response?.data?.message) {
-        errorMessage = error.response.data.message;
-      } else if (error.response?.data?.error) {
-        errorMessage = error.response.data.error;
-      } else if (error.response?.data?.details) {
-        errorMessage = error.response.data.details;
-      } else if (error.response?.data?.errors) {
-        // Handle validation errors array
-        const errors = error.response.data.errors;
-        if (Array.isArray(errors) && errors.length > 0) {
-          errorMessage = errors.map(err => err.message || err).join(', ');
-        } else if (typeof errors === 'object') {
-          errorMessage = Object.values(errors).flat().join(', ');
-        }
-      } else if (error.message) {
-        errorMessage = error.message;
-      }
-      
-      // Handle network errors
-      if (error.code === 'NETWORK_ERROR' || error.code === 'ERR_NETWORK') {
-        errorMessage = 'Network error. Please check your connection and try again.';
-      }
-      
-      // Handle specific HTTP status codes
-      if (error.response?.status === 400) {
-        errorMessage = errorMessage || 'Invalid data provided. Please check your input.';
-      } else if (error.response?.status === 401) {
-        errorMessage = 'You are not authorized to perform this action.';
-      } else if (error.response?.status === 403) {
-        errorMessage = 'You do not have permission to perform this action.';
-      } else if (error.response?.status === 404) {
-        errorMessage = 'The requested resource was not found.';
-      } else if (error.response?.status === 409) {
-        errorMessage = errorMessage || 'A conflict occurred. This item may already exist.';
-      } else if (error.response?.status >= 500) {
-        errorMessage = 'Server error. Please try again later.';
-      }        
-        setSubmitError(errorMessage);
-        // Do NOT close modal on error - let user see the error and retry
-      } finally {
-        setIsSubmitting(false);
-      }
-    } catch (outerError) {
-      console.error('Unexpected error in form submission:', outerError);
-      setSubmitError('An unexpected error occurred. Please try again.');
-      setIsSubmitting(false);
-      // Do NOT close modal on error
-    }
+  const handleEditSubmit = (e) => {
+    e.preventDefault();
+    onUpdateSection(editingSection.id, sectionForm);
+    resetForm();
   };
 
   const resetForm = () => {
-    setFormData({
+    setSectionForm({
       name: '',
-      order: 1,
-      weekId: selectedWeekId || ''
+      order: '',
+      weekId: selectedWeekId || (weeks.length > 0 ? weeks[0].id : '')
     });
-    setErrors({});
-    setSubmitError(null);
-    setIsSubmitting(false);
     setShowCreateForm(false);
     setEditingSection(null);
   };
 
-  const handleModalClose = () => {
-    // Prevent closing modal during submission
-    if (isSubmitting) {
-      return;
-    }
-    resetForm();
-  };
-
-  const handleEdit = (section) => {
-    setFormData({
+  const startEdit = (section) => {
+    setSectionForm({
       name: section.name,
       order: section.order,
       weekId: section.weekId
     });
     setEditingSection(section);
+    setShowCreateForm(false);
+  };
+
+  const startCreate = (weekId = null) => {
+    // If weekId is provided, create topic for that specific module
+    const targetWeekId = weekId || selectedWeekId || (weeks.length > 0 ? weeks[0].id : '');
+    
+    // Find the highest order in the target week's sections and add 1
+    const currentWeekSections = sections.filter(section => section.weekId === targetWeekId);
+    const nextOrder = currentWeekSections.length > 0 
+      ? Math.max(...currentWeekSections.map(section => section.order)) + 1 
+      : 1;
+    
+    setSectionForm({
+      name: '',
+      order: nextOrder,
+      weekId: targetWeekId
+    });
+    setEditingSection(null);
     setShowCreateForm(true);
   };
 
-  const handleDelete = async (sectionId, sectionName) => {
-    if (window.confirm(`Are you sure you want to delete topic "${sectionName}"? This will also delete all associated resources and progress records.`)) {
-      try {
-        await onDeleteSection(sectionId);
-      } catch (error) {
-        console.error('Error deleting section:', error);
-      }
+  const toggleModule = (weekId) => {
+    const newExpanded = new Set(expandedModules);
+    if (newExpanded.has(weekId)) {
+      newExpanded.delete(weekId);
+    } else {
+      newExpanded.add(weekId);
     }
+    setExpandedModules(newExpanded);
   };
 
-  // Filter sections based on selected filters
+  // Filter sections by selected league and week if applicable (skip for Grand Pathfinder)
   const filteredSections = sections.filter(section => {
+    if (!isGrandPathfinder && selectedLeagueId && section.week?.leagueId !== selectedLeagueId) return false;
     if (selectedWeekId && section.weekId !== selectedWeekId) return false;
-    // Skip league filtering for Grand Pathfinder users
-    if (!isGrandPathfinder && selectedLeagueId && section.week?.league?.id !== selectedLeagueId) return false;
     return true;
   });
 
+  // Sort sections by order
+  const sortedSections = [...filteredSections].sort((a, b) => a.order - b.order);
+
   // Group sections by module
-  const sectionsByWeek = filteredSections.reduce((acc, section) => {
+  const sectionsByWeek = sortedSections.reduce((acc, section) => {
     const weekId = section.weekId;
     if (!acc[weekId]) {
+      const week = weeks.find(w => w.id === weekId);
       acc[weekId] = {
-        week: section.week,
+        week: week || { id: weekId, name: 'Unknown Module', leagueId: null },
         sections: []
       };
     }
@@ -262,506 +145,352 @@ const SectionManagement = ({
     weekGroup.sections.sort((a, b) => a.order - b.order);
   });
 
+  // Get filtered weeks for dropdowns
   const getFilteredWeeks = () => {
-    // Skip league filtering for Grand Pathfinder users
     if (!isGrandPathfinder && selectedLeagueId) {
       return weeks.filter(week => week.leagueId === selectedLeagueId);
     }
     return weeks;
   };
 
-  return (
-    <div className="space-y-8">
-      {/* Modern Header with Stats */}
-      <div className="bg-gradient-to-r from-gray-50 to-white rounded-2xl p-6 border border-gray-100">
-        <div className="flex justify-between items-start">
-          <div>
-            <div className="flex items-center space-x-3 mb-2">
-              <div className="p-2 bg-gray-900 rounded-xl">
-                <Calendar className="w-5 h-5 text-white" />
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900">Learning Topics</h2>
-            </div>
-            <p className="text-gray-600 mb-4">
-              Manage learning content and organize educational resources by modules.
-            </p>
-            
-            {/* Quick Stats */}
-            <div className="flex items-center space-x-6 text-sm">
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                <span className="text-gray-600">{filteredSections.length} Days</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="text-gray-600">{Object.keys(sectionsByWeek).length} Weeks</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                <span className="text-gray-600">
-                  {filteredSections.reduce((sum, section) => sum + (section._count?.resources || 0), 0)} Resources
-                </span>
-              </div>
-            </div>
-          </div>
-          
-          <div className="flex items-center space-x-3">
-            {/* Filter Toggle */}
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className={`inline-flex items-center px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
-                selectedLeagueId || selectedWeekId
-                  ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
-              }`}
-            >
-              <Filter className="w-4 h-4 mr-2" />
-              Filters
-              {(selectedLeagueId || selectedWeekId) && (
-                <span className="ml-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
-                  {(selectedLeagueId ? 1 : 0) + (selectedWeekId ? 1 : 0)}
-                </span>
-              )}
-            </button>
-            
-            {/* Create Button */}
-            <button
-              onClick={() => setShowCreateForm(true)}
-              className="inline-flex items-center px-6 py-2 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-gray-800 transition-all duration-200 shadow-sm hover:shadow-md"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              New Topic
-            </button>
-          </div>
-        </div>
+  // Auto-expand modules based on filters
+  useEffect(() => {
+    if (selectedWeekId) {
+      // Only expand the specifically selected module
+      setExpandedModules(new Set([selectedWeekId]));
+    } else {
+      // Keep all modules collapsed by default
+      setExpandedModules(new Set());
+    }
+  }, [selectedWeekId]);
+  
+  if (weeks.length === 0 && !loading) {
+    return (
+      <div className="text-center py-8 text-gray-500">
+        No modules found. Please create a module first before adding topics.
       </div>
+    );
+  }
 
-      {/* Improved Filters */}
-      {showFilters && (
-        <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">Filter Topics</h3>
-            <button
-              onClick={() => setShowFilters(false)}
-              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-          
-          <div className={`grid grid-cols-1 ${!isGrandPathfinder ? 'md:grid-cols-2' : ''} gap-6`}>
-            {/* Show league filter only for non-Grand Pathfinder users */}
-            {!isGrandPathfinder && (
+  return (
+    <div className="min-h-screen bg-gray-50/30">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        
+        {/* Header Section */}
+        <div className="mb-8 sm:mb-12">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-gray-200/50">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 sm:gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <BookOpen className="w-4 h-4 inline mr-2" />
-                  League
-                </label>
-                <select
-                  value={selectedLeagueId}
-                  onChange={(e) => onSelectLeague(e.target.value)}
-                  className="block w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200"
-                >
-                  <option value="">All Leagues</option>
-                  {leagues.map((league) => (
-                    <option key={league.id} value={league.id}>
-                      {league.name}
-                    </option>
-                  ))}
-                </select>
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-gray-900 tracking-tight">
+                  Topic Management
+                </h1>
+                <p className="text-sm sm:text-base text-gray-600 mt-2 leading-relaxed">
+                  Organize and manage your learning topics within modules
+                </p>
               </div>
-            )}
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <Calendar className="w-4 h-4 inline mr-2" />
-                Module
-              </label>
-              <select
-                value={selectedWeekId}
-                onChange={(e) => onSelectWeek(e.target.value)}
-                className="block w-full px-4 py-3 border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200"
-              >
-                <option value="">All Modules</option>
-                {getFilteredWeeks().map((week) => (
-                  <option key={week.id} value={week.id}>
-                    {week.name} {week.league?.name && `(${week.league.name})`}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          
-          {/* Active Filters */}
-          {((!isGrandPathfinder && selectedLeagueId) || selectedWeekId) && (
-            <div className="flex items-center space-x-2 mt-4 pt-4 border-t border-gray-100">
-              <span className="text-sm text-gray-500">Active filters:</span>
-              {!isGrandPathfinder && selectedLeagueId && (
-                <span className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-lg">
-                  {leagues.find(l => l.id === selectedLeagueId)?.name}
-                  <button 
-                    onClick={() => onSelectLeague('')}
-                    className="ml-2 text-blue-600 hover:text-blue-800"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </span>
-              )}
-              {selectedWeekId && (
-                <span className="inline-flex items-center px-3 py-1 bg-green-100 text-green-800 text-sm rounded-lg">
-                  {weeks.find(w => w.id === selectedWeekId)?.name}
-                  <button 
-                    onClick={() => onSelectWeek('')}
-                    className="ml-2 text-green-600 hover:text-green-800"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </span>
-              )}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Modal for Create/Edit Form */}
-      <Modal isOpen={showCreateForm} onClose={handleModalClose}>
-        <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
-            {/* Modal Header */}
-            <div className="bg-gray-50 px-6 py-4 border-b border-gray-100 sticky top-0">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-gray-900 rounded-lg">
-                    {editingSection ? <Edit className="w-4 h-4 text-white" /> : <Plus className="w-4 h-4 text-white" />}
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    {editingSection ? 'Edit Learning Topic' : 'Create New Learning Topic'}
-                  </h3>
-                </div>
-                <button
-                  onClick={handleModalClose}
-                  disabled={isSubmitting}
-                  className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-            
-            {/* Modal Content */}
-            <form onSubmit={handleSubmit} className="flex flex-col h-full">
-              <div className="overflow-y-auto max-h-[calc(90vh-140px)]">
-                <div className="p-6">
-                  {/* Submit Error Display */}
-                  {submitError && (
-                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
-                      <div className="flex items-start">
-                        <div className="flex-shrink-0 mt-0.5">
-                          <div className="w-5 h-5 bg-red-400 rounded-full flex items-center justify-center">
-                            <X className="h-3 w-3 text-white" />
-                          </div>
-                        </div>
-                        <div className="ml-3 flex-1">
-                          <h3 className="text-sm font-medium text-red-800 mb-1">Unable to save</h3>
-                          <p className="text-red-700 text-sm leading-relaxed">{submitError}</p>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setSubmitError(null)}
-                          className="ml-3 flex-shrink-0 text-red-400 hover:text-red-600 transition-colors"
-                          title="Dismiss error"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  <div className="lg:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Topic Name *
+              
+              {/* Filters Row */}
+              <div className="flex flex-col sm:flex-row gap-4 lg:items-end">
+                {/* League Filter - Hide for Grand Pathfinder */}
+                {!isGrandPathfinder && (
+                  <div className="flex-shrink-0 w-full sm:w-auto">
+                    <label htmlFor="leagueFilter" className="block text-xs font-medium text-gray-700 mb-2">
+                      Filter by League
                     </label>
-                    <input
-                      type="text"
-                      value={formData.name}
-                      onChange={(e) => {
-                        setFormData({ ...formData, name: e.target.value });
-                        if (submitError) setSubmitError(null); // Clear submit error when user starts typing
-                      }}
-                      className={`block w-full px-4 py-3 border rounded-xl shadow-sm transition-all duration-200 ${
-                        errors.name 
-                          ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
-                          : 'border-gray-200 focus:ring-2 focus:ring-gray-900 focus:border-transparent'
-                      }`}
-                      placeholder="e.g., Introduction to Machine Learning"
-                      autoFocus
-                      disabled={isSubmitting}
-                    />
-                    {errors.name && <p className="text-red-600 text-sm mt-2">{errors.name}</p>}
+                    <select
+                      id="leagueFilter"
+                      value={selectedLeagueId || ''}
+                      onChange={(e) => onSelectLeague(e.target.value)}
+                      className="w-full sm:w-64 px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/20 focus:border-gray-400 transition-all duration-200"
+                    >
+                      <option value="">All Leagues</option>
+                      {leagues.map(league => (
+                        <option key={league.id} value={league.id}>
+                          {league.name}
+                        </option>
+                      ))}
+                    </select>
                   </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      <Hash className="w-4 h-4 inline mr-1" />
-                      Order *
-                    </label>
-                    <input
-                      type="number"
-                      min="1"
-                      value={formData.order}
-                      onChange={(e) => {
-                        setFormData({ ...formData, order: parseInt(e.target.value) || 1 });
-                        if (submitError) setSubmitError(null);
-                      }}
-                      className={`block w-full px-4 py-3 border rounded-xl shadow-sm transition-all duration-200 ${
-                        errors.order 
-                          ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
-                          : 'border-gray-200 focus:ring-2 focus:ring-gray-900 focus:border-transparent'
-                      }`}
-                      disabled={isSubmitting}
-                    />
-                    {errors.order && <p className="text-red-600 text-sm mt-2">{errors.order}</p>}
-                  </div>
-                </div>
+                )}
                 
-                <div className="mt-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <Calendar className="w-4 h-4 inline mr-1" />
-                    Module *
+                {/* Week Filter */}
+                <div className="flex-shrink-0 w-full sm:w-auto">
+                  <label htmlFor="weekFilter" className="block text-xs font-medium text-gray-700 mb-2">
+                    Filter by Module
                   </label>
                   <select
-                    value={formData.weekId}
-                    onChange={(e) => {
-                      setFormData({ ...formData, weekId: e.target.value });
-                      if (submitError) setSubmitError(null);
-                    }}
-                    className={`block w-full px-4 py-3 border rounded-xl shadow-sm transition-all duration-200 ${
-                      errors.weekId 
-                        ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
-                        : 'border-gray-200 focus:ring-2 focus:ring-gray-900 focus:border-transparent'
-                    }`}
-                    disabled={isSubmitting}
+                    id="weekFilter"
+                    value={selectedWeekId || ''}
+                    onChange={(e) => onSelectWeek(e.target.value)}
+                    className="w-full sm:w-64 px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/20 focus:border-gray-400 transition-all duration-200"
                   >
-                    <option value="">Select a module</option>
-                    {getFilteredWeeks().map((week) => (
+                    <option value="">All Modules</option>
+                    {getFilteredWeeks().map(week => (
                       <option key={week.id} value={week.id}>
-                        {week.name} {week.league?.name && `(${week.league.name})`}
+                        {week.name}
                       </option>
                     ))}
                   </select>
-                  {errors.weekId && <p className="text-red-600 text-sm mt-2">{errors.weekId}</p>}
                 </div>
               </div>
             </div>
-            
-            {/* Modal Footer */}
-            <div className="bg-gray-50 px-6 py-4 border-t border-gray-100 sticky bottom-0">
-              <div className="flex items-center justify-end space-x-4">
-                <button
-                  type="button"
-                  onClick={handleModalClose}
-                  disabled={isSubmitting}
-                  className="px-6 py-2 text-gray-700 bg-white border border-gray-200 hover:bg-gray-100 rounded-xl font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="inline-flex items-center px-6 py-2 bg-gray-900 text-white rounded-xl font-medium hover:bg-gray-800 transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      {editingSection ? 'Updating...' : 'Creating...'}
-                    </>
-                  ) : (
-                    <>
-                      {editingSection ? <Edit className="w-4 h-4 mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
-                      {editingSection ? 'Update Topic' : 'Create Topic'}
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-            </form>
-          </div>
-      </Modal>
-
-      {/* Modern Sections Table */}
-      <div className="space-y-6">
-        {Object.keys(sectionsByWeek).length === 0 ? (
-          <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
-            <div className="max-w-md mx-auto">
-              <div className="bg-gray-100 rounded-full p-4 w-16 h-16 mx-auto mb-4">
-                <Calendar className="w-8 h-8 text-gray-400 mx-auto" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Learning Topics Found</h3>
-              <p className="text-gray-600 mb-6">
-                {selectedWeekId || selectedLeagueId 
-                  ? 'No days match your current filters. Try adjusting your search criteria.' 
-                  : 'Get started by creating your first learning topic to organize educational content.'
-                }
-              </p>
-              {!showCreateForm && (
-                <button
-                  onClick={() => setShowCreateForm(true)}
-                  className="inline-flex items-center px-6 py-3 bg-gray-900 text-white rounded-xl font-medium hover:bg-gray-800 transition-all duration-200"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create First Topic
-                </button>
-              )}
-            </div>
-          </div>
-        ) : (
-          Object.entries(sectionsByWeek).map(([weekId, weekGroup]) => (
-            <div key={weekId} className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
-              {/* Week Header */}
-              <div className="bg-gradient-to-r from-gray-50 to-white px-6 py-4 border-b border-gray-100">
-                <div className="flex items-center space-x-4">
-                  <div className="p-2 bg-gray-900 rounded-lg">
-                    <Calendar className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900">
-                      {weekGroup.week?.name}
-                    </h4>
-                    <div className="flex items-center space-x-4 text-sm text-gray-600">
-                      <span className="flex items-center">
-                        <BookOpen className="w-4 h-4 mr-1" />
-                        {weekGroup.week?.league?.name}
-                      </span>
-                      <span className="flex items-center">
-                        <Target className="w-4 h-4 mr-1" />
-                        {weekGroup.sections.length} Topic{weekGroup.sections.length !== 1 ? 's' : ''}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Sections Table */}
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-gray-50 border-b border-gray-100">
-                    <tr>
-                      <th className="w-2/5 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        <div className="flex items-center space-x-2">
-                          <GripVertical className="w-4 h-4" />
-                          <span>Day</span>
-                        </div>
-                      </th>
-                      <th className="w-20 px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Order
-                      </th>
-                      <th className="w-28 px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Resources
-                      </th>
-                      <th className="w-24 px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Created
-                      </th>
-                      <th className="w-24 px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-50">
-                    {weekGroup.sections.map((section) => (
-                      <tr key={section.id} className="hover:bg-gray-50 transition-colors duration-200 group">
-                        <td className="px-6 py-4">
-                          <div className="flex items-center space-x-3">
-                            <div className="text-gray-300 group-hover:text-gray-400 transition-colors">
-                              <GripVertical className="w-4 h-4" />
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <h5 className="text-sm font-medium text-gray-900 group-hover:text-gray-700 transition-colors truncate">
-                                {section.name}
-                              </h5>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 text-center">
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
-                            #{section.order}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-center">
-                          <div className="flex items-center justify-center text-sm text-gray-500">
-                            <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
-                            <span className="whitespace-nowrap">
-                              {section._count?.resources || 0}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 text-center text-sm text-gray-500">
-                          <span className="whitespace-nowrap">
-                            {new Date(section.createdAt).toLocaleDateString('en-US', { 
-                              month: 'short', 
-                              day: 'numeric',
-                              year: 'numeric' 
-                            })}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center justify-center space-x-1">
-                            <button
-                              onClick={() => handleEdit(section)}
-                              className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
-                              title="Edit Topic"
-                            >
-                              <Edit className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(section.id, section.name)}
-                              className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
-                              title="Delete Day"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
-
-      {/* Toast Notification */}
-      {toast && (
-        <div className="fixed top-4 right-4 z-[10001]">
-          <div className={`flex items-center p-4 rounded-xl shadow-lg transition-all duration-300 ${
-            toast.type === 'success' 
-              ? 'bg-green-50 border border-green-200 text-green-800' 
-              : 'bg-red-50 border border-red-200 text-red-800'
-          }`}>
-            <div className="flex-shrink-0">
-              {toast.type === 'success' ? (
-                <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
-                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                </div>
-              ) : (
-                <X className="h-5 w-5 text-red-400" />
-              )}
-            </div>
-            <div className="ml-3">
-              <p className="text-sm font-medium">{toast.message}</p>
-            </div>
-            <button
-              onClick={() => setToast(null)}
-              className="ml-4 flex-shrink-0 text-gray-400 hover:text-gray-600"
-            >
-              <X className="h-4 w-4" />
-            </button>
           </div>
         </div>
-      )}
+
+        {/* Form for creating or editing topics */}
+        {(showCreateForm || editingSection) && (
+          <div className="mb-8">
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-gray-200/50">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 tracking-tight">
+                  {editingSection ? 'Edit Topic' : 'Create New Topic'}
+                </h3>
+                <button
+                  type="button"
+                  onClick={resetForm}
+                  className="text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              <form onSubmit={editingSection ? handleEditSubmit : handleCreateSubmit} className="space-y-6">
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                    Topic Name
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={sectionForm.name}
+                    onChange={handleFormChange}
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900/20 focus:border-gray-400 transition-all duration-200"
+                    required
+                    placeholder="e.g. Introduction to Neural Networks"
+                  />
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div>
+                    <label htmlFor="order" className="block text-sm font-medium text-gray-700 mb-2">
+                      Order
+                    </label>
+                    <input
+                      type="number"
+                      id="order"
+                      name="order"
+                      value={sectionForm.order}
+                      onChange={handleFormChange}
+                      className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900/20 focus:border-gray-400 transition-all duration-200"
+                      min="1"
+                      step="1"
+                      required
+                    />
+                    <p className="text-xs text-gray-500 mt-2 leading-relaxed">
+                      Position within the module (must be unique)
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="weekId" className="block text-sm font-medium text-gray-700 mb-2">
+                      Module
+                    </label>
+                    <select
+                      id="weekId"
+                      name="weekId"
+                      value={sectionForm.weekId}
+                      onChange={handleFormChange}
+                      className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/20 focus:border-gray-400 transition-all duration-200"
+                      required
+                    >
+                      <option value="" disabled>Select a module</option>
+                      {getFilteredWeeks().map(week => (
+                        <option key={week.id} value={week.id}>
+                          {week.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                
+                <div className="flex flex-col sm:flex-row sm:justify-end gap-3 pt-6 border-t border-gray-100">
+                  <button
+                    type="button"
+                    onClick={resetForm}
+                    className="px-6 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-all duration-200"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-6 py-2.5 text-sm font-medium bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-all duration-200"
+                  >
+                    {editingSection ? 'Save Changes' : 'Create Topic'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Module-wise Topics Organization */}
+        {Object.keys(sectionsByWeek).length > 0 && !editingSection && !showCreateForm ? (
+          <div className="space-y-6">
+            {getFilteredWeeks().map((week) => {
+              const weekSections = sectionsByWeek[week.id];
+              const league = leagues.find(l => l.id === week.leagueId) || { name: 'Unknown League' };
+              const isExpanded = expandedModules.has(week.id);
+              const topicsCount = weekSections?.sections?.length || 0;
+
+              return (
+                <div key={week.id} className="bg-white/90 backdrop-blur-sm rounded-2xl border border-gray-200/50 overflow-hidden">
+                  {/* Module Header */}
+                  <div className="bg-gradient-to-r from-gray-50/80 to-white p-6 border-b border-gray-100/50">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <button
+                          onClick={() => toggleModule(week.id)}
+                          className="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200"
+                        >
+                          <svg 
+                            className={`w-5 h-5 text-gray-600 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`} 
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                        <div className="flex items-center gap-3">
+                          <div>
+                            <h3 className="text-lg font-semibold text-gray-900">{week.name}</h3>
+                            <div className="flex items-center gap-4 text-sm text-gray-500">
+                              <span className="flex items-center gap-1">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                </svg>
+                                {league.name}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                {topicsCount} topic{topicsCount !== 1 ? 's' : ''}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Add Topic Button for this Module */}
+                      <button
+                        onClick={() => startCreate(week.id)}
+                        className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 shadow-sm"
+                      >
+                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        </svg>
+                        Add Topic
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Topics List - Collapsible */}
+                  {isExpanded && (
+                    <div className="p-6">
+                      {weekSections && weekSections.sections.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {weekSections.sections.map((section) => (
+                            <div key={section.id} className="bg-gradient-to-br from-white to-gray-50/50 rounded-xl p-4 border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all duration-200">
+                              <div className="flex items-start justify-between mb-3">
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-700">
+                                      #{section.order}
+                                    </span>
+                                    <span className="text-xs text-gray-500">
+                                      {section._count?.resources || 0} resource{section._count?.resources !== 1 ? 's' : ''}
+                                    </span>
+                                  </div>
+                                  <h4 className="text-sm font-semibold text-gray-900 leading-tight mb-1 line-clamp-2">
+                                    {section.name}
+                                  </h4>
+                                </div>
+                              </div>
+                              
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => startEdit(section)}
+                                  className="flex-1 inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 transition-all duration-200"
+                                >
+                                  <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                  </svg>
+                                  Edit
+                                </button>
+                                <button
+                                  onClick={() => onDeleteSection(section.id)}
+                                  className="px-2 py-1.5 text-xs font-medium text-red-600 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-all duration-200"
+                                >
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                  </svg>
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-8">
+                          <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                          </div>
+                          <p className="text-sm text-gray-500 mb-3">No topics in this module yet</p>
+                          <button
+                            onClick={() => startCreate(week.id)}
+                            className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 transition-all duration-200"
+                          >
+                            <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            Add First Topic
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          !showCreateForm && !editingSection && !loading && (
+            <div className="text-center py-16">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-8 sm:p-12 border border-gray-200/50 max-w-md mx-auto">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  No modules found
+                </h3>
+                <p className="text-sm text-gray-600 mb-6 leading-relaxed">
+                  {selectedLeagueId
+                    ? 'No modules found for this league. Create modules first to organize topics.'
+                    : 'No modules found. Create modules first to organize your topics.'
+                  }
+                </p>
+              </div>
+            </div>
+          )
+        )}
+      </div>
     </div>
   );
 };

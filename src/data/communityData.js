@@ -96,7 +96,7 @@ const communityData = {
     },
     {
       id: 'quantum-3',
-      name: 'Akanshaa',
+      name: 'Akanshha Sonowal',
       league: 'Quantum Computing',
       role: 'Quantum Pathfinder',
       color: '#8B5CF6',
@@ -151,7 +151,7 @@ const communityData = {
       imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756322411/5125b0eb-7856-404f-a8a9-e957d8129152.png'
     },
     {
-      id: 'ml-3',
+      id: 'ml-4',
       name: 'Kunal Kashyap',
       league: 'ML',
       role: 'ML Pathfinder',
@@ -214,14 +214,16 @@ const communityData = {
       name: 'Saaransh Saxena',
       league: 'ExMatrix',
       role: 'ExMatrix Pathfinder',
-      color: '#EC4899'
+      color: '#EC4899',
+      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756365308/Screenshot_2025-08-28_at_12.45.02_PM_wwsna4.png'
     },
     {
       id: 'exmatrix-2',
       name: 'Jeetashwar Singh',
       league: 'ExMatrix',
       role: 'ExMatrix Pathfinder',
-      color: '#EC4899'
+      color: '#EC4899',
+      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756365264/4153ef82-e1c3-42cd-a9c4-74659b8cd118.png'
     },
     {
       id: 'exmatrix-3',
@@ -235,7 +237,8 @@ const communityData = {
       name: 'Krrish Bhagla',
       league: 'ExMatrix',
       role: 'ExMatrix Pathfinder',
-      color: '#EC4899'
+      color: '#EC4899',
+      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756365227/eca377d2-e920-4447-b0f1-7b07b06f1540.png'
     },
     {
       id: 'exmatrix-5',
@@ -254,6 +257,13 @@ const communityData = {
     {
       id: 'exmatrix-7',
       name: 'G Rohit Varshan',
+      league: 'ExMatrix',
+      role: 'ExMatrix Pathfinder',
+      color: '#EC4899'
+    },
+    {
+      id: 'exmatrix-8',
+      name: 'Mayank Shigaonkar',
       league: 'ExMatrix',
       role: 'ExMatrix Pathfinder',
       color: '#EC4899'
