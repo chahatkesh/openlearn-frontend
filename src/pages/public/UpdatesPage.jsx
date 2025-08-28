@@ -62,6 +62,7 @@ const UpdatesPage = () => {
     switch (repo) {
       case 'frontend': return 'client'
       case 'backend': return 'server'
+      case 'monitoring': return 'monitoring'
       default: return repo
     }
   }

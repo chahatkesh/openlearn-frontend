@@ -11,7 +11,8 @@
 const GITHUB_API_BASE = 'https://api.github.com';
 const REPOS = [
   { name: 'openlearn-frontend', owner: 'openlearnnitj' },
-  { name: 'openlearn-backend', owner: 'openlearnnitj' }
+  { name: 'openlearn-backend', owner: 'openlearnnitj' },
+  { name: 'openlearn-monitoring', owner: 'openlearnnitj' }
 ];
 
 // Add your GitHub token here for higher rate limits (optional)
