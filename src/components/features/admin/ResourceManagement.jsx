@@ -1,22 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  Plus, 
-  Edit, 
-  Trash2, 
-  GripVertical, 
-  Play,
-  FileText,
-  ExternalLink,
-  BookOpen,
-  Eye,
-  ChevronDown,
-  ChevronRight,
-  X,
-  RotateCcw
-} from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Plus, ChevronDown, ChevronRight, Edit, Trash2, ExternalLink } from 'lucide-react';
+
 
 const ResourceManagement = ({
-  user,
   resources,
   sections,
   weeks,
@@ -24,145 +10,125 @@ const ResourceManagement = ({
   onCreateResource,
   onUpdateResource,
   onDeleteResource,
-  // onReorderResources, // Reserved for future drag-and-drop functionality
   selectedLeagueId,
   selectedWeekId,
   selectedSectionId,
   onSelectLeague,
   onSelectWeek,
-  onSelectSection,
+  resourceTypes,
+  isGrandPathfinder,
   loading
 }) => {
+
+
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingResource, setEditingResource] = useState(null);
-  const [formData, setFormData] = useState({
+  const [expandedModules, setExpandedModules] = useState(new Set());
+  const [expandedTopics, setExpandedTopics] = useState(new Set());
+  const [resourceForm, setResourceForm] = useState({
     title: '',
     url: '',
     type: 'VIDEO',
-    order: 1,
+    order: '',
     sectionId: ''
   });
-  const [errors, setErrors] = useState({});
-  const [typeFilter, setTypeFilter] = useState('ALL');
-  const [expandedSections, setExpandedSections] = useState({});
+  const [typeFilter] = useState('ALL');
 
-  // Check if user is Grand Pathfinder (has access to all data without filtering)
-  const isGrandPathfinder = user?.role === 'GRAND_PATHFINDER';
-
-  // Resource types with icons and labels
-  const resourceTypes = {
-    VIDEO: { icon: Play, label: 'Video', color: 'text-red-600', bg: 'bg-red-100' },
-    ARTICLE: { icon: FileText, label: 'Article', color: 'text-blue-600', bg: 'bg-blue-100' },
-    EXTERNAL_LINK: { icon: ExternalLink, label: 'External Link', color: 'text-green-600', bg: 'bg-green-100' },
-    BLOG: { icon: BookOpen, label: 'Blog', color: 'text-purple-600', bg: 'bg-purple-100' }
-  };
-
-  // Clear all filters
-  const clearAllFilters = useCallback(() => {
-    onSelectLeague('');
-    onSelectWeek('');
-    onSelectSection('');
-    setTypeFilter('ALL');
-  }, [onSelectLeague, onSelectWeek, onSelectSection]);
-
-  // Initialize form data with selected section
+  // If sections change while the form is open
   useEffect(() => {
-    if (selectedSectionId && !formData.sectionId) {
-      setFormData(prev => ({
+    if (sections.length > 0 && selectedSectionId) {
+      setResourceForm(prev => ({
         ...prev,
         sectionId: selectedSectionId
       }));
     }
-  }, [selectedSectionId, formData.sectionId]);
+  }, [sections, selectedSectionId]);
 
-  // Keyboard shortcuts for filters
   useEffect(() => {
-    const handleKeyDown = (e) => {
-      // Only handle shortcuts when not in input fields
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') {
-        return;
-      }
-
-      if (e.metaKey || e.ctrlKey) {
-        switch (e.key) {
-          case 'r': // Cmd/Ctrl + R to clear filters
-            e.preventDefault();
-            clearAllFilters();
-            break;
-          default:
-            break;
-        }
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [clearAllFilters]);
-
-  // Form validation
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!formData.title.trim()) {
-      newErrors.title = 'Resource title is required';
-    } else if (formData.title.length > 200) {
-      newErrors.title = 'Title must be 200 characters or less';
+    // When switching sections, update the form's sectionId
+    if (selectedSectionId) {
+      setResourceForm(prev => ({
+        ...prev,
+        sectionId: selectedSectionId
+      }));
     }
+  }, [selectedSectionId]);
 
-    if (!formData.url.trim()) {
-      newErrors.url = 'URL is required';
-    } else {
-      try {
-        new URL(formData.url);
-      } catch {
-        newErrors.url = 'Please enter a valid URL';
-      }
-    }
-
-    if (!formData.sectionId) {
-      newErrors.sectionId = 'Section selection is required';
-    }
-
-    if (!formData.order || formData.order < 1) {
-      newErrors.order = 'Order must be a positive integer';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    setResourceForm({
+      ...resourceForm,
+      [name]: name === 'order' ? parseInt(value, 10) || '' : value
+    });
   };
 
-  const handleSubmit = async (e) => {
+  const handleCreateSubmit = (e) => {
     e.preventDefault();
+    onCreateResource(resourceForm);
+    resetForm();
+  };
 
-    if (!validateForm()) return;
-
-    try {
-      if (editingResource) {
-        await onUpdateResource(editingResource.id, formData);
-      } else {
-        await onCreateResource(formData);
-      }
-      resetForm();
-    } catch (error) {
-      console.error('Error submitting form:', error);
-    }
+  const handleEditSubmit = (e) => {
+    e.preventDefault();
+    onUpdateResource(editingResource.id, resourceForm);
+    resetForm();
   };
 
   const resetForm = () => {
-    setFormData({
+    setResourceForm({
       title: '',
       url: '',
       type: 'VIDEO',
-      order: 1,
+      order: '',
       sectionId: selectedSectionId || ''
     });
-    setErrors({});
     setShowCreateForm(false);
     setEditingResource(null);
   };
 
+  const startCreate = (sectionId = null) => {
+    // If sectionId is provided, create resource for that specific topic
+    const targetSectionId = sectionId || selectedSectionId || (sections.length > 0 ? sections[0].id : '');
+    
+    // Find the highest order in the target section's resources and add 1
+    const currentSectionResources = resources.filter(resource => resource.sectionId === targetSectionId);
+    const nextOrder = currentSectionResources.length > 0 
+      ? Math.max(...currentSectionResources.map(resource => resource.order)) + 1 
+      : 1;
+    
+    setResourceForm({
+      title: '',
+      url: '',
+      type: 'VIDEO',
+      order: nextOrder,
+      sectionId: targetSectionId
+    });
+    setEditingResource(null);
+    setShowCreateForm(true);
+  };
+
+  const toggleModule = (weekId) => {
+    const newExpanded = new Set(expandedModules);
+    if (newExpanded.has(weekId)) {
+      newExpanded.delete(weekId);
+    } else {
+      newExpanded.add(weekId);
+    }
+    setExpandedModules(newExpanded);
+  };
+
+  const toggleTopic = (sectionId) => {
+    const newExpanded = new Set(expandedTopics);
+    if (newExpanded.has(sectionId)) {
+      newExpanded.delete(sectionId);
+    } else {
+      newExpanded.add(sectionId);
+    }
+    setExpandedTopics(newExpanded);
+  };
+
   const handleEdit = (resource) => {
-    setFormData({
+    setResourceForm({
       title: resource.title,
       url: resource.url,
       type: resource.type,
@@ -183,65 +149,7 @@ const ResourceManagement = ({
     }
   };
 
-  const toggleSectionExpansion = (sectionId) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [sectionId]: !prev[sectionId]
-    }));
-  };
-
-  // Get active filter count
-  const getActiveFilterCount = () => {
-    let count = 0;
-    if (!isGrandPathfinder && selectedLeagueId) count++;
-    if (selectedWeekId) count++;
-    if (selectedSectionId) count++;
-    if (typeFilter !== 'ALL') count++;
-    return count;
-  };
-
-  // Get filter summary for display
-  const getFilterSummary = () => {
-    const filters = [];
-    if (!isGrandPathfinder && selectedLeagueId) {
-      const league = leagues.find(l => l.id === selectedLeagueId);
-      filters.push({ type: 'league', label: league?.name || 'Unknown League', value: selectedLeagueId });
-    }
-    if (selectedWeekId) {
-      const week = weeks.find(w => w.id === selectedWeekId);
-      filters.push({ type: 'week', label: week?.name || 'Unknown Week', value: selectedWeekId });
-    }
-    if (selectedSectionId) {
-      const section = sections.find(s => s.id === selectedSectionId);
-      filters.push({ type: 'section', label: section?.name || 'Unknown Section', value: selectedSectionId });
-    }
-    if (typeFilter !== 'ALL') {
-      filters.push({ type: 'type', label: resourceTypes[typeFilter]?.label || typeFilter, value: typeFilter });
-    }
-    return filters;
-  };
-
-  // Remove specific filter
-  const removeFilter = (filterType) => {
-    switch (filterType) {
-      case 'league':
-        onSelectLeague('');
-        break;
-      case 'week':
-        onSelectWeek('');
-        break;
-      case 'section':
-        onSelectSection('');
-        break;
-      case 'type':
-        setTypeFilter('ALL');
-        break;
-      default:
-        break;
-    }
-  };
-
-  // Filter resources (with real-time filtering based on league hierarchy)
+  // Filter resources based on current selections
   const filteredResources = resources.filter(resource => {
     // Get the section to check league and week hierarchy
     const section = sections.find(s => s.id === resource.sectionId);
@@ -256,9 +164,6 @@ const ResourceManagement = ({
     
     // Filter by week (if selected, only show resources in that week)
     if (selectedWeekId && section.weekId !== selectedWeekId) return false;
-    
-    // Filter by section (if selected, only show resources in that section)
-    if (selectedSectionId && resource.sectionId !== selectedSectionId) return false;
     
     // Filter by type
     if (typeFilter !== 'ALL' && resource.type !== typeFilter) return false;
@@ -281,9 +186,25 @@ const ResourceManagement = ({
     resourcesBySection[sectionId].sort((a, b) => a.order - b.order);
   });
 
-  // Get resource type icon
+  // Get resource type icon with fallback for missing resourceTypes
   const getResourceTypeIcon = (type) => {
-    const typeInfo = resourceTypes[type] || resourceTypes.ARTICLE;
+    // Provide default resourceTypes if not passed as prop
+    const defaultResourceTypes = {
+      VIDEO: { icon: '🎥', label: 'Video', color: 'text-red-600' },
+      ARTICLE: { icon: '📄', label: 'Article', color: 'text-blue-600' },
+      EXTERNAL_LINK: { icon: '🔗', label: 'External Link', color: 'text-green-600' },
+      BLOG: { icon: '📝', label: 'Blog', color: 'text-purple-600' }
+    };
+    
+    const types = resourceTypes || defaultResourceTypes;
+    const typeInfo = types[type] || types.ARTICLE || { icon: '📄', label: 'Article', color: 'text-gray-600' };
+    
+    // If icon is a string (emoji), render it directly
+    if (typeof typeInfo.icon === 'string') {
+      return <span className={`text-lg ${typeInfo.color}`}>{typeInfo.icon}</span>;
+    }
+    
+    // If icon is a component, render it
     const IconComponent = typeInfo.icon;
     return <IconComponent className={`h-4 w-4 ${typeInfo.color}`} />;
   };
@@ -296,440 +217,645 @@ const ResourceManagement = ({
     );
   }
 
+  // Filter weeks based on current selections
+  const filteredWeeks = weeks.filter(week => {
+    // Filter by league (if selected, only show weeks in that league)
+    // Skip league filtering for Grand Pathfinder users
+    if (!isGrandPathfinder && selectedLeagueId && week.leagueId !== selectedLeagueId) return false;
+    
+    // Filter by week (if selected, only show that specific week)
+    if (selectedWeekId && week.id !== selectedWeekId) return false;
+    
+    return true;
+  });
+
+  // Filter sections based on current selections
+  const filteredSections = sections.filter(section => {
+    const week = weeks.find(w => w.id === section.weekId);
+    if (!week) return false;
+    
+    // Filter by league (if selected, only show sections in weeks from that league)
+    // Skip league filtering for Grand Pathfinder users
+    if (!isGrandPathfinder && selectedLeagueId && week.leagueId !== selectedLeagueId) return false;
+    
+    // Filter by week (if selected, only show sections in that week)
+    if (selectedWeekId && section.weekId !== selectedWeekId) return false;
+    
+    return true;
+  });
+
+  // Group filtered weeks by league for Apple-style organization
+  const weeksByLeague = filteredWeeks.reduce((acc, week) => {
+    const leagueId = week.leagueId;
+    if (!acc[leagueId]) {
+      acc[leagueId] = [];
+    }
+    acc[leagueId].push(week);
+    return acc;
+  }, {});
+
+  // Group filtered sections by week
+  const sectionsByWeek = filteredSections.reduce((acc, section) => {
+    const weekId = section.weekId;
+    if (!acc[weekId]) {
+      acc[weekId] = [];
+    }
+    acc[weekId].push(section);
+    return acc;
+  }, {});
+
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h3 className="text-lg font-medium text-gray-900">Resource Management</h3>
-          <p className="mt-1 text-sm text-gray-600">
-            Manage learning resources (videos, articles, external links, and blogs)
-          </p>
-        </div>
-        <button
-          onClick={() => setShowCreateForm(true)}
-          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-black hover:bg-gray-800"
-        >
-          <Plus size={16} className="mr-2" />
-          Create Resource
-        </button>
-      </div>
-
-      {/* Simple Compact Filters */}
-      <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
-        {/* Filter Controls */}
-        <div className="p-4">
-          <div className={`grid grid-cols-1 gap-4 ${isGrandPathfinder ? 'md:grid-cols-3' : 'md:grid-cols-4'}`}>
-            {!isGrandPathfinder && (
+    <div className="min-h-screen bg-gray-50/30">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        
+        {/* Header Section */}
+        <div className="mb-8 sm:mb-12">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-gray-200/50">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 sm:gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  League
-                </label>
-                <select
-                  value={selectedLeagueId}
-                  onChange={(e) => onSelectLeague(e.target.value)}
-                  className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                >
-                  <option value="">All Leagues</option>
-                  {leagues.map((league) => (
-                    <option key={league.id} value={league.id}>
-                      {league.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Week
-              </label>
-              <select
-                value={selectedWeekId}
-                onChange={(e) => onSelectWeek(e.target.value)}
-                className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors disabled:bg-gray-50 disabled:text-gray-500"
-                disabled={!isGrandPathfinder && !selectedLeagueId}
-              >
-                <option value="">All Weeks</option>
-                {weeks
-                  .filter(week => isGrandPathfinder || !selectedLeagueId || week.leagueId === selectedLeagueId)
-                  .map((week) => (
-                    <option key={week.id} value={week.id}>
-                      {week.name}
-                    </option>
-                  ))}
-              </select>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Section
-              </label>
-              <select
-                value={selectedSectionId}
-                onChange={(e) => onSelectSection(e.target.value)}
-                className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors disabled:bg-gray-50 disabled:text-gray-500"
-                disabled={!selectedWeekId}
-              >
-                <option value="">All Sections</option>
-                {sections
-                  .filter(section => !selectedWeekId || section.weekId === selectedWeekId)
-                  .map((section) => (
-                    <option key={section.id} value={section.id}>
-                      {section.name}
-                    </option>
-                  ))}
-              </select>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Resource Type
-              </label>
-              <select
-                value={typeFilter}
-                onChange={(e) => setTypeFilter(e.target.value)}
-                className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-              >
-                <option value="ALL">All Types</option>
-                {Object.entries(resourceTypes).map(([type, info]) => (
-                  <option key={type} value={type}>
-                    {info.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Quick Actions */}
-          {getActiveFilterCount() > 0 && (
-            <div className="mt-4 flex items-center justify-between">
-              <div className="flex items-center space-x-2 flex-wrap gap-2">
-                <span className="text-xs font-medium text-gray-500">Active filters:</span>
-                {getFilterSummary().map((filter, index) => (
-                  <span
-                    key={index}
-                    className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
-                  >
-                    {filter.label}
-                    <button
-                      onClick={() => removeFilter(filter.type)}
-                      className="ml-1.5 inline-flex items-center justify-center w-3 h-3 rounded-full hover:bg-blue-200 transition-colors"
-                    >
-                      <X className="h-2 w-2" />
-                    </button>
-                  </span>
-                ))}
-              </div>
-              <button
-                onClick={clearAllFilters}
-                title="Clear all filters (⌘R)"
-                className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
-              >
-                <RotateCcw className="h-3 w-3 mr-1" />
-                Clear All
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Results Summary */}
-        <div className="px-4 py-3 bg-gray-50 rounded-b-lg border-t border-gray-200">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-600">
-              <span className="font-medium">{filteredResources.length}</span> resource{filteredResources.length !== 1 ? 's' : ''} found
-              {getActiveFilterCount() > 0 && (
-                <span className="text-xs text-gray-500 ml-2">
-                  (filtered from {resources.length} total)
-                </span>
-              )}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Create/Edit Form */}
-      {showCreateForm && (
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
-          <h4 className="text-lg font-medium text-gray-900 mb-4">
-            {editingResource ? 'Edit Resource' : 'Create New Resource'}
-          </h4>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Title *
-                </label>
-                <input
-                  type="text"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className={`block w-full border rounded-md shadow-sm px-3 py-2 focus:ring-black focus:border-black ${
-                    errors.title ? 'border-red-300' : 'border-gray-300'
-                  }`}
-                  placeholder="Enter resource title..."
-                  maxLength={200}
-                />
-                {errors.title && <p className="text-red-600 text-xs mt-1">{errors.title}</p>}
-                <p className="text-xs text-gray-500 mt-1">{formData.title.length}/200 characters</p>
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-gray-900 tracking-tight">
+                  Resource Management
+                </h1>
+                <p className="text-sm sm:text-base text-gray-600 mt-2 leading-relaxed">
+                  Organize and manage your learning resources within topics
+                </p>
               </div>
               
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  URL *
-                </label>
-                <input
-                  type="url"
-                  value={formData.url}
-                  onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-                  className={`block w-full border rounded-md shadow-sm px-3 py-2 focus:ring-black focus:border-black ${
-                    errors.url ? 'border-red-300' : 'border-gray-300'
-                  }`}
-                  placeholder="https://example.com"
-                />
-                {errors.url && <p className="text-red-600 text-xs mt-1">{errors.url}</p>}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Type *
-                </label>
-                <select
-                  value={formData.type}
-                  onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                  className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-black focus:border-black"
-                >
-                  {Object.entries(resourceTypes).map(([type, info]) => (
-                    <option key={type} value={type}>
-                      {info.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Section *
-                </label>
-                <select
-                  value={formData.sectionId}
-                  onChange={(e) => setFormData({ ...formData, sectionId: e.target.value })}
-                  className={`block w-full border rounded-md shadow-sm focus:ring-black focus:border-black ${
-                    errors.sectionId ? 'border-red-300' : 'border-gray-300'
-                  }`}
-                >
-                  <option value="">Select a section</option>
-                  {sections.map((section) => (
-                    <option key={section.id} value={section.id}>
-                      {section.week?.league?.name} - {section.week?.name} - {section.name}
-                    </option>
-                  ))}
-                </select>
-                {errors.sectionId && <p className="text-red-600 text-xs mt-1">{errors.sectionId}</p>}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Order *
-                </label>
-                <input
-                  type="number"
-                  min="1"
-                  value={formData.order}
-                  onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 1 })}
-                  className={`block w-full border rounded-md shadow-sm px-3 py-2 focus:ring-black focus:border-black ${
-                    errors.order ? 'border-red-300' : 'border-gray-300'
-                  }`}
-                />
-                {errors.order && <p className="text-red-600 text-xs mt-1">{errors.order}</p>}
+              {/* Filters Row */}
+              <div className="flex flex-col sm:flex-row gap-4 lg:items-end">
+                {/* League Filter - Hide for Grand Pathfinder */}
+                {!isGrandPathfinder && (
+                  <div className="flex-shrink-0 w-full sm:w-auto">
+                    <label htmlFor="leagueFilter" className="block text-xs font-medium text-gray-700 mb-2">
+                      Filter by League
+                    </label>
+                    <select
+                      id="leagueFilter"
+                      value={selectedLeagueId || ''}
+                      onChange={(e) => onSelectLeague(e.target.value)}
+                      className="w-full sm:w-64 px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/20 focus:border-gray-400 transition-all duration-200"
+                    >
+                      <option value="">All Leagues</option>
+                      {leagues.map(league => (
+                        <option key={league.id} value={league.id}>
+                          {league.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+                
+                {/* Week Filter */}
+                <div className="flex-shrink-0 w-full sm:w-auto">
+                  <label htmlFor="weekFilter" className="block text-xs font-medium text-gray-700 mb-2">
+                    Filter by Module
+                  </label>
+                  <select
+                    id="weekFilter"
+                    value={selectedWeekId || ''}
+                    onChange={(e) => onSelectWeek(e.target.value)}
+                    className="w-full sm:w-64 px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/20 focus:border-gray-400 transition-all duration-200"
+                    disabled={!isGrandPathfinder && !selectedLeagueId}
+                  >
+                    <option value="">All Modules</option>
+                    {weeks
+                      .filter(week => isGrandPathfinder || !selectedLeagueId || week.leagueId === selectedLeagueId)
+                      .map(week => (
+                        <option key={week.id} value={week.id}>
+                          {week.name}
+                        </option>
+                      ))}
+                  </select>
+                </div>
               </div>
             </div>
-
-            <div className="flex justify-end space-x-3">
-              <button
-                type="button"
-                onClick={resetForm}
-                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-black hover:bg-gray-800"
-              >
-                {editingResource ? 'Update Resource' : 'Create Resource'}
-              </button>
-            </div>
-          </form>
+          </div>
         </div>
-      )}
 
-      {/* Resources Display */}
-      <div className="space-y-4">
-        {Object.keys(resourcesBySection).length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-gray-400 mb-4">
-              <BookOpen className="mx-auto h-12 w-12" />
-            </div>
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No resources found</h3>
-            <p className="mt-1 text-sm text-gray-500">
-              {selectedSectionId ? 'No resources in the selected section.' : 'No resources match your current filters.'}
-            </p>
-            {selectedSectionId && (
-              <div className="mt-6">
+        {/* Create Resource Form Modal */}
+        {showCreateForm && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl border border-gray-200/50 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-8">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-2xl font-bold text-gray-900">
+                  {editingResource ? 'Edit Resource' : 'Add New Resource'}
+                </h3>
                 <button
-                  onClick={() => setShowCreateForm(true)}
-                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-black hover:bg-gray-800"
+                  onClick={resetForm}
+                  className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
                 >
-                  <Plus size={16} className="mr-2" />
-                  Create First Resource
+                  <X className="h-6 w-6" />
                 </button>
               </div>
-            )}
-          </div>
-        ) : (
-          Object.entries(resourcesBySection).map(([sectionId, sectionResources]) => {
-            const section = sections.find(s => s.id === sectionId);
-            const isExpanded = expandedSections[sectionId] !== false; // Default to expanded
-            
-            return (
-              <div key={sectionId} className="bg-white border border-gray-200 rounded-lg">
-                <div 
-                  className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50"
-                  onClick={() => toggleSectionExpansion(sectionId)}
-                >
-                  <div className="flex items-center space-x-3">
-                    {isExpanded ? (
-                      <ChevronDown className="h-5 w-5 text-gray-400" />
-                    ) : (
-                      <ChevronRight className="h-5 w-5 text-gray-400" />
-                    )}
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-900">
-                        {section?.week?.league?.name} - {section?.week?.name} - {section?.name}
-                      </h4>
-                      <p className="text-xs text-gray-500">
-                        {sectionResources.length} resource{sectionResources.length !== 1 ? 's' : ''}
-                      </p>
-                    </div>
+
+              <form onSubmit={editingResource ? handleEditSubmit : handleCreateSubmit} className="space-y-6">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-900 mb-2">
+                    Resource Title
+                  </label>
+                  <input
+                    type="text"
+                    name="title"
+                    value={resourceForm.title}
+                    onChange={handleFormChange}
+                    className="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50/50 backdrop-blur-sm"
+                    placeholder="Enter resource title..."
+                    maxLength={200}
+                    required
+                  />
+                  <p className="text-xs text-gray-500 mt-1">{resourceForm.title.length}/200 characters</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-900 mb-2">
+                    Resource URL
+                  </label>
+                  <input
+                    type="url"
+                    name="url"
+                    value={resourceForm.url}
+                    onChange={handleFormChange}
+                    className="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50/50 backdrop-blur-sm"
+                    placeholder="https://example.com/resource"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">
+                      Resource Type
+                    </label>
+                    <select
+                      name="type"
+                      value={resourceForm.type}
+                      onChange={handleFormChange}
+                      className="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50/50 backdrop-blur-sm"
+                    >
+                      {Object.entries(resourceTypes || {
+                        VIDEO: { label: 'Video' },
+                        ARTICLE: { label: 'Article' },
+                        EXTERNAL_LINK: { label: 'External Link' },
+                        BLOG: { label: 'Blog' }
+                      }).map(([type, info]) => (
+                        <option key={type} value={type}>
+                          {info.label}
+                        </option>
+                      ))}
+                    </select>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    {Object.entries(
-                      sectionResources.reduce((acc, resource) => {
-                        acc[resource.type] = (acc[resource.type] || 0) + 1;
-                        return acc;
-                      }, {})
-                    ).map(([type, count]) => {
-                      const typeInfo = resourceTypes[type];
-                      const IconComponent = typeInfo.icon;
-                      return (
-                        <span
-                          key={type}
-                          className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${typeInfo.bg} ${typeInfo.color}`}
-                          title={`${count} ${typeInfo.label}${count !== 1 ? 's' : ''}`}
-                        >
-                          <IconComponent className="h-3 w-3 mr-1" />
-                          {count}
-                        </span>
-                      );
-                    })}
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">
+                      Display Order
+                    </label>
+                    <input
+                      type="number"
+                      name="order"
+                      min="1"
+                      value={resourceForm.order}
+                      onChange={handleFormChange}
+                      className="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50/50 backdrop-blur-sm"
+                      placeholder="1"
+                      required
+                    />
                   </div>
                 </div>
 
-                {isExpanded && (
-                  <div className="border-t border-gray-200">
-                    <div className="divide-y divide-gray-200">
-                      {sectionResources.map((resource) => (
-                          <div key={resource.id} className="p-4 hover:bg-gray-50">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center space-x-3 flex-1">
-                                <div className="flex items-center space-x-2">
-                                  <GripVertical className="h-4 w-4 text-gray-400" />
-                                  <span className="text-sm font-medium text-gray-500 w-8">
-                                    #{resource.order}
-                                  </span>
-                                </div>
-                                <div className={`p-2 rounded-full ${resourceTypes[resource.type].bg}`}>
-                                  {getResourceTypeIcon(resource.type)}
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <h5 className="text-sm font-medium text-gray-900 truncate">
-                                    {resource.title}
-                                  </h5>
-                                  <div className="flex items-center space-x-4 mt-1">
-                                    <span className={`text-xs px-2 py-1 rounded-full ${resourceTypes[resource.type].bg} ${resourceTypes[resource.type].color}`}>
-                                      {resourceTypes[resource.type].label}
-                                    </span>
-                                    <a
-                                      href={resource.url}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="text-xs text-blue-600 hover:text-blue-800 truncate max-w-xs"
-                                      title={resource.url}
-                                    >
-                                      {resource.url}
-                                    </a>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <button
-                                  onClick={() => window.open(resource.url, '_blank')}
-                                  className="p-2 text-gray-400 hover:text-blue-600"
-                                  title="View Resource"
-                                >
-                                  <Eye size={16} />
-                                </button>
-                                <button
-                                  onClick={() => handleEdit(resource)}
-                                  className="p-2 text-gray-400 hover:text-gray-600"
-                                  title="Edit Resource"
-                                >
-                                  <Edit size={16} />
-                                </button>
-                                <button
-                                  onClick={() => handleDelete(resource.id, resource.title)}
-                                  className="p-2 text-gray-400 hover:text-red-600"
-                                  title="Delete Resource"
-                                >
-                                  <Trash2 size={16} />
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-900 mb-2">
+                    Topic (Section)
+                  </label>
+                  <select
+                    name="sectionId"
+                    value={resourceForm.sectionId}
+                    onChange={handleFormChange}
+                    className="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50/50 backdrop-blur-sm"
+                    required
+                  >
+                    <option value="">Select a topic</option>
+                    {sections.map((section) => (
+                      <option key={section.id} value={section.id}>
+                        {section.week?.league?.name} - {section.week?.name} - {section.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="flex justify-end space-x-4 pt-4">
+                  <button
+                    type="button"
+                    onClick={resetForm}
+                    className="px-6 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-all duration-200"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-6 py-2.5 text-sm font-medium bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-all duration-200"
+                  >
+                    {editingResource ? 'Update Resource' : 'Create Resource'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Leagues (for non-Grand Pathfinder users) or Direct Week View */}
+      <div className="space-y-8">
+        {isGrandPathfinder ? (
+          // Direct week view for Grand Pathfinder
+          <div className="space-y-6">
+            {filteredWeeks.map(week => {
+              const weekSections = sectionsByWeek[week.id] || [];
+              const isModuleExpanded = expandedModules.has(week.id);
+              
+              return (
+                <div
+                  key={week.id}
+                  className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl border border-gray-200/50 overflow-hidden"
+                >
+                  {/* Module Header */}
+                  <div
+                    className="p-6 cursor-pointer hover:bg-gray-50/50 transition-colors"
+                    onClick={() => toggleModule(week.id)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <div className="p-3 bg-blue-100 rounded-2xl">
+                          {isModuleExpanded ? (
+                            <ChevronDown className="h-6 w-6 text-blue-600" />
+                          ) : (
+                            <ChevronRight className="h-6 w-6 text-blue-600" />
+                          )}
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-bold text-gray-900">
+                            Module: {week.name}
+                          </h3>
+                          <p className="text-gray-600">
+                            {weekSections.length} topic{weekSections.length !== 1 ? 's' : ''}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm text-gray-500">
+                          {weekSections.reduce((total, section) => {
+                            return total + (resourcesBySection[section.id]?.length || 0);
+                          }, 0)} resources
+                        </p>
+                      </div>
                     </div>
                   </div>
-                )}
-              </div>
-            );
-          })
-        )}
-      </div>
 
-      {/* Stats Summary */}
-      {filteredResources.length > 0 && (
-        <div className="bg-gray-50 rounded-lg p-4">
-          <h4 className="text-sm font-medium text-gray-900 mb-3">Resource Statistics</h4>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">{filteredResources.length}</div>
-              <div className="text-sm text-gray-500">Total Resources</div>
-            </div>
-            {Object.entries(resourceTypes).map(([type, info]) => {
-              const count = filteredResources.filter(r => r.type === type).length;
-              return (
-                <div key={type} className="text-center">
-                  <div className="text-2xl font-bold text-gray-900">{count}</div>
-                  <div className="text-sm text-gray-500">{info.label}s</div>
+                  {/* Topics within Module */}
+                  {isModuleExpanded && (
+                    <div className="border-t border-gray-100 bg-gray-50/30">
+                      <div className="p-6 space-y-4">
+                        {weekSections.length === 0 ? (
+                          <p className="text-center text-gray-500 py-8">
+                            No topics found in this module
+                          </p>
+                        ) : (
+                          weekSections.map(section => {
+                            const sectionResources = resourcesBySection[section.id] || [];
+                            const isTopicExpanded = expandedTopics.has(section.id);
+                            
+                            return (
+                              <div
+                                key={section.id}
+                                className="bg-white/60 backdrop-blur-sm rounded-2xl border border-white/30 overflow-hidden"
+                              >
+                                {/* Topic Header */}
+                                <div
+                                  className="p-4 cursor-pointer hover:bg-gray-50/50 transition-colors"
+                                  onClick={() => toggleTopic(section.id)}
+                                >
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center space-x-3">
+                                      <div className="p-2 bg-green-100 rounded-xl">
+                                        {isTopicExpanded ? (
+                                          <ChevronDown className="h-4 w-4 text-green-600" />
+                                        ) : (
+                                          <ChevronRight className="h-4 w-4 text-green-600" />
+                                        )}
+                                      </div>
+                                      <div>
+                                        <h4 className="font-semibold text-gray-900">
+                                          {section.name}
+                                        </h4>
+                                        <p className="text-sm text-gray-600">
+                                          {sectionResources.length} resource{sectionResources.length !== 1 ? 's' : ''}
+                                        </p>
+                                      </div>
+                                    </div>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        startCreate(section.id);
+                                      }}
+                                      className="px-4 py-2 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-all duration-200 text-sm font-medium flex items-center space-x-2"
+                                    >
+                                      <Plus className="h-4 w-4" />
+                                      <span>Add Resource</span>
+                                    </button>
+                                  </div>
+                                </div>
+
+                                {/* Resources within Topic */}
+                                {isTopicExpanded && (
+                                  <div className="border-t border-gray-100 bg-white/30 p-4">
+                                    {sectionResources.length === 0 ? (
+                                      <div className="text-center py-8">
+                                        <p className="text-gray-500 mb-4">No resources in this topic</p>
+                                        <button
+                                          onClick={() => startCreate(section.id)}
+                                          className="inline-flex items-center px-4 py-2 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-all duration-200 text-sm font-medium"
+                                        >
+                                          <Plus className="h-4 w-4 mr-2" />
+                                          Add First Resource
+                                        </button>
+                                      </div>
+                                    ) : (
+                                      <div className="space-y-3">
+                                        {sectionResources.map(resource => (
+                                          <div
+                                            key={resource.id}
+                                            className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-gray-200/50 hover:border-gray-300/50 transition-all duration-200"
+                                          >
+                                            <div className="flex items-center justify-between">
+                                              <div className="flex items-center space-x-3 flex-1">
+                                                <div className="flex-shrink-0">
+                                                  {getResourceTypeIcon(resource.type)}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                  <h5 className="font-medium text-gray-900 truncate">
+                                                    {resource.title}
+                                                  </h5>
+                                                  <div className="flex items-center space-x-2 text-sm text-gray-500">
+                                                    <span className="px-2 py-1 bg-gray-100 rounded-lg text-xs">
+                                                      {(resourceTypes || {})[resource.type]?.label || resource.type}
+                                                    </span>
+                                                    <span>Order: {resource.order}</span>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <div className="flex items-center space-x-2">
+                                                <a
+                                                  href={resource.url}
+                                                  target="_blank"
+                                                  rel="noopener noreferrer"
+                                                  className="p-2 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                                                  title="Open resource"
+                                                >
+                                                  <ExternalLink className="h-4 w-4" />
+                                                </a>
+                                                <button
+                                                  onClick={() => handleEdit(resource)}
+                                                  className="p-2 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                                                  title="Edit resource"
+                                                >
+                                                  <Edit className="h-4 w-4" />
+                                                </button>
+                                                <button
+                                                  onClick={() => handleDelete(resource.id, resource.title)}
+                                                  className="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+                                                  title="Delete resource"
+                                                >
+                                                  <Trash2 className="h-4 w-4" />
+                                                </button>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               );
             })}
           </div>
-        </div>
-      )}
+        ) : (
+          // League-based view for other users
+          <div className="space-y-8">
+            {leagues.map(league => {
+              const leagueWeeks = weeksByLeague[league.id] || [];
+              
+              return (
+                <div key={league.id} className="space-y-6">
+                  <div className="text-center">
+                    <h2 className="text-3xl font-bold text-gray-900">{league.name}</h2>
+                    <p className="text-gray-600 mt-2">{leagueWeeks.length} modules</p>
+                  </div>
+                  
+                  {leagueWeeks.map(week => {
+                    const weekSections = sectionsByWeek[week.id] || [];
+                    const isModuleExpanded = expandedModules.has(week.id);
+                    
+                    return (
+                      <div
+                        key={week.id}
+                        className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl border border-gray-200/50 overflow-hidden"
+                      >
+                        {/* Module Header */}
+                        <div
+                          className="p-6 cursor-pointer hover:bg-gray-50/50 transition-colors"
+                          onClick={() => toggleModule(week.id)}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-4">
+                              <div className="p-3 bg-blue-100 rounded-2xl">
+                                {isModuleExpanded ? (
+                                  <ChevronDown className="h-6 w-6 text-blue-600" />
+                                ) : (
+                                  <ChevronRight className="h-6 w-6 text-blue-600" />
+                                )}
+                              </div>
+                              <div>
+                                <h3 className="text-xl font-bold text-gray-900">
+                                  Module: {week.name}
+                                </h3>
+                                <p className="text-gray-600">
+                                  {weekSections.length} topic{weekSections.length !== 1 ? 's' : ''}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-sm text-gray-500">
+                                {weekSections.reduce((total, section) => {
+                                  return total + (resourcesBySection[section.id]?.length || 0);
+                                }, 0)} resources
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Topics within Module - Same as Grand Pathfinder view */}
+                        {isModuleExpanded && (
+                          <div className="border-t border-gray-100 bg-gray-50/30">
+                            <div className="p-6 space-y-4">
+                              {weekSections.length === 0 ? (
+                                <p className="text-center text-gray-500 py-8">
+                                  No topics found in this module
+                                </p>
+                              ) : (
+                                weekSections.map(section => {
+                                  const sectionResources = resourcesBySection[section.id] || [];
+                                  const isTopicExpanded = expandedTopics.has(section.id);
+                                  
+                                  return (
+                                    <div
+                                      key={section.id}
+                                      className="bg-white/60 backdrop-blur-sm rounded-2xl border border-white/30 overflow-hidden"
+                                    >
+                                      {/* Topic Header */}
+                                      <div
+                                        className="p-4 cursor-pointer hover:bg-gray-50/50 transition-colors"
+                                        onClick={() => toggleTopic(section.id)}
+                                      >
+                                        <div className="flex items-center justify-between">
+                                          <div className="flex items-center space-x-3">
+                                            <div className="p-2 bg-green-100 rounded-xl">
+                                              {isTopicExpanded ? (
+                                                <ChevronDown className="h-4 w-4 text-green-600" />
+                                              ) : (
+                                                <ChevronRight className="h-4 w-4 text-green-600" />
+                                              )}
+                                            </div>
+                                            <div>
+                                              <h4 className="font-semibold text-gray-900">
+                                                {section.name}
+                                              </h4>
+                                              <p className="text-sm text-gray-600">
+                                                {sectionResources.length} resource{sectionResources.length !== 1 ? 's' : ''}
+                                              </p>
+                                            </div>
+                                          </div>
+                                          <button
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              startCreate(section.id);
+                                            }}
+                                            className="px-4 py-2 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-all duration-200 text-sm font-medium flex items-center space-x-2"
+                                          >
+                                            <Plus className="h-4 w-4" />
+                                            <span>Add Resource</span>
+                                          </button>
+                                        </div>
+                                      </div>
+
+                                      {/* Resources within Topic */}
+                                      {isTopicExpanded && (
+                                        <div className="border-t border-gray-100 bg-white/30 p-4">
+                                          {sectionResources.length === 0 ? (
+                                            <div className="text-center py-8">
+                                              <p className="text-gray-500 mb-4">No resources in this topic</p>
+                                              <button
+                                                onClick={() => startCreate(section.id)}
+                                                className="inline-flex items-center px-4 py-2 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-all duration-200 text-sm font-medium"
+                                              >
+                                                <Plus className="h-4 w-4 mr-2" />
+                                                Add First Resource
+                                              </button>
+                                            </div>
+                                          ) : (
+                                            <div className="space-y-3">
+                                              {sectionResources.map(resource => (
+                                                <div
+                                                  key={resource.id}
+                                                  className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-gray-200/50 hover:border-gray-300/50 transition-all duration-200"
+                                                >
+                                                  <div className="flex items-center justify-between">
+                                                    <div className="flex items-center space-x-3 flex-1">
+                                                      <div className="flex-shrink-0">
+                                                        {getResourceTypeIcon(resource.type)}
+                                                      </div>
+                                                      <div className="flex-1 min-w-0">
+                                                        <h5 className="font-medium text-gray-900 truncate">
+                                                          {resource.title}
+                                                        </h5>
+                                                        <div className="flex items-center space-x-2 text-sm text-gray-500">
+                                                          <span className="px-2 py-1 bg-gray-100 rounded-lg text-xs">
+                                                            {(resourceTypes || {})[resource.type]?.label || resource.type}
+                                                          </span>
+                                                          <span>Order: {resource.order}</span>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                    <div className="flex items-center space-x-2">
+                                                      <a
+                                                        href={resource.url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="p-2 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                                                        title="Open resource"
+                                                      >
+                                                        <ExternalLink className="h-4 w-4" />
+                                                      </a>
+                                                      <button
+                                                        onClick={() => handleEdit(resource)}
+                                                        className="p-2 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                                                        title="Edit resource"
+                                                      >
+                                                        <Edit className="h-4 w-4" />
+                                                      </button>
+                                                      <button
+                                                        onClick={() => handleDelete(resource.id, resource.title)}
+                                                        className="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+                                                        title="Delete resource"
+                                                      >
+                                                        <Trash2 className="h-4 w-4" />
+                                                      </button>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              ))}
+                                            </div>
+                                          )}
+                                        </div>
+                                      )}
+                                    </div>
+                                  );
+                                })
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Empty State */}
+        {(!isGrandPathfinder && leagues.length === 0) || (isGrandPathfinder && weeks.length === 0) ? (
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-lg">
+              {!isGrandPathfinder ? 'No leagues found' : 'No modules found'}
+            </p>
+            <p className="text-gray-400 text-sm mt-2">
+              Create some {!isGrandPathfinder ? 'leagues and weeks' : 'modules'} first to manage resources
+            </p>
+          </div>
+        ) : null}
+      </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default ResourceManagement;

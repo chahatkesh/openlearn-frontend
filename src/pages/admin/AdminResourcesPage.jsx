@@ -18,6 +18,34 @@ const AdminResourcesPage = () => {
   const [error, setError] = useState(null);
   const { user } = useContext(AuthContext);
 
+  // Resource types definition
+  const resourceTypes = {
+    VIDEO: { 
+      icon: '🎥', 
+      label: 'Video', 
+      color: 'text-red-600', 
+      bg: 'bg-red-50' 
+    },
+    ARTICLE: { 
+      icon: '📄', 
+      label: 'Article', 
+      color: 'text-blue-600', 
+      bg: 'bg-blue-50' 
+    },
+    EXTERNAL_LINK: { 
+      icon: '🔗', 
+      label: 'External Link', 
+      color: 'text-green-600', 
+      bg: 'bg-green-50' 
+    },
+    BLOG: { 
+      icon: '📝', 
+      label: 'Blog', 
+      color: 'text-purple-600', 
+      bg: 'bg-purple-50' 
+    }
+  };
+
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -106,14 +134,14 @@ const AdminResourcesPage = () => {
 
   const handleSelectLeague = (leagueId) => {
     setSelectedLeagueId(leagueId);
+    // Reset dependent filters when league changes
+    setSelectedWeekId('');
+    // Keep section filter but don't reset it since we're not using it for filtering
   };
 
   const handleSelectWeek = (weekId) => {
     setSelectedWeekId(weekId);
-  };
-
-  const handleSelectSection = (sectionId) => {
-    setSelectedSectionId(sectionId);
+    // Don't reset section since we're not using section filtering
   };
 
   const handleCreateResource = async (resource) => {
@@ -264,6 +292,8 @@ const AdminResourcesPage = () => {
       sections={sections}
       weeks={weeks}
       leagues={leagues}
+      resourceTypes={resourceTypes}
+      isGrandPathfinder={user?.role === 'GRAND_PATHFINDER'}
       onCreateResource={handleCreateResource}
       onUpdateResource={handleUpdateResource}
       onDeleteResource={handleDeleteResource}
@@ -273,7 +303,6 @@ const AdminResourcesPage = () => {
       selectedSectionId={selectedSectionId}
       onSelectLeague={handleSelectLeague}
       onSelectWeek={handleSelectWeek}
-      onSelectSection={handleSelectSection}
       loading={loading}
     />
   );
