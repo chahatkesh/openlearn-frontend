@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 const TeamMemberCard = ({ name, description, linkedin, twitter, instagram }) => {
   return (
     <MotionDiv 
-      className="group relative h-full bg-white rounded-3xl overflow-hidden shadow-sm transition-all duration-500 ease-out border border-gray-100/50 flex flex-col"
+      className="group relative h-full bg-white rounded-xl md:rounded-3xl overflow-hidden shadow-sm transition-all duration-500 ease-out border border-gray-100/50 flex flex-col"
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
@@ -43,15 +43,15 @@ const TeamMemberCard = ({ name, description, linkedin, twitter, instagram }) => 
 
       {/* Content Section */}
       <MotionDiv 
-        className="p-6 flex flex-col flex-grow"
+        className="p-4 sm:p-6 flex flex-col flex-grow"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6, delay: 0.3 }}
       >
         {/* Name */}
-        <div className="mb-4">
-          <h3 className="text-xl font-semibold text-gray-900 mb-2 tracking-tight">
+        <div className="mb-3 sm:mb-4">
+          <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1 sm:mb-2 tracking-tight leading-tight">
             {name}
           </h3>
         </div>
@@ -65,7 +65,7 @@ const TeamMemberCard = ({ name, description, linkedin, twitter, instagram }) => 
           transition={{ duration: 0.6, delay: 0.4 }}
         >
           <div 
-            className="text-gray-600 leading-relaxed text-sm mb-4"
+            className="text-gray-600 leading-snug text-xs sm:text-sm mb-3 sm:mb-4 text-justify hyphens-auto"
             dangerouslySetInnerHTML={{ __html: description }}
           />
         </MotionDiv>
@@ -73,7 +73,7 @@ const TeamMemberCard = ({ name, description, linkedin, twitter, instagram }) => 
         {/* Social Links */}
         {(linkedin || twitter || instagram) && (
           <div 
-            className="flex gap-3 pt-3 border-t border-gray-100 mt-auto"
+            className="flex gap-1.5 sm:gap-3 pt-2 sm:pt-3 border-t border-gray-100 mt-auto"
             style={{ pointerEvents: 'auto', zIndex: 10, position: 'relative' }}
           >
             {linkedin && linkedin.trim() && (
@@ -81,12 +81,12 @@ const TeamMemberCard = ({ name, description, linkedin, twitter, instagram }) => 
                 href={linkedin} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 hover:text-blue-700 transition-all duration-300 hover:scale-110 shadow-sm hover:shadow-md border border-blue-100 cursor-pointer"
+                className="flex items-center justify-center w-5 h-5 sm:w-10 sm:h-10 rounded-md sm:rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 hover:text-blue-700 transition-all duration-300 hover:scale-110 shadow-sm hover:shadow-md border border-blue-100 cursor-pointer"
                 title="LinkedIn Profile"
                 style={{ pointerEvents: 'auto' }}
                 onClick={() => window.open(linkedin, '_blank')}
               >
-                <FaLinkedinIn className="w-4 h-4 pointer-events-none" />
+                <FaLinkedinIn className="w-2.5 h-2.5 sm:w-4 sm:h-4 pointer-events-none" />
               </a>
             )}
             {twitter && twitter.trim() && (
@@ -94,12 +94,12 @@ const TeamMemberCard = ({ name, description, linkedin, twitter, instagram }) => 
                 href={twitter} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center justify-center w-10 h-10 rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-all duration-300 hover:scale-110 shadow-sm hover:shadow-md border border-gray-200 cursor-pointer"
+                className="flex items-center justify-center w-5 h-5 sm:w-10 sm:h-10 rounded-md sm:rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-all duration-300 hover:scale-110 shadow-sm hover:shadow-md border border-gray-200 cursor-pointer"
                 title="Twitter Profile"
                 style={{ pointerEvents: 'auto' }}
                 onClick={() => window.open(twitter, '_blank')}
               >
-                <FaXTwitter className="w-4 h-4 pointer-events-none" />
+                <FaXTwitter className="w-2.5 h-2.5 sm:w-4 sm:h-4 pointer-events-none" />
               </a>
             )}
             {instagram && instagram.trim() && (
@@ -107,12 +107,12 @@ const TeamMemberCard = ({ name, description, linkedin, twitter, instagram }) => 
                 href={instagram} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center justify-center w-10 h-10 rounded-lg bg-pink-50 hover:bg-pink-100 text-pink-600 hover:text-pink-700 transition-all duration-300 hover:scale-110 shadow-sm hover:shadow-md border border-pink-100 cursor-pointer"
+                className="flex items-center justify-center w-5 h-5 sm:w-10 sm:h-10 rounded-md sm:rounded-lg bg-pink-50 hover:bg-pink-100 text-pink-600 hover:text-pink-700 transition-all duration-300 hover:scale-110 shadow-sm hover:shadow-md border border-pink-100 cursor-pointer"
                 title="Instagram Profile"
                 style={{ pointerEvents: 'auto' }}
                 onClick={() => window.open(instagram, '_blank')}
               >
-                <FaInstagram className="w-4 h-4 pointer-events-none" />
+                <FaInstagram className="w-2.5 h-2.5 sm:w-4 sm:h-4 pointer-events-none" />
               </a>
             )}
           </div>
@@ -120,7 +120,7 @@ const TeamMemberCard = ({ name, description, linkedin, twitter, instagram }) => 
       </MotionDiv>
 
       {/* Subtle border highlight on hover */}
-      <div className="absolute inset-0 rounded-3xl ring-1 ring-gray-200/50 group-hover:ring-[#FFDE59]/30 transition-all duration-500"></div>
+      <div className="absolute inset-0 rounded-xl md:rounded-3xl ring-1 ring-gray-200/50 group-hover:ring-[#FFDE59]/30 transition-all duration-500"></div>
     </MotionDiv>
   );
 };
@@ -129,7 +129,7 @@ const TeamMemberCard = ({ name, description, linkedin, twitter, instagram }) => 
 const CommunityCard = ({ onClick }) => {
   return (
     <MotionDiv 
-      className="group relative h-full bg-white rounded-3xl overflow-hidden shadow-sm transition-all duration-500 ease-out border border-gray-100/50 flex flex-col cursor-pointer"
+      className="group relative h-full bg-white rounded-xl md:rounded-3xl overflow-hidden shadow-sm transition-all duration-500 ease-out border border-gray-100/50 flex flex-col cursor-pointer"
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
@@ -156,7 +156,7 @@ const CommunityCard = ({ onClick }) => {
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          <Users size={48} className="text-black/80 transition-transform duration-700 group-hover:scale-110" />
+          <Users size={40} className="sm:w-12 sm:h-12 text-black/80 transition-transform duration-700 group-hover:scale-110" />
         </MotionDiv>
         
         {/* Subtle gradient overlay */}
@@ -165,15 +165,15 @@ const CommunityCard = ({ onClick }) => {
 
       {/* Content Section */}
       <MotionDiv 
-        className="p-6 flex flex-col flex-grow"
+        className="p-4 sm:p-6 flex flex-col flex-grow"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6, delay: 0.3 }}
       >
         {/* Title */}
-        <div className="mb-4">
-          <h3 className="text-xl font-semibold text-gray-900 mb-2 tracking-tight">
+        <div className="mb-3 sm:mb-4">
+          <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1 sm:mb-2 tracking-tight leading-tight">
             Find Your Pathfinders
           </h3>
         </div>
@@ -186,24 +186,24 @@ const CommunityCard = ({ onClick }) => {
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          <div className="text-gray-600 leading-relaxed text-sm mb-4">
+          <div className="text-gray-600 leading-snug text-xs sm:text-sm mb-3 sm:mb-4 text-justify hyphens-auto">
             To find all your pathfinders of every league, <strong>Click</strong> and discover your learning community!
           </div>
         </MotionDiv>
 
         {/* Call to Action (replacing social links area) */}
-        <div className="flex gap-3 pt-3 border-t border-gray-100 mt-auto">
-          <div className="flex items-center justify-center flex-1 py-2 px-4 rounded-lg bg-[#FFDE59]/10 hover:bg-[#FFDE59]/20 text-[#B8860B] hover:text-[#8B6914] transition-all duration-300 border border-[#FFDE59]/30">
-            <div className="flex items-center gap-2 font-medium text-sm">
+        <div className="flex gap-2 sm:gap-3 pt-2 sm:pt-3 border-t border-gray-100 mt-auto">
+          <div className="flex items-center justify-center flex-1 py-2 px-3 sm:px-4 rounded-lg bg-[#FFDE59]/10 hover:bg-[#FFDE59]/20 text-[#B8860B] hover:text-[#8B6914] transition-all duration-300 border border-[#FFDE59]/30">
+            <div className="flex items-center gap-1 sm:gap-2 font-medium text-xs sm:text-sm">
               <span>Join Community</span>
-              <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" />
+              <ArrowRight size={12} className="sm:w-[14px] sm:h-[14px] transition-transform duration-300 group-hover:translate-x-1" />
             </div>
           </div>
         </div>
       </MotionDiv>
 
       {/* Subtle border highlight on hover (matching team member cards) */}
-      <div className="absolute inset-0 rounded-3xl ring-1 ring-gray-200/50 group-hover:ring-[#FFDE59]/30 transition-all duration-500"></div>
+      <div className="absolute inset-0 rounded-xl md:rounded-3xl ring-1 ring-gray-200/50 group-hover:ring-[#FFDE59]/30 transition-all duration-500"></div>
     </MotionDiv>
   );
 };
@@ -231,7 +231,7 @@ const Team = () => {
         />
 
         {/* Team Grid - 4-column layout */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 max-w-7xl mx-auto">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 max-w-7xl mx-auto">
           {teamData.team.map((member, index) => (
             <MotionDiv
               key={member.name}
