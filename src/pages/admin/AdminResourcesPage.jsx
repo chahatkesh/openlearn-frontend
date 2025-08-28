@@ -13,7 +13,6 @@ const AdminResourcesPage = () => {
   const [leagues, setLeagues] = useState([]);
   const [selectedLeagueId, setSelectedLeagueId] = useState('');
   const [selectedWeekId, setSelectedWeekId] = useState('');
-  const [selectedSectionId, setSelectedSectionId] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { user } = useContext(AuthContext);
@@ -300,7 +299,6 @@ const AdminResourcesPage = () => {
       onReorderResources={handleReorderResources}
       selectedLeagueId={selectedLeagueId}
       selectedWeekId={selectedWeekId}
-      selectedSectionId={selectedSectionId}
       onSelectLeague={handleSelectLeague}
       onSelectWeek={handleSelectWeek}
       loading={loading}

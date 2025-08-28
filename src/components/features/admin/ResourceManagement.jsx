@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { X, Plus, ChevronDown, ChevronRight, Edit, Trash2, ExternalLink } from 'lucide-react';
 
 
@@ -12,7 +12,6 @@ const ResourceManagement = ({
   onDeleteResource,
   selectedLeagueId,
   selectedWeekId,
-  selectedSectionId,
   onSelectLeague,
   onSelectWeek,
   resourceTypes,
@@ -33,26 +32,6 @@ const ResourceManagement = ({
     sectionId: ''
   });
   const [typeFilter] = useState('ALL');
-
-  // If sections change while the form is open
-  useEffect(() => {
-    if (sections.length > 0 && selectedSectionId) {
-      setResourceForm(prev => ({
-        ...prev,
-        sectionId: selectedSectionId
-      }));
-    }
-  }, [sections, selectedSectionId]);
-
-  useEffect(() => {
-    // When switching sections, update the form's sectionId
-    if (selectedSectionId) {
-      setResourceForm(prev => ({
-        ...prev,
-        sectionId: selectedSectionId
-      }));
-    }
-  }, [selectedSectionId]);
 
   const handleFormChange = (e) => {
     const { name, value } = e.target;
@@ -80,7 +59,7 @@ const ResourceManagement = ({
       url: '',
       type: 'VIDEO',
       order: '',
-      sectionId: selectedSectionId || ''
+      sectionId: ''
     });
     setShowCreateForm(false);
     setEditingResource(null);
@@ -88,7 +67,7 @@ const ResourceManagement = ({
 
   const startCreate = (sectionId = null) => {
     // If sectionId is provided, create resource for that specific topic
-    const targetSectionId = sectionId || selectedSectionId || (sections.length > 0 ? sections[0].id : '');
+    const targetSectionId = sectionId || (sections.length > 0 ? sections[0].id : '');
     
     // Find the highest order in the target section's resources and add 1
     const currentSectionResources = resources.filter(resource => resource.sectionId === targetSectionId);
