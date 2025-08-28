@@ -151,42 +151,16 @@ class MigrationService {
   }
 
   /**
-   * Get institutes list for dropdown
-   * @returns {Array} List of institutes
-   */
-  static getInstitutes() {
-    return [
-      'NIT Jalandhar',
-      'IIT Delhi',
-      'IIT Bombay',
-      'IIT Madras',
-      'IIT Kanpur',
-      'IIT Kharagpur',
-      'IIT Roorkee',
-      'IIT Guwahati',
-      'IIT BHU',
-      'NIT Kurukshetra',
-      'NIT Durgapur',
-      'NIT Rourkela',
-      'NIT Warangal',
-      'NIT Calicut',
-      'IIIT Hyderabad',
-      'IIIT Allahabad',
-      'DTU Delhi',
-      'NSUT Delhi',
-      'Other'
-    ];
-  }
-
-  /**
    * Get departments list for dropdown
    * @returns {Array} List of departments
    */
   static getDepartments() {
     return [
-      'Computer Science and Engineering',
       'Information Technology',
+      'Instrumentation and Control Engineering',
+      'Computer Science and Engineering',
       'Electronics and Communication Engineering',
+      'Data Science Engineering',
       'Electrical Engineering',
       'Mechanical Engineering',
       'Civil Engineering',
@@ -197,7 +171,6 @@ class MigrationService {
       'Artificial Intelligence and Machine Learning',
       'Cyber Security',
       'Industrial and Production Engineering',
-      'Instrumentation and Control Engineering',
       'Textile Technology',
       'Other'
     ];

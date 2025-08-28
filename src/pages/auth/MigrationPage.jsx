@@ -46,7 +46,6 @@ const MigrationPage = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [step, setStep] = useState(1);
-  const [customInstitute, setCustomInstitute] = useState('');
   const [customDepartment, setCustomDepartment] = useState('');
 
   // Check if migration is needed
@@ -96,8 +95,6 @@ const MigrationPage = () => {
     // Institute validation
     if (!formData.institute.trim()) {
       errors.institute = 'Institute is required';
-    } else if (formData.institute === 'Other' && !customInstitute.trim()) {
-      errors.institute = 'Please enter your institute name';
     }
     
     // Department validation
@@ -144,8 +141,7 @@ const MigrationPage = () => {
   // Check if step 1 is complete and valid
   const isStep1Valid = () => {
     // Check all required fields are filled
-    const hasInstitute = formData.institute.trim() && 
-      (formData.institute !== 'Other' || customInstitute.trim());
+    const hasInstitute = formData.institute.trim();
     
     const hasDepartment = formData.department.trim() && 
       (formData.department !== 'Other' || customDepartment.trim());
@@ -212,7 +208,7 @@ const MigrationPage = () => {
     try {
       // Prepare migration data (excluding social handles)
       const migrationData = {
-        institute: formData.institute === 'Other' ? customInstitute : formData.institute,
+        institute: formData.institute,
         department: formData.department === 'Other' ? customDepartment : formData.department,
         graduationYear: parseInt(formData.graduationYear),
         phoneNumber: formData.phoneNumber,
@@ -415,28 +411,15 @@ const MigrationPage = () => {
                   <Building size={16} className="inline mr-2" />
                   Institute *
                 </label>
-                <select
+                <input
+                  type="text"
+                  placeholder="Enter your institute name (e.g., NIT Jalandhar, IIT Delhi, etc.)"
                   value={formData.institute}
                   onChange={(e) => handleInputChange('institute', e.target.value)}
                   className={`w-full px-3 sm:px-4 py-3 sm:py-4 border rounded-xl sm:rounded-2xl bg-gray-50/50 placeholder-gray-400 focus:ring-2 focus:ring-black/10 focus:border-black focus:bg-white transition-all duration-200 outline-none ${
                     errors.institute ? 'border-red-300 bg-red-50/50' : 'border-gray-200'
                   }`}
-                >
-                  <option value="">Select your institute</option>
-                  {MigrationService.getInstitutes().map(institute => (
-                    <option key={institute} value={institute}>{institute}</option>
-                  ))}
-                </select>
-                
-                {formData.institute === 'Other' && (
-                  <input
-                    type="text"
-                    placeholder="Enter your institute name"
-                    value={customInstitute}
-                    onChange={(e) => setCustomInstitute(e.target.value)}
-                    className="w-full px-3 sm:px-4 py-3 sm:py-4 border border-gray-200 rounded-xl sm:rounded-2xl bg-gray-50/50 placeholder-gray-400 focus:ring-2 focus:ring-black/10 focus:border-black focus:bg-white transition-all duration-200 outline-none mt-2"
-                  />
-                )}
+                />
                 
                 {errors.institute && (
                   <p className="text-red-600 text-xs sm:text-sm mt-1 font-medium">{errors.institute}</p>
