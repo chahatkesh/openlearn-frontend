@@ -18,7 +18,11 @@ import {
   Sparkles,
   ChevronDown,
   Loader2,
-  Hash
+  Hash,
+  MessageCircle,
+  Globe,
+  Database,
+  ArrowUpCircle
 } from 'lucide-react';
 import { FaXTwitter } from 'react-icons/fa6';
 import { getUserAvatarUrl } from '../../../utils/helpers/boringAvatarsUtils';
@@ -75,6 +79,7 @@ const UserManagement = ({
   const [selectedRole, setSelectedRole] = useState({});
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [roleFilter, setRoleFilter] = useState('ALL');
+  const [migrationFilter, setMigrationFilter] = useState('ALL');
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('createdAt');
   const [sortDirection, setSortDirection] = useState('desc');
@@ -144,6 +149,12 @@ const UserManagement = ({
       if (statusFilter !== 'ALL' && user.status !== statusFilter) return false;
       if (roleFilter !== 'ALL' && user.role !== roleFilter) return false;
       
+      // Migration filter
+      if (migrationFilter !== 'ALL') {
+        if (migrationFilter === 'MIGRATED' && user.migratedToV2 !== true) return false;
+        if (migrationFilter === 'NOT_MIGRATED' && user.migratedToV2 === true) return false;
+      }
+      
       // Search functionality
       if (searchTerm) {
         const searchLower = searchTerm.toLowerCase();
@@ -185,7 +196,9 @@ const UserManagement = ({
     total: eligibleUsers.length,
     active: eligibleUsers.filter(u => u.status === 'ACTIVE').length,
     pending: eligibleUsers.filter(u => u.status === 'PENDING').length,
-    suspended: eligibleUsers.filter(u => u.status === 'SUSPENDED').length
+    suspended: eligibleUsers.filter(u => u.status === 'SUSPENDED').length,
+    migrated: eligibleUsers.filter(u => u.migratedToV2 === true).length,
+    notMigrated: eligibleUsers.filter(u => u.migratedToV2 !== true).length
   };
 
   // Role display helper
@@ -243,6 +256,15 @@ const UserManagement = ({
                 <div className="w-2 h-2 bg-red-500 rounded-full"></div>
                 <span className="text-sm font-medium text-red-700">{userCounts.suspended} Suspended</span>
               </div>
+              <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 rounded-lg border border-blue-200">
+                <ArrowUpCircle size={14} className="text-blue-500" />
+                <span className="text-sm font-medium text-blue-700">
+                  {userCounts.migrated} Migrated 
+                  <span className="text-xs text-blue-600 ml-1">
+                    ({userCounts.total > 0 ? Math.round((userCounts.migrated / userCounts.total) * 100) : 0}%)
+                  </span>
+                </span>
+              </div>
               <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg border border-gray-200">
                 <Users size={14} className="text-gray-500" />
                 <span className="text-sm font-medium text-gray-700">{userCounts.total} Total</span>
@@ -290,12 +312,23 @@ const UserManagement = ({
                 <option value="CHIEF_PATHFINDER">Chief Pathfinder</option>
                 <option value="LUMINARY">Luminary</option>
               </select>
+
+              <select
+                value={migrationFilter}
+                onChange={(e) => setMigrationFilter(e.target.value)}
+                className="px-3 py-2 pr-8 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-sm cursor-pointer transition-colors"
+              >
+                <option value="ALL">All Migration</option>
+                <option value="MIGRATED">Migrated to V2</option>
+                <option value="NOT_MIGRATED">Not Migrated</option>
+              </select>
               
               <button
                 onClick={() => {
                   setSearchTerm('');
                   setStatusFilter('ALL');
                   setRoleFilter('ALL');
+                  setMigrationFilter('ALL');
                 }}
                 className="px-3 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer text-sm font-medium"
               >
@@ -733,14 +766,210 @@ const UserDetailModal = ({ user, onClose, onUpdateStatus, onApproveUser }) => {
                   <span className="text-sm font-medium text-gray-900">{user.olid}</span>
                 </div>
               </div>
+
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">Email Verified</span>
+                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full border ${
+                  user.emailVerified 
+                    ? 'bg-green-50 text-green-700 border-green-200' 
+                    : 'bg-red-50 text-red-700 border-red-200'
+                }`}>
+                  <div className={`w-1.5 h-1.5 rounded-full ${
+                    user.emailVerified ? 'bg-green-500' : 'bg-red-500'
+                  }`}></div>
+                  {user.emailVerified ? 'Verified' : 'Not Verified'}
+                </span>
+              </div>
+
+              {user.migratedToV2 !== undefined && (
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">V2 Migration</span>
+                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full border ${
+                    user.migratedToV2 
+                      ? 'bg-blue-50 text-blue-700 border-blue-200' 
+                      : 'bg-gray-50 text-gray-700 border-gray-200'
+                  }`}>
+                    <div className={`w-1.5 h-1.5 rounded-full ${
+                      user.migratedToV2 ? 'bg-blue-500' : 'bg-gray-500'
+                    }`}></div>
+                    {user.migratedToV2 ? 'Migrated' : 'Not Migrated'}
+                  </span>
+                </div>
+              )}
               </div>
             </div>
 
-            {/* Social Media Profiles */}
+            {/* Academic Information */}
             <div className="space-y-4">
-              <h3 className="text-lg font-medium text-gray-900">Social Profiles</h3>
+              <h3 className="text-lg font-medium text-gray-900">Academic Information</h3>
               
               <div className="space-y-3">
+                {user.institute && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Institute</span>
+                    <span className="text-sm font-medium text-gray-900 text-right max-w-48 break-words">
+                      {user.institute}
+                    </span>
+                  </div>
+                )}
+
+                {user.department && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Department</span>
+                    <span className="text-sm font-medium text-gray-900 text-right max-w-48 break-words">
+                      {user.department}
+                    </span>
+                  </div>
+                )}
+
+                {user.graduationYear && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Graduation Year</span>
+                    <span className="text-sm font-medium text-gray-900">
+                      {user.graduationYear}
+                    </span>
+                  </div>
+                )}
+
+                {user.studentId && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Student ID</span>
+                    <span className="text-sm font-medium text-gray-900">
+                      {user.studentId}
+                    </span>
+                  </div>
+                )}
+
+                {user.currentCohort && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Current Cohort</span>
+                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full border ${
+                      user.currentCohort.isActive 
+                        ? 'bg-green-50 text-green-700 border-green-200' 
+                        : 'bg-gray-50 text-gray-700 border-gray-200'
+                    }`}>
+                      <div className={`w-1.5 h-1.5 rounded-full ${
+                        user.currentCohort.isActive ? 'bg-green-500' : 'bg-gray-500'
+                      }`}></div>
+                      {user.currentCohort.name}
+                    </span>
+                  </div>
+                )}
+
+                {user.phoneNumber && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Phone Number</span>
+                    <span className="text-sm font-medium text-gray-900">
+                      {user.phoneNumber}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Contact & Professional Information */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Additional Social Profiles */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-900">Additional Profiles</h3>
+              
+              <div className="space-y-3">
+                {user.discordUsername ? (
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-indigo-50 border border-indigo-200">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-indigo-500 flex items-center justify-center">
+                        <MessageCircle size={16} className="text-white" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">Discord</p>
+                        <p className="text-xs text-gray-600">{user.discordUsername}</p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50 border border-gray-200">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-gray-300 flex items-center justify-center">
+                        <MessageCircle size={16} className="text-gray-500" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">Discord</p>
+                        <p className="text-xs text-gray-500">Not connected</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {user.portfolioUrl ? (
+                  <a
+                    href={user.portfolioUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-3 rounded-lg bg-purple-50 hover:bg-purple-100 border border-purple-200 transition-colors cursor-pointer group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-purple-500 flex items-center justify-center">
+                        <Globe size={16} className="text-white" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">Portfolio</p>
+                        <p className="text-xs text-gray-600">Personal website</p>
+                      </div>
+                    </div>
+                    <ExternalLink size={16} className="text-gray-400 group-hover:text-purple-600" />
+                  </a>
+                ) : (
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50 border border-gray-200">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-gray-300 flex items-center justify-center">
+                        <Globe size={16} className="text-gray-500" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">Portfolio</p>
+                        <p className="text-xs text-gray-500">Not provided</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* System Information */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-900">System Information</h3>
+              
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Last Updated</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {user.updatedAt ? new Date(user.updatedAt).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    }) : 'N/A'}
+                  </span>
+                </div>
+
+                {user.approvedBy && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Approved By</span>
+                    <span className="text-sm font-medium text-gray-900">
+                      {user.approvedBy}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Social Media Profiles */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium text-gray-900">Social Profiles</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {user.twitterHandle ? (
                   <a
                     href={`https://x.com/${user.twitterHandle}`}
@@ -870,7 +1099,6 @@ const UserDetailModal = ({ user, onClose, onUpdateStatus, onApproveUser }) => {
                 )}
               </div>
             </div>
-          </div>
 
           {/* Quick Actions */}
           <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
