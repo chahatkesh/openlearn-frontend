@@ -171,15 +171,16 @@ const UserManagement = ({
     .sort((a, b) => {
       let aValue = a[sortBy];
       let bValue = b[sortBy];
-      
       if (sortBy === 'name') {
         aValue = a.name || '';
         bValue = b.name || '';
       } else if (sortBy === 'createdAt') {
         aValue = new Date(a.createdAt);
         bValue = new Date(b.createdAt);
+      } else if (sortBy === 'olid') {
+        aValue = a.olid || '';
+        bValue = b.olid || '';
       }
-      
       if (sortDirection === 'asc') {
         return aValue > bValue ? 1 : -1;
       } else {
@@ -364,8 +365,14 @@ const UserManagement = ({
                 <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Role & Status
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Social Profiles
+                <th 
+                  className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                  onClick={() => handleSort('olid')}
+                >
+                  <div className="flex items-center gap-1">
+                    OL ID
+                    <ChevronDown size={14} className={`transition-transform ${sortBy === 'olid' && sortDirection === 'desc' ? 'rotate-180' : ''}`} />
+                  </div>
                 </th>
                 <th 
                   className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
@@ -508,61 +515,11 @@ const UserManagement = ({
                         </div>
                       </td>
 
-                      {/* Social Profiles */}
+                      {/* OL ID */}
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          {user.twitterHandle && (
-                            <a
-                              href={`https://x.com/${user.twitterHandle}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="w-8 h-8 rounded-lg bg-blue-50 hover:bg-blue-100 flex items-center justify-center text-blue-600 hover:text-blue-700 transition-colors cursor-pointer group/social"
-                              title={`@${user.twitterHandle}`}
-                            >
-                              <FaXTwitter size={14} className="group-hover/social:scale-110 transition-transform" />
-                            </a>
-                          )}
-                          
-                          {user.linkedinUrl && (
-                            <a
-                              href={user.linkedinUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="w-8 h-8 rounded-lg bg-blue-50 hover:bg-blue-100 flex items-center justify-center text-blue-600 hover:text-blue-700 transition-colors cursor-pointer group/social"
-                              title="LinkedIn Profile"
-                            >
-                              <Linkedin size={14} className="group-hover/social:scale-110 transition-transform" />
-                            </a>
-                          )}
-                          
-                          {user.githubUsername && (
-                            <a
-                              href={`https://github.com/${user.githubUsername}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="w-8 h-8 rounded-lg bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-600 hover:text-gray-700 transition-colors cursor-pointer group/social"
-                              title={`@${user.githubUsername}`}
-                            >
-                              <Github size={14} className="group-hover/social:scale-110 transition-transform" />
-                            </a>
-                          )}
-                          
-                          {user.kaggleUsername && (
-                            <a
-                              href={`https://kaggle.com/${user.kaggleUsername}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="w-8 h-8 rounded-lg bg-cyan-50 hover:bg-cyan-100 flex items-center justify-center text-cyan-600 hover:text-cyan-700 transition-colors cursor-pointer group/social"
-                              title={`Kaggle: ${user.kaggleUsername}`}
-                            >
-                              <BarChart3 size={14} className="group-hover/social:scale-110 transition-transform" />
-                            </a>
-                          )}
-                          
-                          {/* No social profiles indicator */}
-                          {!user.twitterHandle && !user.linkedinUrl && !user.githubUsername && !user.kaggleUsername && (
-                            <span className="text-xs text-gray-400 italic">No profiles</span>
-                          )}
+                          <Hash size={14} className="text-gray-400" />
+                          <span className="text-sm font-medium text-gray-900">{user.olid || 'N/A'}</span>
                         </div>
                       </td>
 
