@@ -362,7 +362,7 @@ const LeaguesPage = () => {
                         {isDisabled ? (
                           <>
                             <AlertCircle className="h-4 w-4 mr-2" />
-                            Enrollment Disabled
+                            Expired
                           </>
                         ) : isEnrolled ? (
                           <>
