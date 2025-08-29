@@ -115,6 +115,13 @@ const LeaguesPage = () => {
 
   const handleEnrollment = async (cohortId, leagueId) => {
     try {
+      // Find the league to check if enrollment is disabled
+      const league = leagues.find(l => l.id === leagueId);
+      if (league && isEnrollmentDisabled(league.name)) {
+        alert('Enrollment for this league is expired. Please check back later.');
+        return;
+      }
+      
       await ProgressService.enrollUser(cohortId, leagueId);
       alert('Enrollment successful! Welcome to your learning journey!');
       await loadLeaguesData(); // Refresh data
@@ -126,6 +133,12 @@ const LeaguesPage = () => {
 
   const handleLeagueClick = (league) => {
     navigate(`/dashboard/league/${league.id}`);
+  };
+
+  // Helper function to check if a league enrollment should be disabled
+  const isEnrollmentDisabled = (leagueName) => {
+    const disabledLeagues = ['ML League (1.0)', 'Finance League (1.0)'];
+    return disabledLeagues.includes(leagueName);
   };
 
   const filteredLeagues = filterLeagues();
@@ -215,6 +228,7 @@ const LeaguesPage = () => {
                 const isEnrolled = dashboardData?.enrollments?.some(
                   enrollment => enrollment.league.id === league.id
                 );
+                const isDisabled = !isEnrolled && isEnrollmentDisabled(league.name);
 
                 const dynamicStats = leagueStatistics[league.id];
                 const weeksCount = dynamicStats?.weeksCount || league.weeksCount || 0;
@@ -233,16 +247,18 @@ const LeaguesPage = () => {
                       ease: [0.25, 0.46, 0.45, 0.94] 
                     }}
                     className={`group relative bg-white/80 backdrop-blur-sm rounded-2xl lg:rounded-3xl border border-gray-200/50 transition-all duration-500 ease-out overflow-hidden ${
-                      isEnrolled 
+                      isDisabled
+                        ? 'opacity-60 cursor-not-allowed' 
+                        : isEnrolled 
                         ? 'hover:border-gray-400/60 cursor-pointer hover:bg-white/90' 
                         : 'hover:border-gray-300/60 hover:bg-white/90'
                     }`}
-                    whileHover={{ 
+                    whileHover={isDisabled ? {} : { 
                       y: -4,
                       transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }
                     }}
                     onClick={() => {
-                      if (isEnrolled) {
+                      if (isEnrolled && !isDisabled) {
                         handleLeagueClick(league);
                       }
                     }}
@@ -262,6 +278,16 @@ const LeaguesPage = () => {
                         <div className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-medium bg-[#FFDE59]/80 backdrop-blur-sm text-black border border-[#FFDE59]/70">
                           <CheckCircle className="h-3 w-3 mr-1.5" />
                           Enrolled
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Disabled status badge */}
+                    {isDisabled && (
+                      <div className="absolute top-4 sm:top-6 right-4 sm:right-6 z-10">
+                        <div className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-medium bg-red-100/80 backdrop-blur-sm text-red-700 border border-red-200/70">
+                          <AlertCircle className="h-3 w-3 mr-1.5" />
+                          League Expired
                         </div>
                       </div>
                     )}
@@ -312,6 +338,11 @@ const LeaguesPage = () => {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
+                          if (isDisabled) {
+                            // Show alert for disabled leagues
+                            alert('Enrollment for this league is temporarily disabled. Please check back later.');
+                            return;
+                          }
                           if (isEnrolled) {
                             handleLeagueClick(league);
                           } else {
@@ -319,13 +350,21 @@ const LeaguesPage = () => {
                             handleEnrollment(cohortId, league.id);
                           }
                         }}
+                        disabled={isDisabled}
                         className={`w-full px-6 py-3 lg:py-4 rounded-xl lg:rounded-2xl text-sm lg:text-base font-medium transition-all duration-300 flex items-center justify-center ${
-                          isEnrolled
+                          isDisabled
+                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            : isEnrolled
                             ? 'bg-[#FFDE59] text-black hover:bg-[#FFDE59]/90 focus:ring-4 focus:ring-[#FFDE59]/30'
                             : 'bg-black text-white hover:bg-gray-800 focus:ring-4 focus:ring-gray-200'
                         }`}
                       >
-                        {isEnrolled ? (
+                        {isDisabled ? (
+                          <>
+                            <AlertCircle className="h-4 w-4 mr-2" />
+                            Enrollment Disabled
+                          </>
+                        ) : isEnrolled ? (
                           <>
                             <Play className="h-4 w-4 mr-2" />
                             Continue Learning

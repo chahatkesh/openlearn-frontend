@@ -40,6 +40,16 @@ const handleResponse = async (response) => {
  */
 class ProgressService {
   /**
+   * Helper function to check if a league enrollment should be disabled
+   * @param {string} leagueName - The league name to check
+   * @returns {boolean} True if enrollment is disabled
+   */
+  static isEnrollmentDisabled(leagueName) {
+    const disabledLeagues = ['ML League (1.0)', 'Finance League (1.0)'];
+    return disabledLeagues.includes(leagueName);
+  }
+
+  /**
    * Enroll user in a cohort/league combination
    * @param {string} cohortId - The cohort ID
    * @param {string} leagueId - The league ID  
@@ -48,6 +58,20 @@ class ProgressService {
    */
   static async enrollUser(cohortId, leagueId, userId = null) {
     try {
+      // First, fetch league information to check if enrollment is disabled
+      const leagueResponse = await fetch(`${API_BASE_URL}/leagues/${leagueId}`, {
+        headers: getAuthHeaders()
+      });
+      
+      if (leagueResponse.ok) {
+        const leagueResult = await leagueResponse.json();
+        const leagueName = leagueResult.data?.name;
+        
+        if (leagueName && this.isEnrollmentDisabled(leagueName)) {
+          throw new Error('Enrollment for this league is temporarily disabled. Please check back later.');
+        }
+      }
+      
       const response = await fetch(`${API_BASE_URL}/enroll`, {
         method: 'POST',
         headers: getAuthHeaders(),
