@@ -159,48 +159,42 @@ const MigrationPage = () => {
     return hasInstitute && hasDepartment && hasGraduationYear && hasStudentId && hasValidPhone;
   };
 
-  // Validate social handles
+  // Validate social handles (all optional now)
   const validateSocialHandles = (socialData) => {
-    const errors = {};
+    const socialErrors = {};
 
-    // X (formerly Twitter) handle validation
-    if (!socialData.twitterHandle || !socialData.twitterHandle.trim()) {
-      errors.twitterHandle = 'Twitter handle is required';
-    } else if (!socialData.twitterHandle.startsWith('@')) {
-      errors.twitterHandle = 'Twitter handle must start with @';
-    }
-
-    // LinkedIn URL validation
-    if (!socialData.linkedinUrl || !socialData.linkedinUrl.trim()) {
-      errors.linkedinUrl = 'LinkedIn profile is required';
-    } else {
-      try {
-        const url = new URL(socialData.linkedinUrl);
-        if (!url.hostname.includes('linkedin.com')) {
-          errors.linkedinUrl = 'Please enter a valid LinkedIn profile URL';
-        }
-      } catch {
-        errors.linkedinUrl = 'Please enter a valid LinkedIn profile URL';
+    // Twitter validation - only if provided
+    if (socialData.twitterHandle && socialData.twitterHandle.trim()) {
+      if (!socialData.twitterHandle.startsWith('@')) {
+        socialErrors.twitterHandle = 'Twitter handle must start with @';
       }
     }
 
-    // GitHub username validation
-    if (!socialData.githubUsername || !socialData.githubUsername.trim()) {
-      errors.githubUsername = 'GitHub username is required';
-    } else {
-      const githubRegex = /^[a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,38}$/;
+    // LinkedIn validation - only if provided
+    if (socialData.linkedinUrl && socialData.linkedinUrl.trim()) {
+      try {
+        const url = new URL(socialData.linkedinUrl);
+        if (!url.hostname.includes('linkedin.com')) {
+          socialErrors.linkedinUrl = 'Please enter a valid LinkedIn URL';
+        }
+      } catch {
+        socialErrors.linkedinUrl = 'Please enter a valid URL';
+      }
+    }
+
+    // GitHub validation - only if provided
+    if (socialData.githubUsername && socialData.githubUsername.trim()) {
+      const githubRegex = /^[a-zA-Z0-9]([a-zA-Z0-9-])*[a-zA-Z0-9]$|^[a-zA-Z0-9]$/;
       if (!githubRegex.test(socialData.githubUsername.trim())) {
-        errors.githubUsername = 'Please enter a valid GitHub username';
+        socialErrors.githubUsername = 'Please enter a valid GitHub username';
       }
     }
 
     return {
-      isValid: Object.keys(errors).length === 0,
-      errors
+      isValid: Object.keys(socialErrors).length === 0,
+      errors: socialErrors
     };
-  };
-
-  const handleSubmit = async (e) => {
+  };  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setErrors({});
@@ -546,117 +540,107 @@ const MigrationPage = () => {
           {/* Step 2: Social & Contact */}
           {step === 2 && (
             <div className="space-y-5 sm:space-y-6">
-                  {/* Required Social Handles Section */}
+                  {/* Social Media Section - All Optional */}
                   <div className="bg-gray-50 rounded-lg p-6">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                       <Users size={20} className="mr-2" />
-                      Required Social Handles
+                      Social Media <span className="text-gray-500 text-sm font-normal">(All Optional)</span>
                     </h3>
-                    <div className="space-y-4">
+                    
+                    {/* Simple horizontal layout */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {/* Twitter */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          <FaXTwitter size={16} className="inline mr-2 text-black" />
-                          X (formerly Twitter) Handle <span className="text-red-500">*</span>
+                          <FaXTwitter size={14} className="inline mr-2 text-black" />
+                          X (Twitter)
                         </label>
                         <input
                           type="text"
                           placeholder="@your_handle"
                           value={formData.twitterHandle}
                           onChange={(e) => handleInputChange('twitterHandle', e.target.value)}
-                          required
-                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none ${
+                          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none text-sm ${
                             errors.twitterHandle ? 'border-red-300 bg-red-50' : 'border-gray-300'
                           }`}
                         />
                         {errors.twitterHandle && (
-                          <p className="text-red-600 text-sm mt-1">{errors.twitterHandle}</p>
+                          <p className="text-red-600 text-xs mt-1">{errors.twitterHandle}</p>
                         )}
                       </div>
 
                       {/* LinkedIn */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          <FaLinkedin size={16} className="inline mr-2 text-blue-700" />
-                          LinkedIn Profile <span className="text-red-500">*</span>
+                          <FaLinkedin size={14} className="inline mr-2 text-blue-700" />
+                          LinkedIn
                         </label>
                         <input
                           type="url"
-                          placeholder="https://linkedin.com/in/yourprofile"
+                          placeholder="linkedin.com/in/yourprofile"
                           value={formData.linkedinUrl}
                           onChange={(e) => handleInputChange('linkedinUrl', e.target.value)}
-                          required
-                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none ${
+                          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none text-sm ${
                             errors.linkedinUrl ? 'border-red-300 bg-red-50' : 'border-gray-300'
                           }`}
                         />
                         {errors.linkedinUrl && (
-                          <p className="text-red-600 text-sm mt-1">{errors.linkedinUrl}</p>
+                          <p className="text-red-600 text-xs mt-1">{errors.linkedinUrl}</p>
                         )}
                       </div>
 
                       {/* GitHub */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          <FaGithub size={16} className="inline mr-2 text-gray-900" />
-                          GitHub Username <span className="text-red-500">*</span>
+                          <FaGithub size={14} className="inline mr-2 text-gray-900" />
+                          GitHub
                         </label>
                         <input
                           type="text"
-                          placeholder="your_github_username"
+                          placeholder="username"
                           value={formData.githubUsername}
                           onChange={(e) => handleInputChange('githubUsername', e.target.value)}
-                          required
-                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none ${
+                          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none text-sm ${
                             errors.githubUsername ? 'border-red-300 bg-red-50' : 'border-gray-300'
                           }`}
                         />
                         {errors.githubUsername && (
-                          <p className="text-red-600 text-sm mt-1">{errors.githubUsername}</p>
+                          <p className="text-red-600 text-xs mt-1">{errors.githubUsername}</p>
                         )}
                       </div>
-                    </div>
-                  </div>
 
-                  {/* Optional Information Section */}
-                  <div className="bg-blue-50 rounded-lg p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                      <Globe size={20} className="mr-2" />
-                      Optional Information
-                    </h3>
-                    <div className="space-y-4">
-                      {/* Discord Username */}
+                      {/* Discord */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          <FaDiscord size={16} className="inline mr-2 text-indigo-600" />
-                          Discord Username <span className="text-gray-500 text-sm">(Optional)</span>
+                          <FaDiscord size={14} className="inline mr-2 text-indigo-600" />
+                          Discord
                         </label>
                         <input
                           type="text"
-                          placeholder="your_discord_username"
+                          placeholder="username"
                           value={formData.discordUsername}
                           onChange={(e) => handleInputChange('discordUsername', e.target.value)}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none transition-colors"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none text-sm"
                         />
                       </div>
 
-                      {/* Portfolio URL */}
-                      <div>
+                      {/* Portfolio */}
+                      <div className="md:col-span-2 lg:col-span-2">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          <Globe size={16} className="inline mr-2" />
-                          Portfolio URL <span className="text-gray-500 text-sm">(Optional)</span>
+                          <Globe size={14} className="inline mr-2" />
+                          Portfolio URL
                         </label>
                         <input
                           type="url"
                           placeholder="https://yourportfolio.com"
                           value={formData.portfolioUrl}
                           onChange={(e) => handleInputChange('portfolioUrl', e.target.value)}
-                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none transition-colors ${
+                          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#FFDE59] focus:border-[#FFDE59] outline-none text-sm ${
                             errors.portfolioUrl ? 'border-red-300 bg-red-50' : 'border-gray-300'
                           }`}
                         />
                         {errors.portfolioUrl && (
-                          <p className="text-red-600 text-sm mt-1">{errors.portfolioUrl}</p>
+                          <p className="text-red-600 text-xs mt-1">{errors.portfolioUrl}</p>
                         )}
                       </div>
                     </div>

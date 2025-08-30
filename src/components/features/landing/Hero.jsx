@@ -146,7 +146,7 @@ const Hero = () => {
                 }}
                 variants={itemVariants}
               >
-                OpenLearn Cohort
+                OpenLearn
               </MotionH1>
               <MotionP
                 className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl max-w-lg lg:max-w-xl xl:max-w-2xl leading-relaxed font-light"
@@ -157,7 +157,7 @@ const Hero = () => {
                 }}
                 variants={itemVariants}
               >
-                OpenLearn Cohort 1.5 - Explore new fields, build real projects, and grow with passionate peers in a collaborative journey.
+                Cohort 1.5 - Explore new fields, build real projects, and grow with passionate peers in a collaborative journey.
               </MotionP>
             </div>
             
