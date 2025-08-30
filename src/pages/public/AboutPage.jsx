@@ -85,7 +85,7 @@ const AboutPage = () => {
   const teamRoles = [
     {
       role: "Core Leads",
-      count: "4 members",
+      count: "5 members",
       responsibility: "Manage OpenLearn operations, onboarding, and marketing"
     },
     {
@@ -95,7 +95,7 @@ const AboutPage = () => {
     },
     {
       role: "Pathfinders",
-      count: "3–4 per league",
+      count: "4–6 per league",
       responsibility: "Curate and prepare learning resources"
     },
     {
@@ -116,7 +116,7 @@ const AboutPage = () => {
       <Navbar />
       
       <div className="min-h-screen pt-16 bg-white">
-        <HeroSection 
+        <HeroSection
           title="OpenLearn"
           subtitle="Democratizing Learning, Transforming Future"
           description="A student-run community, created <em>by students, for students</em>. More than just a study group - it's a self-sustaining ecosystem designed to foster <strong style='color: #000000'> learning, research, building, and development</strong>."
@@ -406,7 +406,7 @@ const AboutPage = () => {
             </div>
 
             {/* Organizational Structure */}
-            <div className="mb-20 sm:mb-24">
+            <div className="mb-0">
               
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
                 {teamRoles.map((role, index) => (
@@ -440,7 +440,7 @@ const AboutPage = () => {
             </div>
 
             {/* Join the Team CTA */}
-            <div className="mt-16 sm:mt-20 text-center">
+            {/* <div className="mt-16 sm:mt-20 text-center">
               <div className="bg-gray-50 rounded-2xl sm:rounded-3xl p-8 sm:p-10 lg:p-12 border border-gray-100">
                 <h3 className="text-lg sm:text-xl lg:text-2xl font-medium text-black mb-3 sm:mb-4">
                   Want to join our team?
@@ -453,12 +453,12 @@ const AboutPage = () => {
                   <ArrowRight size={16} className="sm:w-[18px] sm:h-[18px]" />
                 </button>
               </div>
-            </div>
+            </div> */}
           </div>
         </section>
 
         {/* Why Join Section */}
-        <section className="py-16 sm:py-20 lg:py-32 bg-white">
+        <section className="pb-16 sm:pb-20 lg:pb-32 pt-0 bg-white">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             {/* Section Header */}
             <div className="text-center mb-16 sm:mb-20">

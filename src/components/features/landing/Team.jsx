@@ -73,7 +73,7 @@ const TeamMemberCard = ({ name, description, linkedin, twitter, instagram }) => 
         {/* Social Links */}
         {(linkedin || twitter || instagram) && (
           <div 
-            className="flex gap-1.5 sm:gap-3 pt-2 sm:pt-3 border-t border-gray-100 mt-auto"
+            className="flex gap-1 sm:gap-3 pt-2 sm:pt-3 border-t border-gray-100 mt-auto"
             style={{ pointerEvents: 'auto', zIndex: 10, position: 'relative' }}
           >
             {linkedin && linkedin.trim() && (
@@ -81,7 +81,7 @@ const TeamMemberCard = ({ name, description, linkedin, twitter, instagram }) => 
                 href={linkedin} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center justify-center w-5 h-5 sm:w-10 sm:h-10 rounded-md sm:rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 hover:text-blue-700 transition-all duration-300 hover:scale-110 shadow-sm hover:shadow-md border border-blue-100 cursor-pointer"
+                className="flex items-center justify-center w-5 h-5 sm:w-10 sm:h-10 rounded sm:rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 hover:text-blue-700 transition-all duration-300 hover:scale-110 border border-blue-100 cursor-pointer"
                 title="LinkedIn Profile"
                 style={{ pointerEvents: 'auto' }}
                 onClick={() => window.open(linkedin, '_blank')}
@@ -94,7 +94,7 @@ const TeamMemberCard = ({ name, description, linkedin, twitter, instagram }) => 
                 href={twitter} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center justify-center w-5 h-5 sm:w-10 sm:h-10 rounded-md sm:rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-all duration-300 hover:scale-110 shadow-sm hover:shadow-md border border-gray-200 cursor-pointer"
+                className="flex items-center justify-center w-5 h-5 sm:w-10 sm:h-10 rounded sm:rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-all duration-300 hover:scale-110 border border-gray-200 cursor-pointer"
                 title="Twitter Profile"
                 style={{ pointerEvents: 'auto' }}
                 onClick={() => window.open(twitter, '_blank')}
@@ -107,7 +107,7 @@ const TeamMemberCard = ({ name, description, linkedin, twitter, instagram }) => 
                 href={instagram} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center justify-center w-5 h-5 sm:w-10 sm:h-10 rounded-md sm:rounded-lg bg-pink-50 hover:bg-pink-100 text-pink-600 hover:text-pink-700 transition-all duration-300 hover:scale-110 shadow-sm hover:shadow-md border border-pink-100 cursor-pointer"
+                className="flex items-center justify-center w-5 h-5 sm:w-10 sm:h-10 rounded sm:rounded-lg bg-pink-50 hover:bg-pink-100 text-pink-600 hover:text-pink-700 transition-all duration-300 hover:scale-110 border border-pink-100 cursor-pointer"
                 title="Instagram Profile"
                 style={{ pointerEvents: 'auto' }}
                 onClick={() => window.open(instagram, '_blank')}

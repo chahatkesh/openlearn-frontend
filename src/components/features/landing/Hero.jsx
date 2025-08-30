@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Instagram } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { MotionDiv, MotionSection, MotionButton, MotionH1, MotionH2, MotionLi, MotionUl, MotionSpan, MotionP } from '../../common/MotionWrapper';
 
@@ -92,6 +92,49 @@ const Hero = () => {
             className="space-y-8 sm:space-y-10 lg:space-y-12"
             variants={containerVariants}
           >
+            {/* Instagram Flash Notification - Small and at top */}
+            <MotionDiv
+              className="flex justify-start"
+              variants={itemVariants}
+            >
+              <a 
+                href="https://www.instagram.com/openlearn.org.in" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="group relative flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 sm:px-3 sm:py-2 bg-black/80 backdrop-blur-xl border border-white/10 rounded-lg sm:rounded-xl hover:bg-black/90 transition-all duration-500 ease-out hover:scale-[1.02]"
+              >
+                {/* Subtle gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent rounded-lg sm:rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                
+                {/* Instagram icon - smaller */}
+                <div className="relative flex items-center justify-center w-3.5 h-3.5 sm:w-4 sm:h-4">
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 rounded-md opacity-90"></div>
+                  <div className="relative flex items-center justify-center w-full h-full">
+                    <Instagram className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-white" strokeWidth={2.5} />
+                  </div>
+                </div>
+                
+                {/* Text - smaller */}
+                <span className="relative text-xs sm:text-sm font-medium text-white/90 group-hover:text-white transition-colors duration-300 tracking-tight leading-tight">
+                  Follow for updates
+                </span>
+                
+                {/* Live indicator - smaller */}
+                <div className="relative flex items-center">
+                  <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-green-500 rounded-full">
+                    <div className="absolute inset-0 bg-green-400 rounded-full animate-ping opacity-75"></div>
+                  </div>
+                </div>
+                
+                {/* Arrow indicator - smaller */}
+                <div className="relative w-2 h-2 sm:w-2.5 sm:h-2.5 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all duration-300">
+                  <svg viewBox="0 0 12 12" fill="none" className="w-full h-full">
+                    <path d="M4 3L8 6L4 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-white/70" />
+                  </svg>
+                </div>
+              </a>
+            </MotionDiv>
+
             <div className="space-y-6 sm:space-y-8">
               <MotionH1 
                 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight tracking-tight" 

@@ -59,8 +59,8 @@ const AcceleratePage = () => {
       activities: [
         "Identify resources required",
         "Identify manpower required",
-        "Lateral intakes: Accelerate 4.5",
-        "Cohort 4.5 integration"
+        "Lateral intakes: Accelerate n.5",
+        "Cohort n.5 integration"
       ],
       icon: <Users className="w-6 h-6" />,
       color: "from-orange-500 to-orange-600"
