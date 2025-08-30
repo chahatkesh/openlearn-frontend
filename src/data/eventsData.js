@@ -10,6 +10,15 @@ const createEvent = (eventData) => ({
 const eventsData = {
   events: [
     createEvent({
+      id: 'accelerate-meet-2',
+      title: 'Idea Discussion (Accelerate 1.0)',
+      category: 'Accelerate Program',
+      date: '2025-08-28',
+      description: 'Facilitated idea discussion and refinement session for the Pioneers enrolled in the Accelerate Program.',
+      featured: true,
+      location: 'LT-401, NITJ'
+    }),
+    createEvent({
       id: 'accelerate-meet-1',
       title: 'Accelerate Program Meet',
       category: 'Accelerate Program',
