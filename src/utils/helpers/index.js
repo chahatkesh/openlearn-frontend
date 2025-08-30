@@ -1,6 +1,6 @@
 // Helper Utilities - Pure functions and utility helpers
 export { getUserAvatarUrl } from './boringAvatarsUtils';
-export { generateSequentialImages, getEventThumbnail, useFilteredImages } from './eventImageService';
+export { useFilteredImages } from './eventImageService';
 export { default as FaviconService } from './faviconService';
 export { getAllUpdates, getUniqueContributors } from './updatesService';
 

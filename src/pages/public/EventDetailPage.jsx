@@ -79,11 +79,12 @@ const ImageModal = ({ image, isOpen, onClose, onNext, onPrev, currentIndex, tota
         onClick={(e) => e.stopPropagation()}
       >
         <img
-          src={image.url}
-          alt={image.alt}
+          src={typeof image === 'string' ? image : image.url}
+          alt={typeof image === 'string' ? `Event image ${currentIndex + 1}` : (image.alt || `Event image ${currentIndex + 1}`)}
           className="w-full h-auto max-h-[90vh] object-contain rounded-xl shadow-2xl"
           onError={(e) => {
-            e.target.src = `https://via.placeholder.com/800x600/f3f4f6/6b7280?text=${encodeURIComponent(image.alt || 'Event Image')}`;
+            const altText = typeof image === 'string' ? `Event Image ${currentIndex + 1}` : (image.alt || `Event Image ${currentIndex + 1}`);
+            e.target.src = `https://via.placeholder.com/800x600/f3f4f6/6b7280?text=${encodeURIComponent(altText)}`;
           }}
         />
       </MotionDiv>
@@ -97,7 +98,7 @@ const ImageGallery = ({ images, onImageClick }) => {
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {images.map((image, index) => (
         <ImageCard 
-          key={image.id} 
+          key={index} 
           image={image} 
           index={index} 
           onClick={() => onImageClick(image, index)} 
@@ -145,8 +146,8 @@ const ImageCard = ({ image, index, onClick }) => {
         )}
         
         <img
-          src={image.url}
-          alt={image.alt}
+          src={typeof image === 'string' ? image : image.url}
+          alt={typeof image === 'string' ? `Event image ${index + 1}` : (image.alt || `Event image ${index + 1}`)}
           className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-105 ${
             imageLoaded ? 'opacity-100' : 'opacity-0'
           }`}
@@ -177,43 +178,68 @@ const EventDetailPage = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [event, setEvent] = useState(null);
 
-  // Debug logging
+  // Load event data
   useEffect(() => {
-    // Silent operation - logs removed for production
-  }, [eventId]);
+    const loadEvent = () => {
+      try {
+        if (!eventId) {
+          navigate('/events', { replace: true });
+          return;
+        }
 
-  // Validate eventId parameter
-  useEffect(() => {
-    if (!eventId) {
-      navigate('/events', { replace: true });
-      return;
-    }
-  }, [eventId, navigate]);
+        if (!eventsData?.events) {
+          setEvent(null);
+          setLoading(false);
+          return;
+        }
 
-  // Find the event by ID with error handling
-  const event = React.useMemo(() => {
-    try {
-      if (!eventId || !eventsData?.events) {
-        return null;
+        const foundEvent = eventsData.events.find(e => e.id === eventId);
+        setEvent(foundEvent || null);
+      } catch (error) {
+        console.error('Error finding event:', error);
+        setEvent(null);
+      } finally {
+        setLoading(false);
       }
-      const foundEvent = eventsData.events.find(e => e.id === eventId);
-      return foundEvent;
-    } catch (error) {
-      console.error('Error finding event:', error);
-      return null;
-    }
-  }, [eventId]);
+    };
+
+    // Small delay to ensure proper rendering
+    const timer = setTimeout(loadEvent, 100);
+    return () => clearTimeout(timer);
+  }, [eventId, navigate]);
 
   // Filter images to only show existing ones
   const { images: filteredImages } = useFilteredImages(event?.images || []);
 
   // Redirect to events page if event not found
   useEffect(() => {
-    if (!event && eventId) {
+    if (!loading && !event && eventId) {
       navigate('/events', { replace: true });
     }
-  }, [event, eventId, navigate]);
+  }, [loading, event, eventId, navigate]);
+
+  // Show loading state
+  if (loading) {
+    return (
+      <>
+        <PageHead 
+          title="Loading Event..."
+          description="Loading event details"
+        />
+        <Navbar />
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 pt-16">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FFDE59] mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading event details...</p>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
 
   // Show 404 if event not found
   if (!event) {

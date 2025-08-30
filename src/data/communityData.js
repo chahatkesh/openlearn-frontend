@@ -9,7 +9,7 @@ const communityData = {
       league: 'Finance',
       role: 'Finance Chief Pathfinder',
       color: '#10B981', // Green
-      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756321756/pratham-andotra_jyjcwy.jpg',
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/finance/pratham.png',
       isActive: true
     },
     {
@@ -18,7 +18,7 @@ const communityData = {
       league: 'Quantum Computing',
       role: 'Quantum Chief Pathfinder',
       color: '#8B5CF6', // Purple
-      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756321933/IMG_20240601_105257_136_g9yrji.jpg',
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/quantum/guransh.png',
       isActive: true
     },
     {
@@ -27,17 +27,26 @@ const communityData = {
       league: 'ML',
       role: 'ML Chief Pathfinder',
       color: '#3B82F6', // Blue
-      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756321893/ratinderdeep-singh_ltfwbw.jpg',
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/ml/ratinder.png',
       isActive: false
     },
     {
-      id: 'soft-skills',
+      id: 'soft-skills-chief-1',
       name: 'Samridhi Saini',
       league: 'Soft Skills',
       role: 'Soft Skills Chief Pathfinder',
       color: '#F59E0B', // Amber
-      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756323988/648c64de-b6c0-4aeb-9269-67dae2d0d36b.png',
-      isActive: false
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/soft-skills/samridhi.png',
+      isActive: true
+    },
+    {
+      id: 'soft-skills-chief-2',
+      name: 'Aryan Kalia',
+      league: 'Soft Skills',
+      role: 'Soft Skills Chief Pathfinder',
+      color: '#F59E0B', // Amber
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/soft-skills/aryan.png',
+      isActive: true
     },
     {
       id: 'competitive-programming',
@@ -45,7 +54,7 @@ const communityData = {
       league: 'Competitive Programming',
       role: 'Competitive Programming Chief Pathfinder',
       color: '#EF4444', // Red
-      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756323863/ef5964f5-18f4-4bab-bf7a-349edbf04042.png',
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/cp/naman.png',
       isActive: false
     },
     {
@@ -54,16 +63,16 @@ const communityData = {
       league: 'IoT',
       role: 'IoT Chief Pathfinder',
       color: '#06B6D4', // Cyan
-      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756322099/WhatsApp_Image_2025-08-27_at_15.22.01_phjg9i.jpg',
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/iot/shikhar.png',
       isActive: false
     },
     {
-      id: 'exmatrix',
+      id: 'mathematics',
       name: 'Sathvik G A',
-      league: 'ExMatrix',
-      role: 'ExMatrix Chief Pathfinder',
+      league: 'Advanced Mathematics League',
+      role: 'Advanced Mathematics Chief Pathfinder',
       color: '#EC4899', // Pink
-      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756322558/07912ad3-767a-464f-b74e-7583de7fd0d7.png',
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/mathematics/sathvik.png',
       isActive: false
     }
   ],
@@ -75,7 +84,7 @@ const communityData = {
       league: 'Finance',
       role: 'Finance Pathfinder',
       color: '#10B981',
-      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756322277/tanveer-singh_wf3ckb.jpg' 
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/finance/tanveer.png' 
     },
     // Quantum Computing Pathfinders
     {
@@ -84,7 +93,7 @@ const communityData = {
       league: 'Quantum Computing',
       role: 'Quantum Pathfinder',
       color: '#8B5CF6',
-      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756321813/Screenshot_20241213_162311_ad3tpt.jpg'
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/quantum/gursimarpreet.png'
     },
     {
       id: 'quantum-2',
@@ -92,7 +101,7 @@ const communityData = {
       league: 'Quantum Computing',
       role: 'Quantum Pathfinder',
       color: '#8B5CF6',
-      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756320521/Aryan_Sinha_xfpiz0.png'
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/quantum/aryan.png'
     },
     {
       id: 'quantum-3',
@@ -100,7 +109,7 @@ const communityData = {
       league: 'Quantum Computing',
       role: 'Quantum Pathfinder',
       color: '#8B5CF6',
-      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756321030/Screenshot_2025-08-28_at_12.26.41_AM_x4x7th.png' 
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/quantum/akanshha.png' 
     },
     {
       id: 'quantum-4',
@@ -108,7 +117,7 @@ const communityData = {
       league: 'Quantum Computing',
       role: 'Quantum Pathfinder',
       color: '#8B5CF6',
-      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756321557/Photo_lytuyj.jpg' 
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/quantum/tanveer.png' 
     },
     {
       id: 'quantum-5',
@@ -116,7 +125,7 @@ const communityData = {
       league: 'Quantum Computing',
       role: 'Quantum Pathfinder',
       color: '#8B5CF6',
-      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756321623/20250706_092413_kqehrh.jpg' 
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/quantum/harsh.png' 
     },
     {
       id: 'quantum-6',
@@ -124,7 +133,7 @@ const communityData = {
       league: 'Quantum Computing',
       role: 'Quantum Pathfinder',
       color: '#8B5CF6',
-      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756321487/1000023504_tywv7c.jpg'
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/quantum/piyush.png'
     },
     // ML Pathfinders
     {
@@ -133,14 +142,15 @@ const communityData = {
       league: 'ML',
       role: 'ML Pathfinder',
       color: '#3B82F6',
-      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756322361/0bb8191e-7423-43ef-9f38-f515cc353216.png'
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/ml/adesh.png'
     },
     {
       id: 'ml-2',
       name: 'Vivek Dhiman',
       league: 'ML',
       role: 'ML Pathfinder',
-      color: '#3B82F6'
+      color: '#3B82F6',
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/ml/vivek.png'
     },
     {
       id: 'ml-3',
@@ -148,7 +158,7 @@ const communityData = {
       league: 'ML',
       role: 'ML Pathfinder',
       color: '#3B82F6',
-      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756322411/5125b0eb-7856-404f-a8a9-e957d8129152.png'
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/ml/achintya.png'
     },
     {
       id: 'ml-4',
@@ -156,16 +166,64 @@ const communityData = {
       league: 'ML',
       role: 'ML Pathfinder',
       color: '#3B82F6',
-      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756324159/0cd7f49d-05d4-4fe6-ac76-d63f9a022675.png'
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/ml/kunal.png'
     },
     // Soft Skills Pathfinders
     {
       id: 'soft-skills-1',
-      name: 'Aryan Kalia',
+      name: 'Abhishek Bhatti',
       league: 'Soft Skills',
       role: 'Soft Skills Pathfinder',
       color: '#F59E0B',
-      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756324085/7c59d9b9-60df-41f3-b18e-408f5d470dbb.png'
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/soft-skills/abhishek.png'
+    },
+    {
+      id: 'soft-skills-2',
+      name: 'Deepika',
+      league: 'Soft Skills',
+      role: 'Soft Skills Pathfinder',
+      color: '#F59E0B',
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/soft-skills/deepika.png'
+    },
+    {
+      id: 'soft-skills-3',
+      name: 'Avni Kaushal',
+      league: 'Soft Skills',
+      role: 'Soft Skills Pathfinder',
+      color: '#F59E0B',
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/soft-skills/avni.png'
+    },
+    {
+      id: 'soft-skills-4',
+      name: 'Dilpreet',
+      league: 'Soft Skills',
+      role: 'Soft Skills Pathfinder',
+      color: '#F59E0B',
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/soft-skills/dilpreet.png'
+    },
+    {
+      id: 'soft-skills-5',
+      name: 'Ojas Saxena',
+      league: 'Soft Skills',
+      role: 'Soft Skills Pathfinder',
+      color: '#F59E0B',
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/soft-skills/ojas.png'
+    },
+    {
+      id: 'soft-skills-6',
+      name: 'Nidhi Chaudhary',
+      league: 'Soft Skills',
+      role: 'Soft Skills Pathfinder',
+      color: '#F59E0B',
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/soft-skills/nidhi.png'
+    },
+    {
+      id: 'soft-skills-7',
+      name: 'Aditya Mahajan',
+      league: 'Soft Skills',
+      role: 'Soft Skills Pathfinder',
+      color: '#F59E0B',
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/soft-skills/aditya.png'
     },
     // Competitive Programming Pathfinders
     // {
@@ -182,7 +240,7 @@ const communityData = {
       league: 'IoT',
       role: 'IoT Pathfinder',
       color: '#06B6D4',
-      imageUrl: "https://res.cloudinary.com/dgjd6n8up/image/upload/v1756322101/WhatsApp_Image_2025-08-27_at_15.22.14_om5p3y.jpg"
+      imageUrl: "https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/iot/kapil.png"
     },
     {
       id: 'iot-2',
@@ -190,7 +248,7 @@ const communityData = {
       league: 'IoT',
       role: 'IoT Pathfinder',
       color: '#06B6D4',
-      imageUrl: "https://res.cloudinary.com/dgjd6n8up/image/upload/v1756322098/WhatsApp_Image.14_vlmike.jpg"
+      imageUrl: "https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/iot/ansh.png"
     },
     {
       id: 'iot-3',
@@ -198,7 +256,7 @@ const communityData = {
       league: 'IoT',
       role: 'IoT Pathfinder',
       color: '#06B6D4',
-      imageUrl: "https://res.cloudinary.com/dgjd6n8up/image/upload/v1756322100/WhatsApp_Image_2025-08-27_at_15.22.22_exrebl.jpg"
+      imageUrl: "https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/iot/irfan.png"
     },
     {
       id: 'iot-4',
@@ -206,67 +264,72 @@ const communityData = {
       league: 'IoT',
       role: 'IoT Pathfinder',
       color: '#06B6D4',
-      imageUrl: "https://res.cloudinary.com/dgjd6n8up/image/upload/v1756322100/WhatsApp_Image_2025-08-27_at_15.22.13_x7sb2y.jpg"
+      imageUrl: "https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/iot/keshav.png"
     },
-    // ExMatrix Pathfinders
+    // Advanced Mathematics League Pathfinders
     {
-      id: 'exmatrix-1',
+      id: 'mathematics-1',
       name: 'Saaransh Saxena',
-      league: 'ExMatrix',
-      role: 'ExMatrix Pathfinder',
+      league: 'Advanced Mathematics League',
+      role: 'Advanced Mathematics Pathfinder',
       color: '#EC4899',
-      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756365308/Screenshot_2025-08-28_at_12.45.02_PM_wwsna4.png'
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/mathematics/saaransh.png'
     },
     {
-      id: 'exmatrix-2',
+      id: 'mathematics-2',
       name: 'Jeetashwar Singh',
-      league: 'ExMatrix',
-      role: 'ExMatrix Pathfinder',
+      league: 'Advanced Mathematics League',
+      role: 'Advanced Mathematics Pathfinder',
       color: '#EC4899',
-      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756365264/4153ef82-e1c3-42cd-a9c4-74659b8cd118.png'
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/mathematics/jeetashwar.png'
     },
     {
-      id: 'exmatrix-3',
+      id: 'mathematics-3',
       name: 'Laksh Arora',
-      league: 'ExMatrix',
-      role: 'ExMatrix Pathfinder',
-      color: '#EC4899'
-    },
-    {
-      id: 'exmatrix-4',
-      name: 'Krrish Bhagla',
-      league: 'ExMatrix',
-      role: 'ExMatrix Pathfinder',
+      league: 'Advanced Mathematics League',
+      role: 'Advanced Mathematics Pathfinder',
       color: '#EC4899',
-      imageUrl: 'https://res.cloudinary.com/dgjd6n8up/image/upload/v1756365227/eca377d2-e920-4447-b0f1-7b07b06f1540.png'
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/mathematics/laksh.png'
     },
     {
-      id: 'exmatrix-5',
+      id: 'mathematics-4',
+      name: 'Krrish Bhagla',
+      league: 'Advanced Mathematics League',
+      role: 'Advanced Mathematics Pathfinder',
+      color: '#EC4899',
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/mathematics/krrish.png'
+    },
+    {
+      id: 'mathematics-5',
       name: 'Divyansh Jangid',
-      league: 'ExMatrix',
-      role: 'ExMatrix Pathfinder',
-      color: '#EC4899'
+      league: 'Advanced Mathematics League',
+      role: 'Advanced Mathematics Pathfinder',
+      color: '#EC4899',
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/mathematics/divyansh.png'
     },
     {
-      id: 'exmatrix-6',
+      id: 'mathematics-6',
       name: 'Nipun Khatri',
-      league: 'ExMatrix',
-      role: 'ExMatrix Pathfinder',
-      color: '#EC4899'
+      league: 'Advanced Mathematics League',
+      role: 'Advanced Mathematics Pathfinder',
+      color: '#EC4899',
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/mathematics/nipun.png'
     },
     {
-      id: 'exmatrix-7',
+      id: 'mathematics-7',
       name: 'G Rohit Varshan',
-      league: 'ExMatrix',
-      role: 'ExMatrix Pathfinder',
-      color: '#EC4899'
+      league: 'Advanced Mathematics League',
+      role: 'Advanced Mathematics Pathfinder',
+      color: '#EC4899',
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/mathematics/rohit.png'
     },
     {
-      id: 'exmatrix-8',
+      id: 'mathematics-8',
       name: 'Mayank Shigaonkar',
-      league: 'ExMatrix',
-      role: 'ExMatrix Pathfinder',
-      color: '#EC4899'
+      league: 'Advanced Mathematics League',
+      role: 'Advanced Mathematics Pathfinder',
+      color: '#EC4899',
+      imageUrl: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/community/mathematics/mayank.png'
     },
   ],
   stats: {

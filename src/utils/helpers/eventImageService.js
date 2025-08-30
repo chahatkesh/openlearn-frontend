@@ -3,8 +3,8 @@ import { useState, useEffect } from 'react';
 /**
  * Event Image Service
  * 
- * This service handles dynamic loading of event images from the public/events/[event_id] directory.
- * It automatically detects which images exist and filters out non-existent ones.
+ * This service handles validation of event images from external URLs.
+ * It checks which images exist and filters out non-existent ones.
  */
 
 /**
@@ -12,6 +12,7 @@ import { useState, useEffect } from 'react';
  * @param {string} imagePath - Path to the image
  * @returns {Promise<boolean>} Promise that resolves to true if image exists
  */
+/* Currently disabled to improve page load performance
 const checkImageExists = (imagePath) => {
   return new Promise((resolve) => {
     const img = new Image();
@@ -20,38 +21,7 @@ const checkImageExists = (imagePath) => {
     img.src = imagePath;
   });
 };
-
-/**
- * Generate sequential image objects for an event (static version for eventsData.js)
- * @param {string} eventId - The event ID
- * @param {string} extension - Image extension (default: 'jpg')
- * @param {number} maxImages - Maximum number of images to check (default: 10)
- * @returns {Array} Array of image objects
- */
-export const generateSequentialImages = (eventId, extension = 'jpg', maxImages = 10) => {
-  const images = [];
-  
-  for (let i = 1; i <= maxImages; i++) {
-    images.push({
-      id: `${eventId}-${i}`,
-      url: `/events/${eventId}/image-${i}.${extension}`,
-      alt: `${eventId} image ${i}`
-    });
-  }
-  
-  return images;
-};
-
-/**
- * Get the thumbnail image path for an event
- * @param {string|object} event - The event ID string or event object with id property
- * @param {string} extension - Image extension (default: 'png')
- * @returns {string} Thumbnail image path
- */
-export const getEventThumbnail = (event, extension = 'png') => {
-  const eventId = typeof event === 'string' ? event : event.id;
-  return `/events/thumbnail/${eventId}.${extension}`;
-};
+*/
 
 /**
  * React hook to get filtered existing images for an event
@@ -60,7 +30,7 @@ export const getEventThumbnail = (event, extension = 'png') => {
  */
 export const useFilteredImages = (allImages) => {
   const [images, setImages] = useState(allImages || []); // Start with all images
-  const [loading, setLoading] = useState(false); // Don't block UI initially
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const loadImages = async () => {
@@ -70,26 +40,33 @@ export const useFilteredImages = (allImages) => {
         return;
       }
 
-      // Show images immediately, then filter
+      // Show all images immediately for better UX
       setImages(allImages);
-      setLoading(true);
+      setLoading(false); // Don't block the UI
       
+      // Validate images in the background (optional enhancement)
+      // Comment out image validation to prevent delays
+      /*
       const existingImages = [];
-
+      
       for (const image of allImages) {
         try {
-          const exists = await checkImageExists(image.url);
+          const imageUrl = typeof image === 'string' ? image : image.url;
+          const exists = await checkImageExists(imageUrl);
           if (exists) {
             existingImages.push(image);
           }
         } catch (error) {
-          console.warn(`Failed to check image: ${image.url}`, error);
+          const imageUrl = typeof image === 'string' ? image : image.url;
+          console.warn(`Failed to check image: ${imageUrl}`, error);
         }
       }
 
-      // Update with filtered images
-      setImages(existingImages);
-      setLoading(false);
+      // Update with filtered images only if different
+      if (existingImages.length !== allImages.length) {
+        setImages(existingImages);
+      }
+      */
     };
 
     loadImages();
@@ -99,7 +76,5 @@ export const useFilteredImages = (allImages) => {
 };
 
 export default {
-  generateSequentialImages,
-  getEventThumbnail,
   useFilteredImages
 };

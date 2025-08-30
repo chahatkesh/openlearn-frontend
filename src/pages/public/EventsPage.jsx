@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, MapPin, Camera, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Navbar, Footer } from '../../components/layout';
@@ -121,20 +121,54 @@ const EventCard = ({ event }) => {
 
 
 const EventsPage = () => {
-  // Initialize events directly from imported data
-  const events = React.useMemo(() => {
-    try {
-      if (eventsData && typeof eventsData === 'object' && Array.isArray(eventsData.events)) {
-        return eventsData.events;
-      } else {
-        console.warn('Events data structure is invalid:', eventsData);
-        return [];
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Load events data
+  useEffect(() => {
+    const loadEvents = () => {
+      try {
+        if (eventsData && typeof eventsData === 'object' && Array.isArray(eventsData.events)) {
+          setEvents(eventsData.events);
+        } else {
+          console.warn('Events data structure is invalid:', eventsData);
+          setEvents([]);
+        }
+      } catch (error) {
+        console.error('Error loading events:', error);
+        setEvents([]);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error loading events:', error);
-      return [];
-    }
+    };
+
+    // Small delay to ensure proper rendering
+    const timer = setTimeout(loadEvents, 100);
+    return () => clearTimeout(timer);
   }, []);
+
+  if (loading) {
+    return (
+      <>
+        <PageHead 
+          title="Events Gallery"
+          description="Explore OpenLearn's journey through our events. Discover workshops, hackathons, guest lectures, and community gatherings that showcase our collaborative learning environment."
+          keywords="events, workshops, hackathons, guest lectures, community gatherings, NIT Jalandhar, learning events"
+        />
+        
+        <Navbar />
+        
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 pt-16">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FFDE59] mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading events...</p>
+          </div>
+        </div>
+        
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <>
