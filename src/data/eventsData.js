@@ -101,7 +101,15 @@ const eventsData = {
       featured: true,
       location: 'Online',
       thumbnail: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/events/thumbnail/cohort-orientation-1.png',
-      images: []
+      images: [
+        'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/events/cohort-orientation-1/image-1.png',
+        'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/events/cohort-orientation-1/image-2.png',
+        'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/events/cohort-orientation-1/image-3.png',
+        'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/events/cohort-orientation-1/image-4.png',
+        'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/events/cohort-orientation-1/image-5.png',
+        'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/events/cohort-orientation-1/image-6.png',
+        'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/events/cohort-orientation-1/image-7.png',
+        'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/events/cohort-orientation-1/image-8.png',      ]
     },
     {
       id: 'orientation-1',
