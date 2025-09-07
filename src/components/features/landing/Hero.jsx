@@ -92,6 +92,51 @@ const Hero = () => {
             className="space-y-8 sm:space-y-10 lg:space-y-12"
             variants={containerVariants}
           >
+            {/* Urgent Hackathon Notification */}
+            <MotionDiv
+              className="flex justify-start"
+              variants={itemVariants}
+            >
+              <a 
+                href="https://hackathon.openlearn.org.in" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="group relative flex items-center gap-2 sm:gap-3 px-4 py-2.5 sm:px-5 sm:py-3 bg-gradient-to-r from-red-600 to-red-700 backdrop-blur-xl border border-red-500/30 rounded-xl sm:rounded-2xl hover:from-red-700 hover:to-red-800 transition-all duration-500 ease-out hover:scale-[1.02] shadow-lg hover:shadow-xl"
+              >
+                {/* Urgent pulse overlay */}
+                <div className="absolute inset-0 bg-gradient-to-r from-red-400/20 to-red-500/20 rounded-xl sm:rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                
+                {/* Urgent icon */}
+                <div className="relative flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5">
+                  <div className="absolute inset-0 bg-white rounded-full opacity-90"></div>
+                  <div className="relative flex items-center justify-center w-full h-full">
+                    <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+                
+                {/* Urgent text */}
+                <span className="relative text-sm sm:text-base font-semibold text-white group-hover:text-white transition-colors duration-300 tracking-tight leading-tight">
+                  Submit Hackathon Project
+                </span>
+                
+                {/* Urgent indicator - pulsing */}
+                <div className="relative flex items-center">
+                  <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-yellow-400 rounded-full">
+                    <div className="absolute inset-0 bg-yellow-300 rounded-full animate-ping opacity-75"></div>
+                  </div>
+                </div>
+                
+                {/* Arrow indicator */}
+                <div className="relative w-3 h-3 sm:w-3.5 sm:h-3.5 opacity-80 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300">
+                  <svg viewBox="0 0 12 12" fill="none" className="w-full h-full">
+                    <path d="M4 3L8 6L4 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-white" />
+                  </svg>
+                </div>
+              </a>
+            </MotionDiv>
+
             {/* Instagram Flash Notification - Small and at top */}
             <MotionDiv
               className="flex justify-start"
