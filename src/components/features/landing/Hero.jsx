@@ -92,56 +92,50 @@ const Hero = () => {
             className="space-y-8 sm:space-y-10 lg:space-y-12"
             variants={containerVariants}
           >
-            {/* Urgent Hackathon Notification */}
+            {/* Notification Buttons Row */}
             <MotionDiv
-              className="flex justify-start"
+              className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-start"
               variants={itemVariants}
             >
-              <a 
-                href="https://hackathon.openlearn.org.in" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="group relative flex items-center gap-2 sm:gap-3 px-4 py-2.5 sm:px-5 sm:py-3 bg-gradient-to-r from-red-600 to-red-700 backdrop-blur-xl border border-red-500/30 rounded-xl sm:rounded-2xl hover:from-red-700 hover:to-red-800 transition-all duration-500 ease-out hover:scale-[1.02] shadow-lg hover:shadow-xl"
+              {/* Latest Hackathon Notification */}
+              <button 
+                onClick={() => navigate('/events/hackathon-1')}
+                className="group relative flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 sm:px-3 sm:py-2 bg-black/80 backdrop-blur-xl border border-white/10 rounded-lg sm:rounded-xl hover:bg-black/90 transition-all duration-500 ease-out hover:scale-[1.02]"
               >
-                {/* Urgent pulse overlay */}
-                <div className="absolute inset-0 bg-gradient-to-r from-red-400/20 to-red-500/20 rounded-xl sm:rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                {/* Subtle gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent rounded-lg sm:rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 
-                {/* Urgent icon */}
-                <div className="relative flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5">
-                  <div className="absolute inset-0 bg-white rounded-full opacity-90"></div>
+                {/* Hackathon icon - smaller */}
+                <div className="relative flex items-center justify-center w-3.5 h-3.5 sm:w-4 sm:h-4">
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500 via-indigo-500 to-blue-500 rounded-md opacity-90"></div>
                   <div className="relative flex items-center justify-center w-full h-full">
-                    <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    <svg className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
                     </svg>
                   </div>
                 </div>
                 
-                {/* Urgent text */}
-                <span className="relative text-sm sm:text-base font-semibold text-white group-hover:text-white transition-colors duration-300 tracking-tight leading-tight">
-                  Submit Hackathon Project
+                {/* Text - smaller */}
+                <span className="relative text-xs sm:text-sm font-medium text-white/90 group-hover:text-white transition-colors duration-300 tracking-tight leading-tight">
+                  Latest Hackathon
                 </span>
                 
-                {/* Urgent indicator - pulsing */}
+                {/* Hot indicator - smaller */}
                 <div className="relative flex items-center">
-                  <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-yellow-400 rounded-full">
-                    <div className="absolute inset-0 bg-yellow-300 rounded-full animate-ping opacity-75"></div>
+                  <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-orange-500 rounded-full">
+                    <div className="absolute inset-0 bg-orange-400 rounded-full animate-ping opacity-75"></div>
                   </div>
                 </div>
                 
-                {/* Arrow indicator */}
-                <div className="relative w-3 h-3 sm:w-3.5 sm:h-3.5 opacity-80 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300">
+                {/* Arrow indicator - smaller */}
+                <div className="relative w-2 h-2 sm:w-2.5 sm:h-2.5 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all duration-300">
                   <svg viewBox="0 0 12 12" fill="none" className="w-full h-full">
-                    <path d="M4 3L8 6L4 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-white" />
+                    <path d="M4 3L8 6L4 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-white/70" />
                   </svg>
                 </div>
-              </a>
-            </MotionDiv>
+              </button>
 
-            {/* Instagram Flash Notification - Small and at top */}
-            <MotionDiv
-              className="flex justify-start"
-              variants={itemVariants}
-            >
+              {/* Instagram Flash Notification */}
               <a 
                 href="https://www.instagram.com/openlearn.org.in" 
                 target="_blank" 
