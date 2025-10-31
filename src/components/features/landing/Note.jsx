@@ -15,7 +15,9 @@ import {
   SiAwslambda,
   SiVercel,
   SiGithubactions,
-  SiAmazondynamodb
+  SiAmazondynamodb,
+  SiGrafana,
+  SiPrometheus
 } from 'react-icons/si';
 import { FaAws } from "react-icons/fa";
 import { MotionDiv, MotionA, MotionSection, MotionP } from '../../common/MotionWrapper';
@@ -71,6 +73,8 @@ const Note = () => {
   { name: 'Vercel', icon: SiVercel },
   { name: 'GitHub Actions', icon: SiGithubactions },
   { name: 'Amazon DynamoDB', icon: SiAmazondynamodb },
+  { name: 'Grafana', icon: SiGrafana },
+  { name: 'Prometheus', icon: SiPrometheus }
 ];
 
   return (
