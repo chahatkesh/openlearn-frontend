@@ -5,7 +5,7 @@
 We take security seriously. If you discover a security vulnerability, please:
 
 1. **DO NOT** open a public issue
-2. Email us at: security@openlearn.com (replace with your email)
+2. Email us at: info@openlearn.org.in (replace with your email)
 3. Include:
    - Description of the vulnerability
    - Steps to reproduce
