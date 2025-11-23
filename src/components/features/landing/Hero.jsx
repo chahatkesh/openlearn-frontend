@@ -97,44 +97,6 @@ const Hero = () => {
               className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-start"
               variants={itemVariants}
             >
-              {/* Latest Hackathon Notification */}
-              <button 
-                onClick={() => navigate('/events/hackathon-1')}
-                className="group relative flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 sm:px-3 sm:py-2 bg-black/80 backdrop-blur-xl border border-white/10 rounded-lg sm:rounded-xl hover:bg-black/90 transition-all duration-500 ease-out hover:scale-[1.02]"
-              >
-                {/* Subtle gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent rounded-lg sm:rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                
-                {/* Hackathon icon - smaller */}
-                <div className="relative flex items-center justify-center w-3.5 h-3.5 sm:w-4 sm:h-4">
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500 via-indigo-500 to-blue-500 rounded-md opacity-90"></div>
-                  <div className="relative flex items-center justify-center w-full h-full">
-                    <svg className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                </div>
-                
-                {/* Text - smaller */}
-                <span className="relative text-xs sm:text-sm font-medium text-white/90 group-hover:text-white transition-colors duration-300 tracking-tight leading-tight">
-                  Latest Hackathon
-                </span>
-                
-                {/* Hot indicator - smaller */}
-                <div className="relative flex items-center">
-                  <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-orange-500 rounded-full">
-                    <div className="absolute inset-0 bg-orange-400 rounded-full animate-ping opacity-75"></div>
-                  </div>
-                </div>
-                
-                {/* Arrow indicator - smaller */}
-                <div className="relative w-2 h-2 sm:w-2.5 sm:h-2.5 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all duration-300">
-                  <svg viewBox="0 0 12 12" fill="none" className="w-full h-full">
-                    <path d="M4 3L8 6L4 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-white/70" />
-                  </svg>
-                </div>
-              </button>
-
               {/* Instagram Flash Notification */}
               <a 
                 href="https://www.instagram.com/openlearn.org.in" 

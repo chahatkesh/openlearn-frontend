@@ -1,6 +1,28 @@
 const eventsData = {
   events: [
     {
+      id: 'session-1',
+      title: 'AI/ML Session for 29 Batch',
+      category: 'Workshop',
+      date: '2025-11-19',
+      description: 'Conducted an intensive AI/ML workshop for the 2029 batch, introducing fundamental concepts of Artificial Intelligence and Machine Learning. Covered essential topics, practical applications, and hands-on demonstrations.',
+      featured: true,
+      location: 'Science Block, NITJ',
+      thumbnail: 'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/events/thumbnail/session-1.png',
+      images: [
+        'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/events/session-1/image-1.png',
+        'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/events/session-1/image-2.png',
+        'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/events/session-1/image-3.png',
+        'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/events/session-1/image-4.png',
+        'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/events/session-1/image-5.png',
+        'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/events/session-1/image-6.png',
+        'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/events/session-1/image-7.png',
+        'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/events/session-1/image-8.png',
+        'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/events/session-1/image-9.png',
+        'https://fm5g5vzoyzhdhecq.public.blob.vercel-storage.com/events/session-1/image-10.png',
+      ]
+    },
+    {
       id: 'hackathon-1',
       title: 'Bit n Build Punjab Round',
       category: 'Hackathon',
