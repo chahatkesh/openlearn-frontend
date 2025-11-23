@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Calendar, MapPin, Camera, ArrowLeft, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, MapPin, LayoutGrid, Camera, ArrowLeft, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Navbar, Footer } from '../../components/layout';
 import { PageHead, MotionDiv, MotionSection } from '../../components/common';
 import eventsData from '../../data/eventsData';
@@ -277,29 +277,6 @@ const EventDetailPage = () => {
     });
   };
 
-  const getCategoryColor = (category) => {
-    switch (category.toLowerCase()) {
-      case 'workshop':
-        return 'text-blue-700 bg-blue-50 border-blue-200';
-      case 'hackathon':
-        return 'text-purple-700 bg-purple-50 border-purple-200';
-      case 'study group':
-        return 'text-green-700 bg-green-50 border-green-200';
-      case 'guest lecture':
-        return 'text-orange-700 bg-orange-50 border-orange-200';
-      case 'showcase':
-        return 'text-red-700 bg-red-50 border-red-200';
-      case 'accelerate program':
-        return 'text-yellow-700 bg-yellow-50 border-yellow-200';
-      case 'cohort 1.0':
-        return 'text-emerald-700 bg-emerald-50 border-emerald-200';
-      case 'cohort 1.5':
-        return 'text-teal-700 bg-teal-50 border-teal-200';
-      default:
-        return 'text-gray-700 bg-gray-50 border-gray-200';
-    }
-  };
-
   const handleImageClick = (image, index) => {
     setSelectedImage(image);
     setCurrentIndex(index);
@@ -367,12 +344,6 @@ const EventDetailPage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
           >
-            {/* Category Badge */}
-            <div className="mb-6">
-              <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium border ${getCategoryColor(event.category)}`}>
-                {event.category}
-              </span>
-            </div>
 
             {/* Title */}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-black mb-6 tracking-tight leading-none">
@@ -391,8 +362,8 @@ const EventDetailPage = () => {
               </div>
               {filteredImages.length > 0 && (
                 <div className="flex items-center gap-2">
-                  <Camera size={20} className="text-black" />
-                  <span className="text-lg font-medium">{filteredImages.length} photos</span>
+                  <LayoutGrid size={20} className="text-black" />
+                  <span className="text-lg font-medium">{event.category}</span>
                 </div>
               )}
             </div>
