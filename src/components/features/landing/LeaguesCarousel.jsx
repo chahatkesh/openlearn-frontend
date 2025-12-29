@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import { ChevronLeft, ChevronRight, ArrowRight, Play, Users, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { MotionDiv, MotionSection } from '../../common/MotionWrapper';
 import SectionHeader from '../../common/SectionHeader';
-import leaguesData from '../../../data/leaguesData';
+// ...existing code...
 
 const LeagueCard = ({ league, isActive, isMobile }) => {
   const navigate = useNavigate();
