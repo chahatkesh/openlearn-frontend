@@ -109,8 +109,8 @@ const LeaguesPage = () => {
 
   // Filter functions
   const filterLeagues = useCallback(() => {
-    // Return all leagues without any filtering
-    return leagues;
+    // Exclude leagues that are expired/disabled
+    return leagues.filter(league => !isEnrollmentDisabled(league.name));
   }, [leagues]);
 
   const handleEnrollment = async (cohortId, leagueId) => {
