@@ -35,17 +35,30 @@ const fetchCohortsStructure = async () => {
 // League Card Component with Apple Design System
 const LeagueCard = ({ league }) => {
   const modules = league.weeks || [];
-  
+  // Disabled leagues logic (match LeaguesPage)
+  const disabledLeagues = ['ML League (1.0)', 'Finance League (1.0)'];
+  // Try both name and title for robustness
+  const isLeagueDisabled = disabledLeagues.includes(league.name) || disabledLeagues.includes(league.title);
+
   return (
     <div 
-      className="group relative rounded-3xl p-6 lg:p-8 h-full bg-white border border-gray-200/60 backdrop-blur-sm transition-all duration-500 ease-out hover:-translate-y-2 hover:scale-[1.02] opacity-0 animate-fade-in-up"
+      className={`group relative rounded-3xl p-6 lg:p-8 h-full bg-white border border-gray-200/60 backdrop-blur-sm transition-all duration-500 ease-out hover:-translate-y-2 hover:scale-[1.02] opacity-0 animate-fade-in-up ${isLeagueDisabled ? 'opacity-60' : ''}`}
       style={{ animationDelay: '0.1s', animationFillMode: 'forwards' }}
     >
       {/* Status Badge */}
-      <div className="absolute -top-3 right-6 bg-[#FFDE59] text-black px-4 py-2 rounded-full text-xs font-semibold border border-black/10">
+      <div className={`absolute -top-3 right-6 px-4 py-2 rounded-full text-xs font-semibold border ${isLeagueDisabled ? 'bg-red-100 text-red-700 border-red-200' : 'bg-[#FFDE59] text-black border-black/10'}`}>
         <div className="flex items-center gap-2">
-          <div className="w-1.5 h-1.5 bg-black rounded-full animate-pulse"></div>
-          Available Now
+          {isLeagueDisabled ? (
+            <>
+              <AlertCircle size={14} className="text-red-500" />
+              Expired / Not Available
+            </>
+          ) : (
+            <>
+              <div className="w-1.5 h-1.5 bg-black rounded-full animate-pulse"></div>
+              Available Now
+            </>
+          )}
         </div>
       </div>
 

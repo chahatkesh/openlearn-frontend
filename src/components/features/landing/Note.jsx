@@ -1,5 +1,5 @@
 import React from 'react';
-import { Code, Server, ExternalLink } from 'lucide-react';
+import { Code, GithubIcon } from 'lucide-react';
 import { 
   SiReact, 
   SiNodedotjs, 
@@ -122,16 +122,15 @@ const Note = () => {
             variants={itemVariant}
           >
             <MotionA 
-              href={`${import.meta.env.VITE_API_BASE_URL}/status-page`}
+              href={"https://github.com/openlearnnitj"}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:border-gray-400 hover:text-black transition-all duration-200"
               whileHover={{ scale: 1.02, y: -1 }}
               whileTap={{ scale: 0.98 }}
             >
-              <Server size={16} />
-              <span>Server Status</span>
-              <ExternalLink size={14} />
+              <GithubIcon size={16} />
+              <span>Contribute</span>
             </MotionA>
             <MotionA 
               href="/updates"
