@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import LeagueManagement from '../../components/features/admin/LeagueManagement';
+import ConfirmationModal from '../../components/common/ConfirmationModal';
+import SuccessModal from '../../components/common/SuccessModal';
 import AdminService from "../../utils/api/adminService";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -10,6 +12,13 @@ const AdminLeaguesPage = () => {
   const [cohorts, setCohorts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Modal states
+  const [showFirstConfirmation, setShowFirstConfirmation] = useState(false);
+  const [showSecondConfirmation, setShowSecondConfirmation] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [leagueToDelete, setLeagueToDelete] = useState(null);
+  const [deletionStats, setDeletionStats] = useState(null);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -90,15 +99,27 @@ const AdminLeaguesPage = () => {
     }
   };
 
-  const handleDeleteLeague = async (leagueId) => {
-    if (!window.confirm('Are you sure you want to delete this league? This action cannot be undone.')) {
-      return;
-    }
+  const handleDeleteLeague = (leagueId) => {
+    // Find the league to get its details
+    const league = leagues.find(l => l.id === leagueId);
+    if (!league) return;
+    
+    setLeagueToDelete(league);
+    setShowFirstConfirmation(true);
+  };
+
+  const handleFirstConfirm = () => {
+    setShowFirstConfirmation(false);
+    setShowSecondConfirmation(true);
+  };
+
+  const handleFinalConfirm = async () => {
+    setShowSecondConfirmation(false);
     
     try {
       const token = localStorage.getItem('accessToken');
       
-      const response = await fetch(`${API_BASE_URL}/leagues/${leagueId}`, {
+      const response = await fetch(`${API_BASE_URL}/leagues/${leagueToDelete.id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -108,14 +129,24 @@ const AdminLeaguesPage = () => {
       const result = await response.json();
       
       if (result.success) {
-        setLeagues(leagues.filter(league => league.id !== leagueId));
+        setLeagues(leagues.filter(league => league.id !== leagueToDelete.id));
+        setDeletionStats(result.deletionStats);
+        setShowSuccessModal(true);
       } else {
         throw new Error(result.error || 'Failed to delete league');
       }
     } catch (err) {
       console.error('Error deleting league:', err);
       setError(`Failed to delete league: ${err.message}`);
+    } finally {
+      setLeagueToDelete(null);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setShowFirstConfirmation(false);
+    setShowSecondConfirmation(false);
+    setLeagueToDelete(null);
   };
 
   if (error) {
@@ -144,14 +175,134 @@ const AdminLeaguesPage = () => {
   }
 
   return (
-    <LeagueManagement
-      leagues={leagues}
-      cohorts={cohorts}
-      onCreateLeague={handleCreateLeague}
-      onUpdateLeague={handleUpdateLeague}
-      onDeleteLeague={handleDeleteLeague}
-      loading={loading}
-    />
+    <>
+      <LeagueManagement
+        leagues={leagues}
+        cohorts={cohorts}
+        onCreateLeague={handleCreateLeague}
+        onUpdateLeague={handleUpdateLeague}
+        onDeleteLeague={handleDeleteLeague}
+        loading={loading}
+      />
+
+      {/* First Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showFirstConfirmation}
+        onClose={handleCancelDelete}
+        onConfirm={handleFirstConfirm}
+        title="Delete League?"
+        type="warning"
+        confirmText="Continue"
+        cancelText="Cancel"
+      >
+        {leagueToDelete && (
+          <div className="space-y-4">
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+              <p className="text-sm font-semibold text-gray-900 mb-2">
+                You are about to delete: <span className="text-yellow-700">"{leagueToDelete.name}"</span>
+              </p>
+              <p className="text-sm text-gray-700 mb-3">
+                This will permanently delete:
+              </p>
+              <ul className="space-y-2 text-sm text-gray-700">
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-yellow-600 rounded-full mr-2"></span>
+                  <span className="font-medium">{leagueToDelete._count?.weeks || 0}</span>
+                  <span className="ml-1">modules/weeks</span>
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-yellow-600 rounded-full mr-2"></span>
+                  <span className="font-medium">{leagueToDelete._count?.enrollments || 0}</span>
+                  <span className="ml-1">student enrollments</span>
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-yellow-600 rounded-full mr-2"></span>
+                  All badges and specializations
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-yellow-600 rounded-full mr-2"></span>
+                  All related data
+                </li>
+              </ul>
+            </div>
+            <p className="text-sm text-center font-semibold text-red-600">
+              ⚠️ This action CANNOT be undone!
+            </p>
+          </div>
+        )}
+      </ConfirmationModal>
+
+      {/* Second Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showSecondConfirmation}
+        onClose={handleCancelDelete}
+        onConfirm={handleFinalConfirm}
+        title="FINAL CONFIRMATION"
+        type="danger"
+        confirmText="Yes, Delete Everything"
+        cancelText="Cancel"
+      >
+        {leagueToDelete && (
+          <div className="space-y-4">
+            <div className="bg-red-50 border-2 border-red-300 rounded-lg p-4">
+              <p className="text-sm font-bold text-red-900 text-center mb-2">
+                🛑 IRREVERSIBLE ACTION
+              </p>
+              <p className="text-sm text-gray-800 text-center">
+                You are about to permanently delete <br />
+                <span className="font-bold text-red-700">"{leagueToDelete.name}"</span>
+                <br />
+                and ALL its associated data.
+              </p>
+            </div>
+            <p className="text-sm text-center text-gray-700">
+              Are you <span className="font-bold">ABSOLUTELY SURE</span> you want to proceed?
+            </p>
+            <p className="text-xs text-center text-gray-500">
+              This will affect {leagueToDelete._count?.enrollments || 0} students and cannot be recovered.
+            </p>
+          </div>
+        )}
+      </ConfirmationModal>
+
+      {/* Success Modal */}
+      <SuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        title="League Deleted Successfully"
+        message="All associated data has been permanently removed."
+      >
+        {deletionStats && (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            <p className="text-sm font-semibold text-gray-900 mb-3 text-center">
+              Deletion Summary:
+            </p>
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div className="text-center">
+                <div className="font-bold text-lg text-green-700">{deletionStats.weeks}</div>
+                <div className="text-gray-600">Weeks</div>
+              </div>
+              <div className="text-center">
+                <div className="font-bold text-lg text-green-700">{deletionStats.enrollments}</div>
+                <div className="text-gray-600">Enrollments</div>
+              </div>
+              <div className="text-center">
+                <div className="font-bold text-lg text-green-700">{deletionStats.badges}</div>
+                <div className="text-gray-600">Badges</div>
+              </div>
+              <div className="text-center">
+                <div className="font-bold text-lg text-green-700">{deletionStats.specializations}</div>
+                <div className="text-gray-600">Specializations</div>
+              </div>
+              <div className="text-center col-span-2">
+                <div className="font-bold text-lg text-green-700">{deletionStats.pathfinderScopes}</div>
+                <div className="text-gray-600">Pathfinder Scopes</div>
+              </div>
+            </div>
+          </div>
+        )}
+      </SuccessModal>
+    </>
   );
 };
 

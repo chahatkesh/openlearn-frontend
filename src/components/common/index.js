@@ -4,6 +4,8 @@ export { default as PageHead } from './PageHead';
 export { default as ResourceLoadingIndicator } from './ResourceLoadingIndicator';
 export { default as ScrollToTop } from './ScrollToTop';
 export { default as SectionHeader } from './SectionHeader';
+export { default as ConfirmationModal } from './ConfirmationModal';
+export { default as SuccessModal } from './SuccessModal';
 
 // Export motion wrapper components
 export {
