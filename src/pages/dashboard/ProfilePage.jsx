@@ -23,6 +23,63 @@ import { PageHead } from "../../components/common";
 import SocialService from '../../utils/social/socialService';
 import { MotionDiv, MotionButton, MotionSpan } from '../../components/common/MotionWrapper';
 
+// Move component definitions outside to prevent recreation on every render
+const InfoCard = ({ title, children, className = "" }) => (
+  <div className={`bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl border border-gray-200/30 overflow-hidden transition-all duration-300 ${className}`}>
+    <div className="p-5 sm:p-6 lg:p-8">
+      <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-black mb-6 sm:mb-8 tracking-tight leading-tight">{title}</h2>
+      {children}
+    </div>
+  </div>
+);
+
+const StatCard = ({value, label, color = "amber" }) => {
+  const colorClasses = {
+    amber: "from-amber-50 to-amber-100/50 border-amber-200/30 text-amber-700",
+    blue: "from-blue-50 to-blue-100/50 border-blue-200/30 text-blue-700",
+    green: "from-green-50 to-green-100/50 border-green-200/30 text-green-700",
+    purple: "from-purple-50 to-purple-100/50 border-purple-200/30 text-purple-700"
+  };
+
+  return (
+    <div className={`bg-gradient-to-br ${colorClasses[color]} rounded-2xl sm:rounded-3xl border backdrop-blur-sm p-5 sm:p-6 text-center transition-all duration-300 hover:-translate-y-1`}>
+      <p className="text-2xl sm:text-3xl font-semibold mb-2">{value}</p>
+      <p className="text-sm sm:text-base font-medium opacity-80">{label}</p>
+    </div>
+  );
+};
+
+const SocialLink = ({ icon: Icon, label, url, username, color = "gray" }) => {
+  const colorClasses = {
+    gray: "hover:bg-gray-50/80 border-gray-200/30",
+    blue: "hover:bg-blue-50/80 border-blue-200/30",
+    green: "hover:bg-green-50/80 border-green-200/30",
+    purple: "hover:bg-purple-50/80 border-purple-200/30",
+    black: "hover:bg-gray-50/80 border-gray-200/30"
+  };
+
+  const content = (
+    <div className={`flex items-center gap-3 sm:gap-4 p-4 sm:p-5 rounded-2xl border backdrop-blur-sm transition-all duration-300 ${colorClasses[color]} hover:-translate-y-1`}>
+      <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600 flex-shrink-0" />
+      <div className="flex-1 min-w-0">
+        <p className="font-semibold text-gray-900 text-base sm:text-lg">{label}</p>
+        <p className="text-sm sm:text-base text-gray-600 truncate">{username}</p>
+      </div>
+      <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 flex-shrink-0" />
+    </div>
+  );
+
+  return url ? (
+    <a href={url} target="_blank" rel="noopener noreferrer">
+      {content}
+    </a>
+  ) : (
+    <div className="opacity-75">
+      {content}
+    </div>
+  );
+};
+
 const ProfilePage = () => {
   const { user, refreshUser } = useAuth();
   const [isEditingSocial, setIsEditingSocial] = useState(false);
@@ -37,10 +94,9 @@ const ProfilePage = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
 
-  // Update social data when user changes (important for async user loading)
-  // Only update if not currently editing to prevent losing focus
+  // Initialize social data when entering edit mode
   useEffect(() => {
-    if (user && !isEditingSocial) {
+    if (user && isEditingSocial) {
       setSocialData({
         portfolioUrl: user.portfolioUrl || '',
         githubUsername: user.githubUsername || '',
@@ -50,7 +106,7 @@ const ProfilePage = () => {
         kaggleUsername: user.kaggleUsername || ''
       });
     }
-  }, [user, isEditingSocial]);
+  }, [isEditingSocial]);
 
   // Memoized handlers to prevent unnecessary re-renders
   const handlePortfolioChange = useCallback((e) => {
@@ -148,63 +204,6 @@ const ProfilePage = () => {
       month: 'long',
       day: 'numeric'
     });
-  };
-
-  const InfoCard = ({ title, children, className = "" }) => (
-    <div className={`bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl border border-gray-200/30 overflow-hidden transition-all duration-300 ${className}`}>
-      <div className="p-5 sm:p-6 lg:p-8">
-        <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-black mb-6 sm:mb-8 tracking-tight leading-tight">{title}</h2>
-        {children}
-      </div>
-    </div>
-  );
-
-  const StatCard = ({value, label, color = "amber" }) => {
-    const colorClasses = {
-      amber: "from-amber-50 to-amber-100/50 border-amber-200/30 text-amber-700",
-      blue: "from-blue-50 to-blue-100/50 border-blue-200/30 text-blue-700",
-      green: "from-green-50 to-green-100/50 border-green-200/30 text-green-700",
-      purple: "from-purple-50 to-purple-100/50 border-purple-200/30 text-purple-700"
-    };
-
-    return (
-      <div className={`bg-gradient-to-br ${colorClasses[color]} rounded-2xl sm:rounded-3xl border backdrop-blur-sm p-5 sm:p-6 text-center transition-all duration-300 hover:-translate-y-1`}>
-        <p className="text-2xl sm:text-3xl font-semibold mb-2">{value}</p>
-        <p className="text-sm sm:text-base font-medium opacity-80">{label}</p>
-      </div>
-    );
-  };
-
-  // eslint-disable-next-line no-unused-vars
-  const SocialLink = ({ icon: Icon, label, url, username, color = "gray" }) => {
-    const colorClasses = {
-      gray: "hover:bg-gray-50/80 border-gray-200/30",
-      blue: "hover:bg-blue-50/80 border-blue-200/30",
-      green: "hover:bg-green-50/80 border-green-200/30",
-      purple: "hover:bg-purple-50/80 border-purple-200/30",
-      black: "hover:bg-gray-50/80 border-gray-200/30"
-    };
-
-    const content = (
-      <div className={`flex items-center gap-3 sm:gap-4 p-4 sm:p-5 rounded-2xl border backdrop-blur-sm transition-all duration-300 ${colorClasses[color]} hover:-translate-y-1`}>
-        <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600 flex-shrink-0" />
-        <div className="flex-1 min-w-0">
-          <p className="font-semibold text-gray-900 text-base sm:text-lg">{label}</p>
-          <p className="text-sm sm:text-base text-gray-600 truncate">{username}</p>
-        </div>
-        <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 flex-shrink-0" />
-      </div>
-    );
-
-    return url ? (
-      <a href={url} target="_blank" rel="noopener noreferrer">
-        {content}
-      </a>
-    ) : (
-      <div className="opacity-75">
-        {content}
-      </div>
-    );
   };
 
   if (!user) {
@@ -397,12 +396,11 @@ const ProfilePage = () => {
           </div>
 
           {/* Social Links */}
-          {(user.portfolioUrl || user.githubUsername || user.twitterHandle || user.linkedinUrl || user.discordUsername || user.kaggleUsername || isEditingSocial) && (
-            <InfoCard title="Social Links & Profiles">
-              {/* Header with Edit Button */}
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center space-x-2">
-                  <h3 className="text-sm font-medium text-gray-700">Add your profiles</h3>
+          <InfoCard title="Social Links & Profiles">
+            {/* Header with Edit Button */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-2">
+                <h3 className="text-sm font-medium text-gray-700">Add your profiles</h3>
                   {saveMessage && (
                     <MotionSpan 
                       initial={{ opacity: 0, scale: 0.8 }}
@@ -474,7 +472,6 @@ const ProfilePage = () => {
                       <div className="relative">
                         <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
-                          key="portfolio-input"
                           type="url"
                           value={socialData.portfolioUrl}
                           onChange={handlePortfolioChange}
@@ -492,7 +489,6 @@ const ProfilePage = () => {
                       <div className="relative">
                         <SiGithub className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
-                          key="github-input"
                           type="text"
                           value={socialData.githubUsername}
                           onChange={handleGithubChange}
@@ -510,7 +506,6 @@ const ProfilePage = () => {
                       <div className="relative">
                         <SiX className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
-                          key="twitter-input"
                           type="text"
                           value={socialData.twitterHandle}
                           onChange={handleTwitterChange}
@@ -528,7 +523,6 @@ const ProfilePage = () => {
                       <div className="relative">
                         <SiLinkedin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
-                          key="linkedin-input"
                           type="url"
                           value={socialData.linkedinUrl}
                           onChange={handleLinkedinChange}
@@ -546,7 +540,6 @@ const ProfilePage = () => {
                       <div className="relative">
                         <Activity className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
-                          key="discord-input"
                           type="text"
                           value={socialData.discordUsername}
                           onChange={handleDiscordChange}
@@ -564,7 +557,6 @@ const ProfilePage = () => {
                       <div className="relative">
                         <SiKaggle className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
-                          key="kaggle-input"
                           type="text"
                           value={socialData.kaggleUsername}
                           onChange={handleKaggleChange}
@@ -637,10 +629,16 @@ const ProfilePage = () => {
                         color="green"
                       />
                     )}
+                    
+                    {!user.portfolioUrl && !user.githubUsername && !user.twitterHandle && 
+                     !user.linkedinUrl && !user.discordUsername && !user.kaggleUsername && (
+                      <div className="col-span-full text-center py-8">
+                        <p className="text-gray-500 text-sm">No social links added yet. Click "Edit Social" to add your profiles.</p>
+                      </div>
+                    )}
                   </div>
                 )}
             </InfoCard>
-          )}
 
           {/* Enrolled Leagues */}
           {user.enrollments && user.enrollments.length > 0 && (
