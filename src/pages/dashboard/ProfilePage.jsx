@@ -49,7 +49,8 @@ const StatCard = ({value, label, color = "amber" }) => {
   );
 };
 
-const SocialLink = ({ icon: Icon, label, url, username, color = "gray" }) => {
+const SocialLink = ({ icon, label, url, username, color = "gray" }) => {
+  const Icon = icon;
   const colorClasses = {
     gray: "hover:bg-gray-50/80 border-gray-200/30",
     blue: "hover:bg-blue-50/80 border-blue-200/30",
@@ -106,7 +107,7 @@ const ProfilePage = () => {
         kaggleUsername: user.kaggleUsername || ''
       });
     }
-  }, [isEditingSocial]);
+  }, [isEditingSocial, user]);
 
   // Memoized handlers to prevent unnecessary re-renders
   const handlePortfolioChange = useCallback((e) => {
