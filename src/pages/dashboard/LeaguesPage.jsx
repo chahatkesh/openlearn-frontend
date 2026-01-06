@@ -14,117 +14,49 @@ import {
 } from 'lucide-react';
 import OptimizedDashboardService from '../../utils/api/optimizedDashboardService';
 import ProgressService from '../../utils/api/progressService';
-import { StatisticLoader, ResourceProgressBadge } from '../../components/common/ResourceLoadingIndicator';
 import { PageHead } from "../../components/common";
 import { MotionDiv, MotionSection } from '../../components/common/MotionWrapper';
+import { useDashboard } from '../../hooks/useDashboard';
 
 const LeaguesPage = () => {
   const navigate = useNavigate();
   
-  const [dashboardData, setDashboardData] = useState(null);
-  const [cohorts, setCohorts] = useState([]);
-  const [leagues, setLeagues] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [leagueStatistics, setLeagueStatistics] = useState({});
+  // SWR: Automatic caching, revalidation, and state management
+  const { 
+    dashboardData, 
+    leagues, 
+    basicLeagueStats: leagueStatistics,
+    isLoading: loading, 
+    error: swrError,
+    mutate: refreshDashboard 
+  } = useDashboard();
   
-  // Resource calculation tracking
-  const [resourceCalculationsInProgress, setResourceCalculationsInProgress] = useState(new Set());
-  const [resourceCalculationsCompleted, setResourceCalculationsCompleted] = useState(new Set());
-  const [totalResourceCalculations, setTotalResourceCalculations] = useState(0);
-
-  // Load leagues data
-  const loadLeaguesData = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      // Use optimized service for progressive loading
-      const data = await OptimizedDashboardService.loadInitialDashboardData();
-      
-      // Set data immediately
-      setDashboardData(data.dashboardData);
-      setCohorts(data.cohorts);
-      setLeagues(data.leagues);
-      
-      // Set basic league statistics
-      if (data.basicLeagueStats) {
-        setLeagueStatistics(data.basicLeagueStats);
-      }
-      
-      setLoading(false);
-
-      // Calculate accurate statistics in background
-      if (data.leagues?.length > 0) {
-        const leaguesNeedingCalculation = data.leagues.filter(league => {
-          const cachedStats = data.basicLeagueStats[league.id];
-          return !cachedStats || cachedStats.resourcesCount === 0;
-        });
-        
-        setTotalResourceCalculations(leaguesNeedingCalculation.length);
-        setResourceCalculationsInProgress(new Set(leaguesNeedingCalculation.map(l => l.id)));
-        
-        if (leaguesNeedingCalculation.length > 0) {
-          const handleResourceUpdate = (leagueId, resourceCount) => {
-            setLeagueStatistics(prevStats => ({
-              ...prevStats,
-              [leagueId]: {
-                ...prevStats[leagueId],
-                resourcesCount: resourceCount
-              }
-            }));
-            
-            setResourceCalculationsCompleted(prevCompleted => {
-              const newCompleted = new Set([...prevCompleted, leagueId]);
-              return newCompleted;
-            });
-            
-            setResourceCalculationsInProgress(prevInProgress => {
-              const newInProgress = new Set(prevInProgress);
-              newInProgress.delete(leagueId);
-              return newInProgress;
-            });
-          };
-
-          OptimizedDashboardService.calculateAllLeagueStatistics(leaguesNeedingCalculation, handleResourceUpdate)
-            .then(accurateStats => {
-              setLeagueStatistics(prevStats => ({
-                ...prevStats,
-                ...accurateStats
-              }));
-            });
-        }
-      }
-
-    } catch (err) {
-      console.error('Error loading leagues data:', err);
-      setError(`Failed to load leagues. Please try again later. (${err.message})`);
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    loadLeaguesData();
-  }, [loadLeaguesData]);
+  // Format error message
+  const error = swrError ? `Failed to load leagues. Please try again later. (${swrError.message})` : null;
 
   // Filter functions
   const filterLeagues = useCallback(() => {
-    // Exclude leagues that are expired/disabled
-    return leagues.filter(league => !isEnrollmentDisabled(league.name));
+    // Show all leagues - disabled ones will show as expired for non-enrolled users
+    return leagues || [];
   }, [leagues]);
 
-  const handleEnrollment = async (cohortId, leagueId) => {
+  const handleEnrollment = async (leagueId) => {
     try {
       // Find the league to check if enrollment is disabled
-      const league = leagues.find(l => l.id === leagueId);
+      const league = (leagues || []).find(l => l.id === leagueId);
       if (league && isEnrollmentDisabled(league.name)) {
         alert('Enrollment for this league is expired. Please check back later.');
         return;
       }
       
+      // Get cohort from user's existing enrollments or use first available
+      const cohortId = dashboardData?.enrollments?.[0]?.cohort?.id || 'default';
+      
       await ProgressService.enrollUser(cohortId, leagueId);
       alert('Enrollment successful! Welcome to your learning journey!');
-      await loadLeaguesData(); // Refresh data
+      
+      // SWR: Trigger revalidation to refresh data
+      await refreshDashboard();
     } catch (err) {
       console.error('Enrollment error:', err);
       alert(`Enrollment failed: ${err.message}. Please try again.`);
@@ -137,7 +69,7 @@ const LeaguesPage = () => {
 
   // Helper function to check if a league enrollment should be disabled
   const isEnrollmentDisabled = (leagueName) => {
-    const disabledLeagues = ['ML League (1.0)', 'Finance League (1.0)'];
+    const disabledLeagues = ['ML League (1.0)'];
     return disabledLeagues.includes(leagueName);
   };
 
@@ -225,16 +157,17 @@ const LeaguesPage = () => {
           >
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
               {filteredLeagues.map((league, index) => {
-                const isEnrolled = dashboardData?.enrollments?.some(
+                const enrollment = dashboardData?.enrollments?.find(
                   enrollment => enrollment.league.id === league.id
                 );
+                const isEnrolled = !!enrollment;
                 const isDisabled = !isEnrolled && isEnrollmentDisabled(league.name);
 
-                const dynamicStats = leagueStatistics[league.id];
-                const weeksCount = dynamicStats?.weeksCount || league.weeksCount || 0;
-                const sectionsCount = dynamicStats?.sectionsCount || league.sectionsCount || 0;
-                const resourcesCount = dynamicStats?.resourcesCount || league.totalResources || 0;
-                const isCalculatingResources = resourceCalculationsInProgress.has(league.id);
+                // Use enrollment stats if enrolled, otherwise use league defaults
+                const stats = enrollment?.progress || leagueStatistics[league.id] || {};
+                const weeksCount = stats.weeksCount || league.weeksCount || league._count?.weeks || 0;
+                const sectionsCount = stats.totalSections || league.sectionsCount || league._count?.sections || 0;
+                const resourcesCount = stats.totalResources || league.totalResources || league._count?.resources || 0;
 
                 return (
                   <MotionDiv
@@ -263,15 +196,6 @@ const LeaguesPage = () => {
                       }
                     }}
                   >
-                    {/* Resource calculation progress badge */}
-                    {isCalculatingResources && (
-                      <ResourceProgressBadge 
-                        isCalculating={true}
-                        completedCount={resourceCalculationsCompleted.size}
-                        totalCount={totalResourceCalculations}
-                      />
-                    )}
-
                     {/* Enrollment status badge */}
                     {isEnrolled && (
                       <div className="absolute top-4 sm:top-6 right-4 sm:right-6 z-10">
@@ -325,11 +249,7 @@ const LeaguesPage = () => {
                             <Target className="h-4 w-4 text-gray-700" />
                           </div>
                           <span className="font-medium">
-                            {isCalculatingResources ? (
-                              <StatisticLoader color="gray" />
-                            ) : (
-                              `${resourcesCount} ${resourcesCount === 1 ? 'resource' : 'resources'}`
-                            )}
+                            {`${resourcesCount} ${resourcesCount === 1 ? 'resource' : 'resources'}`}
                           </span>
                         </div>
                       </div>
@@ -346,8 +266,7 @@ const LeaguesPage = () => {
                           if (isEnrolled) {
                             handleLeagueClick(league);
                           } else {
-                            const cohortId = cohorts.length > 0 ? cohorts[0].id : 'default';
-                            handleEnrollment(cohortId, league.id);
+                            handleEnrollment(league.id);
                           }
                         }}
                         disabled={isDisabled}

@@ -337,7 +337,7 @@ const SectionManagement = ({
         )}
 
         {/* Module-wise Topics Organization */}
-        {Object.keys(sectionsByWeek).length > 0 && !editingSection && !showCreateForm ? (
+        {getFilteredWeeks().length > 0 && !editingSection && !showCreateForm ? (
           <div className="space-y-6">
             {getFilteredWeeks().map((week) => {
               const weekSections = sectionsByWeek[week.id];

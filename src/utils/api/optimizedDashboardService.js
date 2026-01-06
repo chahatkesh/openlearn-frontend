@@ -81,13 +81,13 @@ class OptimizedDashboardService {
 
   /**
    * OPTIMIZATION 1: Parallel initial data loading
-   * Load dashboard, cohorts, and leagues data simultaneously
+   * Load dashboard and leagues data simultaneously
+   * REMOVED: Cohorts call - not used anywhere in dashboard
    */
   static async loadInitialDashboardData() {
     try {
       // Check cache first
       const cachedDashboard = getCachedData('dashboard');
-      const cachedCohorts = getCachedData('cohorts');
       const cachedLeagues = getCachedData('leagues');
 
       const promises = [];
@@ -102,19 +102,6 @@ class OptimizedDashboardService {
             .then(data => {
               setCachedData('dashboard', data);
               results.dashboardData = data;
-            })
-        );
-      }
-
-      if (cachedCohorts) {
-        results.cohorts = cachedCohorts;
-      } else {
-        promises.push(
-          DataService.getCohorts()
-            .then(data => {
-              const cohorts = data.cohorts || [];
-              setCachedData('cohorts', cohorts);
-              results.cohorts = cohorts;
             })
         );
       }
@@ -145,12 +132,10 @@ class OptimizedDashboardService {
       
       return {
         dashboardData: finalDashboardData,
-        cohorts: results.cohorts || [],
         leagues: finalLeagues,
         basicLeagueStats: this.extractBasicLeagueStats(finalLeagues, enrolledLeagueIds),
         fromCache: {
           dashboard: !!cachedDashboard,
-          cohorts: !!cachedCohorts,
           leagues: !!cachedLeagues
         }
       };
@@ -168,7 +153,6 @@ class OptimizedDashboardService {
       
       return {
         dashboardData: cachedDashboardData,
-        cohorts: getCachedData('cohorts') || [],
         leagues: cachedLeagues,
         basicLeagueStats: this.extractBasicLeagueStats(cachedLeagues, enrolledLeagueIds),
         error: error.message
@@ -475,7 +459,6 @@ class OptimizedDashboardService {
       // Prefetch common data that user might need
       const prefetchPromises = [
         ProgressService.getUserDashboard().then(data => setCachedData('dashboard', data)),
-        DataService.getCohorts().then(data => setCachedData('cohorts', data.cohorts || [])),
         DataService.getLeagues().then(data => setCachedData('leagues', data.leagues || []))
       ];
 
