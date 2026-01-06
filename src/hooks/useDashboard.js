@@ -44,18 +44,14 @@ export const useUserProfile = () => {
       // Dedupe requests within 5 seconds
       dedupingInterval: 5000,
       
-      // Retry on error
-      shouldRetryOnError: true,
+      // Retry on error (don't retry if unauthorized)
+      shouldRetryOnError: (error) => {
+        return !error.message?.includes('401');
+      },
       errorRetryCount: 2,
       
       // Use cache when available
       revalidateIfStale: true,
-      
-      // Don't revalidate if no token (user not logged in)
-      shouldRetryOnError: (error) => {
-        // Don't retry if unauthorized
-        return !error.message?.includes('401');
-      },
     }
   );
 

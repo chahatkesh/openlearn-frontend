@@ -423,7 +423,8 @@ const LeagueDetailPage = ({ league, onBack }) => {
     };
     
     loadResources();
-  }, [leagueProgress]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [leagueProgress]); // Intentionally excluding sectionResources to prevent infinite loop
   
   // Set error from SWR
   useEffect(() => {

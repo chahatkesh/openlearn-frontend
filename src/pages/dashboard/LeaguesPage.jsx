@@ -14,12 +14,14 @@ import {
 } from 'lucide-react';
 import OptimizedDashboardService from '../../utils/api/optimizedDashboardService';
 import ProgressService from '../../utils/api/progressService';
+import DataService from '../../utils/api/dataService';
 import { PageHead } from "../../components/common";
 import { MotionDiv, MotionSection } from '../../components/common/MotionWrapper';
 import { useDashboard } from '../../hooks/useDashboard';
 
 const LeaguesPage = () => {
   const navigate = useNavigate();
+  const [cohorts, setCohorts] = useState([]);
   
   // SWR: Automatic caching, revalidation, and state management
   const { 
@@ -27,9 +29,21 @@ const LeaguesPage = () => {
     leagues, 
     basicLeagueStats: leagueStatistics,
     isLoading: loading, 
-    error: swrError,
-    mutate: refreshDashboard 
+    error: swrError
   } = useDashboard();
+  
+  // Fetch cohorts for enrollment
+  useEffect(() => {
+    const fetchCohorts = async () => {
+      try {
+        const data = await DataService.getCohorts();
+        setCohorts(data.cohorts || []);
+      } catch (err) {
+        console.error('Failed to fetch cohorts:', err);
+      }
+    };
+    fetchCohorts();
+  }, []);
   
   // Format error message
   const error = swrError ? `Failed to load leagues. Please try again later. (${swrError.message})` : null;
@@ -49,14 +63,19 @@ const LeaguesPage = () => {
         return;
       }
       
-      // Get cohort from user's existing enrollments or use first available
-      const cohortId = dashboardData?.enrollments?.[0]?.cohort?.id || 'default';
+      // Get cohort: prioritize user's existing enrollment cohort, else use first available cohort
+      const cohortId = dashboardData?.enrollments?.[0]?.cohort?.id || cohorts[0]?.id;
+      
+      if (!cohortId) {
+        alert('No cohort available for enrollment. Please contact support.');
+        return;
+      }
       
       await ProgressService.enrollUser(cohortId, leagueId);
       alert('Enrollment successful! Welcome to your learning journey!');
       
-      // SWR: Trigger revalidation to refresh data
-      await refreshDashboard();
+      // Reload the page to refresh all data for newly enrolled user
+      window.location.reload();
     } catch (err) {
       console.error('Enrollment error:', err);
       alert(`Enrollment failed: ${err.message}. Please try again.`);
@@ -167,7 +186,7 @@ const LeaguesPage = () => {
                 const stats = enrollment?.progress || leagueStatistics[league.id] || {};
                 const weeksCount = stats.weeksCount || league.weeksCount || league._count?.weeks || 0;
                 const sectionsCount = stats.totalSections || league.sectionsCount || league._count?.sections || 0;
-                const resourcesCount = stats.totalResources || league.totalResources || league._count?.resources || 0;
+                const resourcesCount = stats.totalResources || league.resourcesCount || league._count?.resources || 0;
 
                 return (
                   <MotionDiv

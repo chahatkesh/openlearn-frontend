@@ -58,8 +58,9 @@ class ProgressService {
    */
   static async enrollUser(cohortId, leagueId, userId = null) {
     try {
-      // First, fetch league information to check if enrollment is disabled
-      const leagueResponse = await fetch(`${API_BASE_URL}/leagues/${leagueId}`, {
+      // First, fetch league information from leagues API (not progress API)
+      // to check if enrollment is disabled
+      const leagueResponse = await fetch(`${BASE_URL}/api/leagues/${leagueId}`, {
         headers: getAuthHeaders()
       });
       

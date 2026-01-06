@@ -64,7 +64,8 @@ export const AuthProvider = ({ children }) => {
         clearInterval(tokenRefreshInterval);
       }
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Intentionally empty - only run on mount, startTokenRefresh/tokenRefreshInterval would cause infinite loop
 
   // Start automatic token refresh (refresh every 12 minutes, before 15-min expiry)
   const startTokenRefresh = () => {
