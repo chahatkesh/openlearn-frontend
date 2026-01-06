@@ -220,9 +220,9 @@ const LearningProgressSection = ({ user }) => {
 
         <div className="space-y-6 sm:space-y-8 lg:space-y-10">
 
-        {/* Welcome Banner for New Users - Apple Style */}
+        {/* Welcome Banner for New Users - Minimal & Clean */}
         {(!dashboardData?.enrollments || dashboardData.enrollments.length === 0) && (
-          <div className="relative overflow-hidden bg-gradient-to-br from-[#FFDE59]/10 via-white to-[#FFDE59]/5 rounded-2xl sm:rounded-3xl border border-[#FFDE59]/20">
+          <div className="relative">
             <MemoizedWelcomeBanner user={user} onExploreClick={scrollToLeagues} />
           </div>
         )}

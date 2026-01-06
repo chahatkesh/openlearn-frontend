@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import { useUserProfile } from '../../hooks/useDashboard';
 import { 
   User, 
   Mail, 
@@ -82,7 +83,20 @@ const SocialLink = ({ icon, label, url, username, color = "gray" }) => {
 };
 
 const ProfilePage = () => {
-  const { user, refreshUser } = useAuth();
+  // Get auth context for backward compatibility
+  const { user: authUser, refreshUser } = useAuth();
+  
+  // SWR: Automatic caching, revalidation, and state management for profile
+  const { 
+    user: swrUser, 
+    isLoading: swrLoading,
+    isValidating,
+    mutate: refreshProfile 
+  } = useUserProfile();
+  
+  // Use SWR data if available, fall back to auth context
+  const user = swrUser || authUser;
+  
   const [isEditingSocial, setIsEditingSocial] = useState(false);
   const [socialData, setSocialData] = useState({
     portfolioUrl: user?.portfolioUrl || '',
@@ -162,8 +176,12 @@ const ProfilePage = () => {
 
       await SocialService.updateSocialHandles(cleanData);
       
-      // Refresh user data from server to get the latest state
-      await refreshUser();
+      // Refresh user data using both SWR and auth context
+      await Promise.all([
+        refreshProfile(), // SWR refresh
+        refreshUser()     // Auth context refresh
+      ]);
+      
       setSaveMessage('Social profiles updated successfully!');
       setIsEditingSocial(false);
       
@@ -207,7 +225,7 @@ const ProfilePage = () => {
     });
   };
 
-  if (!user) {
+  if (!user || swrLoading) {
     return (
       <div className="min-h-screen bg-gray-50/30 flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
@@ -226,6 +244,18 @@ const ProfilePage = () => {
       />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 lg:pt-8 pb-12 lg:pb-16">
+        
+        {/* Background revalidation indicator */}
+        {isValidating && (
+          <div className="mb-4 sm:mb-6">
+            <div className="bg-blue-50/80 backdrop-blur-sm border border-blue-200/50 rounded-xl p-3 sm:p-4">
+              <div className="flex items-center gap-3 text-blue-800">
+                <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                <span className="text-sm font-medium">Updating profile data...</span>
+              </div>
+            </div>
+          </div>
+        )}
         
         <div className="space-y-6 sm:space-y-8 lg:space-y-10">
           

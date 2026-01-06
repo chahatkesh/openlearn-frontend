@@ -13,6 +13,7 @@ const WeekManagement = ({
 }) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingWeek, setEditingWeek] = useState(null);
+  const [expandedLeagues, setExpandedLeagues] = useState(new Set());
   const [weekForm, setWeekForm] = useState({
     name: '',
     order: '',
@@ -108,6 +109,25 @@ const WeekManagement = ({
     setEditingWeek(null);
     setShowCreateForm(true);
   };
+  
+  const toggleLeague = (leagueId) => {
+    const newExpanded = new Set(expandedLeagues);
+    if (newExpanded.has(leagueId)) {
+      newExpanded.delete(leagueId);
+    } else {
+      newExpanded.add(leagueId);
+    }
+    setExpandedLeagues(newExpanded);
+  };
+  
+  // Auto-expand leagues based on filter
+  useEffect(() => {
+    if (selectedLeagueId) {
+      setExpandedLeagues(new Set([selectedLeagueId]));
+    } else {
+      setExpandedLeagues(new Set());
+    }
+  }, [selectedLeagueId]);
 
   // Filter weeks by selected league if applicable (skip for Grand Pathfinder)
   const filteredWeeks = (!isGrandPathfinder && selectedLeagueId) 
@@ -116,6 +136,30 @@ const WeekManagement = ({
 
   // Sort weeks by order
   const sortedWeeks = [...filteredWeeks].sort((a, b) => a.order - b.order);
+  
+  // Group weeks by league
+  const weeksByLeague = sortedWeeks.reduce((acc, week) => {
+    const leagueId = week.leagueId;
+    if (!acc[leagueId]) {
+      acc[leagueId] = [];
+    }
+    acc[leagueId].push(week);
+    return acc;
+  }, {});
+  
+  // Add leagues with no modules
+  leagues.forEach(league => {
+    if (!weeksByLeague[league.id]) {
+      weeksByLeague[league.id] = [];
+    }
+  });
+  
+  // Sort leagues for consistent display
+  const sortedLeagueIds = Object.keys(weeksByLeague).sort((a, b) => {
+    const leagueA = leagues.find(l => l.id === a);
+    const leagueB = leagues.find(l => l.id === b);
+    return (leagueA?.name || '').localeCompare(leagueB?.name || '');
+  });
   
   if (leagues.length === 0 && !loading) {
     return (
@@ -266,78 +310,150 @@ const WeekManagement = ({
           </div>
         )}
 
-        {/* Create Button */}
-        {!showCreateForm && !editingWeek && (
-          <div className="mb-8">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-gray-200/50">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                  <h2 className="text-lg sm:text-xl font-semibold text-gray-900 tracking-tight">
-                    Your Modules
-                  </h2>
-                  <p className="text-sm text-gray-600 mt-1">
-                    {sortedWeeks.length} module{sortedWeeks.length !== 1 ? 's' : ''} configured
-                  </p>
-                </div>
-                <button 
-                  onClick={startCreate}
-                  className="inline-flex items-center px-6 py-2.5 text-sm font-medium bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-all duration-200"
-                >
-                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                  Create New Module
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Modules Grid/List */}
+        {/* Modules Grid/List - Grouped by League with Collapsible Sections */}
         {sortedWeeks.length > 0 && !editingWeek && !showCreateForm ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            {sortedWeeks.map((week) => {
-              const league = leagues.find(l => l.id === week.leagueId) || { name: 'Unknown League' };
+          <div className="space-y-6">
+            {sortedLeagueIds.map((leagueId) => {
+              const league = leagues.find(l => l.id === leagueId) || { name: 'Unknown League' };
+              const leagueWeeks = weeksByLeague[leagueId];
+              const isExpanded = expandedLeagues.has(leagueId);
+              const modulesCount = leagueWeeks.length;
+              
               return (
-                <div key={week.id} className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 border border-gray-200/50 hover:border-gray-300/50 transition-all duration-200">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-gray-100 text-gray-800">
-                          #{week.order}
-                        </span>
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-blue-50 text-blue-700">
-                          {league.name}
-                        </span>
+                <div key={leagueId} className="bg-white/90 backdrop-blur-sm rounded-2xl border border-gray-200/50 overflow-hidden">
+                  {/* League Header - Collapsible */}
+                  <div className="bg-gradient-to-r from-gray-50/80 to-white p-6 border-b border-gray-100/50">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <button
+                          onClick={() => toggleLeague(leagueId)}
+                          className="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200"
+                        >
+                          <svg 
+                            className={`w-5 h-5 text-gray-600 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`} 
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-900">{league.name}</h3>
+                          <div className="flex items-center gap-4 text-sm text-gray-500">
+                            {league.specialization && (
+                              <span className="flex items-center gap-1">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                                </svg>
+                                {league.specialization}
+                              </span>
+                            )}
+                            <span className="flex items-center gap-1">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                              </svg>
+                              {modulesCount} module{modulesCount !== 1 ? 's' : ''}
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                      <h3 className="text-base font-semibold text-gray-900 leading-tight mb-2 line-clamp-2">
-                        {week.name}
-                      </h3>
-                      <p className="text-sm text-gray-500">
-                        {week._count?.sections || 0} topic{week._count?.sections !== 1 ? 's' : ''}
-                      </p>
+                      
+                      {/* Add Module Button for this League */}
+                      <button
+                        onClick={() => {
+                          setWeekForm({
+                            name: '',
+                            order: leagueWeeks.length > 0 ? Math.max(...leagueWeeks.map(w => w.order)) + 1 : 1,
+                            leagueId: leagueId
+                          });
+                          setEditingWeek(null);
+                          setShowCreateForm(true);
+                        }}
+                        className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 shadow-sm"
+                      >
+                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        </svg>
+                        Add Module
+                      </button>
                     </div>
                   </div>
-                  
-                  <div className="flex items-center gap-2 pt-4 border-t border-gray-100">
-                    <button
-                      onClick={() => startEdit(week)}
-                      className="flex-1 inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 transition-all duration-200"
-                    >
-                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                      </svg>
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => onDeleteWeek(week.id)}
-                      className="px-3 py-2 text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-all duration-200"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
-                  </div>
+
+                  {/* Modules List - Collapsible */}
+                  {isExpanded && (
+                    <div className="p-6">
+                      {leagueWeeks && leagueWeeks.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {leagueWeeks.map((week) => (
+                            <div key={week.id} className="bg-gradient-to-br from-white to-gray-50/50 rounded-xl p-4 border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all duration-200">
+                              <div className="flex items-start justify-between mb-3">
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-700">
+                                      #{week.order}
+                                    </span>
+                                    <span className="text-xs text-gray-500">
+                                      {week._count?.sections || 0} topic{week._count?.sections !== 1 ? 's' : ''}
+                                    </span>
+                                  </div>
+                                  <h4 className="text-sm font-semibold text-gray-900 leading-tight mb-1 line-clamp-2">
+                                    {week.name}
+                                  </h4>
+                                </div>
+                              </div>
+                              
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => startEdit(week)}
+                                  className="flex-1 inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 transition-all duration-200"
+                                >
+                                  <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                  </svg>
+                                  Edit
+                                </button>
+                                <button
+                                  onClick={() => onDeleteWeek(week.id)}
+                                  className="px-2 py-1.5 text-xs font-medium text-red-600 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-all duration-200"
+                                >
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                  </svg>
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-8">
+                          <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                          </div>
+                          <p className="text-sm text-gray-500 mb-3">No modules in this league yet</p>
+                          <button
+                            onClick={() => {
+                              setWeekForm({
+                                name: '',
+                                order: 1,
+                                leagueId: leagueId
+                              });
+                              setEditingWeek(null);
+                              setShowCreateForm(true);
+                            }}
+                            className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 transition-all duration-200"
+                          >
+                            <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            Add First Module
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             })}

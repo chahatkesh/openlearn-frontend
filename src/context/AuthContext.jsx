@@ -3,6 +3,7 @@ import { AuthContext } from './AuthContextProvider';
 import MigrationService from '../utils/auth/migrationService';
 import EmailVerificationService from '../utils/auth/emailVerificationService';
 import PasswordResetService from '../utils/auth/passwordResetService';
+import OptimizedDashboardService from '../utils/api/optimizedDashboardService';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const API_BASE_URL = `${BASE_URL}/api/auth`;
@@ -11,6 +12,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [tokenRefreshInterval, setTokenRefreshInterval] = useState(null);
 
   // Check if user is logged in on initial load
   useEffect(() => {
@@ -34,6 +36,7 @@ export const AuthProvider = ({ children }) => {
         
         if (result.success) {
           setUser(result.data);
+          startTokenRefresh();
         } else {
           // Try to refresh the token if available
           const refreshResult = await refreshToken();
@@ -42,6 +45,8 @@ export const AuthProvider = ({ children }) => {
             // Clear invalid tokens
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshToken');
+          } else {
+            startTokenRefresh();
           }
         }
       } catch (err) {
@@ -52,7 +57,38 @@ export const AuthProvider = ({ children }) => {
     };
     
     checkAuthStatus();
+    
+    // Cleanup: Clear token refresh interval on unmount
+    return () => {
+      if (tokenRefreshInterval) {
+        clearInterval(tokenRefreshInterval);
+      }
+    };
   }, []);
+
+  // Start automatic token refresh (refresh every 12 minutes, before 15-min expiry)
+  const startTokenRefresh = () => {
+    // Clear existing interval if any
+    if (tokenRefreshInterval) {
+      clearInterval(tokenRefreshInterval);
+    }
+    
+    // Refresh token every 12 minutes (3 minutes before 15-minute expiry)
+    const REFRESH_INTERVAL = 12 * 60 * 1000; // 12 minutes
+    
+    const interval = setInterval(async () => {
+      const success = await refreshToken();
+      
+      if (!success) {
+        console.warn('Auto token refresh failed');
+        clearInterval(interval);
+        setTokenRefreshInterval(null);
+        // Don't auto-logout, let the user continue until they hit a 401
+      }
+    }, REFRESH_INTERVAL);
+    
+    setTokenRefreshInterval(interval);
+  };
 
   // Login function
   const login = async (email, password) => {
@@ -73,12 +109,18 @@ export const AuthProvider = ({ children }) => {
         return false;
       }
       
+      // Clear any cached data from previous session
+      OptimizedDashboardService.clearCache();
+      
       // Store tokens
       localStorage.setItem('accessToken', result.data.accessToken);
       localStorage.setItem('refreshToken', result.data.refreshToken);
       
       // Set user state
       setUser(result.data.user);
+      
+      // Start automatic token refresh
+      startTokenRefresh();
       
       return true;
     } catch (error) {
@@ -107,12 +149,18 @@ export const AuthProvider = ({ children }) => {
         return false;
       }
       
+      // Clear any cached data from previous session
+      OptimizedDashboardService.clearCache();
+      
       // Store tokens
       localStorage.setItem('accessToken', result.data.accessToken);
       localStorage.setItem('refreshToken', result.data.refreshToken);
       
       // Set user state
       setUser(result.data.user);
+      
+      // Start automatic token refresh
+      startTokenRefresh();
       
       return true;
     } catch (error) {
@@ -185,6 +233,15 @@ export const AuthProvider = ({ children }) => {
       // Clear local storage
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
+      
+      // Clear all cached data
+      OptimizedDashboardService.clearCache();
+      
+      // Clear token refresh interval
+      if (tokenRefreshInterval) {
+        clearInterval(tokenRefreshInterval);
+        setTokenRefreshInterval(null);
+      }
       
       // Reset user state
       setUser(null);

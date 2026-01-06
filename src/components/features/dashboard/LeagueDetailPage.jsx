@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { mutate } from 'swr';
 import { 
   ArrowLeft,
   FileText, 
@@ -19,6 +20,8 @@ import { RiTwitterXFill } from 'react-icons/ri';
 import ProgressService from '../../../utils/api/progressService';
 import ResourceProgressService from '../../../utils/api/resourceProgressService';
 import SocialService from '../../../utils/social/socialService';
+import OptimizedDashboardService from '../../../utils/api/optimizedDashboardService';
+import { useLeagueProgress } from '../../../hooks/useDashboard';
 import FaviconService from '../../../utils/helpers/faviconService'; // @see docs/development/favicon-service.md
 import AssignmentManagement from './AssignmentManagement';
 import PageHead from '../../common/PageHead';
@@ -248,8 +251,15 @@ const NoteModal = React.memo(({
 NoteModal.displayName = 'NoteModal';
 
 const LeagueDetailPage = ({ league, onBack }) => {
-  const [leagueProgress, setLeagueProgress] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // SWR: Automatic caching and revalidation for league progress
+  const {
+    leagueProgress,
+    isLoading: loading,
+    isValidating,
+    error: swrError,
+    mutate: refreshLeagueProgress
+  } = useLeagueProgress(league?.id);
+  
   const [error, setError] = useState(null);
   const [noteText, setNoteText] = useState('');
   const [showNoteModal, setShowNoteModal] = useState(false);
@@ -368,47 +378,59 @@ const LeagueDetailPage = ({ league, onBack }) => {
   // Resource Icon Component with Favicon
   // Assignment-related state - no longer needed as handled by AssignmentManagement component
 
-  const fetchLeagueProgress = useCallback(async () => {
-    setLoading(true);
-    setError(null);
+  // Initialize expanded weeks and load resources when league progress is available
+  useEffect(() => {
+    if (!leagueProgress?.progress?.weeks) return;
     
-    try {
-      const data = await ProgressService.getLeagueProgress(league.id);
-      setLeagueProgress(data);
+    // Only initialize expanded state if empty (first load), preserve user's expanded state on revalidation
+    setExpandedWeeks(prev => {
+      // If already initialized, keep current state
+      if (Object.keys(prev).length > 0) return prev;
       
-      // Initialize expanded state for all weeks
-      if (data.progress.weeks) {
-        const initialExpanded = {};
-        data.progress.weeks.forEach(week => {
-          initialExpanded[week.id] = false; // Default to collapsed for faster initial load
-        });
-        setExpandedWeeks(initialExpanded);
-        
-        // OPTIMIZATION 1: Parallel loading of ALL section resources
-        const allSectionIds = data.progress.weeks.flatMap(week => 
-          week.sections.map(section => section.id)
-        );
-        
-        // Set loading to false early to show basic progress data immediately
-        setLoading(false);
+      // First load: initialize all weeks as collapsed
+      const initialExpanded = {};
+      leagueProgress.progress.weeks.forEach(week => {
+        initialExpanded[week.id] = false; // Default to collapsed for faster initial load
+      });
+      return initialExpanded;
+    });
+    
+    // OPTIMIZATION 1: Parallel loading of ALL section resources
+    const allSectionIds = leagueProgress.progress.weeks.flatMap(week => 
+      week.sections.map(section => section.id)
+    );
+    
+    // Load resources in parallel batches for better performance
+    const loadResources = async () => {
+      // Only set loading if not already loaded
+      if (Object.keys(sectionResources).length === 0) {
         setResourcesLoading(true);
-        
-        // Load resources in parallel batches for better performance
-        const batchSize = 5; // Load 5 sections at a time
-        for (let i = 0; i < allSectionIds.length; i += batchSize) {
-          const batch = allSectionIds.slice(i, i + batchSize);
-          const promises = batch.map(sectionId => fetchSectionResources(sectionId));
-          await Promise.all(promises);
-        }
-        
-        setResourcesLoading(false);
       }
-    } catch (err) {
-      console.error('Error fetching league progress:', err);
-      setError(err.message);
-      setLoading(false);
+      
+      const batchSize = 5; // Load 5 sections at a time
+      for (let i = 0; i < allSectionIds.length; i += batchSize) {
+        const batch = allSectionIds.slice(i, i + batchSize);
+        const promises = batch.map(sectionId => {
+          // Only fetch if not already loaded
+          if (!sectionResources[sectionId]) {
+            return fetchSectionResources(sectionId);
+          }
+          return Promise.resolve();
+        });
+        await Promise.all(promises);
+      }
+      setResourcesLoading(false);
+    };
+    
+    loadResources();
+  }, [leagueProgress]);
+  
+  // Set error from SWR
+  useEffect(() => {
+    if (swrError) {
+      setError(swrError.message || 'Failed to load league progress');
     }
-  }, [league.id]);
+  }, [swrError]);
 
   // OPTIMIZATION 8: Non-blocking favicon loading
   useEffect(() => {
@@ -419,8 +441,6 @@ const LeagueDetailPage = ({ league, onBack }) => {
       }, 2000);
     }
   }, [sectionResources, preloadFavicons]);
-
-  // Assignment functions - no longer needed as handled by AssignmentManagement component
 
   // Calculate overall league progress based on actual resource completion
   // OPTIMIZATION 2: Memoized progress calculation for better performance
@@ -492,11 +512,6 @@ const LeagueDetailPage = ({ league, onBack }) => {
     }
   };
 
-  useEffect(() => {
-    fetchLeagueProgress();
-    // Assignment functionality now handled by AssignmentManagement component
-  }, [fetchLeagueProgress]);
-
   const toggleWeekExpansion = (weekId) => {
     setExpandedWeeks(prev => ({
       ...prev,
@@ -520,21 +535,6 @@ const LeagueDetailPage = ({ league, onBack }) => {
     const originalState = resourceProgress[resourceId];
     
     try {
-      // Confirmation for unmarking completed resources
-      if (currentStatus) {
-        const resourceTitle = Object.values(sectionResources)
-          .flat()
-          .find(r => r.id === resourceId)?.title || 'Resource';
-        
-        const confirmed = window.confirm(
-          `Are you sure you want to mark "${resourceTitle}" as not done?\n\nThis will reset your progress for this resource.`
-        );
-        
-        if (!confirmed) {
-          return; // User cancelled
-        }
-      }
-      
       // Add to processing state for loading indicator
       setProcessingResources(prev => new Set([...prev, resourceId]));
       
@@ -546,14 +546,16 @@ const LeagueDetailPage = ({ league, onBack }) => {
           [resourceId]: { ...prev[resourceId], isCompleted: false }
         }));
         
-        // Show undo toast
-        const resourceTitle = Object.values(sectionResources)
-          .flat()
-          .find(r => r.id === resourceId)?.title || 'Resource';
-        setToastType('undo');
+        // SWR: Trigger background revalidation of league progress
+        await refreshLeagueProgress();
         
-        // Calculate new progress for toast message 
-        setShowSuccessToast(`"${resourceTitle}" marked as not done`);
+        // Clear optimizedDashboardService cache and force SWR refresh
+        OptimizedDashboardService.clearCache();
+        await mutate('dashboard-data');
+        
+        // Show undo toast
+        setToastType('undo');
+        setShowSuccessToast('Marked as incomplete');
         
         // Hide toast after 3 seconds
         setTimeout(() => {
@@ -567,17 +569,19 @@ const LeagueDetailPage = ({ league, onBack }) => {
           [resourceId]: { ...prev[resourceId], isCompleted: true }
         }));
         
+        // SWR: Trigger background revalidation of league progress
+        await refreshLeagueProgress();
+        
+        // Clear optimizedDashboardService cache and force SWR refresh
+        OptimizedDashboardService.clearCache();
+        await mutate('dashboard-data');
+        
         // Add to recently completed for animation
         setRecentlyCompleted(prev => new Set([...prev, resourceId]));
         
-        // Show success toast with resource title
-        const resourceTitle = Object.values(sectionResources)
-          .flat()
-          .find(r => r.id === resourceId)?.title || 'Resource';
+        // Show success toast
         setToastType('success');
-        
-        // Calculate new progress for toast message
-        setShowSuccessToast(`"${resourceTitle}" completed! 🎉`);
+        setShowSuccessToast('Resource completed! 🎉');
         
         // Remove from recently completed after animation
         setTimeout(() => {
@@ -815,8 +819,20 @@ const LeagueDetailPage = ({ league, onBack }) => {
       <PageHead 
         title={`${leagueProgress.league.name} - OpenLearn`}
         description={`Learn and track your progress in ${leagueProgress.league.name}. Complete resources, submit assignments, and advance your learning journey with OpenLearn.`}
-        keywords={`${leagueProgress.league.name}, online learning, programming course, skill development, progress tracking, assignments, OpenLearn`}
+        keywords={`${leagueProgress.league.name}, learning, progress tracking, resources, OpenLearn`}
       />
+      
+      {/* Background revalidation indicator */}
+      {isValidating && (
+        <div className="fixed top-4 right-4 z-50">
+          <div className="bg-blue-50/95 backdrop-blur-sm border border-blue-200/50 rounded-xl px-4 py-2 shadow-lg">
+            <div className="flex items-center gap-2 text-blue-800">
+              <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+              <span className="text-sm font-medium">Syncing progress...</span>
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Main Container with Responsive Padding */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
