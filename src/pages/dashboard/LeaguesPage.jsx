@@ -130,20 +130,7 @@ const LeaguesPage = () => {
       />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 lg:pt-12 pb-16 lg:pb-20">
-        {/* Dashboard Header */}
-        <MotionDiv
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="mb-8 lg:mb-12"
-        >
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 lg:mb-4 tracking-tight">
-            Learning Leagues
-          </h1>
-          <p className="text-lg lg:text-xl text-gray-700 max-w-3xl leading-relaxed">
-            Join specialized learning tracks designed to help you master new skills and advance your career
-          </p>
-        </MotionDiv>        {/* Error Message */}
+        {/* Error Message */}
         {error && (
           <MotionDiv
             initial={{ opacity: 0, y: 20 }}

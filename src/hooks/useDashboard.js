@@ -1,5 +1,6 @@
 import useSWR from 'swr';
 import OptimizedDashboardService from '../utils/api/optimizedDashboardService';
+import ResourceProgressService from '../utils/api/resourceProgressService';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const API_BASE_URL = `${BASE_URL}/api/auth`;
@@ -152,7 +153,6 @@ export const useSectionResources = (sectionId, shouldFetch = true) => {
   const { data, error, isLoading, mutate } = useSWR(
     shouldFetch && sectionId ? `section-resources-${sectionId}` : null,
     async () => {
-      const ResourceProgressService = (await import('../utils/api/resourceProgressService')).default;
       const result = await ResourceProgressService.getSectionResourcesProgress(sectionId);
       
       // Extract resource progress into a map

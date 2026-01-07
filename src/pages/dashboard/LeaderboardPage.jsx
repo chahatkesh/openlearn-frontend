@@ -120,7 +120,7 @@ const Leaderboard = () => {
         <div className="container max-w-4xl mx-auto px-4">
           <div className="text-center">
             <MotionDiv 
-              className="bg-white rounded-2xl shadow-lg p-12 border border-gray-200"
+              className="bg-white rounded-2xl p-12 border border-gray-200"
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -184,43 +184,8 @@ const Leaderboard = () => {
   }
 
   return (
-    <MotionSection 
-      className="py-16 bg-gradient-to-br from-yellow-50 to-orange-50" 
-      style={{ backgroundColor: '#FFFBEB' }}
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6 }}
-    >
-      <div className="container max-w-6xl mx-auto px-4">
-        {/* Header Section */}
-        <MotionDiv 
-          className="text-center mb-20 max-w-4xl mx-auto"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          <MotionH2 
-            className="text-5xl font-bold mb-6 bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 bg-clip-text text-transparent"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-             Top Performers
-          </MotionH2>
-          <MotionP 
-            className="text-xl text-gray-600 mb-8 leading-relaxed"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-          >
-          Celebrating our most dedicated learners - ranked by tasks completed.
-          </MotionP>
-        </MotionDiv>
-
+    <div className="min-h-screen bg-transparent">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 lg:pt-8 pb-12 lg:pb-16">
         {loading ? (
           <MotionDiv 
             className="flex justify-center items-center py-16"
@@ -274,7 +239,7 @@ const Leaderboard = () => {
           </MotionDiv>
         ) : (
           <MotionDiv 
-            className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden"
+            className="bg-white rounded-2xl border border-gray-200 overflow-hidden"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -356,7 +321,7 @@ const Leaderboard = () => {
                         {/* Student Column */}
                         <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center gap-2 sm:gap-3">
-                            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden border-2 border-white shadow-sm flex-shrink-0">
+                            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden border-2 border-white flex-shrink-0">
                               <img
                                 src={getUserAvatarUrl(student, 'avataaars', 40)}
                                 alt={`${student.name} avatar`}
@@ -461,7 +426,7 @@ const Leaderboard = () => {
           </MotionDiv>
         )}
       </div>
-    </MotionSection>
+    </div>
   );
 };
 

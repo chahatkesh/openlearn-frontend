@@ -154,7 +154,7 @@ const NoteModal = React.memo(({
       onKeyDown={handleKeyDown}
       tabIndex={-1}
     >
-      <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl w-full max-w-md sm:max-w-lg mx-auto">
+      <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg w-full max-w-md sm:max-w-lg mx-auto">
         {/* Modal Header */}
         <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
           <div className="flex items-center space-x-3">
@@ -267,6 +267,7 @@ const LeagueDetailPage = ({ league, onBack }) => {
   const [favicons, setFavicons] = useState({});
   const [loadingFavicons, setLoadingFavicons] = useState(new Set());
   const [expandedWeeks, setExpandedWeeks] = useState({});
+  const [expandedSections, setExpandedSections] = useState({});
   const [sectionResources, setSectionResources] = useState({});
   const [resourceProgress, setResourceProgress] = useState({});
   const [processingResources, setProcessingResources] = useState(new Set());
@@ -531,6 +532,18 @@ const LeagueDetailPage = ({ league, onBack }) => {
     }
   };
 
+  const toggleSectionExpansion = (sectionId) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [sectionId]: !prev[sectionId]
+    }));
+    
+    // Lazy load resources when section is expanded
+    if (!expandedSections[sectionId] && !sectionResources[sectionId]) {
+      fetchSectionResources(sectionId);
+    }
+  };
+
   const handleResourceComplete = async (resourceId, currentStatus = false) => {
     // Store the original state for potential rollback
     const originalState = resourceProgress[resourceId];
@@ -779,7 +792,7 @@ const LeagueDetailPage = ({ league, onBack }) => {
             <ArrowLeft size={16} className="mr-2" />
             Back to Dashboard
           </button>
-          <div className="bg-white rounded-lg border border-red-200 shadow-sm p-6">
+          <div className="bg-white rounded-lg border border-red-200 p-6">
             <h3 className="text-lg font-medium text-red-700 mb-2">Error Loading League</h3>
             <p className="text-red-600 mb-4">{error}</p>
             <button
@@ -805,7 +818,7 @@ const LeagueDetailPage = ({ league, onBack }) => {
             <ArrowLeft size={16} className="mr-2" />
             Back to Dashboard
           </button>
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-12 text-center">
+          <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
             <BookOpen size={40} className="mx-auto mb-3 text-gray-400" />
             <h3 className="text-lg font-medium text-gray-900 mb-1">No Data Available</h3>
             <p className="text-gray-600 text-sm">This league doesn't have any content yet.</p>
@@ -826,7 +839,7 @@ const LeagueDetailPage = ({ league, onBack }) => {
       {/* Background revalidation indicator */}
       {isValidating && (
         <div className="fixed top-4 right-4 z-50">
-          <div className="bg-blue-50/95 backdrop-blur-sm border border-blue-200/50 rounded-xl px-4 py-2 shadow-lg">
+          <div className="bg-blue-50/95 backdrop-blur-sm border border-blue-200/50 rounded-xl px-4 py-2">
             <div className="flex items-center gap-2 text-blue-800">
               <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
               <span className="text-sm font-medium">Syncing progress...</span>
@@ -854,7 +867,7 @@ const LeagueDetailPage = ({ league, onBack }) => {
           </div>
           
           {/* League Header Card - Responsive Design */}
-          <div className="bg-white rounded-xl sm:rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-300">
+          <div className="bg-white rounded-xl sm:rounded-2xl border border-gray-200">
             <div className="px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
               
               {/* Mobile-First Layout */}
@@ -924,7 +937,7 @@ const LeagueDetailPage = ({ league, onBack }) => {
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2 sm:h-3">
                 <div 
-                  className="bg-gradient-to-r from-[#FFDE59] to-[#FFD700] h-full rounded-full transition-all duration-1000 ease-out progress-bar-fill shadow-sm"
+                  className="bg-gradient-to-r from-[#FFDE59] to-[#FFD700] h-full rounded-full transition-all duration-1000 ease-out progress-bar-fill"
                   style={{ width: `${calculateOverallProgress.percentage || 0}%` }}
                 ></div>
               </div>
@@ -952,7 +965,7 @@ const LeagueDetailPage = ({ league, onBack }) => {
               : 0;
 
             return (
-              <div key={week.id} className="bg-white rounded-xl sm:rounded-2xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-300">
+              <div key={week.id} className="bg-white rounded-xl sm:rounded-2xl border border-gray-200 overflow-hidden">
                 
                 {/* Week Header - Responsive Design */}
                 <div 
@@ -971,16 +984,9 @@ const LeagueDetailPage = ({ league, onBack }) => {
                     
                     {/* Week Title & Info */}
                     <div className="flex-1 min-w-0">
-                      <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900 mb-1 sm:mb-2 leading-tight truncate">
+                      <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900 leading-tight truncate">
                         {week.name}
                       </h2>
-                      <p className="text-xs sm:text-sm text-gray-500 leading-relaxed">
-                        <span className="font-medium text-gray-700">{completedResources}</span>
-                        <span className="mx-1">of</span>
-                        <span className="font-medium text-gray-700">{totalResources}</span>
-                        <span className="hidden sm:inline ml-1">resources completed</span>
-                        <span className="sm:hidden ml-1">completed</span>
-                      </p>
                     </div>
                   </div>
                   
@@ -991,7 +997,7 @@ const LeagueDetailPage = ({ league, onBack }) => {
                     </span>
                     <div className="w-16 sm:w-20 lg:w-24 bg-gray-200 rounded-full h-2 sm:h-3">
                       <div 
-                        className="bg-gradient-to-r from-[#FFDE59] to-[#FFD700] h-full rounded-full transition-all duration-500 shadow-sm"
+                        className="bg-gradient-to-r from-[#FFDE59] to-[#FFD700] h-full rounded-full transition-all duration-500"
                         style={{ width: `${weekProgress}%` }}
                       ></div>
                     </div>
@@ -1001,40 +1007,71 @@ const LeagueDetailPage = ({ league, onBack }) => {
                 {/* Week Content - Expandable */}
                 {isExpanded && (
                   <div className="px-4 sm:px-6 lg:px-8 pb-4 sm:pb-6 content-scroll">
-                    <div className="space-y-4 sm:space-y-6 pt-4 sm:pt-6">
+                    <div className="space-y-3 pt-4 sm:pt-6">
                       {week.sections.map((section) => {
                         const resources = sectionResources[section.id] || [];
+                        
+                        // Calculate section progress
+                        const sectionTotalResources = resources.length;
+                        const sectionCompletedResources = resources.filter(r => resourceProgress[r.id]?.isCompleted).length;
+                        const sectionProgress = sectionTotalResources > 0 
+                          ? Math.round((sectionCompletedResources / sectionTotalResources) * 100)
+                          : 0;
+                        
                         return (
                           <div key={section.id} className="border border-gray-100 rounded-lg sm:rounded-xl overflow-hidden">
                             
                             {/* Section Header */}
-                            <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-100">
-                              <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900 leading-tight">
-                                {section.name}
-                              </h3>
-                              <span className="text-xs sm:text-sm text-gray-500 bg-white px-2 sm:px-3 py-1 rounded-full border">
-                                {resources.length} 
-                                <span className="hidden sm:inline ml-1">items</span>
-                              </span>
+                            <div 
+                              className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-100 cursor-pointer hover:bg-gray-100 transition-colors duration-200"
+                              onClick={() => toggleSectionExpansion(section.id)}
+                            >
+                              <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
+                                {/* Expand/Collapse Icon */}
+                                <div className="flex-shrink-0">
+                                  {expandedSections[section.id] ? (
+                                    <ChevronDown size={18} className="text-gray-400 transition-transform duration-200" />
+                                  ) : (
+                                    <ChevronRight size={18} className="text-gray-400 transition-transform duration-200" />
+                                  )}
+                                </div>
+                                <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900 leading-tight truncate">
+                                  {section.name}
+                                </h3>
+                              </div>
+                              
+                              {/* Section Progress */}
+                              <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
+                                <span className="hidden sm:block text-xs font-medium text-gray-700">
+                                  {sectionProgress}%
+                                </span>
+                                <div className="w-10 sm:w-12 lg:w-16 bg-gray-200 rounded-full h-1 sm:h-1.5">
+                                  <div 
+                                    className="bg-gradient-to-r from-[#FFDE59] to-[#FFD700] h-full rounded-full transition-all duration-500"
+                                    style={{ width: `${sectionProgress}%` }}
+                                  ></div>
+                                </div>
+                              </div>
                             </div>
                             
-                            {/* Resources Content */}
-                            {resources.length > 0 ? (
+                            {/* Resources Content - Only shown when section is expanded */}
+                            {expandedSections[section.id] && resources.length > 0 ? (
                               <div className="overflow-hidden">
                                 
                                 {/* Desktop Table Header - Hidden on Mobile */}
-                                <div className="hidden lg:grid lg:grid-cols-16 gap-2 px-4 sm:px-6 py-3 bg-gray-100 border-b border-gray-200 text-xs font-medium text-gray-700 uppercase tracking-wider">
-                                  <div className="col-span-1 flex justify-center">Status</div>
-                                  <div className="col-span-7 text-left">Title</div>
-                                  <div className="col-span-2 text-center">Resource</div>
-                                  <div className="col-span-3 text-center">Note</div>
-                                  <div className="col-span-2 text-center">Revision</div>
-                                  <div className="col-span-1 text-center">Share</div>
+                                <div className="hidden lg:grid lg:grid-cols-16 gap-2 px-4 py-2.5 bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
+                                  <div className="col-span-1 text-center text-xs font-semibold text-gray-600 uppercase tracking-wide">#</div>
+                                  <div className="col-span-8 text-left text-xs font-semibold text-gray-600 uppercase tracking-wide">Resource Title</div>
+                                  <div className="col-span-2 text-center text-xs font-semibold text-gray-600 uppercase tracking-wide">Type</div>
+                                  <div className="col-span-2 text-center text-xs font-semibold text-gray-600 uppercase tracking-wide">Notes</div>
+                                  <div className="col-span-1 text-center text-xs font-semibold text-gray-600 uppercase tracking-wide">Review</div>
+                                  <div className="col-span-1 text-center text-xs font-semibold text-gray-600 uppercase tracking-wide">Status</div>
+                                  <div className="col-span-1 text-center text-xs font-semibold text-gray-600 uppercase tracking-wide">Share</div>
                                 </div>
                                 
                                 {/* Resources List - Responsive Cards */}
                                 <div className="divide-y divide-gray-100">
-                                  {resources.map((resource) => {
+                                  {resources.map((resource, index) => {
                                     const progress = resourceProgress[resource.id];
                                     const isCompleted = progress?.isCompleted || false;
                                     const hasNote = progress?.personalNote;
@@ -1043,34 +1080,42 @@ const LeagueDetailPage = ({ league, onBack }) => {
                                     return (
                                       <div 
                                         key={resource.id} 
-                                        className="p-3 sm:p-4 lg:p-0 lg:grid lg:grid-cols-16 lg:gap-2 lg:items-center lg:px-4 lg:py-3 hover:bg-gray-50 transition-colors space-y-2.5 lg:space-y-0"
+                                        className="p-3 sm:p-4 lg:p-0 lg:grid lg:grid-cols-16 lg:gap-2 lg:items-center lg:px-4 lg:py-2.5 hover:bg-blue-50/30 transition-all duration-200 space-y-2.5 lg:space-y-0 group cursor-pointer"
                                       >
                                         
                                         {/* Mobile Card Layout */}
-                                        <div className="lg:hidden">
+                                        <div className="lg:hidden bg-white rounded-lg p-3 border border-gray-100">
                                           
-                                          {/* Row 1: Title and Status Checkbox */}
-                                          <div className="flex items-start justify-between mb-2">
-                                            <div className="flex-1 min-w-0 mr-3">
-                                              <button
-                                                onClick={() => openResourceWithType(resource)}
-                                                className="text-left w-full hover:text-blue-600 transition-colors group"
-                                              >
-                                                <h4 className={`text-sm font-medium leading-snug ${isCompleted ? 'line-through text-gray-500' : 'text-gray-900 group-hover:text-blue-600'}`}>
-                                                  {resource.title}
-                                                </h4>
-                                              </button>
+                                          {/* Row 1: Serial Number, Title and Status Checkbox */}
+                                          <div className="flex items-start justify-between mb-3">
+                                            <div className="flex items-start gap-2 flex-1 min-w-0">
+                                              <span className="flex-shrink-0 w-6 h-6 rounded-md bg-gray-100 flex items-center justify-center text-xs font-semibold text-gray-600">
+                                                {index + 1}
+                                              </span>
+                                              <div className="flex-1 min-w-0">
+                                                <button
+                                                  onClick={() => openResourceWithType(resource)}
+                                                  className="text-left w-full transition-colors group"
+                                                >
+                                                  <h4 className={`text-sm font-semibold leading-snug transition-colors ${isCompleted ? 'line-through text-gray-400' : 'text-gray-900 group-hover:text-blue-600 group-active:text-blue-700'}`}>
+                                                    {resource.title}
+                                                  </h4>
+                                                </button>
+                                              </div>
                                             </div>
                                             
                                             {/* Status Checkbox - Smaller Size */}
                                             <button
-                                              onClick={() => handleResourceComplete(resource.id, isCompleted)}
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleResourceComplete(resource.id, isCompleted);
+                                              }}
                                               disabled={processingResources.has(resource.id)}
                                               className={`
-                                                flex-shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center transition-all duration-200
+                                                flex-shrink-0 w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors duration-200
                                                 ${isCompleted 
-                                                  ? 'bg-green-500 border-green-500 text-white shadow-sm' 
-                                                  : 'border-gray-300 hover:border-[#FFDE59] hover:bg-[#FFDE59]/10'
+                                                  ? 'bg-green-500'
+                                                  : 'border-gray-300 bg-white hover:border-gray-400'
                                                 }
                                                 ${processingResources.has(resource.id) ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
                                                 ${recentlyCompleted.has(resource.id) ? 'success-pulse' : ''}
@@ -1085,7 +1130,7 @@ const LeagueDetailPage = ({ league, onBack }) => {
                                           </div>
                                           
                                           {/* Row 2: Resource Type, Star, Note, Share */}
-                                          <div className="flex items-center space-x-1.5">
+                                          <div className="flex items-center gap-2 flex-wrap">
                                             
                                             {/* Resource Type Badge */}
                                             <button
@@ -1106,13 +1151,16 @@ const LeagueDetailPage = ({ league, onBack }) => {
                                             
                                             {/* Revision Button (Star) */}
                                             <button
-                                              onClick={() => handleResourceRevision(resource.id, isMarkedForRevision)}
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleResourceRevision(resource.id, isMarkedForRevision);
+                                              }}
                                               disabled={processingResources.has(resource.id)}
                                               className={`
-                                                w-8 h-8 flex items-center justify-center rounded-lg transition-colors border
+                                                w-6 h-6 flex items-center justify-center rounded-lg transition-all border hover:scale-105 active:scale-95
                                                 ${isMarkedForRevision 
-                                                  ? 'bg-orange-50 text-orange-700 border-orange-200 hover:bg-orange-100' 
-                                                  : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
+                                                  ? 'bg-orange-50 text-orange-600 border-orange-200 hover:bg-orange-100 hover:border-orange-300' 
+                                                  : 'bg-white text-gray-500 border-gray-200 hover:bg-orange-50 hover:text-orange-500 hover:border-orange-200'
                                                 }
                                                 ${processingResources.has(resource.id) ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
                                               `}
@@ -1125,26 +1173,36 @@ const LeagueDetailPage = ({ league, onBack }) => {
                                             </button>
                                             
                                             {/* Note Button */}
-                                            <button
-                                              onClick={() => openNoteModal(resource)}
-                                              className={`
-                                                px-3 py-2 flex items-center justify-center space-x-1 rounded-lg transition-colors text-xs font-medium border
-                                                ${hasNote 
-                                                  ? 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100' 
-                                                  : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
-                                                }
-                                              `}
-                                            >
-                                              <Edit size={12} />
-                                              <span>{hasNote ? 'Edit' : 'Note'}</span>
-                                            </button>
+                                            {hasNote ? (
+                                              <button
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
+                                                  openNoteModal(resource);
+                                                }}
+                                                className="flex-1 min-w-0 px-3 py-2 flex items-center gap-2 rounded-lg transition-all text-xs font-medium border bg-blue-50/50 text-blue-700 border-blue-200/50 hover:bg-blue-50 hover:border-blue-300"
+                                              >
+                                                <Edit size={12} className="flex-shrink-0" />
+                                                <span className="flex-1 truncate text-left">{progress?.personalNote}</span>
+                                              </button>
+                                            ) : (
+                                              <button
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
+                                                  openNoteModal(resource);
+                                                }}
+                                                className="px-3 py-2 flex items-center justify-center space-x-1 rounded-lg transition-all text-xs font-medium border hover:scale-105 active:scale-95 bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:border-gray-300"
+                                              >
+                                                <Edit size={12} />
+                                                <span>Note</span>
+                                              </button>
+                                            )}
                                             
                                             {/* Share Button */}
                                             <button
                                               onClick={() => isCompleted && handleShareOnTwitter(resource.title, leagueProgress.league.name)}
                                               disabled={!isCompleted}
                                               className={`
-                                                w-8 h-8 flex items-center justify-center rounded-lg transition-colors
+                                                w-6 h-6 flex items-center justify-center rounded-lg transition-colors
                                                 ${isCompleted 
                                                   ? 'bg-black text-white hover:bg-gray-800 cursor-pointer' 
                                                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -1159,37 +1217,20 @@ const LeagueDetailPage = ({ league, onBack }) => {
                                         {/* Desktop Table Layout - Hidden on Mobile */}
                                         <div className="hidden lg:contents">
                                           
-                                          {/* Status Column */}
+                                          {/* Serial Number Column */}
                                           <div className="col-span-1 flex justify-center">
-                                            <button
-                                              onClick={() => handleResourceComplete(resource.id, isCompleted)}
-                                              disabled={processingResources.has(resource.id)}
-                                              className={`
-                                                flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-all duration-200 hover-lift
-                                                ${isCompleted 
-                                                  ? 'bg-green-500 border-green-500 text-white shadow-sm' 
-                                                  : 'border-gray-300 hover:border-[#FFDE59] hover:bg-[#FFDE59]/10'
-                                                }
-                                                ${processingResources.has(resource.id) ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
-                                                ${recentlyCompleted.has(resource.id) ? 'success-pulse' : ''}
-                                              `}
-                                              title={isCompleted ? 'Mark as not done' : 'Mark as done'}
-                                            >
-                                              {processingResources.has(resource.id) ? (
-                                                <Loader2 size={14} className="animate-spin" />
-                                              ) : isCompleted ? (
-                                                <Check size={14} />
-                                              ) : null}
-                                            </button>
+                                            <span className="w-6 h-6 rounded-md bg-gray-100 flex items-center justify-center text-xs font-semibold text-gray-600">
+                                              {index + 1}
+                                            </span>
                                           </div>
 
                                           {/* Title Column */}
-                                          <div className="col-span-7">
+                                          <div className="col-span-8">
                                             <button
                                               onClick={() => openResourceWithType(resource)}
-                                              className="text-left w-full hover:text-blue-600 transition-colors"
+                                              className="text-left w-full transition-colors group/title"
                                             >
-                                              <span className={`text-sm font-medium leading-snug ${isCompleted ? 'line-through text-gray-500' : 'text-gray-900'}`}>
+                                              <span className={`text-sm font-medium leading-snug transition-colors ${isCompleted ? 'line-through text-gray-400' : 'text-gray-900 group-hover/title:text-blue-600 group-hover/title:underline decoration-blue-600/30 underline-offset-2'}`}>
                                                 {resource.title}
                                               </span>
                                             </button>
@@ -1214,29 +1255,34 @@ const LeagueDetailPage = ({ league, onBack }) => {
                                           </div>
 
                                           {/* Note Column */}
-                                          <div className="col-span-3 flex justify-center">
-                                            <button
-                                              onClick={() => openNoteModal(resource)}
-                                              className={`
-                                                px-3 py-1 text-xs rounded-lg flex items-center space-x-1 transition-all duration-200 border
-                                                ${hasNote 
-                                                  ? 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100' 
-                                                  : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100'
-                                                }
-                                              `}
-                                            >
-                                              <Edit size={12} />
-                                              <span>{hasNote ? 'Edit' : 'Add'}</span>
-                                            </button>
+                                          <div className="col-span-2 flex items-center justify-center">
+                                            {hasNote ? (
+                                              <button
+                                                onClick={() => openNoteModal(resource)}
+                                                className="w-[80%] px-3 py-1 text-xs rounded-lg flex items-center space-x-1 transition-all duration-200 border bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100 hover:border-gray-300"
+                                                title="Click to edit note"
+                                              >
+                                                <span className="flex-1 overflow-hidden truncate leading-relaxed">
+                                                  {progress?.personalNote}
+                                                </span>
+                                              </button>
+                                            ) : (
+                                              <button
+                                                onClick={() => openNoteModal(resource)}
+                                                className="px-3 py-1 text-xs rounded-lg flex items-center space-x-1 transition-all duration-200 border bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100 hover:border-gray-300"
+                                              >
+                                                <span>Add Note</span>
+                                              </button>
+                                            )}
                                           </div>
 
                                           {/* Revision Column */}
-                                          <div className="col-span-2 flex justify-center">
+                                          <div className="col-span-1 flex justify-center">
                                             <button
                                               onClick={() => handleResourceRevision(resource.id, isMarkedForRevision)}
                                               disabled={processingResources.has(resource.id)}
                                               className={`
-                                                w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 border
+                                                w-6 h-6 rounded-lg flex items-center justify-center transition-all duration-200 border
                                                 ${isMarkedForRevision 
                                                   ? 'bg-orange-50 text-orange-600 border-orange-200 hover:bg-orange-100' 
                                                   : 'bg-gray-50 text-gray-400 border-gray-200 hover:bg-gray-100 hover:text-orange-500'
@@ -1245,10 +1291,37 @@ const LeagueDetailPage = ({ league, onBack }) => {
                                               `}
                                             >
                                               {processingResources.has(resource.id) ? (
-                                                <Loader2 size={14} className="animate-spin" />
+                                                <Loader2 size={12} className="animate-spin" />
                                               ) : (
-                                                <Star size={14} />
+                                                <Star size={12} />
                                               )}
+                                            </button>
+                                          </div>
+
+                                          {/* Status Column */}
+                                          <div className="col-span-1 flex justify-center">
+                                            <button
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleResourceComplete(resource.id, isCompleted);
+                                              }}
+                                              disabled={processingResources.has(resource.id)}
+                                              className={`
+                                                flex-shrink-0 w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors duration-200
+                                                ${isCompleted 
+                                                  ? 'bg-green-500 border-green-500 text-white hover:bg-green-600' 
+                                                  : 'border-gray-300 bg-white hover:border-gray-400'
+                                                }
+                                                ${processingResources.has(resource.id) ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
+                                                ${recentlyCompleted.has(resource.id) ? 'success-pulse' : ''}
+                                              `}
+                                              title={isCompleted ? 'Mark as not done' : 'Mark as done'}
+                                            >
+                                              {processingResources.has(resource.id) ? (
+                                                <Loader2 size={12} className="animate-spin" />
+                                              ) : isCompleted ? (
+                                                <Check size={12} />
+                                              ) : null}
                                             </button>
                                           </div>
 
@@ -1257,13 +1330,13 @@ const LeagueDetailPage = ({ league, onBack }) => {
                                             <button
                                               onClick={() => isCompleted && handleShareOnTwitter(resource.title, leagueProgress.league.name)}
                                               disabled={!isCompleted}
-                                              className={`w-8 h-8 rounded-lg transition-colors flex items-center justify-center ${
+                                              className={`w-6 h-6 rounded-lg transition-colors flex items-center justify-center ${
                                                 isCompleted 
                                                   ? 'bg-black text-white hover:bg-gray-800 cursor-pointer' 
                                                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                               }`}
                                             >
-                                              <RiTwitterXFill size={14} />
+                                              <RiTwitterXFill size={12} />
                                             </button>
                                           </div>
                                         </div>
@@ -1272,7 +1345,7 @@ const LeagueDetailPage = ({ league, onBack }) => {
                                   })}
                                 </div>
                               </div>
-                            ) : resourcesLoading ? (
+                            ) : expandedSections[section.id] && resourcesLoading ? (
                               <div className="p-4 sm:p-6">
                                 <SectionLoadingIndicator 
                                   sectionName={section.name}
@@ -1280,12 +1353,12 @@ const LeagueDetailPage = ({ league, onBack }) => {
                                   progress={sectionsLoadingProgress[section.id] || 0}
                                 />
                               </div>
-                            ) : (
+                            ) : expandedSections[section.id] && resources.length === 0 ? (
                               <div className="px-4 sm:px-6 py-8 text-center text-gray-500">
                                 <FileText size={24} className="mx-auto mb-2 text-gray-400" />
                                 <p className="text-sm sm:text-base">No resources available for this section.</p>
                               </div>
-                            )}
+                            ) : null}
                           </div>
                         );
                       })}
@@ -1299,7 +1372,7 @@ const LeagueDetailPage = ({ league, onBack }) => {
 
         {/* No Weeks Message */}
         {(!leagueProgress.progress.weeks || leagueProgress.progress.weeks.length === 0) && (
-          <div className="bg-white rounded-xl sm:rounded-2xl border border-gray-200 shadow-sm p-8 sm:p-12 text-center">
+          <div className="bg-white rounded-xl sm:rounded-2xl border border-gray-200 p-8 sm:p-12 text-center">
             <BookOpen size={32} className="mx-auto mb-4 text-gray-400 sm:w-10 sm:h-10" />
             <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">No Content Available</h3>
             <p className="text-sm sm:text-base text-gray-600">This league doesn't have any weeks or sections yet.</p>
@@ -1322,7 +1395,7 @@ const LeagueDetailPage = ({ league, onBack }) => {
             toastType === 'success' 
               ? 'bg-green-500' 
               : 'bg-orange-500'
-          } text-white px-4 py-3 sm:py-2 rounded-lg shadow-lg flex items-center space-x-3 sm:space-x-2 max-w-sm mx-auto sm:mx-0`}>
+          } text-white px-4 py-3 sm:py-2 rounded-lg flex items-center space-x-3 sm:space-x-2 max-w-sm mx-auto sm:mx-0`}>
             <div className="flex-shrink-0">
               <div className="w-6 h-6 sm:w-5 sm:h-5 bg-white rounded-full flex items-center justify-center">
                 {toastType === 'success' ? (

@@ -147,7 +147,7 @@ const AssignmentManagement = ({ leagueId }) => {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mt-4">
+      <div className="bg-white rounded-lg border border-gray-200 p-6 mt-4">
         <div className="animate-pulse space-y-4">
           <div className="h-6 bg-gray-200 rounded w-1/4"></div>
           <div className="h-4 bg-gray-200 rounded w-3/4"></div>
@@ -159,7 +159,7 @@ const AssignmentManagement = ({ leagueId }) => {
 
   if (error) {
     return (
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mt-4">
+      <div className="bg-white rounded-lg border border-gray-200 p-6 mt-4">
         <div className="text-center py-8">
           <AlertCircle size={48} className="mx-auto text-red-500 mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">Error Loading Assignment</h3>
@@ -181,7 +181,7 @@ const AssignmentManagement = ({ leagueId }) => {
 
   if (!assignment) {
     return (
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mt-4">
+      <div className="bg-white rounded-lg border border-gray-200 p-6 mt-4">
         <div className="text-center py-8">
           <FileText size={48} className="mx-auto text-gray-300 mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">Assignment Coming Soon</h3>
@@ -199,7 +199,7 @@ const AssignmentManagement = ({ leagueId }) => {
   return (
     <div className="space-y-4 mt-4">
       {/* Assignment Details */}
-      <div className="bg-gradient-to-r from-[#FFDE59]/20 to-[#FFD700]/20 rounded-lg border border-[#FFDE59]/30 shadow-sm">
+      <div className="bg-gradient-to-r from-[#FFDE59]/20 to-[#FFD700]/20 rounded-lg border border-[#FFDE59]/30">
         <div className="px-6 py-4">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center space-x-3">
@@ -302,7 +302,7 @@ const AssignmentManagement = ({ leagueId }) => {
 
       {/* Submission Form */}
       {showSubmissionForm && (
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+        <div className="bg-white rounded-lg border border-gray-200">
           <div className="px-6 py-4 border-b border-gray-100">
             <h3 className="text-lg font-semibold text-gray-900">
               {latestSubmission ? 'Resubmit Your Assignment' : 'Submit Your Assignment'}

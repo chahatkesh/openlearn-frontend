@@ -181,43 +181,33 @@ const LearningProgressSection = ({ user }) => {
     <div className="min-h-screen bg-gray-50/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 lg:pt-8 pb-12 lg:pb-16">
         
-        {/* Dashboard Header - Similar to LeaguesPage */}
-        <div className="mb-8 lg:mb-12">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 lg:mb-4 tracking-tight">
-            Learning Dashboard
-          </h1>
-          <p className="text-lg lg:text-xl text-gray-700 max-w-3xl leading-relaxed">
-            Track your progress and continue your learning journey with personalized insights
-          </p>
-          
-          {/* Search Results Indicator - Dashboard Style */}
-          {isSearchActive && (
-            <div className="mt-6 max-w-2xl">
-              <div className="bg-blue-50/80 backdrop-blur-sm border border-blue-200/50 rounded-2xl p-4 sm:p-6">
-                <div className="flex items-center gap-3 text-blue-800">
-                  <div className="w-8 h-8 rounded-xl bg-blue-100 flex items-center justify-center">
-                    <Search className="h-4 w-4 text-blue-600" />
-                  </div>
-                  <div className="flex-1">
-                    <span className="text-sm sm:text-base font-medium">
-                      Search results for "<span className="font-semibold">{searchTerm}</span>"
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => {
-                      window.dispatchEvent(new CustomEvent('dashboardSearch', {
-                        detail: { searchTerm: '', isActive: false }
-                      }));
-                    }}
-                    className="text-blue-600 hover:text-blue-800 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-all duration-200"
-                  >
-                    Clear
-                  </button>
+        {/* Search Results Indicator - Dashboard Style */}
+        {isSearchActive && (
+          <div className="mb-8 lg:mb-12 max-w-2xl">
+            <div className="bg-blue-50/80 backdrop-blur-sm border border-blue-200/50 rounded-2xl p-4 sm:p-6">
+              <div className="flex items-center gap-3 text-blue-800">
+                <div className="w-8 h-8 rounded-xl bg-blue-100 flex items-center justify-center">
+                  <Search className="h-4 w-4 text-blue-600" />
                 </div>
+                <div className="flex-1">
+                  <span className="text-sm sm:text-base font-medium">
+                    Search results for "<span className="font-semibold">{searchTerm}</span>"
+                  </span>
+                </div>
+                <button
+                  onClick={() => {
+                    window.dispatchEvent(new CustomEvent('dashboardSearch', {
+                      detail: { searchTerm: '', isActive: false }
+                    }));
+                  }}
+                  className="text-blue-600 hover:text-blue-800 text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-all duration-200"
+                >
+                  Clear
+                </button>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         <div className="space-y-6 sm:space-y-8 lg:space-y-10">
 
@@ -388,7 +378,7 @@ const LearningProgressSection = ({ user }) => {
                   return (
                     <div 
                       key={enrollment.league.id} 
-                      className="group bg-gradient-to-br from-white to-gray-50/30 rounded-2xl sm:rounded-3xl border border-gray-200/30 hover:border-gray-300/50 transition-all duration-500 hover:-translate-y-2 hover:shadow-xl hover:shadow-gray-200/25 overflow-hidden"
+                      className="group bg-gradient-to-br from-white to-gray-50/30 rounded-2xl sm:rounded-3xl border border-gray-200/30 hover:border-gray-300/50 transition-all duration-500 overflow-hidden"
                     >
                       {/* League Header - Enhanced */}
                       <div className="p-5 sm:p-6 border-b border-gray-100/50">

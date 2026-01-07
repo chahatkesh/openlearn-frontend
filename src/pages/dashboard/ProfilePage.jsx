@@ -1,21 +1,19 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useUserProfile } from '../../hooks/useDashboard';
+import { ExternalLink } from 'lucide-react';
 import { 
-  User, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Calendar, 
-  Award,
-  ExternalLink,
-  Github,
-  Linkedin,
-  Activity,
-  Shield,
-  Clock,
-  Globe
-} from 'lucide-react';
+  RiUserLine, 
+  RiMailLine, 
+  RiPhoneLine, 
+  RiMapPinLine, 
+  RiCalendarLine, 
+  RiAwardLine,
+  RiShieldLine,
+  RiTimeLine,
+  RiGlobalLine,
+  RiLineChartLine
+} from 'react-icons/ri';
 import { FaXTwitter } from 'react-icons/fa6';
 import { MdOutlineVerified, MdEdit, MdClose, MdSave } from "react-icons/md";
 import { SiKaggle, SiGithub, SiLinkedin, SiX } from "react-icons/si";
@@ -272,7 +270,7 @@ const ProfilePage = () => {
                     className="w-24 h-24 rounded-full object-cover border border-gray-200/30"
                   />
                   <div className="absolute -bottom-2 -right-2 w-8 h-8 sm:w-10 sm:h-10 bg-white/95 rounded-xl flex items-center justify-center backdrop-blur-sm border border-gray-200/30">
-                    <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" />
+                    <RiShieldLine className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" />
                   </div>
                 </div>
                 
@@ -328,7 +326,7 @@ const ProfilePage = () => {
               <div className="space-y-6 sm:space-y-8">
                 <div className="flex items-start gap-4 sm:gap-5">
                   <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-50 rounded-2xl flex items-center justify-center">
-                    <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
+                    <RiMailLine className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
                   </div>
                   <div className="flex-1">
                     <p className="text-sm sm:text-base font-semibold text-gray-500 uppercase tracking-wide mb-1">Email Address</p>
@@ -339,7 +337,7 @@ const ProfilePage = () => {
                 {user.phoneNumber && (
                   <div className="flex items-start gap-4 sm:gap-5">
                     <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-50 rounded-2xl flex items-center justify-center">
-                      <Phone className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
+                      <RiPhoneLine className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
                     </div>
                     <div className="flex-1">
                       <p className="text-sm sm:text-base font-semibold text-gray-500 uppercase tracking-wide mb-1">Phone Number</p>
@@ -350,7 +348,7 @@ const ProfilePage = () => {
                 
                 <div className="flex items-start gap-4 sm:gap-5">
                   <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-50 rounded-2xl flex items-center justify-center">
-                    <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
+                    <RiCalendarLine className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
                   </div>
                   <div className="flex-1">
                     <p className="text-sm sm:text-base font-semibold text-gray-500 uppercase tracking-wide mb-1">Member Since</p>
@@ -361,7 +359,7 @@ const ProfilePage = () => {
                 {user.updatedAt && (
                   <div className="flex items-start gap-4 sm:gap-5">
                     <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-50 rounded-2xl flex items-center justify-center">
-                      <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
+                      <RiTimeLine className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
                     </div>
                     <div className="flex-1">
                       <p className="text-sm sm:text-base font-semibold text-gray-500 uppercase tracking-wide mb-1">Last Updated</p>
@@ -378,7 +376,7 @@ const ProfilePage = () => {
                 {user.institute && (
                   <div className="flex items-start gap-4 sm:gap-5">
                     <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-50 rounded-2xl flex items-center justify-center">
-                      <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
+                      <RiMapPinLine className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
                     </div>
                     <div className="flex-1">
                       <p className="text-sm sm:text-base font-semibold text-gray-500 uppercase tracking-wide mb-1">Institute</p>
@@ -390,7 +388,7 @@ const ProfilePage = () => {
                 {user.department && (
                   <div className="flex items-start gap-4 sm:gap-5">
                     <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-50 rounded-2xl flex items-center justify-center">
-                      <Award className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
+                      <RiAwardLine className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
                     </div>
                     <div className="flex-1">
                       <p className="text-sm sm:text-base font-semibold text-gray-500 uppercase tracking-wide mb-1">Department</p>
@@ -402,7 +400,7 @@ const ProfilePage = () => {
                 {user.graduationYear && (
                   <div className="flex items-start gap-4 sm:gap-5">
                     <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-50 rounded-2xl flex items-center justify-center">
-                      <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
+                      <RiCalendarLine className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
                     </div>
                     <div className="flex-1">
                       <p className="text-sm sm:text-base font-semibold text-gray-500 uppercase tracking-wide mb-1">Graduation Year</p>
@@ -414,7 +412,7 @@ const ProfilePage = () => {
                 {user.studentId && (
                   <div className="flex items-start gap-4 sm:gap-5">
                     <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-50 rounded-2xl flex items-center justify-center">
-                      <User className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
+                      <RiUserLine className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
                     </div>
                     <div className="flex-1">
                       <p className="text-sm sm:text-base font-semibold text-gray-500 uppercase tracking-wide mb-1">Student ID</p>
@@ -501,7 +499,7 @@ const ProfilePage = () => {
                         Portfolio URL
                       </label>
                       <div className="relative">
-                        <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <RiGlobalLine className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
                           type="url"
                           value={socialData.portfolioUrl}
@@ -569,7 +567,7 @@ const ProfilePage = () => {
                         Discord Username
                       </label>
                       <div className="relative">
-                        <Activity className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <RiLineChartLine className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
                           type="text"
                           value={socialData.discordUsername}
@@ -601,7 +599,7 @@ const ProfilePage = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                     {user.portfolioUrl && (
                       <SocialLink 
-                        icon={Globe} 
+                        icon={RiGlobalLine} 
                         label="Portfolio" 
                         url={user.portfolioUrl}
                         username={user.portfolioUrl}
@@ -611,7 +609,7 @@ const ProfilePage = () => {
                     
                     {user.githubUsername && (
                       <SocialLink 
-                        icon={Github} 
+                        icon={SiGithub} 
                         label="GitHub" 
                         url={`https://github.com/${user.githubUsername}`}
                         username={`@${user.githubUsername}`}
@@ -631,7 +629,7 @@ const ProfilePage = () => {
                     
                     {user.linkedinUrl && (
                       <SocialLink 
-                        icon={Linkedin} 
+                        icon={SiLinkedin} 
                         label="LinkedIn" 
                         url={user.linkedinUrl}
                         username={user.linkedinUrl.includes('/in/') 
@@ -644,7 +642,7 @@ const ProfilePage = () => {
                     
                     {user.discordUsername && (
                       <SocialLink 
-                        icon={Activity} 
+                        icon={RiLineChartLine} 
                         label="Discord" 
                         username={user.discordUsername}
                         color="purple"
@@ -653,7 +651,7 @@ const ProfilePage = () => {
                     
                     {user.kaggleUsername && (
                       <SocialLink 
-                        icon={Activity} 
+                        icon={SiKaggle} 
                         label="Kaggle" 
                         url={`https://kaggle.com/${user.kaggleUsername}`}
                         username={`@${user.kaggleUsername}`}
@@ -697,7 +695,7 @@ const ProfilePage = () => {
             <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200/30 rounded-2xl sm:rounded-3xl p-6 sm:p-8">
               <div className="flex items-center gap-4 sm:gap-5">
                 <div className="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center">
-                  <Shield className="w-6 h-6 text-green-600" />
+                  <RiShieldLine className="w-6 h-6 text-green-600" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-green-900 text-lg sm:text-xl">Account Migrated</h3>
