@@ -8,3 +8,4 @@ export { default as ProgressCard } from './ProgressCard';
 export { default as ProgressDashboard } from './ProgressDashboard';
 export { default as UserProfileSection } from './UserProfileSection';
 export { default as WelcomeBanner } from './WelcomeBanner';
+export { default as ActivityHeatmap } from './ActivityHeatmap';

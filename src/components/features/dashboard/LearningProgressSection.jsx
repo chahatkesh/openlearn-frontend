@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronRight, Play, CheckSquare, AlertCircle, Trophy, Clock, Target, Search } from 'lucide-react';
 import WelcomeBanner from './WelcomeBanner';
 import AssignmentManagement from './AssignmentManagement';
+import ActivityHeatmap from './ActivityHeatmap';
 import OptimizedDashboardService from '../../../utils/api/optimizedDashboardService';
 import ProgressService from '../../../utils/api/progressService';
 import ResourceLoadingIndicator, { StatisticLoader, ResourceProgressBadge } from '../../common/ResourceLoadingIndicator';
@@ -343,6 +344,11 @@ const LearningProgressSection = ({ user }) => {
             </div>
           </section>
         )}
+
+        {/* Activity Heatmap - Show for all users */}
+        <div className="relative">
+          <ActivityHeatmap />
+        </div>
 
         {/* Active Leagues Section - Apple Style Enhanced */}
         {dashboardData?.enrollments?.length > 0 && (
