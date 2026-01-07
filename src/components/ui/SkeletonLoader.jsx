@@ -424,106 +424,72 @@ export const AppleResourceRowSkeleton = ({ delay = 0 }) => (
   </div>
 );
 
-// Main Apple-style League Detail Skeleton
+// Main Apple-style League Detail Skeleton - Simplified
 export const LeagueDetailSkeleton = () => (
-  <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50/50">
+  <div className="min-h-screen bg-gray-50/30">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
-      {/* Back navigation with breadcrumb style */}
-      <div className="mb-8">
-        <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-          {/* Back button */}
-          <div className="flex items-center space-x-3">
-            <AppleSkeletonCircle size="w-5 h-5" delay={0} />
-            <AppleSkeletonText width="w-24" variant="body" delay={50} />
+      
+      {/* Back button */}
+      <div className="mb-6">
+        <AppleSkeletonButton width="w-20" height="h-8" variant="secondary" />
+      </div>
+      
+      {/* League header - simplified */}
+      <div className="bg-white/95 rounded-2xl border border-gray-100 p-6 sm:p-8 mb-6">
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+          {/* Title section */}
+          <div className="flex-1 space-y-3">
+            <AppleSkeletonText width="w-2/3 max-w-md" variant="title" />
+            <AppleSkeletonText width="w-full max-w-lg" variant="body" />
           </div>
           
-          {/* Quick stats - hidden on mobile */}
-          <div className="hidden md:flex items-center space-x-8">
-            <div className="flex items-center space-x-2">
-              <AppleSkeletonCircle size="w-4 h-4" delay={100} />
-              <AppleSkeletonText width="w-20" variant="caption" delay={150} />
-            </div>
-            <div className="flex items-center space-x-2">
-              <AppleSkeletonCircle size="w-4 h-4" delay={200} />
-              <AppleSkeletonText width="w-24" variant="caption" delay={250} />
-            </div>
-            <div className="flex items-center space-x-2">
-              <AppleSkeletonCircle size="w-4 h-4" delay={300} />
-              <AppleSkeletonText width="w-18" variant="caption" delay={350} />
-            </div>
+          {/* Progress circle */}
+          <AppleSkeletonCircle size="w-16 h-16" />
+        </div>
+        
+        {/* Progress bar */}
+        <div className="mt-6 space-y-2">
+          <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div className="h-full w-2/5 bg-gray-200 rounded-full animate-pulse" />
           </div>
         </div>
       </div>
-      
-      {/* League header */}
-      <AppleLeagueHeaderSkeleton />
 
-      {/* Weeks skeleton with staggered animation */}
-      <div className="space-y-6">
-        <AppleWeekSkeleton expanded={true} index={0} />
-        <AppleWeekSkeleton index={1} />
-        <AppleWeekSkeleton index={2} />
-      </div>
-
-      {/* Assignment section skeleton */}
-      <div className="mt-12">
-        <AppleSkeletonCard height="h-48" padding="p-8">
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <AppleSkeletonText 
-                width="w-40" 
-                variant="title" 
-                delay={800}
-              />
-              <AppleSkeletonButton 
-                width="w-32" 
-                height="h-10" 
-                delay={850}
-              />
+      {/* Week cards - simplified */}
+      <div className="space-y-4">
+        {[1, 2, 3].map((index) => (
+          <div key={index} className="bg-white/95 rounded-2xl border border-gray-100 p-5 sm:p-6">
+            {/* Week header */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex-1 space-y-2">
+                <AppleSkeletonText width="w-48" variant="subtitle" />
+                <AppleSkeletonText width="w-32" variant="caption" />
+              </div>
+              <AppleSkeletonCircle size="w-5 h-5" />
             </div>
             
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="space-y-3">
-                <AppleSkeletonText 
-                  width="w-full" 
-                  variant="body" 
-                  delay={900}
-                />
-                <AppleSkeletonText 
-                  width="w-3/4" 
-                  variant="body" 
-                  delay={950}
-                />
+            {/* Show expanded content only for first week */}
+            {index === 1 && (
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                {/* Section */}
+                <div className="mb-4 pb-4 border-b border-gray-100">
+                  <AppleSkeletonText width="w-40" variant="body" className="mb-3" />
+                  
+                  {/* Resource rows */}
+                  <div className="space-y-2">
+                    {[1, 2, 3].map((rowIndex) => (
+                      <div key={rowIndex} className="flex items-center gap-3 p-2">
+                        <AppleSkeletonCircle size="w-5 h-5" />
+                        <AppleSkeletonText width="flex-1" variant="body" />
+                        <AppleSkeletonButton width="w-12" height="h-6" variant="secondary" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
-              <div className="space-y-3">
-                <AppleSkeletonText 
-                  width="w-full" 
-                  variant="body" 
-                  delay={1000}
-                />
-                <AppleSkeletonText 
-                  width="w-2/3" 
-                  variant="body" 
-                  delay={1050}
-                />
-              </div>
-            </div>
-            
-            <div className="flex flex-col sm:flex-row sm:justify-end space-y-3 sm:space-y-0 sm:space-x-3 pt-4 border-t border-gray-100/50">
-              <AppleSkeletonButton 
-                width="w-full sm:w-24" 
-                height="h-10" 
-                variant="secondary"
-                delay={1100}
-              />
-              <AppleSkeletonButton 
-                width="w-full sm:w-32" 
-                height="h-10" 
-                delay={1150}
-              />
-            </div>
+            )}
           </div>
-        </AppleSkeletonCard>
+        ))}
       </div>
     </div>
   </div>
