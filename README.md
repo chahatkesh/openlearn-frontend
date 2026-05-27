@@ -3,7 +3,15 @@
 
 # OpenLearn Platform
 
-A comprehensive learning management system designed for skill-based cohort learning with role-based progression and collaborative learning experiences.
+> **End of Service Notice**
+>
+> OpenLearn has reached end of service. The active platform, cohorts, dashboard,
+> login, and submissions have been discontinued. The public website remains available
+> as an archive of OpenLearn's community, events, and work.
+>
+> Read the full notice: [END_OF_SERVICE.md](./END_OF_SERVICE.md)
+
+An archived learning management system designed for skill-based cohort learning with role-based progression and collaborative learning experiences.
 
 ## Platform Overview
 

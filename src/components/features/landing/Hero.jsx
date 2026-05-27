@@ -73,7 +73,7 @@ const Hero = () => {
 
   return (
       <MotionSection
-        className="relative min-h-screen flex mt-16 flex-col justify-center hero-pattern overflow-hidden"
+        className="relative min-h-screen flex flex-col justify-center hero-pattern overflow-hidden"
         style={{ backgroundColor: '#FFDE59' }}
         initial="hidden"
         animate="visible"

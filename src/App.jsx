@@ -9,7 +9,8 @@ import {
   CommunityPage,
   EventsPage,
   EventDetailPage,
-  UpdatesPage
+  UpdatesPage,
+  EndOfServicePage
 } from './pages/public'
 
 import {
@@ -76,6 +77,7 @@ const App = () => {
         <Route path="/privacy" element={<PrivacyPolicyPage />} />
         <Route path="/terms" element={<TermsOfServicePage />} />
         <Route path="/updates" element={<UpdatesPage />} />
+        <Route path="/end-of-service" element={<EndOfServicePage />} />
 
         {/* Migration and Email Verification Routes */}
         <Route element={<ProtectedRoute />}>

@@ -7,3 +7,4 @@ export { default as CommunityPage } from './CommunityPage';
 export { default as EventsPage } from './EventsPage';
 export { default as EventDetailPage } from './EventDetailPage';
 export { default as UpdatesPage } from './UpdatesPage';
+export { default as EndOfServicePage } from './EndOfServicePage';
